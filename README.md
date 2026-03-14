@@ -49,7 +49,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the site.
 
 ## Setup for GitHub
 
-1. Create the repository: `gh repo create ProHealthLedger --public --source=. --push`
+1. Create the repository: `gh repo create muglikar/ProHealthLedger --public --source=. --push`
 2. Enable Actions write permissions: Settings → Actions → General → Workflow permissions → Read and write
 3. Votes are submitted via GitHub Issues and processed automatically
 

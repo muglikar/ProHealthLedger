@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const REPO_OWNER = "anandmuglikar";
+const REPO_OWNER = "muglikar";
 const REPO_NAME = "ProHealthLedger";
 
 export default function SubmitPage() {

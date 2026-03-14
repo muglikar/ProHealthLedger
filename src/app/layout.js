@@ -44,7 +44,7 @@ export default function RootLayout({ children }) {
             </p>
             <div className="footer-links">
               <a
-                href="https://github.com/anandmuglikar/ProHealthLedger"
+                href="https://github.com/muglikar/ProHealthLedger"
                 target="_blank"
                 rel="noopener noreferrer"
               >
