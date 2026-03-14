@@ -7,9 +7,15 @@
         "vote": "yes",
         "issue": 3,
         "date": "2026-03-14"
+      },
+      {
+        "profile_slug": "tgaurav",
+        "vote": "no",
+        "issue": 4,
+        "date": "2026-03-14"
       }
     ],
     "yes_count": 1,
-    "no_count": 0
+    "no_count": 1
   }
 ]
