@@ -36,7 +36,8 @@ async function main() {
   const profiles = readJSON(PROFILES_PATH);
   const users = readJSON(USERS_PATH);
 
-  const existingUser = users.find((u) => u.github_username === issueAuthor);
+  const userId = `github:${issueAuthor}`;
+  const existingUser = users.find((u) => u.user_id === userId);
   const alreadyVoted = existingUser?.contributions.some(
     (c) => c.profile_slug === slug
   );
@@ -66,7 +67,8 @@ async function main() {
 
   const today = new Date().toISOString().split("T")[0];
   const submission = {
-    user: issueAuthor,
+    user: userId,
+    display_name: issueAuthor,
     vote: normalizedVote,
     issue: issueNumber,
     date: today,
@@ -85,10 +87,11 @@ async function main() {
   profile.votes[normalizedVote]++;
   profile.submissions.push(submission);
 
-  let userEntry = users.find((u) => u.github_username === issueAuthor);
+  let userEntry = users.find((u) => u.user_id === userId);
   if (!userEntry) {
     userEntry = {
-      github_username: issueAuthor,
+      user_id: userId,
+      display_name: issueAuthor,
       contributions: [],
       yes_count: 0,
       no_count: 0,

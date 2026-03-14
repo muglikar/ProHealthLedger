@@ -31,6 +31,24 @@ export default function TransparencyPage() {
 
   const repoBase = "https://github.com/muglikar/ProHealthLedger";
 
+  function voterDisplay(submission) {
+    const name = submission.display_name || submission.user;
+    const userId = submission.user || "";
+    if (userId.startsWith("github:")) {
+      const gh = userId.slice(7);
+      return (
+        <a
+          href={`https://github.com/${gh}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {name}
+        </a>
+      );
+    }
+    return <span>{name}</span>;
+  }
+
   return (
     <>
       <div className="page-header">
@@ -86,15 +104,7 @@ export default function TransparencyPage() {
                         : "Would not"}
                     </span>
                   </td>
-                  <td>
-                    <a
-                      href={`https://github.com/${v.user}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      @{v.user}
-                    </a>
-                  </td>
+                  <td>{voterDisplay(v)}</td>
                   <td>
                     <a
                       href={`${repoBase}/issues/${v.issue}`}

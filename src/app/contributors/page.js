@@ -20,6 +20,21 @@ export default function ContributorsPage() {
     (a, b) => b.yes_count + b.no_count - (a.yes_count + a.no_count)
   );
 
+  function profileUrl(userId) {
+    if (!userId) return null;
+    if (userId.startsWith("github:")) {
+      return `https://github.com/${userId.slice(7)}`;
+    }
+    if (userId.startsWith("linkedin:")) {
+      return null;
+    }
+    return `https://github.com/${userId}`;
+  }
+
+  function displayLabel(user) {
+    return user.display_name || user.user_id || user.github_username || "Unknown";
+  }
+
   return (
     <>
       <div className="page-header">
@@ -38,42 +53,51 @@ export default function ContributorsPage() {
         <div className="empty-state">
           <div className="empty-state-icon">👥</div>
           <h3>No contributors yet</h3>
-          <p>
-            Share your first experience to appear on this list.
-          </p>
+          <p>Share your first experience to appear on this list.</p>
         </div>
       ) : (
         <div className="leaderboard">
-          {sorted.map((user, idx) => (
-            <div key={user.github_username} className="leaderboard-row">
+          {sorted.map((user, idx) => {
+            const url = profileUrl(user.user_id || user.github_username);
+            const name = displayLabel(user);
+            return (
               <div
-                className={`leaderboard-rank${idx < 3 ? " top-3" : ""}`}
+                key={user.user_id || user.github_username}
+                className="leaderboard-row"
               >
-                {idx + 1}
-              </div>
-              <div className="leaderboard-info">
-                <div className="leaderboard-username">
-                  <a
-                    href={`https://github.com/${user.github_username}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    @{user.github_username}
-                  </a>
+                <div
+                  className={`leaderboard-rank${idx < 3 ? " top-3" : ""}`}
+                >
+                  {idx + 1}
                 </div>
-                <div className="leaderboard-stats">
-                  <span>✓ {user.yes_count} positive</span>
-                  <span>✗ {user.no_count} negative</span>
-                  <span>{user.contributions.length} total</span>
+                <div className="leaderboard-info">
+                  <div className="leaderboard-username">
+                    {url ? (
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {name}
+                      </a>
+                    ) : (
+                      name
+                    )}
+                  </div>
+                  <div className="leaderboard-stats">
+                    <span>✓ {user.yes_count} positive</span>
+                    <span>✗ {user.no_count} negative</span>
+                    <span>{user.contributions.length} total</span>
+                  </div>
                 </div>
+                <span
+                  className={`karma-status ${user.yes_count >= 1 ? "karma-good" : "karma-pending"}`}
+                >
+                  {user.yes_count >= 1 ? "Can vote No" : "Yes only"}
+                </span>
               </div>
-              <span
-                className={`karma-status ${user.yes_count >= 1 ? "karma-good" : "karma-pending"}`}
-              >
-                {user.yes_count >= 1 ? "Can vote No" : "Yes only"}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </>

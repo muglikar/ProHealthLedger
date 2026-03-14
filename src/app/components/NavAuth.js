@@ -11,7 +11,7 @@ export default function NavAuth() {
 
   if (!session) {
     return (
-      <button className="nav-auth-btn" onClick={() => signIn("github")}>
+      <button className="nav-auth-btn" onClick={() => signIn()}>
         Sign In
       </button>
     );
@@ -19,7 +19,7 @@ export default function NavAuth() {
 
   return (
     <div className="nav-auth-user">
-      <span className="nav-auth-name">@{session.username}</span>
+      <span className="nav-auth-name">{session.displayName}</span>
       <button
         className="nav-auth-btn nav-auth-btn-out"
         onClick={() => signOut()}

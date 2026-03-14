@@ -761,6 +761,52 @@ a:hover {
   color: var(--text-secondary);
 }
 
+/* ── Sign-In Options ── */
+.signin-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.btn-signin {
+  width: 100%;
+  justify-content: center;
+  padding: 14px 24px;
+  font-size: 0.95rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+  font-family: var(--font-sans);
+  text-decoration: none !important;
+}
+
+.btn-github {
+  background: #24292e;
+  color: white !important;
+  border-color: #24292e;
+}
+
+.btn-github:hover {
+  background: #2f363d;
+}
+
+.btn-linkedin {
+  background: #0a66c2;
+  color: white !important;
+  border-color: #0a66c2;
+}
+
+.btn-linkedin:hover {
+  background: #004182;
+}
+
 /* ── Vote Form ── */
 .vote-form {
   max-width: 560px;

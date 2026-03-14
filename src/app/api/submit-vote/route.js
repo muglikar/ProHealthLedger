@@ -4,7 +4,7 @@ import { readDataFile, writeDataFile, createIssue } from "@/lib/github";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
-  if (!session?.username) {
+  if (!session?.userId) {
     return Response.json(
       { error: "You must be signed in to vote." },
       { status: 401 }
@@ -13,7 +13,8 @@ export async function POST(req) {
 
   const body = await req.json();
   const { linkedinUrl, vote, reason } = body;
-  const username = session.username;
+  const userId = session.userId;
+  const displayName = session.displayName;
 
   if (!linkedinUrl || !vote) {
     return Response.json(
@@ -47,7 +48,7 @@ export async function POST(req) {
     "data/users/_index.json"
   );
 
-  const existingUser = users.find((u) => u.github_username === username);
+  const existingUser = users.find((u) => u.user_id === userId);
   const alreadyVoted = existingUser?.contributions.some(
     (c) => c.profile_slug === slug
   );
@@ -95,7 +96,7 @@ export async function POST(req) {
     ``,
     `### Submitted via`,
     ``,
-    `Website form by @${username}`,
+    `Website form by **${displayName}** (${userId})`,
     ``,
     `---`,
     `*This vote was submitted programmatically and pre-validated (Karma Rule checked, duplicate vote checked).*`,
@@ -108,7 +109,7 @@ export async function POST(req) {
       issueBody,
       ["vote"]
     );
-  } catch (err) {
+  } catch {
     return Response.json(
       { error: "Failed to create audit record. Please try again." },
       { status: 500 }
@@ -116,7 +117,13 @@ export async function POST(req) {
   }
 
   const issueNumber = issue.number;
-  const submission = { user: username, vote, issue: issueNumber, date: today };
+  const submission = {
+    user: userId,
+    display_name: displayName,
+    vote,
+    issue: issueNumber,
+    date: today,
+  };
 
   let profile = profiles.find((p) => p.slug === slug);
   if (!profile) {
@@ -131,16 +138,18 @@ export async function POST(req) {
   profile.votes[vote]++;
   profile.submissions.push(submission);
 
-  let userEntry = users.find((u) => u.github_username === username);
+  let userEntry = users.find((u) => u.user_id === userId);
   if (!userEntry) {
     userEntry = {
-      github_username: username,
+      user_id: userId,
+      display_name: displayName,
       contributions: [],
       yes_count: 0,
       no_count: 0,
     };
     users.push(userEntry);
   }
+  userEntry.display_name = displayName;
   userEntry.contributions.push({
     profile_slug: slug,
     vote,
@@ -154,7 +163,7 @@ export async function POST(req) {
       "data/profiles/_index.json",
       profiles,
       profilesSha,
-      `Add ${vote} vote for ${slug} from @${username} (issue #${issueNumber})`
+      `Add ${vote} vote for ${slug} from ${userId} (issue #${issueNumber})`
     );
 
     const { sha: freshUsersSha } = await readDataFile(
@@ -164,11 +173,14 @@ export async function POST(req) {
       "data/users/_index.json",
       users,
       freshUsersSha || usersSha,
-      `Update contributor @${username} (issue #${issueNumber})`
+      `Update contributor ${userId} (issue #${issueNumber})`
     );
-  } catch (err) {
+  } catch {
     return Response.json(
-      { error: "Vote recorded as issue but data update failed. An admin will resolve this." },
+      {
+        error:
+          "Vote recorded as issue but data update failed. An admin will resolve this.",
+      },
       { status: 500 }
     );
   }
