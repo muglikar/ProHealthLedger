@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "linkedin_url": "https://www.linkedin.com/in/piyush-bhujbal",
+    "slug": "piyush-bhujbal",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "muglikar",
+        "vote": "yes",
+        "issue": 3,
+        "date": "2026-03-14"
+      }
+    ]
+  }
+]
