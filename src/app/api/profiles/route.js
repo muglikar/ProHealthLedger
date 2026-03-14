@@ -1,14 +1,6 @@
-import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { readDataFile } from "@/lib/github";
 
 export async function GET() {
-  const filePath = path.join(process.cwd(), "data", "profiles", "_index.json");
-  try {
-    const raw = fs.readFileSync(filePath, "utf-8");
-    const profiles = JSON.parse(raw);
-    return NextResponse.json(profiles);
-  } catch {
-    return NextResponse.json([]);
-  }
+  const { data } = await readDataFile("data/profiles/_index.json");
+  return Response.json(data);
 }
