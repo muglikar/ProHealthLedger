@@ -1,0 +1,49 @@
+name: "Submit a Professional Vote"
+description: "Share your experience — would you work with this person again?"
+title: "[VOTE] "
+labels: ["vote"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Professional Health Ledger — Vote Submission
+
+        Share your honest, subjective professional experience. This is not a review — it is a personal reflection on whether you would choose to work with this person again.
+
+        **Karma Rule:** You must have at least one "Yes" vote on record before you can submit a "No" vote. Pay it forward first.
+
+  - type: input
+    id: linkedin_url
+    attributes:
+      label: LinkedIn Profile URL
+      description: "Paste the full LinkedIn URL of the professional."
+      placeholder: "https://www.linkedin.com/in/jane-doe"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: vote
+    attributes:
+      label: "Based on your experience, would you work with/for them again?"
+      options:
+        - "Yes"
+        - "No"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Brief Reason (optional)
+      description: "A short, professional note about your experience. Keep it constructive."
+      placeholder: "Great mentor, always available for guidance."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Acknowledgment
+      options:
+        - label: "I confirm this is based on my genuine professional experience and I accept the community guidelines."
+          required: true

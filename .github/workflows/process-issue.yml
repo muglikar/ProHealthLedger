@@ -1,0 +1,40 @@
+name: Process Vote Submission
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  process-vote:
+    if: contains(github.event.issue.labels.*.name, 'vote')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Process the vote
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          REPO_FULL_NAME: ${{ github.repository }}
+        run: node scripts/process-vote.js
+
+      - name: Commit and push data changes
+        run: |
+          git config user.name "ProHealthLedger Bot"
+          git config user.email "bot@prohealthledger.dev"
+          git add data/
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "Update ledger data from issue #${{ github.event.issue.number }}"
+          git push
