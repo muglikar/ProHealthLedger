@@ -4,16 +4,15 @@ const REPO_OWNER = "muglikar";
 const REPO_NAME = "ProHealthLedger";
 
 export default function SubmitPage() {
-  const issueUrl = `https://github.com/${REPO_OWNER}/${REPO_NAME}/issues/new?template=submit-vote.yml&title=%5BVOTE%5D+`;
+  const issueUrl = `https://github.com/${REPO_OWNER}/${REPO_NAME}/issues/new?template=submit-vote.yml`;
 
   return (
     <>
       <section className="submit-hero">
-        <h1>Submit a Vote</h1>
+        <h1>Share Your Experience</h1>
         <p>
-          Share your genuine professional experience. Your vote is submitted as
-          a GitHub Issue and processed automatically by our transparent,
-          open-source pipeline.
+          Worked with someone great — or not so great? Share your honest
+          experience so others can make informed decisions.
         </p>
         <a
           href={issueUrl}
@@ -21,46 +20,42 @@ export default function SubmitPage() {
           rel="noopener noreferrer"
           className="btn btn-primary"
         >
-          Open Submission Form on GitHub →
+          Submit Your Vote →
         </a>
       </section>
 
       <div className="submit-steps">
         <div className="submit-step">
-          <h3>1. Prepare</h3>
+          <h3>1. You&apos;ll need two things</h3>
           <p>
-            You will need the LinkedIn URL of the professional you want to vote
-            on. Make sure you have a GitHub account — your GitHub username is
-            your identity on the ledger.
+            A free GitHub account (to identify yourself) and the LinkedIn URL
+            of the person you&apos;re voting on.
           </p>
         </div>
         <div className="submit-step">
-          <h3>2. Answer One Question</h3>
+          <h3>2. Answer one question</h3>
           <p>
-            &ldquo;Based on your experience, would you work with/for them
-            again?&rdquo; Choose Yes or No. Optionally add a brief,
-            constructive reason.
+            &ldquo;Would you work with this person again?&rdquo; Pick Yes or
+            No. You can optionally share a brief reason.
           </p>
         </div>
         <div className="submit-step">
-          <h3>3. Submit</h3>
+          <h3>3. It&apos;s permanent</h3>
           <p>
-            Open the issue. Our GitHub Action picks it up within seconds,
-            validates it, applies the Karma Rule, and updates the ledger
-            automatically.
+            Your vote is recorded publicly and cannot be edited or deleted.
+            It&apos;s tied to your GitHub username forever. Be honest.
           </p>
         </div>
       </div>
 
       <div className="cta-box">
-        <h2>Remember the Karma Rule</h2>
+        <h2>Remember: positivity comes first</h2>
         <p>
-          You must have at least one &ldquo;Yes&rdquo; vote on record before
-          you can submit a &ldquo;No&rdquo; vote. This keeps the community
-          constructive.
+          Your first vote must be a &ldquo;Yes&rdquo; — vouch for someone
+          you&apos;ve had a good experience with before you can flag anyone.
         </p>
         <Link href="/profiles" className="btn btn-secondary">
-          Browse Existing Profiles
+          See Who&apos;s Been Voted On
         </Link>
       </div>
     </>

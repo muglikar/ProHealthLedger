@@ -23,19 +23,24 @@ export default function ContributorsPage() {
   return (
     <>
       <div className="page-header">
-        <h1>Contributors</h1>
-        <p>The people making the professional ledger possible.</p>
+        <h1>Community Contributors</h1>
+        <p>
+          Everyone who has shared their professional experience. Ranked by
+          total contributions.
+        </p>
       </div>
 
       {loading ? (
         <div className="empty-state">
-          <p>Loading contributors…</p>
+          <p>Loading…</p>
         </div>
       ) : sorted.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon">👥</div>
           <h3>No contributors yet</h3>
-          <p>Submit a vote to become the first contributor on the leaderboard.</p>
+          <p>
+            Share your first experience to appear on this list.
+          </p>
         </div>
       ) : (
         <div className="leaderboard">
@@ -57,15 +62,15 @@ export default function ContributorsPage() {
                   </a>
                 </div>
                 <div className="leaderboard-stats">
-                  <span>✓ {user.yes_count} Yes</span>
-                  <span>✗ {user.no_count} No</span>
+                  <span>✓ {user.yes_count} positive</span>
+                  <span>✗ {user.no_count} negative</span>
                   <span>{user.contributions.length} total</span>
                 </div>
               </div>
               <span
                 className={`karma-status ${user.yes_count >= 1 ? "karma-good" : "karma-pending"}`}
               >
-                {user.yes_count >= 1 ? "Karma ✓" : "Pending"}
+                {user.yes_count >= 1 ? "Can vote No" : "Yes only"}
               </span>
             </div>
           ))}

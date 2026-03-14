@@ -4,53 +4,55 @@ export default function Home() {
   return (
     <>
       <section className="hero">
-        <span className="hero-badge">Open Source · Community Driven</span>
-        <h1>Professional Health Ledger</h1>
+        <span className="hero-badge">Free · Public · Permanent</span>
+        <h1>
+          Know who you&apos;re working with{" "}
+          <span className="hero-highlight">before you commit.</span>
+        </h1>
         <p>
-          A transparent, GitHub-native system where professionals are
-          community-verified through genuine work experiences. No algorithms, no
-          gatekeepers — just honest, subjective voices.
+          A simple, honest directory where people share one thing: whether
+          they&apos;d work with someone again. No long reviews, no star
+          ratings — just a clear Yes or No from real professionals.
         </p>
         <div className="hero-actions">
           <Link href="/submit" className="btn btn-primary">
-            Submit a Vote
+            Share Your Experience
           </Link>
           <Link href="/profiles" className="btn btn-secondary">
-            Browse Profiles
+            Look Up Someone
           </Link>
         </div>
       </section>
 
       <section className="how-it-works">
-        <h2 className="section-title">How It Works</h2>
+        <h2 className="section-title">How does it work?</h2>
         <p className="section-subtitle">
-          Three simple steps to contribute to the professional ledger.
+          Three steps. No sign-up forms, no subscriptions, no hidden fees.
         </p>
         <div className="steps-grid">
           <div className="step-card">
             <div className="step-number">1</div>
-            <h3>Open a GitHub Issue</h3>
+            <h3>Share your experience</h3>
             <p>
-              Use our structured issue template to submit a vote. Paste a
-              LinkedIn URL and answer one question: &ldquo;Would you work with
-              them again?&rdquo;
+              Paste someone&apos;s LinkedIn profile link and answer one
+              question: &ldquo;Would you work with them again?&rdquo; That&apos;s
+              it.
             </p>
           </div>
           <div className="step-card">
             <div className="step-number">2</div>
-            <h3>Automated Processing</h3>
+            <h3>We record it publicly</h3>
             <p>
-              A GitHub Action validates your submission, checks the Karma Rule,
-              and updates the public ledger data — all transparently in the
-              repository.
+              Your answer is permanently saved in a public record that anyone
+              can see. No edits, no takebacks — it&apos;s your honest word.
             </p>
           </div>
           <div className="step-card">
             <div className="step-number">3</div>
-            <h3>Public Verification</h3>
+            <h3>Anyone can look them up</h3>
             <p>
-              The professional&apos;s profile is updated with community votes.
-              Anyone can browse the ledger and see the aggregate sentiment.
+              Before hiring, partnering, or joining a team, check if others
+              have vouched for — or flagged — that person.
             </p>
           </div>
         </div>
@@ -60,12 +62,42 @@ export default function Home() {
         <div className="karma-box">
           <div className="karma-icon">⚖️</div>
           <div>
-            <h3>The Karma Rule</h3>
+            <h3>Positivity comes first</h3>
             <p>
-              Before you can submit a &ldquo;No&rdquo; vote, you must first
-              vouch for someone with a &ldquo;Yes.&rdquo; This ensures the
-              community is rooted in positive engagement and prevents drive-by
-              negativity. Pay it forward, then speak your truth.
+              Before you can flag someone, you must first vouch for someone
+              else. This simple rule keeps the platform constructive and
+              prevents anonymous pile-ons. Give credit where it&apos;s due,
+              then speak your truth.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="why-section">
+        <h2 className="section-title">Why does this exist?</h2>
+        <div className="why-grid">
+          <div className="why-card">
+            <h3>References are broken</h3>
+            <p>
+              Traditional references are curated — people only list contacts
+              who&apos;ll say nice things. This gives the full, unfiltered
+              picture.
+            </p>
+          </div>
+          <div className="why-card">
+            <h3>Reputation should be portable</h3>
+            <p>
+              Your professional track record shouldn&apos;t vanish when you
+              leave a company. It belongs to you — and to the people
+              considering working with you.
+            </p>
+          </div>
+          <div className="why-card">
+            <h3>Transparency protects everyone</h3>
+            <p>
+              When professional conduct is publicly visible, it creates
+              accountability. Good actors are recognized. Bad patterns become
+              visible.
             </p>
           </div>
         </div>

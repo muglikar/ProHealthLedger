@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Professional Health Ledger",
+  title: "Professional Health Ledger — Know Who You're Working With",
   description:
-    "A transparent, community-driven professional verification system. Share your genuine work experiences.",
+    "A free, public directory of honest professional experiences. Look up anyone. Share your truth.",
 };
 
 export default function RootLayout({ children }) {
@@ -28,7 +28,8 @@ export default function RootLayout({ children }) {
               <span className="logo-icon">◆</span> ProHealthLedger
             </Link>
             <div className="nav-links">
-              <Link href="/profiles">Profiles</Link>
+              <Link href="/profiles">Look Up</Link>
+              <Link href="/transparency">All Votes</Link>
               <Link href="/contributors">Contributors</Link>
               <Link href="/submit">Submit</Link>
             </div>
@@ -39,23 +40,32 @@ export default function RootLayout({ children }) {
           <div className="footer-inner">
             <p className="disclaimer">
               This ledger is a collection of subjective professional
-              experiences. The platform does not author or verify these ratings.
-              Use at your own risk.
+              experiences. The platform does not author, verify, or endorse
+              any rating. Every vote reflects one individual&apos;s personal
+              opinion. Use at your own discretion.
             </p>
             <div className="footer-links">
+              <Link href="/transparency">Full Audit Trail</Link>
+              <span className="footer-sep">·</span>
               <a
                 href="https://github.com/muglikar/ProHealthLedger"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                GitHub
+                View Source Code
               </a>
               <span className="footer-sep">·</span>
-              <Link href="/submit">Submit a Vote</Link>
+              <a
+                href="https://github.com/muglikar/ProHealthLedger/issues/new?template=request-removal.yml"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Request Removal
+              </a>
             </div>
             <p className="copyright">
-              © {new Date().getFullYear()} Professional Health Ledger. Open
-              Source.
+              © {new Date().getFullYear()} Professional Health Ledger —
+              Open Source, Zero Cost, Fully Transparent.
             </p>
           </div>
         </footer>

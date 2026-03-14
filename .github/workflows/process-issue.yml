@@ -10,18 +10,31 @@ permissions:
 
 jobs:
   process-vote:
-    if: contains(github.event.issue.labels.*.name, 'vote')
     runs-on: ubuntu-latest
     steps:
+      - name: Check if this is a vote submission
+        id: check
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          if echo "$ISSUE_BODY" | grep -q "LinkedIn Profile URL" && echo "$ISSUE_BODY" | grep -q "would you work with/for them again"; then
+            echo "is_vote=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_vote=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout repository
+        if: steps.check.outputs.is_vote == 'true'
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: steps.check.outputs.is_vote == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
       - name: Process the vote
+        if: steps.check.outputs.is_vote == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
@@ -31,10 +44,11 @@ jobs:
         run: node scripts/process-vote.js
 
       - name: Commit and push data changes
+        if: steps.check.outputs.is_vote == 'true'
         run: |
           git config user.name "ProHealthLedger Bot"
           git config user.email "bot@prohealthledger.dev"
           git add data/
           git diff --cached --quiet && echo "No changes to commit" && exit 0
-          git commit -m "Update ledger data from issue #${{ github.event.issue.number }}"
+          git commit -m "Update ledger from issue #${{ github.event.issue.number }}"
           git push

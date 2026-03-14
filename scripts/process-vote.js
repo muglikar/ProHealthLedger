@@ -16,10 +16,8 @@ async function main() {
 
   if (!linkedinUrl || !vote) {
     await commentAndClose(
-      repoFullName,
-      issueNumber,
-      token,
-      "Could not parse the LinkedIn URL or vote from this issue. Please use the issue template."
+      repoFullName, issueNumber, token,
+      "Could not read the LinkedIn URL or vote from this submission. Please use the submission form and fill in all required fields."
     );
     process.exit(0);
   }
@@ -29,10 +27,8 @@ async function main() {
 
   if (!slug) {
     await commentAndClose(
-      repoFullName,
-      issueNumber,
-      token,
-      "Invalid LinkedIn URL format. Please provide a URL like `https://www.linkedin.com/in/jane-doe`."
+      repoFullName, issueNumber, token,
+      "That doesn't look like a valid LinkedIn URL. Please use a link like `https://www.linkedin.com/in/jane-doe`."
     );
     process.exit(0);
   }
@@ -40,18 +36,28 @@ async function main() {
   const profiles = readJSON(PROFILES_PATH);
   const users = readJSON(USERS_PATH);
 
+  const existingUser = users.find((u) => u.github_username === issueAuthor);
+  const alreadyVoted = existingUser?.contributions.some(
+    (c) => c.profile_slug === slug
+  );
+  if (alreadyVoted) {
+    await commentAndClose(
+      repoFullName, issueNumber, token,
+      `You have already submitted a vote for **${slug}**. Each person can only vote once per profile — votes are permanent and cannot be changed.`
+    );
+    process.exit(0);
+  }
+
   if (normalizedVote === "no") {
-    const user = users.find((u) => u.github_username === issueAuthor);
-    if (!user || user.yes_count < 1) {
+    if (!existingUser || existingUser.yes_count < 1) {
       await commentAndClose(
-        repoFullName,
-        issueNumber,
-        token,
+        repoFullName, issueNumber, token,
         [
-          "**Karma Rule:** You must have at least one 'Yes' contribution before submitting a 'No'.",
+          "**Your first contribution must be a positive one.**",
           "",
-          "This ensures the community is built on positive engagement first.",
-          "Please vouch for a professional you've had a great experience with, then come back.",
+          "Before you can flag someone, you need to vouch for at least one professional you've had a good experience with.",
+          "",
+          "This keeps the community constructive. Come back after your first positive submission!",
         ].join("\n")
       );
       process.exit(0);
@@ -100,16 +106,17 @@ async function main() {
   writeJSON(PROFILES_PATH, profiles);
   writeJSON(USERS_PATH, users);
 
+  const titleSlug = slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  await setIssueTitle(repoFullName, issueNumber, token, `[${normalizedVote.toUpperCase()}] ${titleSlug}`);
+
   await commentAndClose(
-    repoFullName,
-    issueNumber,
-    token,
+    repoFullName, issueNumber, token,
     [
-      `Vote recorded for **${slug}** (${normalizedVote.toUpperCase()}).`,
+      `Your vote has been recorded for **${titleSlug}** — ${normalizedVote === "yes" ? "you'd work with them again" : "you would not work with them again"}.`,
       "",
-      `Profile now has ${profile.votes.yes} Yes / ${profile.votes.no} No votes.`,
+      `This profile now has **${profile.votes.yes}** positive and **${profile.votes.no}** negative votes.`,
       "",
-      "Thank you for contributing to the Professional Health Ledger.",
+      "Thank you for contributing. Your vote is permanent and publicly visible.",
     ].join("\n")
   );
 
@@ -156,23 +163,24 @@ function writeJSON(filePath, data) {
 
 async function commentAndClose(repo, issueNumber, token, message) {
   const baseUrl = `https://api.github.com/repos/${repo}/issues/${issueNumber}`;
-
   await fetch(`${baseUrl}/comments`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({ body: message }),
   });
-
   await fetch(baseUrl, {
     method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({ state: "closed" }),
+  });
+}
+
+async function setIssueTitle(repo, issueNumber, token, title) {
+  const baseUrl = `https://api.github.com/repos/${repo}/issues/${issueNumber}`;
+  await fetch(baseUrl, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ title }),
   });
 }
 
