@@ -61,6 +61,8 @@ export default function RootLayout({ children }) {
                   View Source Code
                 </a>
                 <span className="footer-sep">·</span>
+                <Link href="/privacy">Privacy Policy</Link>
+                <span className="footer-sep">·</span>
                 <a
                   href="https://github.com/muglikar/ProHealthLedger/issues/new?template=request-removal.yml"
                   target="_blank"

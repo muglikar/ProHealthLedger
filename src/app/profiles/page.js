@@ -17,10 +17,19 @@ export default function ProfilesPage() {
       .catch(() => setLoading(false));
   }, []);
 
+  const normalizeQuery = (q) => {
+    const lower = q.toLowerCase().trim();
+    const slugMatch = lower.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/);
+    return slugMatch ? slugMatch[1].toLowerCase() : lower;
+  };
+
+  const query = normalizeQuery(search);
+
   const filtered = profiles.filter(
     (p) =>
-      p.slug.includes(search.toLowerCase()) ||
-      p.linkedin_url.toLowerCase().includes(search.toLowerCase())
+      p.slug.includes(query) ||
+      p.linkedin_url.toLowerCase().includes(query) ||
+      formatName(p.slug).toLowerCase().includes(query)
   );
 
   const formatName = (slug) =>
@@ -30,13 +39,13 @@ export default function ProfilesPage() {
     <>
       <div className="page-header">
         <h1>Look Up a Professional</h1>
-        <p>Search by name to see what the community says about them.</p>
+        <p>Search by name or paste a LinkedIn profile link.</p>
       </div>
 
       <input
         type="text"
         className="search-bar"
-        placeholder="Type a name to search…"
+        placeholder="Type a name or paste a LinkedIn URL…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
