@@ -2,6 +2,11 @@
 
 import { useState, useEffect } from "react";
 
+function formatName(slug) {
+  if (!slug || typeof slug !== "string") return "";
+  return slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default function TransparencyPage() {
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,24 +15,25 @@ export default function TransparencyPage() {
     fetch("/api/profiles")
       .then((res) => res.json())
       .then((data) => {
-        setProfiles(data);
+        setProfiles(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setProfiles([]);
+        setLoading(false);
+      });
   }, []);
 
   const allVotes = profiles
-    .flatMap((p) =>
-      p.submissions.map((s) => ({
+    .flatMap((p) => {
+      if (!p || !Array.isArray(p.submissions)) return [];
+      return p.submissions.map((s) => ({
         ...s,
         profile_slug: p.slug,
         linkedin_url: p.linkedin_url,
-      }))
-    )
+      }));
+    })
     .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-  const formatName = (slug) =>
-    slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const repoBase = "https://github.com/muglikar/ProHealthLedger";
 

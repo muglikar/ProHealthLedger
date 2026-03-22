@@ -10,14 +10,20 @@ export default function ContributorsPage() {
     fetch("/api/contributors")
       .then((res) => res.json())
       .then((data) => {
-        setUsers(data);
+        setUsers(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setUsers([]);
+        setLoading(false);
+      });
   }, []);
 
   const sorted = [...users].sort(
-    (a, b) => b.yes_count + b.no_count - (a.yes_count + a.no_count)
+    (a, b) =>
+      (b.yes_count ?? 0) +
+      (b.no_count ?? 0) -
+      ((a.yes_count ?? 0) + (a.no_count ?? 0))
   );
 
   function profileUrl(userId) {

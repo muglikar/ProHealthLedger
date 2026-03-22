@@ -13,8 +13,14 @@ export async function readDataFile(filePath) {
   const res = await fetch(url, { headers: headers(), cache: "no-store" });
   if (!res.ok) return { data: [], sha: null };
   const json = await res.json();
+  if (!json.content) return { data: [], sha: null };
   const decoded = Buffer.from(json.content, "base64").toString("utf-8");
-  return { data: JSON.parse(decoded), sha: json.sha };
+  try {
+    const data = JSON.parse(decoded);
+    return { data: Array.isArray(data) ? data : [], sha: json.sha };
+  } catch {
+    return { data: [], sha: json.sha };
+  }
 }
 
 export async function writeDataFile(filePath, data, sha, message) {
