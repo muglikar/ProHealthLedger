@@ -27,9 +27,15 @@
         "vote": "yes",
         "issue": 5,
         "date": "2026-03-22"
+      },
+      {
+        "profile_slug": "abhijit-moharir-6291274",
+        "vote": "no",
+        "issue": 6,
+        "date": "2026-03-22"
       }
     ],
     "yes_count": 1,
-    "no_count": 0
+    "no_count": 1
   }
 ]
