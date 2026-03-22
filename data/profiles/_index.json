@@ -47,5 +47,22 @@
         "date": "2026-03-22"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/abhijit-moharir-6291274",
+    "slug": "abhijit-moharir-6291274",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "github:muglikar",
+        "display_name": "Anand Muglikar",
+        "vote": "no",
+        "issue": 6,
+        "date": "2026-03-22"
+      }
+    ]
   }
 ]
