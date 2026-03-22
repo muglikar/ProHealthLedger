@@ -17,5 +17,19 @@
     ],
     "yes_count": 1,
     "no_count": 1
+  },
+  {
+    "user_id": "github:muglikar",
+    "display_name": "Anand Muglikar",
+    "contributions": [
+      {
+        "profile_slug": "omvarshney",
+        "vote": "yes",
+        "issue": 5,
+        "date": "2026-03-22"
+      }
+    ],
+    "yes_count": 1,
+    "no_count": 0
   }
 ]
