@@ -68,6 +68,7 @@ async function main() {
   const today = new Date().toISOString().split("T")[0];
   const submission = {
     user: userId,
+    display_name: issueAuthor,
     vote: normalizedVote,
     issue: issueNumber,
     date: today,
@@ -90,12 +91,14 @@ async function main() {
   if (!userEntry) {
     userEntry = {
       user_id: userId,
+      display_name: issueAuthor,
       contributions: [],
       yes_count: 0,
       no_count: 0,
     };
     users.push(userEntry);
   }
+  userEntry.display_name = userEntry.display_name || issueAuthor;
   userEntry.contributions.push({
     profile_slug: slug,
     vote: normalizedVote,

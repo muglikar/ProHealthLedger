@@ -19,8 +19,11 @@ export default function NavAuth() {
 
   return (
     <div className="nav-auth-user">
-      <span className="nav-auth-id" title="Signed-in account ID">
-        {session.userId}
+      <span
+        className="nav-auth-name"
+        title={session.userId ? `Account: ${session.userId}` : ""}
+      >
+        {session.displayName || session.userId}
       </span>
       <button
         className="nav-auth-btn nav-auth-btn-out"

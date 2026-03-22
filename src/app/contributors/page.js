@@ -31,9 +31,10 @@ export default function ContributorsPage() {
     return `https://github.com/${userId}`;
   }
 
-  function contributorId(user) {
+  function contributorLabel(user) {
+    if (user.display_name) return user.display_name;
     if (user.user_id) return user.user_id;
-    if (user.github_username) return `github:${user.github_username}`;
+    if (user.github_username) return user.github_username;
     return "Unknown";
   }
 
@@ -64,7 +65,7 @@ export default function ContributorsPage() {
               user.user_id ||
               (user.github_username ? `github:${user.github_username}` : "");
             const url = profileUrl(rawId);
-            const name = contributorId(user);
+            const name = contributorLabel(user);
             return (
               <div
                 key={rawId || idx}

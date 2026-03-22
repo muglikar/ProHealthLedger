@@ -34,6 +34,9 @@ export default function TransparencyPage() {
   function voterDisplay(submission) {
     const userId = submission.user || submission.github_username || "";
     if (!userId) return <span>—</span>;
+    const label =
+      submission.display_name ||
+      (userId.startsWith("github:") ? userId.slice(7) : userId);
     if (userId.startsWith("github:")) {
       const gh = userId.slice(7);
       return (
@@ -43,11 +46,11 @@ export default function TransparencyPage() {
           rel="noopener noreferrer"
           className="issue-link"
         >
-          {userId}
+          {label}
         </a>
       );
     }
-    return <span className="issue-link">{userId}</span>;
+    return <span>{label}</span>;
   }
 
   return (
