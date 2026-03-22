@@ -30,5 +30,22 @@
         "date": "2026-03-14"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/omvarshney",
+    "slug": "omvarshney",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "github:muglikar",
+        "display_name": "Anand Muglikar",
+        "vote": "yes",
+        "issue": 5,
+        "date": "2026-03-22"
+      }
+    ]
   }
 ]
