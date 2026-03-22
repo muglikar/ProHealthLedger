@@ -32,8 +32,8 @@ export default function TransparencyPage() {
   const repoBase = "https://github.com/muglikar/ProHealthLedger";
 
   function voterDisplay(submission) {
-    const name = submission.display_name || submission.user;
-    const userId = submission.user || "";
+    const userId = submission.user || submission.github_username || "";
+    if (!userId) return <span>—</span>;
     if (userId.startsWith("github:")) {
       const gh = userId.slice(7);
       return (
@@ -41,12 +41,13 @@ export default function TransparencyPage() {
           href={`https://github.com/${gh}`}
           target="_blank"
           rel="noopener noreferrer"
+          className="issue-link"
         >
-          {name}
+          {userId}
         </a>
       );
     }
-    return <span>{name}</span>;
+    return <span className="issue-link">{userId}</span>;
   }
 
   return (

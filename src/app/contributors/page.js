@@ -31,8 +31,10 @@ export default function ContributorsPage() {
     return `https://github.com/${userId}`;
   }
 
-  function displayLabel(user) {
-    return user.display_name || user.user_id || user.github_username || "Unknown";
+  function contributorId(user) {
+    if (user.user_id) return user.user_id;
+    if (user.github_username) return `github:${user.github_username}`;
+    return "Unknown";
   }
 
   return (
@@ -58,11 +60,14 @@ export default function ContributorsPage() {
       ) : (
         <div className="leaderboard">
           {sorted.map((user, idx) => {
-            const url = profileUrl(user.user_id || user.github_username);
-            const name = displayLabel(user);
+            const rawId =
+              user.user_id ||
+              (user.github_username ? `github:${user.github_username}` : "");
+            const url = profileUrl(rawId);
+            const name = contributorId(user);
             return (
               <div
-                key={user.user_id || user.github_username}
+                key={rawId || idx}
                 className="leaderboard-row"
               >
                 <div

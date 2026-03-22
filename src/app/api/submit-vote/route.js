@@ -14,7 +14,6 @@ export async function POST(req) {
   const body = await req.json();
   const { linkedinUrl, vote, reason } = body;
   const userId = session.userId;
-  const displayName = session.displayName;
 
   if (!linkedinUrl || !vote) {
     return Response.json(
@@ -96,7 +95,7 @@ export async function POST(req) {
     ``,
     `### Submitted via`,
     ``,
-    `Website form by **${displayName}** (${userId})`,
+    `Website form by **${userId}**`,
     ``,
     `---`,
     `*This vote was submitted programmatically and pre-validated (Karma Rule checked, duplicate vote checked).*`,
@@ -119,7 +118,6 @@ export async function POST(req) {
   const issueNumber = issue.number;
   const submission = {
     user: userId,
-    display_name: displayName,
     vote,
     issue: issueNumber,
     date: today,
@@ -142,14 +140,12 @@ export async function POST(req) {
   if (!userEntry) {
     userEntry = {
       user_id: userId,
-      display_name: displayName,
       contributions: [],
       yes_count: 0,
       no_count: 0,
     };
     users.push(userEntry);
   }
-  userEntry.display_name = displayName;
   userEntry.contributions.push({
     profile_slug: slug,
     vote,

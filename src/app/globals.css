@@ -761,6 +761,22 @@ a:hover {
   color: var(--text-secondary);
 }
 
+.nav-auth-id {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mono-id {
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+  word-break: break-all;
+}
+
 /* ── Sign-In Options ── */
 .signin-options {
   display: flex;
@@ -1128,10 +1144,6 @@ a:hover {
 
   .nav-links a {
     font-size: 0.78rem;
-  }
-
-  .nav-auth-name {
-    display: none;
   }
 
   .vote-options {

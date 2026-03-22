@@ -112,7 +112,7 @@ export default function SubmitPage() {
       <section className="submit-hero">
         <h1>Share Your Experience</h1>
         <p>
-          Signed in as <strong>{session.displayName}</strong>. Your vote is
+          Signed in as <strong className="mono-id">{session.userId}</strong>. Your vote is
           permanent, public, and tied to your identity.
         </p>
       </section>
