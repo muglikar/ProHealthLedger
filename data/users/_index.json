@@ -39,9 +39,15 @@
         "vote": "yes",
         "issue": 7,
         "date": "2026-03-24"
+      },
+      {
+        "profile_slug": "roylanpais",
+        "vote": "yes",
+        "issue": 8,
+        "date": "2026-03-24"
       }
     ],
-    "yes_count": 2,
+    "yes_count": 3,
     "no_count": 1
   }
 ]
