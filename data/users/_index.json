@@ -33,9 +33,15 @@
         "vote": "no",
         "issue": 6,
         "date": "2026-03-22"
+      },
+      {
+        "profile_slug": "tirthankarsen243",
+        "vote": "yes",
+        "issue": 7,
+        "date": "2026-03-24"
       }
     ],
-    "yes_count": 1,
+    "yes_count": 2,
     "no_count": 1
   }
 ]
