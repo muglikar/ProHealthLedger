@@ -40,11 +40,17 @@ html {
   scroll-behavior: smooth;
   overflow-x: clip;
   max-width: 100%;
+  color-scheme: light dark;
 }
 
-html.nav-menu-open,
-html.nav-menu-open body {
+/*
+ * Lock scroll on the root only. `overflow: hidden` on body clips `position: fixed`
+ * descendants (drawer/backdrop) on Chrome/Android WebKit — menu looked "open" (X)
+ * but the panel was invisible and untouchable.
+ */
+html.nav-menu-open {
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 body {
@@ -73,7 +79,7 @@ a:hover {
 .nav {
   position: sticky;
   top: 0;
-  z-index: 200;
+  z-index: 10020;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
@@ -144,15 +150,18 @@ a:hover {
   display: none;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 5px;
   width: 44px;
   height: 44px;
   padding: 0;
-  border: none;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: var(--radius-sm);
   background: transparent;
+  color: #1a1a1a;
   cursor: pointer;
   flex-shrink: 0;
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -163,14 +172,15 @@ a:hover {
 .nav-burger-line {
   display: block;
   width: 22px;
-  height: 2px;
-  background: var(--text);
+  height: 3px;
+  flex-shrink: 0;
+  background: #1a1a1a;
   border-radius: 1px;
   transition: transform 0.2s, opacity 0.2s;
 }
 
 .nav-burger-open .nav-burger-line:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
+  transform: translateY(8px) rotate(45deg);
 }
 
 .nav-burger-open .nav-burger-line:nth-child(2) {
@@ -178,7 +188,7 @@ a:hover {
 }
 
 .nav-burger-open .nav-burger-line:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
+  transform: translateY(-8px) rotate(-45deg);
 }
 
 .nav-drawer-backdrop {
@@ -187,7 +197,7 @@ a:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 180;
+  z-index: 10000;
   background: rgba(0, 0, 0, 0.35);
   border: none;
   padding: 0;
@@ -200,7 +210,7 @@ a:hover {
   top: var(--nav-height, 60px);
   right: 0;
   bottom: 0;
-  z-index: 190;
+  z-index: 10010;
   width: min(320px, 100%);
   max-width: 100vw;
   background: var(--bg-card);
@@ -260,6 +270,70 @@ a:hover {
 .nav-drawer-auth .nav-auth-name {
   text-align: left;
   word-break: break-word;
+}
+
+@media (prefers-color-scheme: dark) {
+  .nav {
+    background: rgba(28, 28, 30, 0.94);
+    border-bottom-color: #3a3a3c;
+  }
+
+  .nav .nav-logo {
+    color: #f5f5f7 !important;
+  }
+
+  .nav-burger {
+    color: #f5f5f7;
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+
+  .nav-burger-line {
+    background: #f5f5f7;
+  }
+
+  .nav-burger:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .nav-drawer {
+    background: #2c2c2e;
+    border-left-color: #48484a;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.45);
+  }
+
+  .nav-drawer-links li {
+    border-bottom-color: #48484a;
+  }
+
+  .nav-drawer-links a {
+    color: #f5f5f7;
+  }
+
+  .nav-drawer-auth {
+    border-top-color: #48484a;
+  }
+
+  .nav-drawer .nav-auth-loading {
+    color: #8e8e93;
+  }
+
+  .nav-drawer .nav-auth-btn-out {
+    color: #d1d1d6;
+    border-color: #48484a;
+  }
+
+  .nav-drawer .nav-auth-btn-out:hover {
+    background: #3a3a3c;
+    color: #f5f5f7;
+  }
+
+  .nav-drawer .nav-auth-name {
+    color: #d1d1d6;
+  }
+
+  .nav-drawer .nav-auth-id {
+    color: #8e8e93;
+  }
 }
 
 /* ── Main Content ── */
