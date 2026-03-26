@@ -155,9 +155,15 @@
         "vote": "no",
         "issue": 20,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "aditinagarkar",
+        "vote": "yes",
+        "issue": 21,
+        "date": "2026-03-26"
       }
     ],
-    "yes_count": 6,
+    "yes_count": 7,
     "no_count": 6
   }
 ]
