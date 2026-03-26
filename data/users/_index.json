@@ -89,9 +89,15 @@
         "vote": "yes",
         "issue": 11,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "rohit-kadam-9781964b",
+        "vote": "yes",
+        "issue": 12,
+        "date": "2026-03-26"
       }
     ],
-    "yes_count": 3,
+    "yes_count": 4,
     "no_count": 0
   }
 ]
