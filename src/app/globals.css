@@ -1,5 +1,7 @@
 :root {
   --nav-height: 60px;
+  /** Set by VoteQuotaStrip when signed in (actual strip height in px). */
+  --vote-quota-strip-height: 0px;
   --bg: #fafafa;
   --bg-warm: #fef7ed;
   --bg-card: #ffffff;
@@ -599,7 +601,7 @@ a:hover {
   min-width: 0;
 }
 
-/* ── Home: single column, compact above-the-fold (through karma) ── */
+/* ── Home: single column, first fold through karma (desktop fills viewport) ── */
 .main-content:has(.home-above-fold) {
   padding-top: max(6px, 1.2vw);
   min-height: 0;
@@ -610,34 +612,52 @@ a:hover {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: clamp(0.35rem, 1.2vh, 0.65rem);
-  padding: 0 0 8px;
-  max-width: 680px;
+  gap: clamp(0.5rem, 2vh, 1rem);
+  padding: 0 0 12px;
+  max-width: 800px;
   margin: 0 auto;
   min-width: 0;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .home-above-fold {
+    justify-content: space-between;
+    gap: clamp(0.75rem, 2.5vh, 1.5rem);
+    min-height: calc(
+      100dvh - var(--nav-height, 60px) -
+        var(--vote-quota-strip-height, 0px) - clamp(18px, 2.5vw, 32px)
+    );
+    padding-bottom: clamp(8px, 1.5vh, 16px);
+  }
 }
 
 .home-hero-block {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.35rem, 1.2vh, 0.65rem);
+  flex-shrink: 0;
 }
 
 .hero-badge {
   display: inline-block;
   background: var(--accent-bg);
   color: var(--accent);
-  padding: 4px 12px;
+  padding: 5px 14px;
   border-radius: 999px;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.03em;
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .home-above-fold h1 {
-  font-size: clamp(1.2rem, 2.8vw + 0.35rem, 1.85rem);
+  font-size: clamp(1.25rem, 2.5vw + 0.5rem, 2.05rem);
   font-weight: 800;
-  line-height: 1.14;
-  margin: 0 auto 6px;
+  line-height: 1.12;
+  margin: 0 auto;
   color: var(--text);
   max-width: 22em;
   word-wrap: break-word;
@@ -650,51 +670,53 @@ a:hover {
 }
 
 .hero-lede {
-  font-size: 0.86rem;
+  font-size: clamp(0.88rem, 1.1vw + 0.75rem, 0.98rem);
   color: var(--text-secondary);
-  max-width: 36rem;
-  margin: 0 auto 5px;
-  line-height: 1.38;
+  max-width: 38rem;
+  margin: 0 auto;
+  line-height: 1.45;
 }
 
 .hero-trust-line {
-  font-size: 0.68rem;
+  font-size: clamp(0.68rem, 0.5vw + 0.62rem, 0.75rem);
   color: var(--text-secondary);
-  max-width: 36rem;
-  margin: 0 auto 10px;
-  line-height: 1.32;
+  max-width: 38rem;
+  margin: 0 auto;
+  line-height: 1.35;
   opacity: 0.95;
 }
 
 .hero-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
   flex-wrap: wrap;
+  margin-top: clamp(2px, 0.8vh, 8px);
 }
 
 .home-above-fold .btn {
-  padding: 7px 14px;
-  font-size: 0.78rem;
+  padding: 9px 18px;
+  font-size: 0.84rem;
 }
 
 .home-how-block {
   width: 100%;
-  padding-top: 2px;
+  padding-top: 0;
+  flex-shrink: 0;
 }
 
 .home-how-title {
-  font-size: 0.92rem;
+  font-size: clamp(0.95rem, 1vw + 0.8rem, 1.08rem);
   font-weight: 700;
-  margin: 0 0 2px;
+  margin: 0 0 4px;
   color: var(--text);
 }
 
 .home-how-sub {
   color: var(--text-secondary);
-  font-size: 0.68rem;
-  margin: 0 0 6px;
-  line-height: 1.3;
+  font-size: clamp(0.72rem, 0.4vw + 0.65rem, 0.8rem);
+  margin: 0 0 10px;
+  line-height: 1.35;
 }
 
 .home-steps-compact {
@@ -702,7 +724,7 @@ a:hover {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 6px;
+  gap: 8px;
   text-align: left;
 }
 
@@ -710,16 +732,17 @@ a:hover {
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto auto;
-  column-gap: 8px;
-  row-gap: 2px;
+  column-gap: 10px;
+  row-gap: 3px;
   align-items: start;
-  padding: 6px 8px;
+  padding: 8px 10px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  font-size: 0.72rem;
-  line-height: 1.32;
+  font-size: 0.76rem;
+  line-height: 1.36;
   color: var(--text-secondary);
+  box-shadow: var(--shadow);
 }
 
 .home-step-num {
@@ -727,13 +750,13 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: var(--accent-bg);
   color: var(--accent);
   font-weight: 700;
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   flex-shrink: 0;
   margin-top: 1px;
 }
@@ -741,7 +764,7 @@ a:hover {
 .home-step-label {
   grid-column: 2;
   grid-row: 1;
-  font-size: 0.74rem;
+  font-size: 0.8rem;
   color: var(--text);
   font-weight: 600;
 }
@@ -755,7 +778,7 @@ a:hover {
 @media (min-width: 640px) {
   .home-steps-compact {
     grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+    gap: 10px;
     text-align: center;
   }
 
@@ -763,8 +786,10 @@ a:hover {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
     justify-items: center;
-    padding: 8px 6px;
+    padding: clamp(10px, 1.8vh, 14px) 10px;
     text-align: center;
+    min-height: clamp(100px, 14vh, 130px);
+    align-content: start;
   }
 
   .home-step-num {
@@ -900,10 +925,12 @@ a:hover {
 
 .karma-box--fold {
   width: 100%;
-  padding: 10px 14px;
-  gap: 12px;
+  padding: 12px 16px;
+  gap: 14px;
   align-items: center;
   text-align: left;
+  flex-shrink: 0;
+  margin-top: 0;
 }
 
 .karma-icon {
@@ -912,7 +939,7 @@ a:hover {
 }
 
 .karma-box--fold .karma-icon {
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   line-height: 1;
 }
 
@@ -923,10 +950,10 @@ a:hover {
 }
 
 .karma-box--fold h3 {
-  font-size: 0.82rem;
+  font-size: clamp(0.85rem, 0.6vw + 0.75rem, 0.95rem);
   font-weight: 700;
-  margin-bottom: 3px;
-  line-height: 1.2;
+  margin-bottom: 4px;
+  line-height: 1.25;
 }
 
 .karma-box p {
@@ -936,8 +963,8 @@ a:hover {
 }
 
 .karma-box--fold p {
-  font-size: 0.72rem;
-  line-height: 1.38;
+  font-size: clamp(0.74rem, 0.45vw + 0.68rem, 0.84rem);
+  line-height: 1.45;
   margin: 0;
 }
 
@@ -945,6 +972,11 @@ a:hover {
 .why-section {
   padding: 48px 0 32px;
   border-top: 1px solid var(--border);
+}
+
+.main-content:has(.home-above-fold) .why-section {
+  padding-top: clamp(40px, 7vh, 72px);
+  scroll-margin-top: var(--nav-height, 60px);
 }
 
 .why-grid {

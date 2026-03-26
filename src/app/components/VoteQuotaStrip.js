@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 function IconVouch({ className }) {
@@ -47,6 +47,33 @@ function IconFlag({ className }) {
 export default function VoteQuotaStrip() {
   const { data: session, status } = useSession();
   const [stats, setStats] = useState(null);
+  const stripRef = useRef(null);
+
+  /** Lets the homepage fold use `calc(100dvh - nav - strip - …)` accurately. */
+  useLayoutEffect(() => {
+    if (status !== "authenticated" || !stats) {
+      document.documentElement.style.removeProperty("--vote-quota-strip-height");
+      return;
+    }
+    const el = stripRef.current;
+    if (!el) return;
+    const apply = () => {
+      const h = Math.ceil(el.getBoundingClientRect().height);
+      document.documentElement.style.setProperty(
+        "--vote-quota-strip-height",
+        `${h}px`
+      );
+    };
+    apply();
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    window.addEventListener("resize", apply);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", apply);
+      document.documentElement.style.removeProperty("--vote-quota-strip-height");
+    };
+  }, [status, stats]);
 
   useEffect(() => {
     if (status !== "authenticated") {
@@ -125,6 +152,7 @@ export default function VoteQuotaStrip() {
 
   return (
     <aside
+      ref={stripRef}
       className={`vote-quota-strip${stripClass}`}
       aria-label="Your voting quota"
     >
