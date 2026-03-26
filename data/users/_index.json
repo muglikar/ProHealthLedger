@@ -119,9 +119,15 @@
         "vote": "yes",
         "issue": 14,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "prasad-bhaskar-8117b299",
+        "vote": "no",
+        "issue": 15,
+        "date": "2026-03-26"
       }
     ],
     "yes_count": 6,
-    "no_count": 0
+    "no_count": 1
   }
 ]
