@@ -130,8 +130,8 @@ a:hover {
   flex-shrink: 0;
   width: 36px;
   height: 36px;
-  object-fit: contain;
-  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .nav-links {

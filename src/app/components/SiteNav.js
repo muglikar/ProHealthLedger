@@ -40,7 +40,7 @@ export default function SiteNav() {
           onClick={() => setMenuOpen(false)}
         >
           <Image
-            src="/prohl-logo.png"
+            src="/icon.png"
             alt=""
             width={40}
             height={40}
