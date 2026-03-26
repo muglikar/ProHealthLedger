@@ -201,5 +201,19 @@
     ],
     "yes_count": 11,
     "no_count": 8
+  },
+  {
+    "user_id": "linkedin:IXYyBWOZrk",
+    "display_name": "Rajashri Shinde Muglikar",
+    "contributions": [
+      {
+        "profile_slug": "muglikar",
+        "vote": "yes",
+        "issue": 28,
+        "date": "2026-03-26"
+      }
+    ],
+    "yes_count": 1,
+    "no_count": 0
   }
 ]
