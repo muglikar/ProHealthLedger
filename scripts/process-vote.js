@@ -90,12 +90,16 @@ async function main() {
   }
 
   const today = new Date().toISOString().split("T")[0];
+  const reasonStored = normalizeReason(
+    extractField(issueBody, "Brief Reason")
+  );
   const submission = {
     user: userId,
     display_name: issueAuthor,
     vote: normalizedVote,
     issue: issueNumber,
     date: today,
+    ...(reasonStored ? { reason: reasonStored } : {}),
   };
 
   let profile = profiles.find((p) => p.slug === slug);
@@ -164,6 +168,13 @@ function extractField(body, label) {
     }
   }
   return null;
+}
+
+function normalizeReason(raw) {
+  if (!raw || typeof raw !== "string") return undefined;
+  const t = raw.trim();
+  if (!t || /^_no response_$/i.test(t)) return undefined;
+  return t;
 }
 
 function extractSlug(url) {

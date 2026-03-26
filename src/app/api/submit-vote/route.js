@@ -129,12 +129,15 @@ export async function POST(req) {
   }
 
   const issueNumber = issue.number;
+  const reasonTrimmed =
+    typeof reason === "string" && reason.trim() ? reason.trim() : "";
   const submission = {
     user: userId,
     display_name: displayName,
     vote,
     issue: issueNumber,
     date: today,
+    ...(reasonTrimmed ? { reason: reasonTrimmed } : {}),
   };
 
   let profile = profileForTitle;
