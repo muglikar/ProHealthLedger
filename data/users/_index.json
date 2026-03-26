@@ -185,9 +185,15 @@
         "vote": "yes",
         "issue": 25,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "swapnil-sakharshete-81432715",
+        "vote": "yes",
+        "issue": 26,
+        "date": "2026-03-26"
       }
     ],
-    "yes_count": 9,
+    "yes_count": 10,
     "no_count": 8
   }
 ]
