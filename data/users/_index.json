@@ -173,9 +173,15 @@
         "vote": "no",
         "issue": 23,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "debdutta-bhowmick-441a8b1a",
+        "vote": "no",
+        "issue": 24,
+        "date": "2026-03-26"
       }
     ],
     "yes_count": 8,
-    "no_count": 7
+    "no_count": 8
   }
 ]
