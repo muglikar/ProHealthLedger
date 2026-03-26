@@ -149,9 +149,15 @@
         "vote": "no",
         "issue": 19,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "atchyuta-rao-135438a",
+        "vote": "no",
+        "issue": 20,
+        "date": "2026-03-26"
       }
     ],
     "yes_count": 6,
-    "no_count": 5
+    "no_count": 6
   }
 ]
