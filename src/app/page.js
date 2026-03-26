@@ -3,77 +3,76 @@ import Link from "next/link";
 export default function Home() {
   return (
     <>
-      <section className="home-first-fold" aria-label="Overview">
-        <div className="home-first-fold-grid">
-          <div className="home-hero-col">
-            <span className="hero-badge">Free · Public · Permanent</span>
-            <h1>
-              Know who you&apos;re working with{" "}
-              <span className="hero-highlight">before you commit.</span>
-            </h1>
-            <p className="hero-lede">
-              One question per person: would you work with them again? Real
-              identities, public ledger — no star ratings or essay reviews.
-            </p>
-            <p className="hero-trust-line">
-              LinkedIn or GitHub sign-in · Full transparency page · One vote per
-              person per profile
-            </p>
-            <div className="hero-actions">
-              <Link href="/submit" className="btn btn-primary">
-                Share Your Experience
-              </Link>
-              <Link href="/profiles" className="btn btn-secondary">
-                Look Up Someone
-              </Link>
-            </div>
+      <section className="home-above-fold" aria-labelledby="home-hero-title">
+        <header className="home-hero-block">
+          <span className="hero-badge">Free · Public · Permanent</span>
+          <h1 id="home-hero-title">
+            Know who you&apos;re working with{" "}
+            <span className="hero-highlight">before you commit.</span>
+          </h1>
+          <p className="hero-lede">
+            One question: would you work with them again? Public ledger — no star
+            ratings, no long reviews.
+          </p>
+          <p className="hero-trust-line">
+            GitHub or LinkedIn sign-in · Transparency page · One vote per you per
+            profile
+          </p>
+          <div className="hero-actions">
+            <Link href="/submit" className="btn btn-primary">
+              Share Your Experience
+            </Link>
+            <Link href="/profiles" className="btn btn-secondary">
+              Look Up Someone
+            </Link>
           </div>
+        </header>
 
-          <div className="home-steps-col">
-            <h2 className="home-steps-heading">How does it work?</h2>
-            <p className="home-steps-sub">Three steps. No fees or subscription.</p>
-            <div className="steps-grid steps-grid--fold">
-              <div className="step-card step-card--compact">
-                <div className="step-number">1</div>
-                <h3>Share your experience</h3>
-                <p>
-                  Paste a LinkedIn URL and answer: &ldquo;Would you work with
-                  them again?&rdquo; Optional short reason.
-                </p>
-              </div>
-              <div className="step-card step-card--compact">
-                <div className="step-number">2</div>
-                <h3>Recorded in public</h3>
-                <p>
-                  Saved in an open audit trail (GitHub). No edits — your word
-                  stays on the record.
-                </p>
-              </div>
-              <div className="step-card step-card--compact">
-                <div className="step-number">3</div>
-                <h3>Anyone can look them up</h3>
-                <p>
-                  Before you hire, partner, or join a team, see how others have
-                  vouched or flagged.
-                </p>
-              </div>
-            </div>
-          </div>
+        <div
+          className="home-how-block"
+          aria-labelledby="home-how-heading"
+        >
+          <h2 id="home-how-heading" className="home-how-title">
+            How does it work?
+          </h2>
+          <p className="home-how-sub">Three steps. No subscription or fees.</p>
+          <ol className="home-steps-compact" role="list">
+            <li>
+              <span className="home-step-num">1</span>
+              <strong className="home-step-label">Share</strong>
+              <span className="home-step-desc">
+                Paste a LinkedIn URL; answer the one question (optional reason).
+              </span>
+            </li>
+            <li>
+              <span className="home-step-num">2</span>
+              <strong className="home-step-label">Public record</strong>
+              <span className="home-step-desc">
+                Stored in the open audit trail. No edits after submit.
+              </span>
+            </li>
+            <li>
+              <span className="home-step-num">3</span>
+              <strong className="home-step-label">Look up</strong>
+              <span className="home-step-desc">
+                Check vouches and flags before you hire, partner, or join.
+              </span>
+            </li>
+          </ol>
         </div>
-      </section>
 
-      <section className="karma-section">
-        <div className="karma-box">
-          <div className="karma-icon">⚖️</div>
+        <aside className="karma-box karma-box--fold" aria-label="Voting rules">
+          <span className="karma-icon" aria-hidden>
+            ⚖️
+          </span>
           <div>
             <h3>Positivity comes first</h3>
             <p>
-              Your first contribution must be a positive vouch. After that,
-              each positive vouch earns one flag (negative vote) credit, and each
-              flag uses one credit. That keeps the platform constructive.
+              Your first contribution must be a positive vouch. After that, each
+              vouch earns one flag credit; each flag uses one credit.
             </p>
           </div>
-        </div>
+        </aside>
       </section>
 
       <section className="why-section">
