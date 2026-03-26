@@ -69,9 +69,15 @@
         "vote": "yes",
         "issue": 12,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "jeewanjyotiagarwal",
+        "vote": "yes",
+        "issue": 13,
+        "date": "2026-03-26"
       }
     ],
-    "yes_count": 7,
+    "yes_count": 8,
     "no_count": 1
   },
   {
