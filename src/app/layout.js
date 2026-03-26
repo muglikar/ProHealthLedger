@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import Providers from "./providers";
-import NavAuth from "./components/NavAuth";
+import SiteNav from "./components/SiteNav";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,22 +25,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
-          <nav className="nav">
-            <div className="nav-inner">
-              <Link href="/" className="nav-logo">
-                <span className="logo-icon">◆</span> ProHealthLedger
-              </Link>
-              <div className="nav-right">
-                <div className="nav-links">
-                  <Link href="/profiles">Look Up</Link>
-                  <Link href="/transparency">All Votes</Link>
-                  <Link href="/contributors">Contributors</Link>
-                  <Link href="/submit">Submit</Link>
-                </div>
-                <NavAuth />
-              </div>
-            </div>
-          </nav>
+          <SiteNav />
           <main className="main-content">{children}</main>
           <footer className="footer">
             <div className="footer-inner">

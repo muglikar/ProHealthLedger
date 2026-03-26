@@ -17,7 +17,10 @@ jobs:
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
         run: |
-          if echo "$ISSUE_BODY" | grep -q "LinkedIn Profile URL" && echo "$ISSUE_BODY" | grep -q "would you work with/for them again"; then
+          # Website /api/submit-vote already updates JSON; skip to avoid double-counting.
+          if echo "$ISSUE_BODY" | grep -qF "pre-validated (Karma Rule checked"; then
+            echo "is_vote=false" >> "$GITHUB_OUTPUT"
+          elif echo "$ISSUE_BODY" | grep -q "LinkedIn Profile URL" && echo "$ISSUE_BODY" | grep -q "would you work with/for them again"; then
             echo "is_vote=true" >> "$GITHUB_OUTPUT"
           else
             echo "is_vote=false" >> "$GITHUB_OUTPUT"
