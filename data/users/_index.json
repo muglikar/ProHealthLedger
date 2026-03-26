@@ -125,9 +125,15 @@
         "vote": "no",
         "issue": 15,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "amol-patil-72417915",
+        "vote": "no",
+        "issue": 16,
+        "date": "2026-03-26"
       }
     ],
     "yes_count": 6,
-    "no_count": 1
+    "no_count": 2
   }
 ]
