@@ -1,8 +1,6 @@
 import GithubProvider from "next-auth/providers/github";
 import LinkedInProvider from "next-auth/providers/linkedin";
 
-// Vercel: use exact names LINKEDIN_ID + LINKEDIN_SECRET (see .env.example).
-// Fallbacks help if you used LinkedIn's default naming from their UI.
 const linkedInClientId =
   process.env.LINKEDIN_ID?.trim() ||
   process.env.LINKEDIN_CLIENT_ID?.trim() ||
@@ -25,15 +23,32 @@ if (linkedInClientId && linkedInClientSecret) {
       clientId: linkedInClientId,
       clientSecret: linkedInClientSecret,
       client: { token_endpoint_auth_method: "client_secret_post" },
+      // OIDC discovery — correct token + userinfo endpoints for OpenID product
+      wellKnown: "https://www.linkedin.com/oauth/.well-known/openid-configuration",
       authorization: {
-        url: "https://www.linkedin.com/oauth/v2/authorization",
         params: { scope: "openid profile email" },
       },
-      token: "https://www.linkedin.com/oauth/v2/accessToken",
-      userinfo: { url: "https://api.linkedin.com/v2/userinfo" },
+      // Default LinkedIn provider merges in userinfo.params.projection for /v2/me.
+      // That breaks /v2/userinfo. Custom request skips those params entirely.
+      userinfo: {
+        async request({ tokens }) {
+          const res = await fetch("https://api.linkedin.com/v2/userinfo", {
+            headers: { Authorization: `Bearer ${tokens.access_token}` },
+          });
+          if (!res.ok) {
+            const body = await res.text();
+            throw new Error(`LinkedIn userinfo ${res.status}: ${body}`);
+          }
+          return res.json();
+        },
+      },
       profile(profile) {
+        const id = profile.sub;
+        if (!id) {
+          throw new Error("LinkedIn userinfo missing `sub`");
+        }
         return {
-          id: profile.sub,
+          id: String(id),
           name:
             profile.name ||
             [profile.given_name, profile.family_name].filter(Boolean).join(" ") ||
@@ -47,6 +62,7 @@ if (linkedInClientId && linkedInClientSecret) {
 }
 
 export const authOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers,
   callbacks: {
     async jwt({ token, account, profile }) {
