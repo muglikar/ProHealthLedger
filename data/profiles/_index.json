@@ -127,13 +127,20 @@
     "linkedin_url": "https://www.linkedin.com/in/mohitsadayet",
     "slug": "mohitsadayet",
     "votes": {
-      "yes": 1,
+      "yes": 2,
       "no": 0
     },
     "submissions": [
       {
         "user": "linkedin:CAOSO1oig0",
         "display_name": "Anand Muglikar",
+        "vote": "yes",
+        "issue": 10,
+        "date": "2026-03-26"
+      },
+      {
+        "user": "github:muglikar",
+        "display_name": "muglikar",
         "vote": "yes",
         "issue": 10,
         "date": "2026-03-26"

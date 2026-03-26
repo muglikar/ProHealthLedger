@@ -51,9 +51,15 @@
         "vote": "yes",
         "issue": 9,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "mohitsadayet",
+        "vote": "yes",
+        "issue": 10,
+        "date": "2026-03-26"
       }
     ],
-    "yes_count": 4,
+    "yes_count": 5,
     "no_count": 1
   },
   {
