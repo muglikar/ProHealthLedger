@@ -459,5 +459,23 @@
         "date": "2026-03-26"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/muglikar",
+    "slug": "muglikar",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:IXYyBWOZrk",
+        "display_name": "Rajashri Shinde Muglikar",
+        "vote": "yes",
+        "issue": 28,
+        "date": "2026-03-26",
+        "reason": "Hard working, having deep knowledge but still cooperative for juniors and always ready to help"
+      }
+    ]
   }
 ]
