@@ -10,8 +10,25 @@ export const authOptions = {
     LinkedInProvider({
       clientId: process.env.LINKEDIN_ID,
       clientSecret: process.env.LINKEDIN_SECRET,
+      client: { token_endpoint_auth_method: "client_secret_post" },
       authorization: {
+        url: "https://www.linkedin.com/oauth/v2/authorization",
         params: { scope: "openid profile email" },
+      },
+      token: "https://www.linkedin.com/oauth/v2/accessToken",
+      // Default NextAuth LinkedIn uses /v2/me + legacy email API; that fails if your
+      // app only has "Sign In with LinkedIn using OpenID Connect". OIDC userinfo:
+      userinfo: { url: "https://api.linkedin.com/v2/userinfo" },
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name:
+            profile.name ||
+            [profile.given_name, profile.family_name].filter(Boolean).join(" ") ||
+            null,
+          email: profile.email ?? null,
+          image: profile.picture ?? null,
+        };
       },
     }),
   ],
