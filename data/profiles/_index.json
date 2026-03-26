@@ -236,5 +236,22 @@
         "date": "2026-03-26"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/prasad-bhaskar-8117b299",
+    "slug": "prasad-bhaskar-8117b299",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "no",
+        "issue": 15,
+        "date": "2026-03-26"
+      }
+    ]
   }
 ]
