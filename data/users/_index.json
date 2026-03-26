@@ -137,9 +137,15 @@
         "vote": "no",
         "issue": 17,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "shreekantp",
+        "vote": "no",
+        "issue": 18,
+        "date": "2026-03-26"
       }
     ],
     "yes_count": 6,
-    "no_count": 3
+    "no_count": 4
   }
 ]
