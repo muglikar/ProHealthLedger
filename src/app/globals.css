@@ -599,29 +599,39 @@ a:hover {
   min-width: 0;
 }
 
-/* ── Hero ── */
-.hero {
+/* ── Home first fold (hero + how it works, above karma) ── */
+.home-first-fold {
+  padding: 28px 0 24px;
+}
+
+.home-first-fold-grid {
+  display: grid;
+  gap: 22px;
+  align-items: start;
+}
+
+.home-hero-col {
   text-align: center;
-  padding: 72px 0 56px;
+  min-width: 0;
 }
 
 .hero-badge {
   display: inline-block;
   background: var(--accent-bg);
   color: var(--accent);
-  padding: 6px 16px;
+  padding: 5px 14px;
   border-radius: 20px;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.03em;
-  margin-bottom: 24px;
+  margin-bottom: 14px;
 }
 
-.hero h1 {
-  font-size: clamp(1.55rem, 5vw + 0.5rem, 2.8rem);
+.home-hero-col h1 {
+  font-size: clamp(1.45rem, 4.2vw + 0.45rem, 2.45rem);
   font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 16px;
+  line-height: 1.18;
+  margin-bottom: 10px;
   color: var(--text);
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -632,19 +642,119 @@ a:hover {
   color: var(--accent);
 }
 
-.hero p {
-  font-size: 1.1rem;
+.hero-lede {
+  font-size: 1rem;
   color: var(--text-secondary);
   max-width: 540px;
-  margin: 0 auto 36px;
-  line-height: 1.7;
+  margin: 0 auto 10px;
+  line-height: 1.55;
+}
+
+.hero-trust-line {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto 18px;
+  line-height: 1.4;
+  opacity: 0.95;
 }
 
 .hero-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+.home-steps-col {
+  min-width: 0;
+}
+
+.home-steps-heading {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--text);
+  text-align: center;
+}
+
+.home-steps-sub {
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  margin: 0 0 12px;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.steps-grid--fold {
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+}
+
+.step-card--compact {
+  padding: 12px 14px;
+}
+
+.step-card--compact .step-number {
+  width: 26px;
+  height: 26px;
+  font-size: 0.72rem;
+  margin-bottom: 6px;
+}
+
+.step-card--compact h3 {
+  font-size: 0.88rem;
+  margin-bottom: 3px;
+}
+
+.step-card--compact p {
+  font-size: 0.78rem;
+  line-height: 1.42;
+}
+
+@media (min-width: 960px) {
+  .home-first-fold {
+    padding: 20px 0 28px;
+  }
+
+  .home-first-fold-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.95fr);
+    gap: 28px 36px;
+  }
+
+  .home-hero-col {
+    text-align: left;
+  }
+
+  .home-hero-col .hero-lede,
+  .home-hero-col .hero-trust-line {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .home-hero-col .hero-lede {
+    max-width: 32rem;
+    margin-bottom: 8px;
+  }
+
+  .home-hero-col .hero-trust-line {
+    max-width: none;
+    margin-bottom: 16px;
+  }
+
+  .home-hero-col .hero-actions {
+    justify-content: flex-start;
+  }
+
+  .home-steps-heading,
+  .home-steps-sub {
+    text-align: left;
+  }
+
+  .steps-grid--fold {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
 }
 
 /* ── Buttons ── */
@@ -752,7 +862,7 @@ a:hover {
 
 /* ── Karma Box ── */
 .karma-section {
-  padding: 32px 0;
+  padding: 20px 0 32px;
 }
 
 .karma-box {
@@ -1769,8 +1879,8 @@ a:hover {
     grid-template-columns: 1fr;
   }
 
-  .hero {
-    padding: 48px 0 36px;
+  .home-first-fold {
+    padding: 20px 0 20px;
   }
 
   .karma-box {
