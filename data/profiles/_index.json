@@ -389,5 +389,22 @@
         "date": "2026-03-26"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/debdutta-bhowmick-441a8b1a",
+    "slug": "debdutta-bhowmick-441a8b1a",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "no",
+        "issue": 24,
+        "date": "2026-03-26"
+      }
+    ]
   }
 ]
