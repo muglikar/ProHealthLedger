@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import NavAuth from "./NavAuth";
@@ -38,7 +39,14 @@ export default function SiteNav() {
           className="nav-logo"
           onClick={() => setMenuOpen(false)}
         >
-          <span className="logo-icon">◆</span>
+          <Image
+            src="/prohl-logo.png"
+            alt=""
+            width={40}
+            height={40}
+            className="logo-icon"
+            priority
+          />
           <span className="nav-logo-text">ProHealthLedger</span>
         </Link>
 
