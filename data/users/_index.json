@@ -45,9 +45,15 @@
         "vote": "yes",
         "issue": 8,
         "date": "2026-03-24"
+      },
+      {
+        "profile_slug": "er-apoorv-gupta",
+        "vote": "yes",
+        "issue": 9,
+        "date": "2026-03-26"
       }
     ],
-    "yes_count": 3,
+    "yes_count": 4,
     "no_count": 1
   },
   {
