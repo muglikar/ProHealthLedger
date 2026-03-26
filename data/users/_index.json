@@ -113,9 +113,15 @@
         "vote": "yes",
         "issue": 13,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "abhijit-kumar-iitb",
+        "vote": "yes",
+        "issue": 14,
+        "date": "2026-03-26"
       }
     ],
-    "yes_count": 5,
+    "yes_count": 6,
     "no_count": 0
   }
 ]
