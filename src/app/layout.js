@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import Providers from "./providers";
 import SiteNav from "./components/SiteNav";
+import VoteQuotaStrip from "./components/VoteQuotaStrip";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
           <SiteNav />
+          <VoteQuotaStrip />
           <main className="main-content">{children}</main>
           <footer className="footer">
             <div className="footer-inner">

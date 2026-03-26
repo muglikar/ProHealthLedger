@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { formatProfessionalDisplayName } from "@/lib/profiles";
 
-function formatName(slug) {
-  if (!slug || typeof slug !== "string") return "";
-  return slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+function parseVoteDate(d) {
+  if (!d || typeof d !== "string") return 0;
+  const t = Date.parse(d);
+  return Number.isFinite(t) ? t : 0;
 }
 
 /** One row per GitHub audit issue; JSON can list the same issue twice (e.g. API + legacy Action). */
@@ -29,12 +31,19 @@ function dedupeVotesByAuditRecord(votes) {
       map.set(key, preferSubmissionRow(map.get(key), v));
     }
   }
-  return [...map.values()].sort((a, b) => new Date(b.date) - new Date(a.date));
+  return [...map.values()];
+}
+
+function compareByDateThenIssue(a, b) {
+  const d = parseVoteDate(b.date) - parseVoteDate(a.date);
+  if (d !== 0) return d;
+  return (Number(b.issue) || 0) - (Number(a.issue) || 0);
 }
 
 export default function TransparencyPage() {
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortMode, setSortMode] = useState("flags");
 
   useEffect(() => {
     fetch("/api/profiles")
@@ -49,18 +58,45 @@ export default function TransparencyPage() {
       });
   }, []);
 
-  const allVotes = dedupeVotesByAuditRecord(
-    profiles
-      .flatMap((p) => {
-        if (!p || !Array.isArray(p.submissions)) return [];
-        return p.submissions.map((s) => ({
-          ...s,
-          profile_slug: p.slug,
-          linkedin_url: p.linkedin_url,
-        }));
-      })
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
+  const slugToFlagCount = useMemo(() => {
+    const m = new Map();
+    for (const p of profiles) {
+      if (!p?.slug) continue;
+      m.set(p.slug, p.votes?.no ?? 0);
+    }
+    return m;
+  }, [profiles]);
+
+  const dedupedVotes = useMemo(
+    () =>
+      dedupeVotesByAuditRecord(
+        profiles.flatMap((p) => {
+          if (!p || !Array.isArray(p.submissions)) return [];
+          return p.submissions.map((s) => ({
+            ...s,
+            profile_slug: p.slug,
+            linkedin_url: p.linkedin_url,
+            public_name: p.public_name,
+          }));
+        })
+      ),
+    [profiles]
   );
+
+  const sortedVotes = useMemo(() => {
+    const copy = [...dedupedVotes];
+    if (sortMode === "date") {
+      copy.sort(compareByDateThenIssue);
+      return copy;
+    }
+    copy.sort((a, b) => {
+      const fa = slugToFlagCount.get(a.profile_slug) ?? 0;
+      const fb = slugToFlagCount.get(b.profile_slug) ?? 0;
+      if (fb !== fa) return fb - fa;
+      return compareByDateThenIssue(a, b);
+    });
+    return copy;
+  }, [dedupedVotes, sortMode, slugToFlagCount]);
 
   const repoBase = "https://github.com/muglikar/ProHealthLedger";
 
@@ -101,68 +137,92 @@ export default function TransparencyPage() {
         <div className="empty-state">
           <p>Loading…</p>
         </div>
-      ) : allVotes.length === 0 ? (
+      ) : sortedVotes.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon">📜</div>
           <h3>No votes recorded yet</h3>
           <p>Once people start voting, every single vote will appear here.</p>
         </div>
       ) : (
-        <div className="audit-table-wrap">
-          <table className="audit-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Professional</th>
-                <th>Vote</th>
-                <th>Submitted By</th>
-                <th>Record</th>
-              </tr>
-            </thead>
-            <tbody>
-              {allVotes.map((v) => (
-                <tr
-                  key={
-                    v.issue != null
-                      ? `issue-${v.issue}`
-                      : `${v.profile_slug}-${v.date}-${v.user}-${v.vote}`
-                  }
-                >
-                  <td>{v.date}</td>
-                  <td>
-                    <a
-                      href={v.linkedin_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {formatName(v.profile_slug)}
-                    </a>
-                  </td>
-                  <td>
-                    <span
-                      className={`vote-pill ${v.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
-                    >
-                      {v.vote === "yes"
-                        ? "Would work with again"
-                        : "Would not"}
-                    </span>
-                  </td>
-                  <td>{voterDisplay(v)}</td>
-                  <td>
-                    <a
-                      href={`${repoBase}/issues/${v.issue}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="issue-link"
-                    >
-                      #{v.issue}
-                    </a>
-                  </td>
+        <>
+          <div className="audit-sort-bar" role="group" aria-label="Sort votes">
+            <span className="audit-sort-label">Sort</span>
+            <button
+              type="button"
+              className={`audit-sort-btn${sortMode === "flags" ? " is-active" : ""}`}
+              onClick={() => setSortMode("flags")}
+              aria-pressed={sortMode === "flags"}
+            >
+              Most flags on profile
+            </button>
+            <button
+              type="button"
+              className={`audit-sort-btn${sortMode === "date" ? " is-active" : ""}`}
+              onClick={() => setSortMode("date")}
+              aria-pressed={sortMode === "date"}
+            >
+              Newest by date
+            </button>
+          </div>
+          <div className="audit-table-wrap">
+            <table className="audit-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Professional</th>
+                  <th>Vote</th>
+                  <th>Submitted By</th>
+                  <th>Record</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {sortedVotes.map((v) => (
+                  <tr
+                    key={
+                      v.issue != null
+                        ? `issue-${v.issue}`
+                        : `${v.profile_slug}-${v.date}-${v.user}-${v.vote}`
+                    }
+                  >
+                    <td>{v.date}</td>
+                    <td>
+                      <a
+                        href={v.linkedin_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {formatProfessionalDisplayName(
+                          v.profile_slug,
+                          v.public_name
+                        )}
+                      </a>
+                    </td>
+                    <td>
+                      <span
+                        className={`vote-pill ${v.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
+                      >
+                        {v.vote === "yes"
+                          ? "Would work with again"
+                          : "Would not"}
+                      </span>
+                    </td>
+                    <td>{voterDisplay(v)}</td>
+                    <td>
+                      <a
+                        href={`${repoBase}/issues/${v.issue}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="issue-link"
+                      >
+                        #{v.issue}
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </>
   );

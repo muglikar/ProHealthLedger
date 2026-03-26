@@ -384,6 +384,91 @@ a:hover {
   }
 }
 
+/* ── Signed-in vote quota (below nav) ── */
+.vote-quota-strip {
+  position: sticky;
+  top: var(--nav-height, 60px);
+  z-index: 10015;
+  background: linear-gradient(180deg, #fff8f0 0%, #fef3e6 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 10px clamp(12px, 4vw, 24px);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.vote-quota-strip-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.vote-quota-strip-icon {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  line-height: 1.3;
+  opacity: 0.85;
+}
+
+.vote-quota-strip-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.vote-quota-strip-msg {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vote-quota-strip-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.vote-quota-strip-link {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.vote-quota-strip-link:hover {
+  color: var(--accent-light);
+  text-decoration: underline;
+}
+
+.vote-quota-strip-sub {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  .vote-quota-strip {
+    background: linear-gradient(180deg, #2c2c2e 0%, #252528 100%);
+    border-bottom-color: #48484a;
+    color: #aeaeb2;
+  }
+
+  .vote-quota-strip-msg {
+    color: #f5f5f7;
+  }
+
+  .vote-quota-strip-meta {
+    color: #8e8e93;
+  }
+
+  .vote-quota-strip-link {
+    color: #fbbf24;
+  }
+
+  .vote-quota-strip-link:hover {
+    color: #fcd34d;
+  }
+}
+
 /* ── Main Content ── */
 .main-content {
   max-width: 960px;
@@ -864,6 +949,46 @@ a:hover {
 }
 
 /* ── Transparency / Audit ── */
+.audit-sort-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 14px;
+}
+
+.audit-sort-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.audit-sort-btn {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.audit-sort-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+.audit-sort-btn.is-active {
+  background: var(--accent-bg);
+  border-color: var(--accent-light);
+  color: var(--accent);
+}
+
 .audit-table-wrap {
   width: 100%;
   max-width: 100%;
