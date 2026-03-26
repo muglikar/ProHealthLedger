@@ -191,9 +191,15 @@
         "vote": "yes",
         "issue": 26,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "paras-salunkhe",
+        "vote": "yes",
+        "issue": 27,
+        "date": "2026-03-26"
       }
     ],
-    "yes_count": 10,
+    "yes_count": 11,
     "no_count": 8
   }
 ]
