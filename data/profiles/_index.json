@@ -253,5 +253,22 @@
         "date": "2026-03-26"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/amol-patil-72417915",
+    "slug": "amol-patil-72417915",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "no",
+        "issue": 16,
+        "date": "2026-03-26"
+      }
+    ]
   }
 ]
