@@ -167,9 +167,15 @@
         "vote": "yes",
         "issue": 22,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "vishalkumar-mehta-8a63034",
+        "vote": "no",
+        "issue": 23,
+        "date": "2026-03-26"
       }
     ],
     "yes_count": 8,
-    "no_count": 6
+    "no_count": 7
   }
 ]
