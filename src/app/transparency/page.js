@@ -11,6 +11,10 @@ function parseVoteDate(d) {
 
 /** One row per GitHub audit issue; JSON can list the same issue twice (e.g. API + legacy Action). */
 function preferSubmissionRow(a, b) {
+  const ra = a?.reason && String(a.reason).trim();
+  const rb = b?.reason && String(b.reason).trim();
+  if (rb && !ra) return b;
+  if (ra && !rb) return a;
   if (b.display_name && !a.display_name) return b;
   if (a.display_name && !b.display_name) return a;
   const len = (s) => (s?.display_name || "").length;
@@ -67,6 +71,15 @@ export default function TransparencyPage() {
     return m;
   }, [profiles]);
 
+  const slugToVouchCount = useMemo(() => {
+    const m = new Map();
+    for (const p of profiles) {
+      if (!p?.slug) continue;
+      m.set(p.slug, p.votes?.yes ?? 0);
+    }
+    return m;
+  }, [profiles]);
+
   const dedupedVotes = useMemo(
     () =>
       dedupeVotesByAuditRecord(
@@ -89,6 +102,15 @@ export default function TransparencyPage() {
       copy.sort(compareByDateThenIssue);
       return copy;
     }
+    if (sortMode === "vouches") {
+      copy.sort((a, b) => {
+        const va = slugToVouchCount.get(a.profile_slug) ?? 0;
+        const vb = slugToVouchCount.get(b.profile_slug) ?? 0;
+        if (vb !== va) return vb - va;
+        return compareByDateThenIssue(a, b);
+      });
+      return copy;
+    }
     copy.sort((a, b) => {
       const fa = slugToFlagCount.get(a.profile_slug) ?? 0;
       const fb = slugToFlagCount.get(b.profile_slug) ?? 0;
@@ -96,9 +118,22 @@ export default function TransparencyPage() {
       return compareByDateThenIssue(a, b);
     });
     return copy;
-  }, [dedupedVotes, sortMode, slugToFlagCount]);
+  }, [dedupedVotes, sortMode, slugToFlagCount, slugToVouchCount]);
 
   const repoBase = "https://github.com/muglikar/ProHealthLedger";
+
+  function commentCell(submission) {
+    const raw =
+      typeof submission.reason === "string" ? submission.reason.trim() : "";
+    if (!raw) {
+      return <span className="audit-comment-empty">—</span>;
+    }
+    return (
+      <span className="audit-comment" title={raw}>
+        {raw}
+      </span>
+    );
+  }
 
   function voterDisplay(submission) {
     const userId = submission.user || submission.github_username || "";
@@ -157,6 +192,14 @@ export default function TransparencyPage() {
             </button>
             <button
               type="button"
+              className={`audit-sort-btn${sortMode === "vouches" ? " is-active" : ""}`}
+              onClick={() => setSortMode("vouches")}
+              aria-pressed={sortMode === "vouches"}
+            >
+              Most vouches on profile
+            </button>
+            <button
+              type="button"
               className={`audit-sort-btn${sortMode === "date" ? " is-active" : ""}`}
               onClick={() => setSortMode("date")}
               aria-pressed={sortMode === "date"}
@@ -171,6 +214,7 @@ export default function TransparencyPage() {
                   <th>Date</th>
                   <th>Professional</th>
                   <th>Vote</th>
+                  <th>Comment</th>
                   <th>Submitted By</th>
                   <th>Record</th>
                 </tr>
@@ -206,6 +250,7 @@ export default function TransparencyPage() {
                           : "Would not"}
                       </span>
                     </td>
+                    <td className="audit-table-comment">{commentCell(v)}</td>
                     <td>{voterDisplay(v)}</td>
                     <td>
                       <a
