@@ -118,8 +118,11 @@ a:hover {
 }
 
 .logo-icon {
-  color: var(--accent);
-  font-size: 1.2rem;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
 }
 
 .nav-links {
