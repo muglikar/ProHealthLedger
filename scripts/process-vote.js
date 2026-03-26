@@ -70,6 +70,23 @@ async function main() {
       );
       process.exit(0);
     }
+    const yes = existingUser.yes_count ?? 0;
+    const no = existingUser.no_count ?? 0;
+    if (yes <= no) {
+      await commentAndClose(
+        repoFullName,
+        issueNumber,
+        token,
+        [
+          "**No flag credits left.**",
+          "",
+          "Each **positive vouch** earns **1 flag** credit. Each **negative** vote uses **one credit**.",
+          "",
+          `You currently have **${yes}** vouch${yes === 1 ? "" : "es"} and **${no}** negative submission${no === 1 ? "" : "s"}. Add another positive vouch to earn a new credit.`,
+        ].join("\n")
+      );
+      process.exit(0);
+    }
   }
 
   const today = new Date().toISOString().split("T")[0];

@@ -1,11 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-function formatName(slug) {
-  if (!slug || typeof slug !== "string") return "";
-  return slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
+import { formatProfessionalDisplayName } from "@/lib/profiles";
 
 export default function ProfilesPage() {
   const [profiles, setProfiles] = useState([]);
@@ -38,11 +34,18 @@ export default function ProfilesPage() {
     const slug = typeof p.slug === "string" ? p.slug : "";
     const url =
       typeof p.linkedin_url === "string" ? p.linkedin_url.toLowerCase() : "";
+    const pub =
+      typeof p.public_name === "string" ? p.public_name.toLowerCase() : "";
     if (!slug && !url) return false;
+    const display = formatProfessionalDisplayName(
+      slug,
+      p.public_name
+    ).toLowerCase();
     return (
       slug.includes(query) ||
       url.includes(query) ||
-      formatName(slug).toLowerCase().includes(query)
+      display.includes(query) ||
+      pub.includes(query)
     );
   });
 
@@ -95,7 +98,10 @@ export default function ProfilesPage() {
               return (
                 <div key={profile.slug || profile.linkedin_url} className="profile-card">
                   <div className="profile-slug">
-                    {formatName(profile.slug) || "Profile"}
+                    {formatProfessionalDisplayName(
+                      profile.slug,
+                      profile.public_name
+                    ) || "Profile"}
                   </div>
                   <div className="profile-url">
                     <a

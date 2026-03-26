@@ -39,6 +39,9 @@ export default function SubmitPage() {
       }
 
       setResult(data);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("prohl-vote-recorded"));
+      }
       setLinkedinUrl("");
       setVote("");
       setReason("");
@@ -105,8 +108,9 @@ export default function SubmitPage() {
           <div className="submit-step">
             <h3>Positivity first</h3>
             <p>
-              Your first vote must be positive — vouch for someone before
-              you can flag anyone. This keeps the community constructive.
+              Your first contribution must be a positive vouch. After that,
+              each <strong>positive vouch</strong> earns <strong>1 flag</strong>{" "}
+              credit; each negative vote uses one credit.
             </p>
           </div>
         </div>

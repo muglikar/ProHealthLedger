@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { flagsAvailable } from "@/lib/karma";
 
 export default function ContributorsPage() {
   const [users, setUsers] = useState([]);
@@ -72,6 +73,7 @@ export default function ContributorsPage() {
               (user.github_username ? `github:${user.github_username}` : "");
             const url = profileUrl(rawId);
             const name = contributorLabel(user);
+            const flagLeft = flagsAvailable(user);
             return (
               <div
                 key={rawId || idx}
@@ -103,9 +105,17 @@ export default function ContributorsPage() {
                   </div>
                 </div>
                 <span
-                  className={`karma-status ${user.yes_count >= 1 ? "karma-good" : "karma-pending"}`}
+                  className={`karma-status ${
+                    user.yes_count >= 1 && flagLeft > 0
+                      ? "karma-good"
+                      : "karma-pending"
+                  }`}
                 >
-                  {user.yes_count >= 1 ? "Can vote No" : "Yes only"}
+                  {user.yes_count < 1
+                    ? "Vouch first"
+                    : flagLeft > 0
+                      ? `${flagLeft} flag${flagLeft === 1 ? "" : "s"} left`
+                      : "No flags left"}
                 </span>
               </div>
             );

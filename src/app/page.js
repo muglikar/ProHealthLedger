@@ -64,10 +64,9 @@ export default function Home() {
           <div>
             <h3>Positivity comes first</h3>
             <p>
-              Before you can flag someone, you must first vouch for someone
-              else. This simple rule keeps the platform constructive and
-              prevents anonymous pile-ons. Give credit where it&apos;s due,
-              then speak your truth.
+              Your first contribution must be a positive vouch. After that,
+              each positive vouch earns one flag (negative vote) credit, and each
+              flag uses one credit. That keeps the platform constructive.
             </p>
           </div>
         </div>

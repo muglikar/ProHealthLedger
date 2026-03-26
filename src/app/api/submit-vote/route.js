@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { readDataFile, writeDataFile, createIssue } from "@/lib/github";
+import { canSubmitNegativeVote } from "@/lib/karma";
+import { formatProfessionalDisplayName } from "@/lib/profiles";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -73,13 +75,23 @@ export async function POST(req) {
         { status: 403 }
       );
     }
+    if (!canSubmitNegativeVote(existingUser)) {
+      return Response.json(
+        {
+          error: `Each positive vouch earns 1 flag credit; each negative vote uses one credit. Add another positive vouch to get a new credit.`,
+          karma: true,
+        },
+        { status: 403 }
+      );
+    }
   }
 
   const today = new Date().toISOString().split("T")[0];
 
-  const titleName = slug
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const profileForTitle = profiles.find((p) => p.slug === slug);
+  const titleName =
+    formatProfessionalDisplayName(slug, profileForTitle?.public_name) ||
+    slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const issueBody = [
     `### LinkedIn Profile URL`,
@@ -125,7 +137,7 @@ export async function POST(req) {
     date: today,
   };
 
-  let profile = profiles.find((p) => p.slug === slug);
+  let profile = profileForTitle;
   if (!profile) {
     profile = {
       linkedin_url: normalizeUrl(linkedinUrl),
