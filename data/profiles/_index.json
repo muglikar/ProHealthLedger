@@ -218,5 +218,22 @@
         "date": "2026-03-26"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/abhijit-kumar-iitb",
+    "slug": "abhijit-kumar-iitb",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "yes",
+        "issue": 14,
+        "date": "2026-03-26"
+      }
+    ]
   }
 ]
