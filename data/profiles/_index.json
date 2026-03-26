@@ -321,5 +321,22 @@
         "date": "2026-03-26"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/atchyuta-rao-135438a",
+    "slug": "atchyuta-rao-135438a",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "no",
+        "issue": 20,
+        "date": "2026-03-26"
+      }
+    ]
   }
 ]
