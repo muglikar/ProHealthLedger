@@ -131,9 +131,15 @@
         "vote": "no",
         "issue": 16,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "anuptapadia",
+        "vote": "no",
+        "issue": 17,
+        "date": "2026-03-26"
       }
     ],
     "yes_count": 6,
-    "no_count": 2
+    "no_count": 3
   }
 ]
