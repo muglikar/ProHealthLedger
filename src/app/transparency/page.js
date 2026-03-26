@@ -188,7 +188,8 @@ export default function TransparencyPage() {
               onClick={() => setSortMode("flags")}
               aria-pressed={sortMode === "flags"}
             >
-              Most flags on profile
+              <span className="audit-sort-btn-long">Most flags on profile</span>
+              <span className="audit-sort-btn-short">Most flags</span>
             </button>
             <button
               type="button"
@@ -196,7 +197,8 @@ export default function TransparencyPage() {
               onClick={() => setSortMode("vouches")}
               aria-pressed={sortMode === "vouches"}
             >
-              Most vouches on profile
+              <span className="audit-sort-btn-long">Most vouches on profile</span>
+              <span className="audit-sort-btn-short">Most vouches</span>
             </button>
             <button
               type="button"
@@ -204,9 +206,13 @@ export default function TransparencyPage() {
               onClick={() => setSortMode("date")}
               aria-pressed={sortMode === "date"}
             >
-              Newest by date
+              <span className="audit-sort-btn-long">Newest by date</span>
+              <span className="audit-sort-btn-short">By date</span>
             </button>
           </div>
+          <p className="audit-table-hint">
+            Scroll the table horizontally to see every column, including comments.
+          </p>
           <div className="audit-table-wrap">
             <table className="audit-table">
               <thead>
@@ -214,7 +220,7 @@ export default function TransparencyPage() {
                   <th>Date</th>
                   <th>Professional</th>
                   <th>Vote</th>
-                  <th>Comment</th>
+                  <th className="audit-table-col-comment">Comment</th>
                   <th>Submitted By</th>
                   <th>Record</th>
                 </tr>
@@ -250,7 +256,7 @@ export default function TransparencyPage() {
                           : "Would not"}
                       </span>
                     </td>
-                    <td className="audit-table-comment">{commentCell(v)}</td>
+                    <td className="audit-table-col-comment">{commentCell(v)}</td>
                     <td>{voterDisplay(v)}</td>
                     <td>
                       <a
