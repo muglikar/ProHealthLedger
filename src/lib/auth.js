@@ -1,23 +1,35 @@
 import GithubProvider from "next-auth/providers/github";
 import LinkedInProvider from "next-auth/providers/linkedin";
 
-export const authOptions = {
-  providers: [
-    GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    }),
+// Vercel: use exact names LINKEDIN_ID + LINKEDIN_SECRET (see .env.example).
+// Fallbacks help if you used LinkedIn's default naming from their UI.
+const linkedInClientId =
+  process.env.LINKEDIN_ID?.trim() ||
+  process.env.LINKEDIN_CLIENT_ID?.trim() ||
+  "";
+const linkedInClientSecret =
+  process.env.LINKEDIN_SECRET?.trim() ||
+  process.env.LINKEDIN_CLIENT_SECRET?.trim() ||
+  "";
+
+const providers = [
+  GithubProvider({
+    clientId: process.env.GITHUB_ID,
+    clientSecret: process.env.GITHUB_SECRET,
+  }),
+];
+
+if (linkedInClientId && linkedInClientSecret) {
+  providers.push(
     LinkedInProvider({
-      clientId: process.env.LINKEDIN_ID,
-      clientSecret: process.env.LINKEDIN_SECRET,
+      clientId: linkedInClientId,
+      clientSecret: linkedInClientSecret,
       client: { token_endpoint_auth_method: "client_secret_post" },
       authorization: {
         url: "https://www.linkedin.com/oauth/v2/authorization",
         params: { scope: "openid profile email" },
       },
       token: "https://www.linkedin.com/oauth/v2/accessToken",
-      // Default NextAuth LinkedIn uses /v2/me + legacy email API; that fails if your
-      // app only has "Sign In with LinkedIn using OpenID Connect". OIDC userinfo:
       userinfo: { url: "https://api.linkedin.com/v2/userinfo" },
       profile(profile) {
         return {
@@ -30,8 +42,12 @@ export const authOptions = {
           image: profile.picture ?? null,
         };
       },
-    }),
-  ],
+    })
+  );
+}
+
+export const authOptions = {
+  providers,
   callbacks: {
     async jwt({ token, account, profile }) {
       if (account && profile) {
