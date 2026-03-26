@@ -49,5 +49,19 @@
     ],
     "yes_count": 3,
     "no_count": 1
+  },
+  {
+    "user_id": "linkedin:CAOSO1oig0",
+    "display_name": "Anand Muglikar",
+    "contributions": [
+      {
+        "profile_slug": "er-apoorv-gupta",
+        "vote": "yes",
+        "issue": 9,
+        "date": "2026-03-26"
+      }
+    ],
+    "yes_count": 1,
+    "no_count": 0
   }
 ]
