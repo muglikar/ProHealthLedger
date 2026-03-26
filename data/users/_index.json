@@ -77,9 +77,15 @@
         "vote": "yes",
         "issue": 10,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "savadikar-chinmay",
+        "vote": "yes",
+        "issue": 11,
+        "date": "2026-03-26"
       }
     ],
-    "yes_count": 2,
+    "yes_count": 3,
     "no_count": 0
   }
 ]
