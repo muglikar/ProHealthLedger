@@ -7,6 +7,31 @@ function formatName(slug) {
   return slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/** One row per GitHub audit issue; JSON can list the same issue twice (e.g. API + legacy Action). */
+function preferSubmissionRow(a, b) {
+  if (b.display_name && !a.display_name) return b;
+  if (a.display_name && !b.display_name) return a;
+  const len = (s) => (s?.display_name || "").length;
+  if (len(b) > len(a)) return b;
+  return a;
+}
+
+function dedupeVotesByAuditRecord(votes) {
+  const map = new Map();
+  for (const v of votes) {
+    const key =
+      v.issue != null && v.issue !== ""
+        ? `issue:${v.issue}`
+        : `row:${v.profile_slug}:${v.date}:${String(v.user || "")}:${v.vote}`;
+    if (!map.has(key)) {
+      map.set(key, v);
+    } else {
+      map.set(key, preferSubmissionRow(map.get(key), v));
+    }
+  }
+  return [...map.values()].sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
 export default function TransparencyPage() {
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,16 +49,18 @@ export default function TransparencyPage() {
       });
   }, []);
 
-  const allVotes = profiles
-    .flatMap((p) => {
-      if (!p || !Array.isArray(p.submissions)) return [];
-      return p.submissions.map((s) => ({
-        ...s,
-        profile_slug: p.slug,
-        linkedin_url: p.linkedin_url,
-      }));
-    })
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  const allVotes = dedupeVotesByAuditRecord(
+    profiles
+      .flatMap((p) => {
+        if (!p || !Array.isArray(p.submissions)) return [];
+        return p.submissions.map((s) => ({
+          ...s,
+          profile_slug: p.slug,
+          linkedin_url: p.linkedin_url,
+        }));
+      })
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+  );
 
   const repoBase = "https://github.com/muglikar/ProHealthLedger";
 
@@ -93,8 +120,14 @@ export default function TransparencyPage() {
               </tr>
             </thead>
             <tbody>
-              {allVotes.map((v, i) => (
-                <tr key={i}>
+              {allVotes.map((v) => (
+                <tr
+                  key={
+                    v.issue != null
+                      ? `issue-${v.issue}`
+                      : `${v.profile_slug}-${v.date}-${v.user}-${v.vote}`
+                  }
+                >
                   <td>{v.date}</td>
                   <td>
                     <a
