@@ -270,5 +270,22 @@
         "date": "2026-03-26"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/anuptapadia",
+    "slug": "anuptapadia",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "no",
+        "issue": 17,
+        "date": "2026-03-26"
+      }
+    ]
   }
 ]
