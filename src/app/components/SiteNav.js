@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import NavAuth from "./NavAuth";
@@ -66,38 +67,41 @@ export default function SiteNav() {
         </button>
       </div>
 
-      {menuOpen ? (
-        <>
-          <button
-            type="button"
-            className="nav-drawer-backdrop"
-            aria-label="Close menu"
-            onClick={() => setMenuOpen(false)}
-          />
-          <div
-            id="site-nav-drawer"
-            className="nav-drawer"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Site navigation"
-          >
-            <div className="nav-drawer-inner">
-              <ul className="nav-drawer-links">
-                {NAV_LINKS.map(({ href, label }) => (
-                  <li key={href}>
-                    <Link href={href} onClick={() => setMenuOpen(false)}>
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <div className="nav-drawer-auth">
-                <NavAuth />
+      {menuOpen
+        ? createPortal(
+            <>
+              <button
+                type="button"
+                className="nav-drawer-backdrop"
+                aria-label="Close menu"
+                onClick={() => setMenuOpen(false)}
+              />
+              <div
+                id="site-nav-drawer"
+                className="nav-drawer"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Site navigation"
+              >
+                <div className="nav-drawer-inner">
+                  <ul className="nav-drawer-links">
+                    {NAV_LINKS.map(({ href, label }) => (
+                      <li key={href}>
+                        <Link href={href} onClick={() => setMenuOpen(false)}>
+                          {label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="nav-drawer-auth">
+                    <NavAuth />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </>
-      ) : null}
+            </>,
+            document.body
+          )
+        : null}
     </nav>
   );
 }

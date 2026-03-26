@@ -20,6 +20,12 @@ export const metadata = {
     "A free, public directory of honest professional experiences. Look up anyone. Share your truth.",
 };
 
+/** Ensures real device width for CSS breakpoints (hamburger @ max-width 768px). */
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
