@@ -161,9 +161,15 @@
         "vote": "yes",
         "issue": 21,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "pankajdeshpandehr",
+        "vote": "yes",
+        "issue": 22,
+        "date": "2026-03-26"
       }
     ],
-    "yes_count": 7,
+    "yes_count": 8,
     "no_count": 6
   }
 ]
