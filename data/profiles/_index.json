@@ -170,5 +170,22 @@
         "date": "2026-03-26"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/rohit-kadam-9781964b",
+    "slug": "rohit-kadam-9781964b",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "yes",
+        "issue": 12,
+        "date": "2026-03-26"
+      }
+    ]
   }
 ]
