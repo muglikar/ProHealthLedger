@@ -406,5 +406,22 @@
         "date": "2026-03-26"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/sagarjoglekar",
+    "slug": "sagarjoglekar",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "yes",
+        "issue": 25,
+        "date": "2026-03-26"
+      }
+    ]
   }
 ]
