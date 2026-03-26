@@ -23,14 +23,18 @@ if (linkedInClientId && linkedInClientSecret) {
       clientId: linkedInClientId,
       clientSecret: linkedInClientSecret,
       client: { token_endpoint_auth_method: "client_secret_post" },
-      // OIDC discovery — correct token + userinfo endpoints for OpenID product
-      wellKnown: "https://www.linkedin.com/oauth/.well-known/openid-configuration",
+      // Must match LinkedIn ID token `iss` (see openid-configuration). wellKnown +
+      // merged defaults produced issuer undefined → "unexpected iss value" in openid-client.
+      issuer: "https://www.linkedin.com/oauth",
+      jwks_endpoint: "https://www.linkedin.com/oauth/openid/jwks",
       authorization: {
+        url: "https://www.linkedin.com/oauth/v2/authorization",
         params: { scope: "openid profile email" },
       },
-      // Default LinkedIn provider merges in userinfo.params.projection for /v2/me.
-      // That breaks /v2/userinfo. Custom request skips those params entirely.
+      token: "https://www.linkedin.com/oauth/v2/accessToken",
+      // Custom fetch avoids merged userinfo.params.projection (for /v2/me) breaking OIDC userinfo.
       userinfo: {
+        url: "https://api.linkedin.com/v2/userinfo",
         async request({ tokens }) {
           const res = await fetch("https://api.linkedin.com/v2/userinfo", {
             headers: { Authorization: `Bearer ${tokens.access_token}` },

@@ -11,6 +11,13 @@ async function main() {
   const repoFullName = process.env.REPO_FULL_NAME || "";
   const token = process.env.GITHUB_TOKEN || "";
 
+  if (issueBody.includes("pre-validated (Karma Rule checked")) {
+    console.log(
+      `Skipping issue #${issueNumber}: vote already recorded by website API.`
+    );
+    process.exit(0);
+  }
+
   const linkedinUrl = extractField(issueBody, "LinkedIn Profile URL");
   const vote = extractField(issueBody, "Based on your experience, would you work with/for them again?");
 
