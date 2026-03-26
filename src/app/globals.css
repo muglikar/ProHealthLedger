@@ -77,12 +77,20 @@ a:hover {
 
 /* ── Navigation ── */
 .nav {
+  --nav-bar-bg: rgba(255, 255, 255, 0.96);
+  --nav-bar-border: #e0d8cc;
+  --nav-fg: #141414;
+  --nav-fg-muted: #3a3a3a;
+  --nav-fg-subtle: #5a5a5a;
+  --nav-link: #333333;
+  --nav-link-hover: #141414;
   position: sticky;
   top: 0;
   z-index: 10020;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--nav-bar-bg);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--nav-bar-border);
+  color: var(--nav-fg);
 }
 
 .nav-inner {
@@ -101,7 +109,7 @@ a:hover {
 .nav-logo {
   font-weight: 700;
   font-size: clamp(0.92rem, 3.5vw, 1.05rem);
-  color: var(--text) !important;
+  color: var(--nav-fg) !important;
   text-decoration: none !important;
   display: flex;
   align-items: center;
@@ -131,14 +139,14 @@ a:hover {
 }
 
 .nav-links a {
-  color: var(--text-secondary);
+  color: var(--nav-link);
   font-size: 0.9rem;
   font-weight: 500;
   text-decoration: none;
 }
 
 .nav-links a:hover {
-  color: var(--text);
+  color: var(--nav-link-hover);
   text-decoration: none;
 }
 
@@ -146,6 +154,29 @@ a:hover {
 .nav-desktop-only {
   display: flex;
   align-items: center;
+}
+
+/* Auth + links in bar: use nav tokens (readable on light or dark bar) */
+.nav .nav-auth-loading {
+  color: var(--nav-fg-subtle);
+}
+
+.nav .nav-auth-btn-out {
+  color: var(--nav-fg-muted);
+  border-color: rgba(0, 0, 0, 0.16);
+}
+
+.nav .nav-auth-btn-out:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--nav-fg);
+}
+
+.nav .nav-auth-name {
+  color: var(--nav-fg-muted);
+}
+
+.nav .nav-auth-id {
+  color: var(--nav-fg-subtle);
 }
 
 /* Hamburger (hidden on desktop) */
@@ -277,12 +308,17 @@ a:hover {
 
 @media (prefers-color-scheme: dark) {
   .nav {
-    background: rgba(28, 28, 30, 0.94);
-    border-bottom-color: #3a3a3c;
+    --nav-bar-bg: rgba(28, 28, 30, 0.96);
+    --nav-bar-border: #3a3a3c;
+    --nav-fg: #f5f5f7;
+    --nav-fg-muted: #d1d1d6;
+    --nav-fg-subtle: #aeaeb2;
+    --nav-link: #d8d8dc;
+    --nav-link-hover: #ffffff;
   }
 
   .nav .nav-logo {
-    color: #f5f5f7 !important;
+    color: var(--nav-fg) !important;
   }
 
   .nav-burger {
@@ -296,6 +332,15 @@ a:hover {
 
   .nav-burger:hover {
     background: rgba(255, 255, 255, 0.08);
+  }
+
+  .nav .nav-auth-btn-out {
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+
+  .nav .nav-auth-btn-out:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--nav-fg);
   }
 
   .nav-drawer {
