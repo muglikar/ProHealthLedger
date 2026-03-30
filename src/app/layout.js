@@ -22,25 +22,7 @@ export const metadata = {
   description:
     "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
   icons: {
-    icon: [
-      {
-        url: "/favicon-heart-light.png",
-        type: "image/png",
-        sizes: "512x512",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/favicon-heart-dark.png",
-        type: "image/png",
-        sizes: "512x512",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/favicon-heart-light.png",
-        type: "image/png",
-        sizes: "512x512",
-      },
-    ],
+    icon: { url: "/favicon.png", type: "image/png", sizes: "512x512" },
     apple: {
       url: "/apple-touch-icon.png",
       sizes: "180x180",
