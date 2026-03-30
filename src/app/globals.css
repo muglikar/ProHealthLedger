@@ -128,12 +128,13 @@ a:hover {
   white-space: nowrap;
 }
 
-/* Natural badge silhouette (transparent outside rim); no extra circular clip. */
+/* Full round emblem (public/logo.png); circular clip matches the badge. */
 .logo-icon {
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 50%;
   display: block;
 }
 
