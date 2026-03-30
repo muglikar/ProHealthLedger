@@ -18,7 +18,21 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Professional Health Ledger — Know Who You're Working With",
   description:
-    "A free, public directory of honest professional experiences. Look up anyone. Share your truth.",
+    "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
+  openGraph: {
+    title: "Professional Health Ledger — Know Who You're Working With",
+    description:
+      "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
+    url: "https://pro-health-ledger.vercel.app",
+    siteName: "Professional Health Ledger",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Professional Health Ledger",
+    description:
+      "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
+  },
 };
 
 /** Ensures real device width for CSS breakpoints (hamburger @ max-width 768px). */
