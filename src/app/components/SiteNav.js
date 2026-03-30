@@ -39,14 +39,16 @@ export default function SiteNav() {
           className="nav-logo"
           onClick={() => setMenuOpen(false)}
         >
-          <Image
-            src="/icon.png"
-            alt=""
-            width={40}
-            height={40}
-            className="logo-icon"
-            priority
-          />
+          <span className="logo-icon-wrap" aria-hidden>
+            <Image
+              src="/icon.png"
+              alt=""
+              width={40}
+              height={40}
+              className="logo-icon"
+              priority
+            />
+          </span>
           <span className="nav-logo-text">ProHealthLedger</span>
         </Link>
 

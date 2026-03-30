@@ -128,12 +128,26 @@ a:hover {
   white-space: nowrap;
 }
 
-.logo-icon {
+/* Circular clip: PNG is round + transparent outside rim; wrap handles Next/Image layout. */
+.logo-icon-wrap {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  background: transparent;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
   object-fit: cover;
   border-radius: 50%;
+  display: block;
 }
 
 .nav-links {
