@@ -15,23 +15,60 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://pro-health-ledger.vercel.app";
+
 export const metadata = {
   title: "Professional Health Ledger — Know Who You're Working With",
   description:
     "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
+  icons: {
+    icon: [
+      {
+        url: "/favicon-heart-light.png",
+        type: "image/png",
+        sizes: "512x512",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/favicon-heart-dark.png",
+        type: "image/png",
+        sizes: "512x512",
+        media: "(prefers-color-scheme: dark)",
+      },
+      {
+        url: "/favicon-heart-light.png",
+        type: "image/png",
+        sizes: "512x512",
+      },
+    ],
+    apple: {
+      url: "/apple-touch-icon.png",
+      sizes: "180x180",
+      type: "image/png",
+    },
+  },
   openGraph: {
     title: "Professional Health Ledger — Know Who You're Working With",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    url: "https://pro-health-ledger.vercel.app",
+    url: siteUrl,
     siteName: "Professional Health Ledger",
     type: "website",
+    images: [
+      {
+        url: `${siteUrl}/logo.png`,
+        width: 1024,
+        height: 1024,
+        alt: "Professional Health Ledger — round emblem",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Professional Health Ledger",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
+    images: [`${siteUrl}/logo.png`],
   },
 };
 
