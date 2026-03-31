@@ -36,21 +36,12 @@ export const metadata = {
     url: siteUrl,
     siteName: "Professional Health Ledger",
     type: "website",
-    images: [
-      {
-        url: `${siteUrl}/logo.png`,
-        width: 1024,
-        height: 1024,
-        alt: "Professional Health Ledger — round emblem",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Professional Health Ledger",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    images: [`${siteUrl}/logo.png`],
   },
 };
 
