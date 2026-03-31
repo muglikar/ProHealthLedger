@@ -1,15 +1,14 @@
 import { ImageResponse } from 'next/og'
-
-export const runtime = 'edge'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 
 export const alt = "Professional Health Ledger — Know Who You're Working With"
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 export default async function Image() {
-  const logoData = await fetch(
-    new URL('../../public/prohl-logo.png', import.meta.url)
-  ).then((res) => res.arrayBuffer())
+  const logoBuffer = await readFile(join(process.cwd(), 'public', 'prohl-logo.png'))
+  const logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`
 
   return new ImageResponse(
     (
@@ -26,8 +25,7 @@ export default async function Image() {
         }}
       >
         <div style={{ display: 'flex', marginBottom: '30px' }}>
-          {/* Use the ArrayBuffer directly as the src */}
-          <img src={logoData} width="160" height="160" />
+          <img src={logoBase64} width="160" height="160" />
         </div>
         
         <div style={{
