@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
 const siteUrl = "https://pro-health-ledger.vercel.app";
 
 export const metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Professional Health Ledger — Know Who You're Working With",
   description:
     "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
