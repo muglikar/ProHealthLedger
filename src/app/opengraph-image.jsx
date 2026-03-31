@@ -7,7 +7,7 @@ export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 export default async function Image() {
-  const logoBuffer = await readFile(join(process.cwd(), 'public', 'prohl-logo.png'))
+  const logoBuffer = await readFile(join(process.cwd(), 'public', 'logo.png'))
   const logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`
 
   return new ImageResponse(
