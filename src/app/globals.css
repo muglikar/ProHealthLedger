@@ -637,6 +637,7 @@ a:hover {
 
 .home-hero-block {
   width: 100%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -657,19 +658,30 @@ a:hover {
 }
 
 .home-above-fold h1 {
-  font-size: clamp(1.25rem, 2.5vw + 0.5rem, 2.05rem);
+  font-size: clamp(0.78rem, 2.4vw + 0.45rem, 2.05rem);
   font-weight: 800;
   line-height: 1.12;
   margin: 0 auto;
   color: var(--text);
-  max-width: 22em;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
+  text-align: center;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
+}
+
+@media (max-width: 360px) {
+  .home-above-fold h1 {
+    white-space: normal;
+    max-width: 100%;
+    hyphens: auto;
+    overflow-wrap: anywhere;
+  }
 }
 
 .hero-highlight {
   color: var(--accent);
+  font-weight: 800;
+  font-style: italic;
 }
 
 .hero-lede {
