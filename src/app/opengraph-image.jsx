@@ -27,20 +27,20 @@ export default async function Image() {
         {/* Logo — large, centered, no circle */}
         <img
           src={logoBase64}
-          width="260"
-          height="260"
-          style={{ marginBottom: 28 }}
+          width="200"
+          height="200"
+          style={{ marginBottom: 20 }}
         />
 
         {/* Title */}
         <div
           style={{
-            fontSize: 52,
+            fontSize: 48,
             fontWeight: 800,
             color: '#0f172a',
             textAlign: 'center',
             lineHeight: 1.15,
-            marginBottom: 16,
+            marginBottom: 12,
           }}
         >
           Professional Health Ledger
@@ -49,13 +49,28 @@ export default async function Image() {
         {/* Tagline */}
         <div
           style={{
-            fontSize: 28,
-            fontWeight: 500,
-            color: '#475569',
+            fontSize: 26,
+            fontWeight: 600,
+            color: '#334155',
             textAlign: 'center',
+            marginBottom: 16,
           }}
         >
           Know who you're working with — before you commit.
+        </div>
+
+        {/* Description */}
+        <div
+          style={{
+            fontSize: 20,
+            fontWeight: 400,
+            color: '#64748b',
+            textAlign: 'center',
+            maxWidth: '85%',
+            lineHeight: 1.5,
+          }}
+        >
+          A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.
         </div>
       </div>
     ),
