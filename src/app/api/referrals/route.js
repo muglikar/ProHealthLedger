@@ -1,0 +1,90 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import {
+  createReferral,
+  getReferralsByUser,
+  getAllReferrals,
+} from "@/lib/referrals";
+import { formatProfessionalDisplayName } from "@/lib/profiles";
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://pro-health-ledger.vercel.app";
+
+export async function POST(req) {
+  const session = await getServerSession(authOptions);
+  if (!session?.userId) {
+    return Response.json(
+      { error: "You must be signed in." },
+      { status: 401 }
+    );
+  }
+
+  const { profileSlug, profileName } = await req.json();
+
+  if (!profileSlug) {
+    return Response.json(
+      { error: "profileSlug is required." },
+      { status: 400 }
+    );
+  }
+
+  const displayName =
+    formatProfessionalDisplayName(profileSlug, profileName) ||
+    profileSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+  try {
+    const referral = await createReferral(
+      session.userId,
+      session.displayName || session.userId,
+      profileSlug,
+      displayName
+    );
+
+    const shareUrl = `${SITE_URL}/?ref=${referral.ref_code}`;
+
+    const linkedinText = `Hey, I just vouched for ${displayName} on Professional Health Ledger — a free, transparent directory of honest professional experiences.\n\nCheck it out and share your experience too!\n\n${shareUrl}\n\n#ProHealthLedger #OpenSource #ProfessionalReputation`;
+
+    const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+
+    return Response.json({
+      refCode: referral.ref_code,
+      shareUrl,
+      linkedinText,
+      linkedinShareUrl,
+    });
+  } catch (err) {
+    console.error("Failed to create referral:", err);
+    return Response.json(
+      { error: "Failed to create referral link. Please try again." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(req) {
+  const session = await getServerSession(authOptions);
+  if (!session?.userId) {
+    return Response.json(
+      { error: "You must be signed in." },
+      { status: 401 }
+    );
+  }
+
+  const { searchParams } = new URL(req.url);
+  const allMode = searchParams.get("all") === "true";
+
+  try {
+    if (allMode) {
+      const all = await getAllReferrals();
+      return Response.json(all);
+    }
+    const userReferrals = await getReferralsByUser(session.userId);
+    return Response.json(userReferrals);
+  } catch (err) {
+    console.error("Failed to fetch referrals:", err);
+    return Response.json(
+      { error: "Failed to load referral stats." },
+      { status: 500 }
+    );
+  }
+}
