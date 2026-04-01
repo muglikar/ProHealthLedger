@@ -26,8 +26,9 @@
   --radius-sm: 8px;
   --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-geist-mono), monospace;
+  --font-sans: var(--font-monda), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-playfair), Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
 }
 
 *,
@@ -64,6 +65,15 @@ body {
   max-width: 100%;
   overflow-x: clip;
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
 }
 
 a {
@@ -122,6 +132,7 @@ a:hover {
 }
 
 .nav-logo-text {
+  font-family: var(--font-serif);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -677,6 +688,16 @@ a:hover {
   max-width: 38rem;
   margin: 0 auto;
   line-height: 1.45;
+}
+
+.hero-lede-quote {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.hero-lede-rest {
+  display: block;
+  margin-top: 0.4em;
 }
 
 .hero-trust-line {
@@ -2030,5 +2051,237 @@ a:hover {
 @media (max-width: 380px) {
   .nav-logo-text {
     max-width: 42vw;
+  }
+}
+
+/* ── Share Section (after positive vouch) ── */
+.share-section {
+  margin-top: 24px;
+  padding: 20px 24px;
+  background: var(--blue-bg);
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius);
+}
+
+.share-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: var(--text);
+}
+
+.share-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+
+.share-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-linkedin-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0a66c2;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+}
+
+.btn-linkedin-share:hover {
+  background: #004182;
+  transform: translateY(-1px);
+}
+
+.btn-linkedin-share:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-copy-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-copy-link:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.share-link-preview {
+  margin-top: 14px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+.share-link-preview code {
+  background: var(--bg-card);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+}
+
+/* ── Referral Stats Dashboard ── */
+.referral-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.referral-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.referral-stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.referral-stat-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.referral-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
+}
+
+.referral-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.referral-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--border);
+  background: var(--bg);
+}
+
+.referral-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.referral-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.referral-table tbody tr:hover {
+  background: var(--bg-card-hover);
+}
+
+.referral-profile-name {
+  font-weight: 600;
+}
+
+.ref-code {
+  background: var(--accent-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+
+.referral-num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (max-width: 639px) {
+  .referral-summary {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .referral-stat-card {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 16px 20px;
+  }
+
+  .referral-stat-number {
+    font-size: 1.5rem;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .share-section {
+    background: rgba(30, 58, 138, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  .btn-linkedin-share {
+    background: #0a66c2;
+  }
+
+  .btn-linkedin-share:hover {
+    background: #0077b5;
+  }
+
+  .btn-copy-link {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.16);
+    color: #f5f5f7;
+  }
+
+  .btn-copy-link:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .share-link-preview code {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .ref-code {
+    background: rgba(180, 83, 9, 0.2);
   }
 }

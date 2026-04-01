@@ -11,8 +11,13 @@ export default function Home() {
             <span className="hero-highlight">before you commit.</span>
           </h1>
           <p className="hero-lede">
-            One question: would you work with them again? Public ledger — no star
-            ratings, no long reviews.
+            One question:{" "}
+            <strong className="hero-lede-quote">
+              &ldquo;Would you work with them again?&rdquo;
+            </strong>
+            <span className="hero-lede-rest">
+              Public ledger — no star ratings, no long reviews.
+            </span>
           </p>
           <p className="hero-trust-line">
             GitHub or LinkedIn sign-in · Transparency page · One vote per you per

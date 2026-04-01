@@ -1,18 +1,23 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
+import { Monda, Playfair_Display } from "next/font/google";
 import Link from "next/link";
 import Providers from "./providers";
 import SiteNav from "./components/SiteNav";
 import VoteQuotaStrip from "./components/VoteQuotaStrip";
+import ReferralCapture from "./components/ReferralCapture";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const monda = Monda({
+  weight: ["400", "700"],
   subsets: ["latin"],
+  variable: "--font-monda",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const playfair = Playfair_Display({
   subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
 });
 
 const siteUrl = "https://pro-health-ledger.vercel.app";
@@ -55,10 +60,13 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${monda.variable} ${playfair.variable}`}>
         <Providers>
           <SiteNav />
           <VoteQuotaStrip />
+          <Suspense fallback={null}>
+            <ReferralCapture />
+          </Suspense>
           <main className="main-content">{children}</main>
           <footer className="footer">
             <div className="footer-inner">
