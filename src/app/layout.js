@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Monda, Playfair_Display } from "next/font/google";
+import { Monda } from "next/font/google";
 import Link from "next/link";
 import Providers from "./providers";
 import SiteNav from "./components/SiteNav";
@@ -11,12 +11,6 @@ const monda = Monda({
   weight: ["400", "700"],
   subsets: ["latin"],
   variable: "--font-monda",
-  display: "swap",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
   display: "swap",
 });
 
@@ -59,8 +53,8 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${monda.variable} ${playfair.variable}`}>
+    <html lang="en" className={monda.variable}>
+      <body>
         <Providers>
           <SiteNav />
           <VoteQuotaStrip />
