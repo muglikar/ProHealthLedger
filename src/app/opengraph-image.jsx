@@ -17,105 +17,45 @@ export default async function Image() {
           width: '100%',
           height: '100%',
           display: 'flex',
-          flexDirection: 'row',
-          background: 'linear-gradient(135deg, #0f4c3a 0%, #1a6b50 40%, #0d3d2e 100%)',
-          padding: 0,
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(180deg, #f0fdf4 0%, #e0f2fe 100%)',
+          padding: '40px',
         }}
       >
-        {/* Left side: Logo on a bright contrasting circle */}
+        {/* Logo — large, centered, no circle */}
+        <img
+          src={logoBase64}
+          width="260"
+          height="260"
+          style={{ marginBottom: 28 }}
+        />
+
+        {/* Title */}
         <div
           style={{
-            width: '45%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            fontSize: 52,
+            fontWeight: 800,
+            color: '#0f172a',
+            textAlign: 'center',
+            lineHeight: 1.15,
+            marginBottom: 16,
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 320,
-              height: 320,
-              borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.95)',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-            }}
-          >
-            <img src={logoBase64} width="240" height="240" />
-          </div>
+          Professional Health Ledger
         </div>
 
-        {/* Right side: Text content */}
+        {/* Tagline */}
         <div
           style={{
-            width: '55%',
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            paddingRight: 60,
-            paddingLeft: 20,
+            fontSize: 28,
+            fontWeight: 500,
+            color: '#475569',
+            textAlign: 'center',
           }}
         >
-          <div
-            style={{
-              fontSize: 56,
-              fontWeight: 800,
-              color: '#ffffff',
-              lineHeight: 1.15,
-              marginBottom: 20,
-            }}
-          >
-            Professional Health Ledger
-          </div>
-
-          <div
-            style={{
-              fontSize: 26,
-              fontWeight: 400,
-              color: 'rgba(255,255,255,0.85)',
-              lineHeight: 1.5,
-              marginBottom: 36,
-            }}
-          >
-            Know who you're working with. A transparent, public directory of honest professional experiences.
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                background: '#0ea5e9',
-                color: 'white',
-                padding: '16px 36px',
-                borderRadius: 12,
-                fontSize: 26,
-                fontWeight: 'bold',
-              }}
-            >
-              Search the Ledger →
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              marginTop: 24,
-              fontSize: 18,
-              color: 'rgba(255,255,255,0.6)',
-              fontWeight: 500,
-            }}
-          >
-            Open Source · Zero Cost · Fully Transparent
-          </div>
+          Know who you're working with — before you commit.
         </div>
       </div>
     ),
