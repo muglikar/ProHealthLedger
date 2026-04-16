@@ -1396,6 +1396,18 @@ a:hover {
   display: none;
 }
 
+.audit-top-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.audit-top-scroll-inner {
+  height: 1px;
+}
+
 .audit-table-wrap {
   width: 100%;
   max-width: 100%;
@@ -1423,7 +1435,7 @@ a:hover {
 
   .audit-table th.audit-col-vote {
     white-space: normal;
-    width: 65px;
+    width: 90px;
   }
 
   .audit-table th.audit-col-share,
