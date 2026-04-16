@@ -218,6 +218,9 @@ export default function SubmitPage() {
           <div className="form-notice">
             By submitting, you confirm this is your genuine professional
             experience. Your vote is permanent, public, and cannot be edited.
+            {reason.trim() ? (
+              <span className="form-notice-mod"> Your comment will be visible after admin review.</span>
+            ) : null}
           </div>
 
           <button
@@ -225,7 +228,11 @@ export default function SubmitPage() {
             className="btn btn-primary btn-full"
             disabled={submitting || !linkedinUrl || !vote}
           >
-            {submitting ? "Submitting…" : "Submit your vote permanently"}
+            {submitting
+              ? "Submitting…"
+              : reason.trim()
+                ? "Submit vote (comment pending review)"
+                : "Submit your vote permanently"}
           </button>
         </form>
       )}

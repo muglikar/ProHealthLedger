@@ -1606,6 +1606,17 @@ a:hover {
   font-weight: 500;
 }
 
+.audit-comment-pending {
+  color: var(--accent);
+  font-style: italic;
+  font-size: 0.82rem;
+}
+
+.form-notice-mod {
+  font-weight: 600;
+  color: var(--accent);
+}
+
 .audit-table th {
   background: #f8f4ee;
   text-align: left;
@@ -2920,4 +2931,64 @@ a:hover {
     border-color: rgba(96, 165, 250, 0.5);
   }
 
+}
+
+/* ── Admin Moderation Page ── */
+.mod-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.mod-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+}
+
+.mod-card-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.mod-card-meta {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.mod-card-reason {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  background: var(--bg-warm);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.mod-card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-sm {
+  padding: 6px 16px;
+  font-size: 0.82rem;
+}
+
+.mod-btn-reject {
+  color: var(--red);
+  border-color: var(--red-border);
+}
+
+.mod-btn-reject:hover {
+  background: var(--red-bg);
 }
