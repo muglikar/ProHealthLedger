@@ -51,14 +51,14 @@ function ShareModal({ data, onClose, firstPerson = false }) {
   const displayName = formatProfessionalDisplayName(data.profile_slug, data.public_name);
   const shareText = buildShareText(displayName, data.profile_slug, firstPerson);
   const profileUrl = `${SITE_URL}/profiles?search=${encodeURIComponent(data.profile_slug)}`;
-  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`;
 
   const handlePostToLinkedIn = useCallback(async () => {
+    const fullText = shareText + "\n\n" + profileUrl;
     try {
-      await navigator.clipboard.writeText(shareText);
+      await navigator.clipboard.writeText(fullText);
     } catch {
       const ta = document.createElement("textarea");
-      ta.value = shareText;
+      ta.value = fullText;
       ta.style.position = "fixed";
       ta.style.opacity = "0";
       document.body.appendChild(ta);
@@ -67,9 +67,9 @@ function ShareModal({ data, onClose, firstPerson = false }) {
       document.body.removeChild(ta);
     }
     setCopied(true);
-    window.open(linkedinShareUrl, "_blank", "noopener,noreferrer");
+    window.open("https://www.linkedin.com/feed/", "_blank", "noopener,noreferrer");
     setTimeout(() => setCopied(false), 3000);
-  }, [shareText, linkedinShareUrl]);
+  }, [shareText, profileUrl]);
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === "Escape") onClose(); };
@@ -87,9 +87,9 @@ function ShareModal({ data, onClose, firstPerson = false }) {
         </div>
         <div className="share-modal-body">
           <p className="share-modal-hint">
-            Clicking &ldquo;Copy &amp; Post to LinkedIn&rdquo; will copy this
-            text and open LinkedIn with the profile preview card. Paste the
-            text into your post — the preview card provides the link.
+            Clicking the button below will copy this text (with the profile
+            link) and open LinkedIn. Paste into the compose box to create
+            your post with a large preview card.
           </p>
           <div className="share-modal-text">{shareText}</div>
           <div className="share-modal-links">
