@@ -1396,30 +1396,31 @@ a:hover {
   display: none;
 }
 
-.audit-scroll-track {
-  position: relative;
+.audit-scroll-hint {
   width: 100%;
-  height: 20px;
-  background: var(--bg);
+  padding: 4px 8px;
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-bg);
   border: 1px solid var(--border);
   border-bottom: none;
   border-radius: var(--radius) var(--radius) 0 0;
-  touch-action: pan-x;
-  cursor: pointer;
-  overflow: hidden;
+  letter-spacing: 0.05em;
+  user-select: none;
 }
 
-.audit-scroll-track-inner {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.62rem;
-  color: var(--text-muted);
-  letter-spacing: 0.08em;
-  user-select: none;
-  pointer-events: none;
+.audit-scroll-track {
+  position: relative;
+  width: 100%;
+  height: 18px;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-bottom: none;
+  touch-action: pan-x;
+  cursor: pointer;
 }
 
 .audit-scroll-thumb {
@@ -1428,9 +1429,10 @@ a:hover {
   bottom: 3px;
   min-width: 30px;
   background: var(--accent);
-  border-radius: 7px;
-  opacity: 0.85;
+  border-radius: 6px;
+  opacity: 0.9;
   transition: opacity 0.15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .audit-scroll-thumb:hover,
@@ -1458,6 +1460,10 @@ a:hover {
   table-layout: auto;
 }
 
+.audit-col-vote-short {
+  display: none;
+}
+
 @media (max-width: 640px) {
   .audit-table {
     min-width: 0;
@@ -1466,11 +1472,11 @@ a:hover {
   }
 
   .audit-col-vote-long {
-    display: none;
+    display: none !important;
   }
 
   .audit-col-vote-short {
-    display: inline;
+    display: inline !important;
   }
 
   .audit-table th.audit-col-prof,
@@ -1516,10 +1522,6 @@ a:hover {
 .audit-comment-empty {
   color: var(--text-secondary);
   font-weight: 500;
-}
-
-.audit-col-vote-short {
-  display: none;
 }
 
 .audit-table th {
