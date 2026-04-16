@@ -64,6 +64,9 @@ export default function SubmitPage() {
     return (
       <section className="submit-hero">
         <h1>Share Your Experience</h1>
+        <p className="submit-hero-sub">
+          <Link href="/">What the heck is this?</Link>
+        </p>
         <p>
           Sign in to submit your vote. We verify your identity so each person
           can only vote once per professional — no duplicates allowed.
@@ -122,6 +125,9 @@ export default function SubmitPage() {
     <>
       <section className="submit-hero">
         <h1>Share Your Experience</h1>
+        <p className="submit-hero-sub">
+          <Link href="/">What the heck is this?</Link>
+        </p>
         <p>
           Signed in as <strong>{session.displayName || session.userId}</strong>. Your vote is
           permanent, public, and tied to your identity.
@@ -205,7 +211,7 @@ export default function SubmitPage() {
               placeholder="A short, professional note about your experience."
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              rows={3}
+              rows={2}
             />
           </div>
 
