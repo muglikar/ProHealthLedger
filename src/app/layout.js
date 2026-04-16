@@ -35,7 +35,7 @@ export const metadata = {
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
     url: siteUrl,
     siteName: "Professional Health Ledger",
-    type: "website",
+    type: "article",
     images: [
       {
         url: `${siteUrl}/og-banner.png`,
