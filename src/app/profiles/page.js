@@ -33,21 +33,15 @@ function countVotes(submissions) {
 }
 
 function buildShareText(displayName, profileSlug, firstPerson = false) {
-  const profileLink = `${SITE_URL}/profiles?search=${encodeURIComponent(profileSlug)}`;
-  const submitLink = `${SITE_URL}/submit`;
   if (firstPerson) {
     return (
       `I've been vouched for i.e. positively reviewed on Pro-Health Ledger.\n\n` +
-      `Please check it out and share your experiences too!\n\n` +
-      `Share your experience: ${submitLink}\n\n` +
-      `See my Pro-Health Ledger Profile: ${profileLink}`
+      `Please check it out and share your experiences too!`
     );
   }
   return (
     `Hey ${displayName}, I have vouched for you i.e. positively reviewed you on Pro-Health Ledger.\n\n` +
-    `Please check it out and share your experiences too!\n\n` +
-    `Share your experience: ${submitLink}\n\n` +
-    `See your Pro-Health Ledger Profile: ${profileLink}`
+    `Please check it out and share your experiences too!`
   );
 }
 
@@ -92,9 +86,9 @@ function ShareModal({ data, onClose, firstPerson = false }) {
         </div>
         <div className="share-modal-body">
           <p className="share-modal-hint">
-            Review the text below. Clicking &ldquo;Copy &amp; Post to LinkedIn&rdquo; will
-            copy this text to your clipboard and open LinkedIn with the profile
-            preview card. Paste the copied text into your post.
+            Clicking &ldquo;Copy &amp; Post to LinkedIn&rdquo; will copy this
+            text and open LinkedIn with the profile preview card. Paste the
+            text into your post — the preview card provides the link.
           </p>
           <div className="share-modal-text">{shareText}</div>
           <div className="share-modal-links">
