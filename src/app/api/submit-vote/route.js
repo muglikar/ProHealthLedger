@@ -114,12 +114,15 @@ export async function POST(req) {
     `*This vote was submitted programmatically and pre-validated (Karma Rule checked, duplicate vote checked).*`,
   ].join("\n");
 
+  const issueLabels = ["vote"];
+  if (reason && reason.trim()) issueLabels.push("moderation-pending");
+
   let issue;
   try {
     issue = await createIssue(
       `[${vote.toUpperCase()}] ${titleName}`,
       issueBody,
-      ["vote"]
+      issueLabels
     );
   } catch {
     return Response.json(
@@ -131,13 +134,14 @@ export async function POST(req) {
   const issueNumber = issue.number;
   const reasonTrimmed =
     typeof reason === "string" && reason.trim() ? reason.trim() : "";
+  const needsModeration = reasonTrimmed.length > 0;
   const submission = {
     user: userId,
     display_name: displayName,
     vote,
     issue: issueNumber,
     date: today,
-    ...(reasonTrimmed ? { reason: reasonTrimmed } : {}),
+    ...(reasonTrimmed ? { reason: reasonTrimmed, reason_pending: true } : {}),
   };
 
   let profile = profileForTitle;
@@ -202,7 +206,10 @@ export async function POST(req) {
 
   return Response.json({
     success: true,
-    message: `Your ${vote === "yes" ? "positive" : "negative"} vote for ${titleName} has been recorded permanently.`,
+    message: needsModeration
+      ? `Your ${vote === "yes" ? "positive" : "negative"} vote for ${titleName} has been recorded permanently. Your comment is pending admin review before it will be publicly visible.`
+      : `Your ${vote === "yes" ? "positive" : "negative"} vote for ${titleName} has been recorded permanently.`,
+    moderation: needsModeration,
     profile: {
       slug,
       votes: profile.votes,

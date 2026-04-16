@@ -289,7 +289,9 @@ function ProfilesContent() {
                                 ) : <span>—</span>}
                               </td>
                               <td className="profile-vouch-comment">
-                                {s.reason || s.comment || "—"}
+                                {s.reason_pending
+                                  ? <span className="audit-comment-pending">Pending review</span>
+                                  : (s.reason || s.comment || "—")}
                               </td>
                               <td>{voterDisplay(s)}</td>
                               <td>

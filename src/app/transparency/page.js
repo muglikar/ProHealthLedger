@@ -331,6 +331,9 @@ export default function TransparencyPage() {
   const repoBase = "https://github.com/muglikar/ProHealthLedger";
 
   function commentCell(submission) {
+    if (submission.reason_pending) {
+      return <span className="audit-comment-pending">Pending review</span>;
+    }
     const raw =
       typeof submission.reason === "string" ? submission.reason.trim() : "";
     if (!raw) {
