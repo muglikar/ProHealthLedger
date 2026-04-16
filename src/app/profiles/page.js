@@ -42,8 +42,6 @@ function ProfilesContent() {
   const [profiles, setProfiles] = useState([]);
   const [search, setSearch] = useState(initialSearch);
   const [loading, setLoading] = useState(true);
-  const [expandedSlug, setExpandedSlug] = useState(initialSearch || null);
-
   useEffect(() => {
     fetch("/api/profiles")
       .then((res) => res.json())
@@ -127,7 +125,6 @@ function ProfilesContent() {
             .map((profile) => {
               const { yes, no, total } = countVotes(profile.submissions);
               const deduped = dedupeSubmissions(profile.submissions);
-              const isExpanded = expandedSlug === profile.slug;
               return (
                 <div key={profile.slug || profile.linkedin_url} className="profile-card">
                   <div className="profile-slug">
@@ -156,22 +153,13 @@ function ProfilesContent() {
                   <div className="submission-count">
                     {total} vote
                     {total !== 1 ? "s" : ""} from the community
-                    {deduped.length > 0 && (
-                      <button
-                        type="button"
-                        className="profile-toggle-details"
-                        onClick={() => setExpandedSlug(isExpanded ? null : profile.slug)}
-                      >
-                        {isExpanded ? "Hide details ▲" : "View details ▼"}
-                      </button>
-                    )}
                   </div>
-                  {isExpanded && deduped.length > 0 && (
+                  {deduped.length > 0 && (
                     <div className="profile-vouch-details">
                       <table className="profile-vouch-table">
                         <thead>
                           <tr>
-                            <th>Vote</th>
+                            <th>Would work with again?</th>
                             <th>Comment</th>
                             <th>Date</th>
                           </tr>
@@ -195,6 +183,7 @@ function ProfilesContent() {
                     </div>
                   )}
                 </div>
+
               );
             })}
         </div>

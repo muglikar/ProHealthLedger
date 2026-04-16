@@ -2668,8 +2668,9 @@ a:hover {
   width: min(520px, calc(100vw - 32px));
   max-height: calc(100dvh - 48px);
   overflow-y: auto;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid #e8e0d4;
   border-radius: var(--radius);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
   display: flex;
@@ -2681,13 +2682,13 @@ a:hover {
   align-items: center;
   justify-content: space-between;
   padding: 18px 22px 14px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #e8e0d4;
 }
 
 .share-modal-header h3 {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--text);
+  color: #1a1a1a;
   margin: 0;
 }
 
@@ -2701,7 +2702,7 @@ a:hover {
   border: none;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--text-muted);
+  color: #888888;
   font-size: 1.1rem;
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
@@ -2709,8 +2710,8 @@ a:hover {
 }
 
 .share-modal-close:hover {
-  background: var(--accent-bg);
-  color: var(--text);
+  background: rgba(180, 83, 9, 0.07);
+  color: #1a1a1a;
 }
 
 .share-modal-body {
@@ -2722,19 +2723,19 @@ a:hover {
 
 .share-modal-hint {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: #555555;
   line-height: 1.5;
   margin: 0;
 }
 
 .share-modal-text {
   background: #f8f4ee;
-  border: 1px solid var(--border);
+  border: 1px solid #e8e0d4;
   border-radius: var(--radius-sm);
   padding: 14px 16px;
   font-size: 0.85rem;
   line-height: 1.55;
-  color: var(--text);
+  color: #1a1a1a;
   white-space: pre-wrap;
   word-break: break-word;
   font-family: var(--font-sans);
@@ -2742,7 +2743,7 @@ a:hover {
 
 .share-modal-links {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: #888888;
   display: flex;
   flex-wrap: wrap;
   gap: 4px 6px;
@@ -2751,7 +2752,7 @@ a:hover {
 
 .share-modal-link-label {
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #555555;
 }
 
 .share-modal-links a {
@@ -2763,16 +2764,16 @@ a:hover {
   display: flex;
   gap: 10px;
   padding: 14px 22px 20px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid #e8e0d4;
 }
 
 .btn-copy-share {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--bg-card);
-  color: var(--text);
-  border: 1px solid var(--border);
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid #e8e0d4;
   padding: 10px 18px;
   border-radius: var(--radius-sm);
   font-size: 0.86rem;
@@ -2783,24 +2784,27 @@ a:hover {
 }
 
 .btn-copy-share:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--border-hover);
+  background: #fffbf5;
+  border-color: #d4c4ac;
 }
 
 .btn-linkedin-open {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   background: #0a66c2;
   color: #ffffff !important;
   border: none;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: var(--radius-sm);
-  font-size: 0.86rem;
+  font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
   text-decoration: none !important;
+  font-family: var(--font-sans);
   transition: background 0.15s, transform 0.12s;
+  width: 100%;
 }
 
 .btn-linkedin-open:hover {
