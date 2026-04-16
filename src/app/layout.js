@@ -38,7 +38,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: `${siteUrl}/opengraph-image`,
+        url: `${siteUrl}/og-banner.png`,
         width: 1200,
         height: 630,
         alt: "Professional Health Ledger — Know Who You're Working With",
@@ -50,7 +50,7 @@ export const metadata = {
     title: "Professional Health Ledger",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    images: [`${siteUrl}/opengraph-image`],
+    images: [`${siteUrl}/og-banner.png`],
   },
 };
 
