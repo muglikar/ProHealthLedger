@@ -1,7 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
+
+function dedupeSubmissions(submissions) {
+  if (!Array.isArray(submissions)) return [];
+  const map = new Map();
+  for (const s of submissions) {
+    const key =
+      s.issue != null && s.issue !== ""
+        ? `issue:${s.issue}`
+        : `row:${s.date}:${String(s.user || "")}:${s.vote}`;
+    if (!map.has(key)) map.set(key, s);
+  }
+  return [...map.values()];
+}
+
+function countVotes(submissions) {
+  const deduped = dedupeSubmissions(submissions);
+  let yes = 0;
+  let no = 0;
+  for (const s of deduped) {
+    if (s.vote === "yes") yes++;
+    else if (s.vote === "no") no++;
+  }
+  return { yes, no, total: yes + no };
+}
 
 export default function ProfilesPage() {
   const [profiles, setProfiles] = useState([]);
@@ -83,16 +107,13 @@ export default function ProfilesPage() {
       ) : (
         <div className="profile-grid">
           {filtered
-            .sort(
-              (a, b) =>
-                (b.votes?.yes ?? 0) +
-                (b.votes?.no ?? 0) -
-                ((a.votes?.yes ?? 0) + (a.votes?.no ?? 0))
-            )
+            .sort((a, b) => {
+              const va = countVotes(a.submissions);
+              const vb = countVotes(b.submissions);
+              return vb.total - va.total;
+            })
             .map((profile) => {
-              const yes = profile.votes?.yes ?? 0;
-              const no = profile.votes?.no ?? 0;
-              const total = yes + no;
+              const { yes, no, total } = countVotes(profile.submissions);
               return (
                 <div key={profile.slug || profile.linkedin_url} className="profile-card">
                   <div className="profile-slug">
