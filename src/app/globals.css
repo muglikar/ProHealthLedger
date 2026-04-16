@@ -1377,7 +1377,7 @@ a:hover {
 
 .audit-table {
   width: 100%;
-  min-width: 920px;
+  min-width: 980px;
   border-collapse: collapse;
   font-size: 0.88rem;
   background: var(--bg-card);
@@ -2377,6 +2377,216 @@ a:hover {
   }
 }
 
+/* ── LinkedIn Share Button (in audit table) ── */
+.share-linkedin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-sm);
+  background: #eff6ff;
+  color: #0a66c2;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s, border-color 0.15s;
+}
+
+.share-linkedin-btn:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+.share-linkedin-btn:active {
+  transform: translateY(0);
+}
+
+/* ── Share Modal ── */
+.share-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.share-modal {
+  position: fixed;
+  z-index: 10051;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+}
+
+.share-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.share-modal-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.share-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  flex-shrink: 0;
+}
+
+.share-modal-close:hover {
+  background: var(--accent-bg);
+  color: var(--text);
+}
+
+.share-modal-body {
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.share-modal-hint {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.share-modal-text {
+  background: #f8f4ee;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-sans);
+}
+
+.share-modal-links {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  align-items: baseline;
+}
+
+.share-modal-link-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.share-modal-links a {
+  word-break: break-all;
+  font-size: 0.78rem;
+}
+
+.share-modal-actions {
+  display: flex;
+  gap: 10px;
+  padding: 14px 22px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-copy-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-copy-share:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.btn-linkedin-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0a66c2;
+  color: #ffffff !important;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none !important;
+  transition: background 0.15s, transform 0.12s;
+}
+
+.btn-linkedin-open:hover {
+  background: #004182;
+  transform: translateY(-1px);
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+@media (max-width: 480px) {
+  .share-modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-copy-share,
+  .btn-linkedin-open {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .share-modal-header {
+    padding: 14px 16px 12px;
+  }
+
+  .share-modal-body {
+    padding: 14px 16px;
+  }
+
+  .share-modal-actions {
+    padding: 12px 16px 16px;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .share-section {
     background: rgba(30, 58, 138, 0.15);
@@ -2407,5 +2617,67 @@ a:hover {
 
   .ref-code {
     background: rgba(180, 83, 9, 0.2);
+  }
+
+  .share-linkedin-btn {
+    background: rgba(10, 102, 194, 0.15);
+    border-color: rgba(10, 102, 194, 0.35);
+    color: #60a5fa;
+  }
+
+  .share-linkedin-btn:hover {
+    background: rgba(10, 102, 194, 0.25);
+    border-color: rgba(96, 165, 250, 0.5);
+  }
+
+  .share-modal {
+    background: #1c1c1e;
+    border-color: #48484a;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+  }
+
+  .share-modal-header {
+    border-bottom-color: #48484a;
+  }
+
+  .share-modal-header h3 {
+    color: #f5f5f7;
+  }
+
+  .share-modal-close {
+    color: #8e8e93;
+  }
+
+  .share-modal-close:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f5f5f7;
+  }
+
+  .share-modal-text {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: #48484a;
+    color: #e5e5e7;
+  }
+
+  .share-modal-actions {
+    border-top-color: #48484a;
+  }
+
+  .btn-copy-share {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #48484a;
+    color: #e5e5e7;
+  }
+
+  .btn-copy-share:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .btn-linkedin-open {
+    background: #0a66c2;
+  }
+
+  .btn-linkedin-open:hover {
+    background: #0077b5;
   }
 }
