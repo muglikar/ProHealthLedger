@@ -1419,7 +1419,24 @@ a:hover {
 @media (max-width: 640px) {
   .audit-table {
     min-width: 0;
-    width: max-content;
+  }
+
+  .audit-table th.audit-col-vote {
+    white-space: normal;
+    width: 65px;
+  }
+
+  .audit-table th.audit-col-share,
+  .audit-table td.audit-col-share {
+    width: 36px;
+    text-align: center;
+  }
+
+  .audit-table th.audit-col-prof,
+  .audit-table td.audit-col-prof {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 

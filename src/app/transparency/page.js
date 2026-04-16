@@ -348,9 +348,9 @@ export default function TransparencyPage() {
             <table className="audit-table">
               <thead>
                 <tr>
-                  <th>Professional</th>
-                  <th>Would work with again?</th>
-                  <th>Share</th>
+                  <th className="audit-col-prof">Professional</th>
+                  <th className="audit-col-vote">Would work with again?</th>
+                  <th className="audit-col-share">Share</th>
                   <th className="audit-table-col-comment">Comment</th>
                   <th>Submitted By</th>
                   <th>Record</th>
@@ -366,7 +366,7 @@ export default function TransparencyPage() {
                         : `${v.profile_slug}-${v.date}-${v.user}-${v.vote}`
                     }
                   >
-                    <td>
+                    <td className="audit-col-prof">
                       <a
                         href={v.linkedin_url}
                         target="_blank"
@@ -385,7 +385,7 @@ export default function TransparencyPage() {
                         {v.vote === "yes" ? "Yes" : "No"}
                       </span>
                     </td>
-                    <td>
+                    <td className="audit-col-share">
                       {v.vote === "yes" && currentUserId && currentUserId === v.user ? (
                         <button
                           type="button"
