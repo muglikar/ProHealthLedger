@@ -162,45 +162,104 @@ export default function TransparencyPage() {
   const [shareModalData, setShareModalData] = useState(null);
   const [scrolledEnd, setScrolledEnd] = useState(false);
   const tableWrapRef = useRef(null);
-  const topScrollRef = useRef(null);
-  const syncing = useRef(false);
+  const trackRef = useRef(null);
+  const thumbRef = useRef(null);
+
+  const updateThumb = useCallback(() => {
+    const el = tableWrapRef.current;
+    const track = trackRef.current;
+    const thumb = thumbRef.current;
+    if (!el || !track || !thumb) return;
+    const { scrollWidth, clientWidth, scrollLeft } = el;
+    if (scrollWidth <= clientWidth) {
+      track.style.display = "none";
+      return;
+    }
+    track.style.display = "";
+    const trackW = track.clientWidth;
+    const ratio = clientWidth / scrollWidth;
+    const thumbW = Math.max(30, Math.round(trackW * ratio));
+    const maxLeft = trackW - thumbW;
+    const thumbLeft = Math.round((scrollLeft / (scrollWidth - clientWidth)) * maxLeft);
+    thumb.style.width = thumbW + "px";
+    thumb.style.left = thumbLeft + "px";
+    setScrolledEnd(scrollLeft + clientWidth >= scrollWidth - 4);
+  }, []);
 
   useEffect(() => {
     const el = tableWrapRef.current;
-    const top = topScrollRef.current;
-    if (!el) return;
+    const track = trackRef.current;
+    const thumb = thumbRef.current;
+    if (!el || !track) return;
 
-    const check = () => {
-      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
-      setScrolledEnd(atEnd);
-      if (top) top.firstChild.style.width = el.scrollWidth + "px";
-    };
-    check();
+    el.addEventListener("scroll", updateThumb, { passive: true });
+    window.addEventListener("resize", updateThumb);
+    const raf = requestAnimationFrame(updateThumb);
 
-    const syncFromTable = () => {
-      if (syncing.current) return;
-      syncing.current = true;
-      if (top) top.scrollLeft = el.scrollLeft;
-      check();
-      syncing.current = false;
-    };
-    const syncFromTop = () => {
-      if (syncing.current) return;
-      syncing.current = true;
-      el.scrollLeft = top.scrollLeft;
-      check();
-      syncing.current = false;
+    let dragging = false;
+    let startX = 0;
+    let startScrollLeft = 0;
+
+    const onDown = (e) => {
+      e.preventDefault();
+      dragging = true;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      startX = clientX;
+      startScrollLeft = el.scrollLeft;
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+      document.addEventListener("touchmove", onMove, { passive: false });
+      document.addEventListener("touchend", onUp);
     };
 
-    el.addEventListener("scroll", syncFromTable, { passive: true });
-    if (top) top.addEventListener("scroll", syncFromTop, { passive: true });
-    window.addEventListener("resize", check);
+    const onMove = (e) => {
+      if (!dragging) return;
+      e.preventDefault();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const dx = clientX - startX;
+      const { scrollWidth, clientWidth } = el;
+      const trackW = track.clientWidth;
+      const ratio = clientWidth / scrollWidth;
+      const thumbW = Math.max(30, Math.round(trackW * ratio));
+      const maxThumbLeft = trackW - thumbW;
+      const scrollRange = scrollWidth - clientWidth;
+      el.scrollLeft = startScrollLeft + (dx / maxThumbLeft) * scrollRange;
+    };
+
+    const onUp = () => {
+      dragging = false;
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onUp);
+    };
+
+    if (thumb) {
+      thumb.addEventListener("mousedown", onDown);
+      thumb.addEventListener("touchstart", onDown, { passive: false });
+    }
+
+    const onTrackClick = (e) => {
+      if (e.target === thumb) return;
+      const rect = track.getBoundingClientRect();
+      const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      const { scrollWidth, clientWidth } = el;
+      el.scrollLeft = (clickX / rect.width) * (scrollWidth - clientWidth);
+    };
+    track.addEventListener("click", onTrackClick);
+
     return () => {
-      el.removeEventListener("scroll", syncFromTable);
-      if (top) top.removeEventListener("scroll", syncFromTop);
-      window.removeEventListener("resize", check);
+      cancelAnimationFrame(raf);
+      el.removeEventListener("scroll", updateThumb);
+      window.removeEventListener("resize", updateThumb);
+      if (thumb) {
+        thumb.removeEventListener("mousedown", onDown);
+        thumb.removeEventListener("touchstart", onDown);
+      }
+      track.removeEventListener("click", onTrackClick);
+      onUp();
     };
-  }, [loading]);
+  }, [loading, updateThumb]);
 
   useEffect(() => {
     fetch("/api/profiles")
@@ -366,8 +425,9 @@ export default function TransparencyPage() {
           <p className="audit-table-hint">
             Scroll the table horizontally to see every column, including comments.
           </p>
-          <div className="audit-top-scroll" ref={topScrollRef}>
-            <div className="audit-top-scroll-inner" />
+          <div className="audit-scroll-track" ref={trackRef}>
+            <div className="audit-scroll-track-inner">← drag or tap to scroll →</div>
+            <div className="audit-scroll-thumb" ref={thumbRef} />
           </div>
           <div className={`audit-table-outer${scrolledEnd ? " scrolled-end" : ""}`}>
           <div className="audit-table-wrap" ref={tableWrapRef}>
@@ -377,7 +437,7 @@ export default function TransparencyPage() {
                   <th className="audit-col-prof">Professional</th>
                   <th className="audit-col-vote">
                     <span className="audit-col-vote-long">Would work with again?</span>
-                    <span className="audit-col-vote-short">Work again?</span>
+                    <span className="audit-col-vote-short">Would work again?</span>
                   </th>
                   <th className="audit-col-share">Share</th>
                   <th className="audit-table-col-comment">Comment</th>
@@ -407,7 +467,7 @@ export default function TransparencyPage() {
                         )}
                       </a>
                     </td>
-                    <td>
+                    <td className="audit-col-vote">
                       <span
                         className={`vote-pill ${v.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
                       >
