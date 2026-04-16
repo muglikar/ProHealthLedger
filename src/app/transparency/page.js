@@ -54,15 +54,15 @@ function buildShareText(displayName, profileSlug, firstPerson = false) {
     return (
       `I've been vouched for i.e. positively reviewed on Pro-Health Ledger.\n\n` +
       `Please check it out and share your experiences too!\n\n` +
-      `See my Pro-Health Ledger Profile: ${profileLink}\n\n` +
-      `Share your experience: ${submitLink}`
+      `Share your experience: ${submitLink}\n\n` +
+      `See my Pro-Health Ledger Profile: ${profileLink}`
     );
   }
   return (
     `Hey ${displayName}, I have vouched for you i.e. positively reviewed you on Pro-Health Ledger.\n\n` +
     `Please check it out and share your experiences too!\n\n` +
-    `See your Pro-Health Ledger Profile: ${profileLink}\n\n` +
-    `Share your experience: ${submitLink}`
+    `Share your experience: ${submitLink}\n\n` +
+    `See your Pro-Health Ledger Profile: ${profileLink}`
   );
 }
 
