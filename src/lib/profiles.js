@@ -12,7 +12,7 @@ export function formatProfessionalDisplayName(slug, publicName) {
   if (!slug || typeof slug !== "string") return "";
 
   let s = slug.trim().toLowerCase();
-  s = s.replace(/-?\d+$/u, "");
+  s = s.replace(/(-\d[\da-z]*)+$/u, "");
   const words = s.split("-").filter(Boolean);
   if (words.length === 0) return "";
   return words
