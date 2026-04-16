@@ -162,19 +162,42 @@ export default function TransparencyPage() {
   const [shareModalData, setShareModalData] = useState(null);
   const [scrolledEnd, setScrolledEnd] = useState(false);
   const tableWrapRef = useRef(null);
+  const topScrollRef = useRef(null);
+  const syncing = useRef(false);
 
   useEffect(() => {
     const el = tableWrapRef.current;
+    const top = topScrollRef.current;
     if (!el) return;
+
     const check = () => {
       const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
       setScrolledEnd(atEnd);
+      if (top) top.firstChild.style.width = el.scrollWidth + "px";
     };
     check();
-    el.addEventListener("scroll", check, { passive: true });
+
+    const syncFromTable = () => {
+      if (syncing.current) return;
+      syncing.current = true;
+      if (top) top.scrollLeft = el.scrollLeft;
+      check();
+      syncing.current = false;
+    };
+    const syncFromTop = () => {
+      if (syncing.current) return;
+      syncing.current = true;
+      el.scrollLeft = top.scrollLeft;
+      check();
+      syncing.current = false;
+    };
+
+    el.addEventListener("scroll", syncFromTable, { passive: true });
+    if (top) top.addEventListener("scroll", syncFromTop, { passive: true });
     window.addEventListener("resize", check);
     return () => {
-      el.removeEventListener("scroll", check);
+      el.removeEventListener("scroll", syncFromTable);
+      if (top) top.removeEventListener("scroll", syncFromTop);
       window.removeEventListener("resize", check);
     };
   }, [loading]);
@@ -343,6 +366,9 @@ export default function TransparencyPage() {
           <p className="audit-table-hint">
             Scroll the table horizontally to see every column, including comments.
           </p>
+          <div className="audit-top-scroll" ref={topScrollRef}>
+            <div className="audit-top-scroll-inner" />
+          </div>
           <div className={`audit-table-outer${scrolledEnd ? " scrolled-end" : ""}`}>
           <div className="audit-table-wrap" ref={tableWrapRef}>
             <table className="audit-table">
