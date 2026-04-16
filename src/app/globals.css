@@ -1416,6 +1416,13 @@ a:hover {
   table-layout: auto;
 }
 
+@media (max-width: 640px) {
+  .audit-table {
+    min-width: 0;
+    width: max-content;
+  }
+}
+
 .audit-table th.audit-table-col-comment,
 .audit-table td.audit-table-col-comment {
   min-width: 160px;
