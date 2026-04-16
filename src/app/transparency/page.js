@@ -47,25 +47,33 @@ function compareByDateThenIssue(a, b) {
   return (Number(b.issue) || 0) - (Number(a.issue) || 0);
 }
 
-function buildShareText(displayName, profileSlug) {
+function buildShareText(displayName, profileSlug, firstPerson = false) {
   const profileLink = `${SITE_URL}/profiles?search=${encodeURIComponent(profileSlug)}`;
   const submitLink = `${SITE_URL}/submit`;
+  if (firstPerson) {
+    return (
+      `I've been vouched for (i.e. positively reviewed) on Pro-Health Ledger! ` +
+      `Check it out and share your experiences too!\n\n` +
+      `See my profile: ${profileLink}\n` +
+      `Share your experience: ${submitLink}`
+    );
+  }
   return (
-    `Hey, I have vouched / positively reviewed you ${displayName} on Pro-Health Ledger. ` +
-    `Please check out and share your experiences too.\n\n` +
-    `See their profile: ${profileLink}\n` +
+    `Hey ${displayName}, I have vouched for you (i.e. positively reviewed) on Pro-Health Ledger. ` +
+    `Please check it out and share your experiences too!\n\n` +
+    `See your profile: ${profileLink}\n` +
     `Share your experience: ${submitLink}`
   );
 }
 
-function ShareModal({ data, onClose }) {
+function ShareModal({ data, onClose, firstPerson = false }) {
   const [copied, setCopied] = useState(false);
 
   const displayName = formatProfessionalDisplayName(
     data.profile_slug,
     data.public_name
   );
-  const shareText = buildShareText(displayName, data.profile_slug);
+  const shareText = buildShareText(displayName, data.profile_slug, firstPerson);
   const profileUrl = `${SITE_URL}/profiles?search=${encodeURIComponent(data.profile_slug)}`;
   const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`;
 
@@ -153,9 +161,14 @@ function ShareModal({ data, onClose }) {
   );
 }
 
+function normalizeNameForMatch(name) {
+  return (name || "").toLowerCase().replace(/[^a-z]/g, "");
+}
+
 export default function TransparencyPage() {
   const { data: session } = useSession();
   const currentUserId = session?.userId || "";
+  const currentDisplayName = session?.displayName || "";
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortMode, setSortMode] = useState("flags");
@@ -472,18 +485,31 @@ export default function TransparencyPage() {
                       </span>
                     </td>
                     <td className="audit-col-share">
-                      {v.vote === "yes" && currentUserId && currentUserId === v.user ? (
-                        <button
-                          type="button"
-                          className="share-linkedin-btn"
-                          title="Share this vouch on LinkedIn"
-                          onClick={() => setShareModalData(v)}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                          </svg>
-                        </button>
-                      ) : null}
+                      {(() => {
+                        if (v.vote !== "yes" || !currentUserId) return null;
+                        const isReviewer = currentUserId === v.user;
+                        const profName = normalizeNameForMatch(
+                          formatProfessionalDisplayName(v.profile_slug, v.public_name)
+                        );
+                        const isReviewee =
+                          !isReviewer &&
+                          currentDisplayName &&
+                          profName.length > 2 &&
+                          normalizeNameForMatch(currentDisplayName) === profName;
+                        if (!isReviewer && !isReviewee) return null;
+                        return (
+                          <button
+                            type="button"
+                            className="share-linkedin-btn"
+                            title={isReviewee ? "Share your vouch on LinkedIn" : "Share this vouch on LinkedIn"}
+                            onClick={() => setShareModalData({ ...v, _firstPerson: isReviewee })}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                          </button>
+                        );
+                      })()}
                     </td>
                     <td className="audit-table-col-comment">{commentCell(v)}</td>
                     <td>{voterDisplay(v)}</td>
@@ -511,6 +537,7 @@ export default function TransparencyPage() {
         <ShareModal
           data={shareModalData}
           onClose={() => setShareModalData(null)}
+          firstPerson={!!shareModalData._firstPerson}
         />
       )}
     </>

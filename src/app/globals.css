@@ -1140,6 +1140,63 @@ a:hover {
 .submission-count {
   color: var(--text-muted);
   font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-toggle-details {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 0;
+  font-family: var(--font-sans);
+}
+
+.profile-toggle-details:hover {
+  text-decoration: underline;
+}
+
+.profile-vouch-details {
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.profile-vouch-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.profile-vouch-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 4px 8px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-vouch-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f0ebe3;
+  color: var(--text);
+  vertical-align: top;
+}
+
+.profile-vouch-comment {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  max-width: 280px;
+  word-break: break-word;
 }
 
 /* ── Leaderboard ── */
