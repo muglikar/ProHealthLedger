@@ -1396,31 +1396,29 @@ a:hover {
   display: none;
 }
 
-.audit-scroll-hint {
+.audit-scroll-track {
+  position: relative;
   width: 100%;
-  padding: 4px 8px;
-  text-align: center;
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: var(--accent);
+  height: 22px;
   background: var(--accent-bg);
   border: 1px solid var(--border);
   border-bottom: none;
   border-radius: var(--radius) var(--radius) 0 0;
-  letter-spacing: 0.05em;
-  user-select: none;
-}
-
-.audit-scroll-track {
-  position: relative;
-  width: 100%;
-  height: 18px;
-  background: var(--bg);
-  border-left: 1px solid var(--border);
-  border-right: 1px solid var(--border);
-  border-bottom: none;
   touch-action: pan-x;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.audit-scroll-track-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  user-select: none;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .audit-scroll-thumb {
@@ -1430,14 +1428,14 @@ a:hover {
   min-width: 30px;
   background: var(--accent);
   border-radius: 6px;
-  opacity: 0.9;
+  opacity: 0.35;
   transition: opacity 0.15s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  z-index: 2;
 }
 
 .audit-scroll-thumb:hover,
 .audit-scroll-thumb:active {
-  opacity: 1;
+  opacity: 0.55;
 }
 
 .audit-table-wrap {
@@ -1460,23 +1458,11 @@ a:hover {
   table-layout: auto;
 }
 
-.audit-col-vote-short {
-  display: none;
-}
-
 @media (max-width: 640px) {
   .audit-table {
     min-width: 0;
     width: max-content;
     table-layout: fixed;
-  }
-
-  .audit-col-vote-long {
-    display: none !important;
-  }
-
-  .audit-col-vote-short {
-    display: inline !important;
   }
 
   .audit-table th.audit-col-prof,
@@ -1489,7 +1475,7 @@ a:hover {
 
   .audit-table th.audit-col-vote,
   .audit-table td.audit-col-vote {
-    width: 90px;
+    width: 110px;
     white-space: normal;
     word-break: break-word;
   }
@@ -1535,6 +1521,7 @@ a:hover {
   letter-spacing: 0.03em;
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
+  vertical-align: top;
 }
 
 .audit-table td {
