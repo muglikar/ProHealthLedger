@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 
@@ -160,6 +160,24 @@ export default function TransparencyPage() {
   const [loading, setLoading] = useState(true);
   const [sortMode, setSortMode] = useState("flags");
   const [shareModalData, setShareModalData] = useState(null);
+  const [scrolledEnd, setScrolledEnd] = useState(false);
+  const tableWrapRef = useRef(null);
+
+  useEffect(() => {
+    const el = tableWrapRef.current;
+    if (!el) return;
+    const check = () => {
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+      setScrolledEnd(atEnd);
+    };
+    check();
+    el.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      el.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
+  }, [loading]);
 
   useEffect(() => {
     fetch("/api/profiles")
@@ -325,7 +343,8 @@ export default function TransparencyPage() {
           <p className="audit-table-hint">
             Scroll the table horizontally to see every column, including comments.
           </p>
-          <div className="audit-table-wrap">
+          <div className={`audit-table-outer${scrolledEnd ? " scrolled-end" : ""}`}>
+          <div className="audit-table-wrap" ref={tableWrapRef}>
             <table className="audit-table">
               <thead>
                 <tr>
@@ -399,6 +418,7 @@ export default function TransparencyPage() {
                 ))}
               </tbody>
             </table>
+          </div>
           </div>
         </>
       )}
