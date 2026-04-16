@@ -26,9 +26,8 @@
   --radius-sm: 8px;
   --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  /* --font-monda is set on <html> by next/font; must live on :root so var() resolves here. */
-  --font-sans: var(--font-monda), system-ui, -apple-system, sans-serif;
-  --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 *,
@@ -602,6 +601,7 @@ a:hover {
   padding: clamp(24px, 5vw, 40px) clamp(12px, 4vw, 24px) 80px;
   min-height: calc(100vh - var(--nav-height, 60px) - 220px);
   min-width: 0;
+  overflow-x: hidden;
 }
 
 /* ── Home: single column, first fold through karma (desktop fills viewport) ── */
@@ -621,6 +621,8 @@ a:hover {
   margin: 0 auto;
   min-width: 0;
   box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
 }
 
 @media (min-width: 768px) {
@@ -637,7 +639,6 @@ a:hover {
 
 .home-hero-block {
   width: 100%;
-  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -658,57 +659,45 @@ a:hover {
 }
 
 .home-above-fold h1 {
-  font-size: clamp(0.78rem, 2.4vw + 0.45rem, 2.05rem);
-  font-weight: 700;
+  font-size: clamp(1.25rem, 2.5vw + 0.5rem, 2.05rem);
+  font-weight: 800;
   line-height: 1.12;
   margin: 0 auto;
   color: var(--text);
-  text-align: center;
-  white-space: nowrap;
-  display: inline-block;
   max-width: 100%;
-}
-
-@media (max-width: 360px) {
-  .home-above-fold h1 {
-    white-space: normal;
-    max-width: 100%;
-    hyphens: auto;
-    overflow-wrap: anywhere;
-  }
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .hero-highlight {
   color: var(--accent);
-  font-weight: 700;
-  font-style: oblique 12deg;
+}
+
+.hero-highlight--emphasis {
+  font-weight: 800;
+  font-style: italic;
 }
 
 .hero-lede {
   font-size: clamp(0.88rem, 1.1vw + 0.75rem, 0.98rem);
   color: var(--text-secondary);
-  max-width: 38rem;
+  max-width: 100%;
   margin: 0 auto;
   line-height: 1.45;
-}
-
-.hero-lede-quote {
-  font-weight: 700;
-  color: var(--text);
-}
-
-.hero-lede-rest {
-  display: block;
-  margin-top: 0.4em;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .hero-trust-line {
   font-size: clamp(0.68rem, 0.5vw + 0.62rem, 0.75rem);
   color: var(--text-secondary);
-  max-width: 38rem;
+  max-width: 100%;
   margin: 0 auto;
   line-height: 1.35;
   opacity: 0.95;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .hero-actions {
@@ -1033,9 +1022,11 @@ a:hover {
 }
 
 .page-header h1 {
-  font-size: 1.7rem;
+  font-size: clamp(1.3rem, 4vw, 1.7rem);
   font-weight: 700;
   margin-bottom: 6px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .page-header p {
@@ -1227,8 +1218,10 @@ a:hover {
 }
 
 .submit-hero h1 {
-  font-size: 1.7rem;
+  font-size: clamp(1.3rem, 4vw, 1.7rem);
   margin-bottom: 12px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .submit-hero p {
@@ -1895,6 +1888,9 @@ a:hover {
   border-radius: var(--radius-sm);
   overflow: hidden;
   margin: 16px 0;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .legal-table th {
@@ -1987,6 +1983,28 @@ a:hover {
 
   .home-above-fold {
     gap: 0.5rem;
+    padding: 0 4px 12px;
+  }
+
+  .home-above-fold h1 {
+    font-size: clamp(1.15rem, 5vw, 1.5rem);
+    line-height: 1.2;
+    padding: 0 2px;
+  }
+
+  .hero-lede {
+    font-size: 0.88rem;
+    padding: 0 4px;
+  }
+
+  .hero-trust-line {
+    font-size: 0.7rem;
+    padding: 0 4px;
+  }
+
+  .hero-badge {
+    font-size: 0.68rem;
+    padding: 4px 12px;
   }
 
   .karma-box:not(.karma-box--fold) {
@@ -2005,10 +2023,24 @@ a:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .profile-card {
+    padding: 16px;
+  }
+
+  .profile-slug {
+    font-size: 0.95rem;
+  }
+
   .leaderboard-row {
     flex-wrap: wrap;
     gap: 10px;
     min-width: 0;
+    padding: 12px 14px;
+  }
+
+  .leaderboard-stats {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   .cta-box {
@@ -2025,8 +2057,16 @@ a:hover {
     grid-template-columns: 1fr;
   }
 
+  .why-section {
+    padding: 32px 0 24px;
+  }
+
   .submit-steps {
     grid-template-columns: 1fr;
+  }
+
+  .submit-hero {
+    padding: 24px 0;
   }
 
   .hero-actions {
@@ -2039,6 +2079,10 @@ a:hover {
     justify-content: center;
   }
 
+  .result-box {
+    padding: 28px 20px;
+  }
+
   .result-actions {
     flex-direction: column;
     align-items: stretch;
@@ -2048,242 +2092,86 @@ a:hover {
     width: 100%;
     justify-content: center;
   }
+
+  .page-header {
+    margin-bottom: 24px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+  }
+
+  .page-header p {
+    font-size: 0.9rem;
+  }
+
+  .footer-inner {
+    padding: 24px clamp(12px, 4vw, 24px);
+  }
+
+  .footer-links {
+    gap: 4px 8px;
+  }
+
+  .footer-links a {
+    font-size: 0.8rem;
+  }
+
+  .vote-quota-strip {
+    padding: 10px clamp(10px, 3vw, 20px);
+    font-size: 0.8rem;
+  }
+
+  .vote-quota-chip {
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .vote-quota-chip-value {
+    font-size: 1.15rem;
+  }
+
+  .vote-quota-strip-msg {
+    font-size: 0.82rem;
+  }
+
+  .legal-content {
+    max-width: 100%;
+  }
+
+  .legal-section h2 {
+    font-size: 1.05rem;
+  }
+
+  .legal-section p,
+  .legal-section li {
+    font-size: 0.85rem;
+  }
+
+  .legal-callout {
+    padding: 12px 14px;
+    font-size: 0.82rem;
+  }
 }
 
 @media (max-width: 380px) {
   .nav-logo-text {
     max-width: 42vw;
   }
-}
 
-/* ── Share Section (after positive vouch) ── */
-.share-section {
-  margin-top: 24px;
-  padding: 20px 24px;
-  background: var(--blue-bg);
-  border: 1px solid #bfdbfe;
-  border-radius: var(--radius);
-}
-
-.share-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  margin: 0 0 6px;
-  color: var(--text);
-}
-
-.share-desc {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin: 0 0 16px;
-}
-
-.share-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.btn-linkedin-share {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #0a66c2;
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: var(--radius-sm);
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.12s;
-}
-
-.btn-linkedin-share:hover {
-  background: #004182;
-  transform: translateY(-1px);
-}
-
-.btn-linkedin-share:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
-.btn-copy-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--bg-card);
-  color: var(--text);
-  border: 1px solid var(--border);
-  padding: 10px 18px;
-  border-radius: var(--radius-sm);
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.btn-copy-link:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--border-hover);
-}
-
-.share-link-preview {
-  margin-top: 14px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  word-break: break-all;
-}
-
-.share-link-preview code {
-  background: var(--bg-card);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.78rem;
-  font-family: var(--font-mono);
-}
-
-/* ── Referral Stats Dashboard ── */
-.referral-summary {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.referral-stat-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 24px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-
-.referral-stat-number {
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
-}
-
-.referral-stat-label {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.referral-table-wrap {
-  overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-card);
-  box-shadow: var(--shadow);
-}
-
-.referral-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.88rem;
-}
-
-.referral-table th {
-  text-align: left;
-  padding: 12px 16px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  border-bottom: 2px solid var(--border);
-  background: var(--bg);
-}
-
-.referral-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  color: var(--text);
-}
-
-.referral-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.referral-table tbody tr:hover {
-  background: var(--bg-card-hover);
-}
-
-.referral-profile-name {
-  font-weight: 600;
-}
-
-.ref-code {
-  background: var(--accent-bg);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-family: var(--font-mono);
-  color: var(--accent);
-}
-
-.referral-num {
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  text-align: center;
-}
-
-@media (max-width: 639px) {
-  .referral-summary {
-    grid-template-columns: 1fr;
-    gap: 10px;
+  .home-above-fold h1 {
+    font-size: 1.1rem;
   }
 
-  .referral-stat-card {
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 16px 20px;
+  .hero-lede {
+    font-size: 0.82rem;
   }
 
-  .referral-stat-number {
-    font-size: 1.5rem;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .share-section {
-    background: rgba(30, 58, 138, 0.15);
-    border-color: rgba(59, 130, 246, 0.3);
+  .home-step-desc {
+    font-size: 0.72rem;
   }
 
-  .btn-linkedin-share {
-    background: #0a66c2;
-  }
-
-  .btn-linkedin-share:hover {
-    background: #0077b5;
-  }
-
-  .btn-copy-link {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.16);
-    color: #f5f5f7;
-  }
-
-  .btn-copy-link:hover {
-    background: rgba(255, 255, 255, 0.14);
-  }
-
-  .share-link-preview code {
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .ref-code {
-    background: rgba(180, 83, 9, 0.2);
+  .vote-quota-strip-inner {
+    gap: 10px 14px;
   }
 }

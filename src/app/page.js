@@ -8,7 +8,7 @@ export default function Home() {
           <span className="hero-badge">Free · Public · Permanent</span>
           <h1 id="home-hero-title">
             Know who you&apos;re working with{" "}
-            <span className="hero-highlight">before you commit.</span>
+            <span className="hero-highlight hero-highlight--emphasis">before you commit.</span>
           </h1>
           <p className="hero-lede">
             One question:{" "}
@@ -20,8 +20,8 @@ export default function Home() {
             </span>
           </p>
           <p className="hero-trust-line">
-            GitHub or LinkedIn sign-in · Transparency page · One vote per you per
-            profile
+            GitHub or LinkedIn sign-in · Transparency page · One vote per person,
+            per professional
           </p>
           <div className="hero-actions">
             <Link href="/submit" className="btn btn-primary">
