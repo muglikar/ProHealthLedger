@@ -1793,6 +1793,22 @@ a:hover {
   color: var(--text-secondary);
 }
 
+.nav-admin-link {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 3px 8px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-admin-link:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
 .nav-auth-id {
   font-family: var(--font-mono);
   font-size: 0.75rem;
