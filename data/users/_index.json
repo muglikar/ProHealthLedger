@@ -221,5 +221,19 @@
     ],
     "yes_count": 1,
     "no_count": 0
+  },
+  {
+    "user_id": "linkedin:BzkLFAyue1",
+    "display_name": "Anurag Siddhanti",
+    "contributions": [
+      {
+        "profile_slug": "muglikar",
+        "vote": "yes",
+        "issue": 30,
+        "date": "2026-04-16"
+      }
+    ],
+    "yes_count": 1,
+    "no_count": 0
   }
 ]
