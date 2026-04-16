@@ -375,7 +375,10 @@ export default function TransparencyPage() {
               <thead>
                 <tr>
                   <th className="audit-col-prof">Professional</th>
-                  <th className="audit-col-vote">Would work with again?</th>
+                  <th className="audit-col-vote">
+                    <span className="audit-col-vote-long">Would work with again?</span>
+                    <span className="audit-col-vote-short">Work again?</span>
+                  </th>
                   <th className="audit-col-share">Share</th>
                   <th className="audit-table-col-comment">Comment</th>
                   <th>Submitted By</th>
