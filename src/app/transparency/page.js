@@ -349,7 +349,7 @@ export default function TransparencyPage() {
               <thead>
                 <tr>
                   <th>Professional</th>
-                  <th>Vote</th>
+                  <th>Would work with again?</th>
                   <th>Share</th>
                   <th className="audit-table-col-comment">Comment</th>
                   <th>Submitted By</th>
@@ -382,9 +382,7 @@ export default function TransparencyPage() {
                       <span
                         className={`vote-pill ${v.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
                       >
-                        {v.vote === "yes"
-                          ? "Would work with again"
-                          : "Would not"}
+                        {v.vote === "yes" ? "Yes" : "No"}
                       </span>
                     </td>
                     <td>

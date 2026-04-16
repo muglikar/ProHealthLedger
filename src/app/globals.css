@@ -2138,8 +2138,28 @@ a:hover {
 
   .audit-table th,
   .audit-table td {
-    padding: 6px 8px;
-    font-size: 0.78rem;
+    padding: 6px 5px;
+    font-size: 0.76rem;
+  }
+
+  .audit-table th:first-child,
+  .audit-table td:first-child {
+    padding-left: 8px;
+  }
+
+  .share-linkedin-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .share-linkedin-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .vote-pill {
+    padding: 2px 6px;
+    font-size: 0.72rem;
   }
 
   .vote-quota-strip {
