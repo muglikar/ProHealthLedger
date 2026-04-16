@@ -1171,10 +1171,8 @@ a:hover {
 
 .profile-vouch-table {
   width: 100%;
-  min-width: 680px;
   border-collapse: collapse;
   font-size: 0.82rem;
-  table-layout: auto;
 }
 
 .profile-vouch-table th {
@@ -1184,27 +1182,59 @@ a:hover {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  padding: 6px 10px;
+  padding: 6px 8px;
   border-bottom: 1px solid var(--border);
-  white-space: nowrap;
   vertical-align: top;
+  white-space: normal;
 }
 
 .profile-vouch-table td {
-  padding: 6px 10px;
+  padding: 6px 8px;
   border-bottom: 1px solid #f0ebe3;
   color: var(--text);
   vertical-align: top;
-  white-space: nowrap;
+}
+
+.profile-vouch-table .pvt-col-vote {
+  width: 70px;
+}
+
+.profile-vouch-table .pvt-col-share {
+  width: 40px;
+  text-align: center;
+}
+
+.profile-vouch-table .pvt-col-comment {
+  min-width: 120px;
 }
 
 .profile-vouch-comment {
   font-size: 0.8rem;
   color: var(--text-secondary);
   line-height: 1.45;
-  max-width: 200px;
-  white-space: normal;
   word-break: break-word;
+}
+
+.profile-share-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: #0a66c2;
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: background 0.15s, transform 0.12s;
+}
+
+.profile-share-card-btn:hover {
+  background: #004182;
+  transform: translateY(-1px);
 }
 
 /* ── Leaderboard ── */
