@@ -50,7 +50,7 @@ function ShareModal({ data, onClose, firstPerson = false }) {
   const [copied, setCopied] = useState(false);
   const displayName = formatProfessionalDisplayName(data.profile_slug, data.public_name);
   const shareText = buildShareText(displayName, data.profile_slug, firstPerson);
-  const profileUrl = `${SITE_URL}/profiles?search=${encodeURIComponent(data.profile_slug)}`;
+  const profileUrl = `${SITE_URL}/profiles?search=${encodeURIComponent(data.profile_slug)}&v=2`;
   const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`;
 
   const handlePostToLinkedIn = useCallback(async () => {
