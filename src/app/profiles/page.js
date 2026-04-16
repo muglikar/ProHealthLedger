@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 
 function dedupeSubmissions(submissions) {
@@ -28,9 +29,20 @@ function countVotes(submissions) {
 }
 
 export default function ProfilesPage() {
+  return (
+    <Suspense fallback={<div className="empty-state"><p>Loading…</p></div>}>
+      <ProfilesContent />
+    </Suspense>
+  );
+}
+
+function ProfilesContent() {
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get("search") || "";
   const [profiles, setProfiles] = useState([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
   const [loading, setLoading] = useState(true);
+  const [expandedSlug, setExpandedSlug] = useState(initialSearch || null);
 
   useEffect(() => {
     fetch("/api/profiles")
@@ -114,6 +126,8 @@ export default function ProfilesPage() {
             })
             .map((profile) => {
               const { yes, no, total } = countVotes(profile.submissions);
+              const deduped = dedupeSubmissions(profile.submissions);
+              const isExpanded = expandedSlug === profile.slug;
               return (
                 <div key={profile.slug || profile.linkedin_url} className="profile-card">
                   <div className="profile-slug">
@@ -142,7 +156,44 @@ export default function ProfilesPage() {
                   <div className="submission-count">
                     {total} vote
                     {total !== 1 ? "s" : ""} from the community
+                    {deduped.length > 0 && (
+                      <button
+                        type="button"
+                        className="profile-toggle-details"
+                        onClick={() => setExpandedSlug(isExpanded ? null : profile.slug)}
+                      >
+                        {isExpanded ? "Hide details ▲" : "View details ▼"}
+                      </button>
+                    )}
                   </div>
+                  {isExpanded && deduped.length > 0 && (
+                    <div className="profile-vouch-details">
+                      <table className="profile-vouch-table">
+                        <thead>
+                          <tr>
+                            <th>Vote</th>
+                            <th>Comment</th>
+                            <th>Date</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {deduped.map((s, i) => (
+                            <tr key={s.issue != null ? `i-${s.issue}` : `r-${i}`}>
+                              <td>
+                                <span className={`vote-pill ${s.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}>
+                                  {s.vote === "yes" ? "Yes" : "No"}
+                                </span>
+                              </td>
+                              <td className="profile-vouch-comment">
+                                {s.reason || s.comment || "—"}
+                              </td>
+                              <td>{s.date || "—"}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
               );
             })}
