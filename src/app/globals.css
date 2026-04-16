@@ -1425,13 +1425,13 @@ a:hover {
 
 .audit-comment {
   display: block;
-  max-height: 5.5rem;
-  overflow-y: auto;
+  max-height: 2.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 0.82rem;
   line-height: 1.45;
   color: var(--text-secondary);
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: nowrap;
 }
 
 .audit-comment-empty {
@@ -1442,19 +1442,21 @@ a:hover {
 .audit-table th {
   background: #f8f4ee;
   text-align: left;
-  padding: 12px 16px;
+  padding: 10px 12px;
   font-weight: 600;
   font-size: 0.82rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
 .audit-table td {
-  padding: 10px 16px;
+  padding: 8px 12px;
   border-bottom: 1px solid #f0ebe3;
   color: var(--text);
+  white-space: nowrap;
 }
 
 .audit-table tr:last-child td {
@@ -2129,8 +2131,72 @@ a:hover {
 
   .audit-table th,
   .audit-table td {
-    padding: 8px 10px;
+    padding: 6px 8px;
+    font-size: 0.78rem;
+  }
+
+  .vote-quota-strip {
+    padding: 8px clamp(10px, 3vw, 16px);
+    font-size: 0.78rem;
+  }
+
+  .vote-quota-chip {
+    padding: 5px 10px;
+    gap: 6px;
+  }
+
+  .vote-quota-chip-value {
+    font-size: 1.1rem;
+  }
+
+  .vote-quota-chip-label {
+    font-size: 0.6rem;
+  }
+
+  .vote-quota-strip-msg {
     font-size: 0.8rem;
+  }
+
+  .vote-quota-strip-meta {
+    font-size: 0.72rem;
+  }
+
+  .vote-quota-strip-inner {
+    gap: 8px 14px;
+  }
+
+  .main-content:has(.audit-table) {
+    padding-top: 12px;
+    padding-bottom: 40px;
+  }
+
+  .main-content:has(.audit-table) .page-header {
+    margin-bottom: 10px;
+  }
+
+  .main-content:has(.audit-table) .page-header h1 {
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+  }
+
+  .main-content:has(.audit-table) .page-header p {
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  .audit-sort-bar {
+    margin-bottom: 8px;
+  }
+
+  .audit-sort-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+
+  .audit-table-hint {
+    font-size: 0.75rem;
+    margin-bottom: 6px;
+    padding: 4px 10px;
   }
 
   .why-grid {
