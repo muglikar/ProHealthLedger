@@ -329,13 +329,13 @@ export default function TransparencyPage() {
             <table className="audit-table">
               <thead>
                 <tr>
-                  <th>Date</th>
                   <th>Professional</th>
                   <th>Vote</th>
+                  <th>Share</th>
                   <th className="audit-table-col-comment">Comment</th>
                   <th>Submitted By</th>
-                  <th>Share</th>
                   <th>Record</th>
+                  <th>Date</th>
                 </tr>
               </thead>
               <tbody>
@@ -347,7 +347,6 @@ export default function TransparencyPage() {
                         : `${v.profile_slug}-${v.date}-${v.user}-${v.vote}`
                     }
                   >
-                    <td>{v.date}</td>
                     <td>
                       <a
                         href={v.linkedin_url}
@@ -369,8 +368,6 @@ export default function TransparencyPage() {
                           : "Would not"}
                       </span>
                     </td>
-                    <td className="audit-table-col-comment">{commentCell(v)}</td>
-                    <td>{voterDisplay(v)}</td>
                     <td>
                       {v.vote === "yes" && currentUserId && currentUserId === v.user ? (
                         <button
@@ -385,6 +382,8 @@ export default function TransparencyPage() {
                         </button>
                       ) : null}
                     </td>
+                    <td className="audit-table-col-comment">{commentCell(v)}</td>
+                    <td>{voterDisplay(v)}</td>
                     <td>
                       <a
                         href={`${repoBase}/issues/${v.issue}`}
@@ -395,6 +394,7 @@ export default function TransparencyPage() {
                         #{v.issue}
                       </a>
                     </td>
+                    <td>{v.date}</td>
                   </tr>
                 ))}
               </tbody>
