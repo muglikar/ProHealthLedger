@@ -65,8 +65,8 @@ export default function SubmitPage() {
       <section className="submit-hero">
         <h1>Share Your Experience</h1>
         <p>
-          Sign in to submit your vote. We verify your identity to ensure
-          one vote per person per profile.
+          Sign in to submit your vote. We verify your identity so each person
+          can only vote once per professional — no duplicates allowed.
         </p>
         <div className="signin-options">
           <button

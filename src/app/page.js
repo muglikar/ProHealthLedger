@@ -20,8 +20,8 @@ export default function Home() {
             </span>
           </p>
           <p className="hero-trust-line">
-            GitHub or LinkedIn sign-in · Transparency page · One vote per person,
-            per professional
+            GitHub or LinkedIn sign-in · Full transparency page · One voice per
+            person, per professional — no duplicates
           </p>
           <div className="hero-actions">
             <Link href="/submit" className="btn btn-primary">
