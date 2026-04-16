@@ -425,8 +425,8 @@ export default function TransparencyPage() {
           <p className="audit-table-hint">
             Scroll the table horizontally to see every column, including comments.
           </p>
+          <div className="audit-scroll-hint">← drag or tap to scroll →</div>
           <div className="audit-scroll-track" ref={trackRef}>
-            <div className="audit-scroll-track-inner">← drag or tap to scroll →</div>
             <div className="audit-scroll-thumb" ref={thumbRef} />
           </div>
           <div className={`audit-table-outer${scrolledEnd ? " scrolled-end" : ""}`}>
