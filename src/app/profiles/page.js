@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 
 const SITE_URL = "https://pro-health-ledger.vercel.app";
@@ -187,6 +188,9 @@ function ProfilesContent() {
     <>
       <div className="page-header">
         <h1>Look Up a Professional</h1>
+        <p className="submit-hero-sub">
+          <Link href="/">What the heck is this?</Link>
+        </p>
         <p>Search by name or paste a LinkedIn profile link.</p>
       </div>
 
