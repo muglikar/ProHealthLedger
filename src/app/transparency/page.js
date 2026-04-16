@@ -50,7 +50,7 @@ function buildShareText(displayName, profileSlug) {
   const profileLink = `${SITE_URL}/profiles?search=${encodeURIComponent(profileSlug)}`;
   const submitLink = `${SITE_URL}/submit`;
   return (
-    `Hey, I have vouched / positively reviewed ${displayName} on Pro-Health Ledger. ` +
+    `Hey, I have vouched / positively reviewed you ${displayName} on Pro-Health Ledger. ` +
     `Please check out and share your experiences too.\n\n` +
     `See their profile: ${profileLink}\n` +
     `Share your experience: ${submitLink}`
