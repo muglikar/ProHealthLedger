@@ -406,8 +406,8 @@ a:hover {
   position: sticky;
   top: var(--nav-height, 60px);
   z-index: 10015;
-  padding: 12px clamp(12px, 4vw, 24px);
-  font-size: 0.84rem;
+  padding: 8px clamp(12px, 4vw, 24px);
+  font-size: 0.82rem;
   line-height: 1.5;
   border-bottom: 2px solid transparent;
 }
@@ -611,7 +611,7 @@ a:hover {
 }
 
 .main-content:has(.submit-hero) {
-  padding-top: clamp(8px, 2vw, 16px);
+  padding-top: 4px;
   padding-bottom: 40px;
 }
 
@@ -1298,19 +1298,19 @@ a:hover {
 /* ── Submit Page ── */
 .submit-hero {
   text-align: center;
-  padding: clamp(8px, 2vw, 20px) 0;
+  padding: 6px 0 2px;
 }
 
 .submit-hero h1 {
-  font-size: clamp(1.25rem, 3vw + 0.5rem, 1.7rem);
-  margin-bottom: 4px;
+  font-size: clamp(1.15rem, 2.5vw + 0.5rem, 1.5rem);
+  margin-bottom: 2px;
   overflow-wrap: break-word;
 }
 
 .submit-hero-sub {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--text-muted);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .submit-hero-sub a {
@@ -1326,9 +1326,9 @@ a:hover {
 .submit-hero p {
   color: var(--text-secondary);
   max-width: 500px;
-  margin: 0 auto 16px;
-  line-height: 1.6;
-  font-size: clamp(0.85rem, 1vw + 0.5rem, 0.95rem);
+  margin: 0 auto 10px;
+  line-height: 1.5;
+  font-size: 0.88rem;
 }
 
 .submit-steps {
@@ -1852,25 +1852,25 @@ a:hover {
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .form-group label {
   display: block;
   font-weight: 600;
-  font-size: 0.92rem;
-  margin-bottom: 8px;
+  font-size: 0.88rem;
+  margin-bottom: 5px;
   color: var(--text);
 }
 
 .form-input {
   width: 100%;
-  padding: 12px 16px;
+  padding: 9px 14px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-family: var(--font-sans);
   transition: border-color 0.2s;
 }
@@ -1887,19 +1887,19 @@ a:hover {
 
 .form-hint {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
-  margin-top: 6px;
+  margin-top: 3px;
 }
 
 .form-textarea {
   width: 100%;
-  padding: 12px 16px;
+  padding: 8px 14px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-family: var(--font-sans);
   resize: vertical;
   transition: border-color 0.2s;
@@ -1918,19 +1918,19 @@ a:hover {
 .vote-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 
 .vote-option {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 16px 20px;
+  gap: 8px;
+  padding: 10px 16px;
   background: var(--bg-card);
   border: 2px solid var(--border);
   border-radius: var(--radius);
   cursor: pointer;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 500;
   font-family: var(--font-sans);
   color: var(--text-secondary);
@@ -1959,32 +1959,32 @@ a:hover {
 }
 
 .form-notice {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
-  line-height: 1.6;
-  margin-bottom: 20px;
-  padding: 12px 16px;
+  line-height: 1.4;
+  margin-bottom: 10px;
+  padding: 8px 12px;
   background: #fefce8;
   border: 1px solid #fde68a;
   border-radius: var(--radius-sm);
 }
 
 .form-error {
-  padding: 14px 18px;
+  padding: 10px 14px;
   background: var(--red-bg);
   border: 1px solid var(--red-border);
   border-radius: var(--radius-sm);
   color: var(--red);
-  font-size: 0.9rem;
-  margin-bottom: 24px;
-  line-height: 1.5;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  line-height: 1.4;
 }
 
 .btn-full {
   width: 100%;
   justify-content: center;
-  padding: 14px 24px;
-  font-size: 1rem;
+  padding: 10px 20px;
+  font-size: 0.92rem;
 }
 
 .btn:disabled {
