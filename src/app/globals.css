@@ -237,7 +237,7 @@ a:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 10000;
+  z-index: 10018;
   background: rgba(0, 0, 0, 0.35);
   border: none;
   padding: 0;
@@ -250,7 +250,7 @@ a:hover {
   top: var(--nav-height, 60px);
   right: 0;
   bottom: 0;
-  z-index: 10010;
+  z-index: 10019;
   width: min(320px, 100%);
   max-width: 100vw;
   background: var(--bg-card);

@@ -92,9 +92,7 @@ export default function ProfilesPage() {
             .map((profile) => {
               const yes = profile.votes?.yes ?? 0;
               const no = profile.votes?.no ?? 0;
-              const subs = Array.isArray(profile.submissions)
-                ? profile.submissions
-                : [];
+              const total = yes + no;
               return (
                 <div key={profile.slug || profile.linkedin_url} className="profile-card">
                   <div className="profile-slug">
@@ -121,8 +119,8 @@ export default function ProfilesPage() {
                     </span>
                   </div>
                   <div className="submission-count">
-                    {subs.length} vote
-                    {subs.length !== 1 ? "s" : ""} from the community
+                    {total} vote
+                    {total !== 1 ? "s" : ""} from the community
                   </div>
                 </div>
               );
