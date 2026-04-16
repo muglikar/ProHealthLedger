@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
+
+const SITE_URL = "https://pro-health-ledger.vercel.app";
+const REPO_BASE = "https://github.com/muglikar/ProHealthLedger";
 
 function dedupeSubmissions(submissions) {
   if (!Array.isArray(submissions)) return [];
@@ -28,6 +32,106 @@ function countVotes(submissions) {
   return { yes, no, total: yes + no };
 }
 
+function buildShareText(displayName, profileSlug, firstPerson = false) {
+  const profileLink = `${SITE_URL}/profiles?search=${encodeURIComponent(profileSlug)}`;
+  const submitLink = `${SITE_URL}/submit`;
+  if (firstPerson) {
+    return (
+      `I've been vouched for i.e. positively reviewed on Pro-Health Ledger.\n\n` +
+      `Please check it out and share your experiences too!\n\n` +
+      `See my Pro-Health Ledger Profile: ${profileLink}\n\n` +
+      `Share your experience: ${submitLink}`
+    );
+  }
+  return (
+    `Hey ${displayName}, I have vouched for you i.e. positively reviewed you on Pro-Health Ledger.\n\n` +
+    `Please check it out and share your experiences too!\n\n` +
+    `See your Pro-Health Ledger Profile: ${profileLink}\n\n` +
+    `Share your experience: ${submitLink}`
+  );
+}
+
+function ShareModal({ data, onClose, firstPerson = false }) {
+  const [copied, setCopied] = useState(false);
+  const displayName = formatProfessionalDisplayName(data.profile_slug, data.public_name);
+  const shareText = buildShareText(displayName, data.profile_slug, firstPerson);
+  const profileUrl = `${SITE_URL}/profiles?search=${encodeURIComponent(data.profile_slug)}`;
+  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`;
+
+  const handlePostToLinkedIn = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(shareText);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = shareText;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    window.open(linkedinShareUrl, "_blank", "noopener,noreferrer");
+    setTimeout(() => setCopied(false), 3000);
+  }, [shareText, linkedinShareUrl]);
+
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <>
+      <div className="share-modal-backdrop" onClick={onClose} />
+      <div className="share-modal" role="dialog" aria-modal="true" aria-label="Share vouch on LinkedIn">
+        <div className="share-modal-header">
+          <h3>{firstPerson ? "Share your vouch on LinkedIn" : "Share this vouch on LinkedIn"}</h3>
+          <button type="button" className="share-modal-close" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+        <div className="share-modal-body">
+          <p className="share-modal-hint">
+            Review the text below. Clicking &ldquo;Copy &amp; Post to LinkedIn&rdquo; will
+            copy this text to your clipboard and open LinkedIn with the profile
+            preview card. Paste the copied text into your post.
+          </p>
+          <div className="share-modal-text">{shareText}</div>
+          <div className="share-modal-links">
+            <span className="share-modal-link-label">Profile link:</span>
+            <a href={profileUrl} target="_blank" rel="noopener noreferrer">{profileUrl}</a>
+          </div>
+        </div>
+        <div className="share-modal-actions">
+          <button type="button" className="btn-linkedin-open" onClick={handlePostToLinkedIn}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+            {copied ? "Copied & Opening…" : "Copy & Post to LinkedIn"}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function voterDisplay(submission) {
+  const userId = submission.user || submission.github_username || "";
+  if (!userId) return <span>—</span>;
+  const label =
+    submission.display_name ||
+    (userId.startsWith("github:") ? userId.slice(7) : userId);
+  if (userId.startsWith("github:")) {
+    const gh = userId.slice(7);
+    return (
+      <a href={`https://github.com/${gh}`} target="_blank" rel="noopener noreferrer" className="issue-link">
+        {label}
+      </a>
+    );
+  }
+  return <span>{label}</span>;
+}
+
 export default function ProfilesPage() {
   return (
     <Suspense fallback={<div className="empty-state"><p>Loading…</p></div>}>
@@ -39,9 +143,13 @@ export default function ProfilesPage() {
 function ProfilesContent() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
+  const { data: session } = useSession();
+  const currentUserId = session?.userId || "";
   const [profiles, setProfiles] = useState([]);
   const [search, setSearch] = useState(initialSearch);
   const [loading, setLoading] = useState(true);
+  const [shareModalData, setShareModalData] = useState(null);
+
   useEffect(() => {
     fetch("/api/profiles")
       .then((res) => res.json())
@@ -71,10 +179,7 @@ function ProfilesContent() {
     const pub =
       typeof p.public_name === "string" ? p.public_name.toLowerCase() : "";
     if (!slug && !url) return false;
-    const display = formatProfessionalDisplayName(
-      slug,
-      p.public_name
-    ).toLowerCase();
+    const display = formatProfessionalDisplayName(slug, p.public_name).toLowerCase();
     return (
       slug.includes(query) ||
       url.includes(query) ||
@@ -128,31 +233,19 @@ function ProfilesContent() {
               return (
                 <div key={profile.slug || profile.linkedin_url} className="profile-card">
                   <div className="profile-slug">
-                    {formatProfessionalDisplayName(
-                      profile.slug,
-                      profile.public_name
-                    ) || "Profile"}
+                    {formatProfessionalDisplayName(profile.slug, profile.public_name) || "Profile"}
                   </div>
                   <div className="profile-url">
-                    <a
-                      href={profile.linkedin_url || "#"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <a href={profile.linkedin_url || "#"} target="_blank" rel="noopener noreferrer">
                       View LinkedIn Profile →
                     </a>
                   </div>
                   <div className="vote-counts">
-                    <span className="vote-badge vote-yes">
-                      ✓ {yes} would work with again
-                    </span>
-                    <span className="vote-badge vote-no">
-                      ✗ {no} would not
-                    </span>
+                    <span className="vote-badge vote-yes">✓ {yes} would work with again</span>
+                    <span className="vote-badge vote-no">✗ {no} would not</span>
                   </div>
                   <div className="submission-count">
-                    {total} vote
-                    {total !== 1 ? "s" : ""} from the community
+                    {total} vote{total !== 1 ? "s" : ""} from the community
                   </div>
                   {deduped.length > 0 && (
                     <div className="profile-vouch-details">
@@ -160,33 +253,80 @@ function ProfilesContent() {
                         <thead>
                           <tr>
                             <th>Would work with again?</th>
+                            <th>Submitted By</th>
                             <th>Comment</th>
+                            <th>Record</th>
+                            {currentUserId && <th>Share</th>}
                             <th>Date</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {deduped.map((s, i) => (
-                            <tr key={s.issue != null ? `i-${s.issue}` : `r-${i}`}>
-                              <td>
-                                <span className={`vote-pill ${s.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}>
-                                  {s.vote === "yes" ? "Yes" : "No"}
-                                </span>
-                              </td>
-                              <td className="profile-vouch-comment">
-                                {s.reason || s.comment || "—"}
-                              </td>
-                              <td>{s.date || "—"}</td>
-                            </tr>
-                          ))}
+                          {deduped.map((s, i) => {
+                            const isReviewer = currentUserId && currentUserId === s.user;
+                            return (
+                              <tr key={s.issue != null ? `i-${s.issue}` : `r-${i}`}>
+                                <td>
+                                  <span className={`vote-pill ${s.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}>
+                                    {s.vote === "yes" ? "Yes" : "No"}
+                                  </span>
+                                </td>
+                                <td>{voterDisplay(s)}</td>
+                                <td className="profile-vouch-comment">
+                                  {s.reason || s.comment || "—"}
+                                </td>
+                                <td>
+                                  {s.issue != null ? (
+                                    <a
+                                      href={`${REPO_BASE}/issues/${s.issue}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="issue-link"
+                                    >
+                                      #{s.issue}
+                                    </a>
+                                  ) : "—"}
+                                </td>
+                                {currentUserId && (
+                                  <td>
+                                    {s.vote === "yes" ? (
+                                      <button
+                                        type="button"
+                                        className="share-linkedin-btn"
+                                        title={isReviewer ? "Share this vouch on LinkedIn" : "Share your vouch on LinkedIn"}
+                                        onClick={() => setShareModalData({
+                                          ...s,
+                                          profile_slug: profile.slug,
+                                          public_name: profile.public_name,
+                                          _firstPerson: !isReviewer,
+                                        })}
+                                      >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                        </svg>
+                                      </button>
+                                    ) : "—"}
+                                  </td>
+                                )}
+                                <td>{s.date || "—"}</td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>
                   )}
                 </div>
-
               );
             })}
         </div>
+      )}
+
+      {shareModalData && (
+        <ShareModal
+          data={shareModalData}
+          onClose={() => setShareModalData(null)}
+          firstPerson={!!shareModalData._firstPerson}
+        />
       )}
     </>
   );
