@@ -174,15 +174,16 @@ function ProfilesContent() {
   const filtered = profiles.filter((p) => {
     if (!p || typeof p !== "object") return false;
     const slug = typeof p.slug === "string" ? p.slug : "";
-    const url =
+    const rawUrl =
       typeof p.linkedin_url === "string" ? p.linkedin_url.toLowerCase() : "";
     const pub =
       typeof p.public_name === "string" ? p.public_name.toLowerCase() : "";
-    if (!slug && !url) return false;
+    if (!slug && !rawUrl) return false;
+    const urlSlug = rawUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || "";
     const display = formatProfessionalDisplayName(slug, p.public_name).toLowerCase();
     return (
       slug.includes(query) ||
-      url.includes(query) ||
+      urlSlug.includes(query) ||
       display.includes(query) ||
       pub.includes(query)
     );
