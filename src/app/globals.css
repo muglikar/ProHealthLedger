@@ -1398,10 +1398,29 @@ a:hover {
 
 .audit-top-scroll {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: scroll;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+  scrollbar-color: var(--border-hover) var(--bg);
+}
+
+.audit-top-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.audit-top-scroll::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 5px;
+}
+
+.audit-top-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-hover);
+  border-radius: 5px;
+  border: 2px solid var(--bg);
+}
+
+.audit-top-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
 
 .audit-top-scroll-inner {
@@ -1411,12 +1430,32 @@ a:hover {
 .audit-table-wrap {
   width: 100%;
   max-width: 100%;
-  overflow-x: auto;
+  overflow-x: scroll;
   overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  scrollbar-color: var(--border-hover) var(--bg);
+}
+
+.audit-table-wrap::-webkit-scrollbar {
+  height: 10px;
+}
+
+.audit-table-wrap::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 5px;
+}
+
+.audit-table-wrap::-webkit-scrollbar-thumb {
+  background: var(--border-hover);
+  border-radius: 5px;
+  border: 2px solid var(--bg);
+}
+
+.audit-table-wrap::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
 
 .audit-table {
@@ -1433,9 +1472,17 @@ a:hover {
     min-width: 0;
   }
 
+  .audit-col-vote-long {
+    display: none;
+  }
+
+  .audit-col-vote-short {
+    display: inline;
+  }
+
   .audit-table th.audit-col-vote {
     white-space: normal;
-    width: 90px;
+    width: 55px;
   }
 
   .audit-table th.audit-col-share,
@@ -1473,6 +1520,10 @@ a:hover {
 .audit-comment-empty {
   color: var(--text-secondary);
   font-weight: 500;
+}
+
+.audit-col-vote-short {
+  display: none;
 }
 
 .audit-table th {
