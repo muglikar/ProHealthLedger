@@ -41,6 +41,7 @@ export const metadata = {
         url: `${siteUrl}/og-banner.png`,
         width: 1200,
         height: 630,
+        type: "image/png",
         alt: "Professional Health Ledger — Know Who You're Working With",
       },
     ],
