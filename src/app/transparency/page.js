@@ -52,16 +52,16 @@ function buildShareText(displayName, profileSlug, firstPerson = false) {
   const submitLink = `${SITE_URL}/submit`;
   if (firstPerson) {
     return (
-      `I've been vouched for (i.e. positively reviewed) on Pro-Health Ledger! ` +
-      `Check it out and share your experiences too!\n\n` +
-      `See my profile: ${profileLink}\n` +
+      `I've been vouched for i.e. positively reviewed on Pro-Health Ledger.\n\n` +
+      `Please check it out and share your experiences too!\n\n` +
+      `See my Pro-Health Ledger Profile: ${profileLink}\n\n` +
       `Share your experience: ${submitLink}`
     );
   }
   return (
-    `Hey ${displayName}, I have vouched for you (i.e. positively reviewed) on Pro-Health Ledger. ` +
+    `Hey ${displayName}, I have vouched for you i.e. positively reviewed you on Pro-Health Ledger.\n\n` +
     `Please check it out and share your experiences too!\n\n` +
-    `See your profile: ${profileLink}\n` +
+    `See your Pro-Health Ledger Profile: ${profileLink}\n\n` +
     `Share your experience: ${submitLink}`
   );
 }
@@ -120,7 +120,7 @@ function ShareModal({ data, onClose, firstPerson = false }) {
         </div>
         <div className="share-modal-body">
           <p className="share-modal-hint">
-            Review the text below. Clicking &ldquo;Post to LinkedIn&rdquo; will
+            Review the text below. Clicking &ldquo;Copy &amp; Post to LinkedIn&rdquo; will
             copy this text to your clipboard and open LinkedIn with the profile
             preview card. Paste the copied text into your post.
           </p>
@@ -141,7 +141,7 @@ function ShareModal({ data, onClose, firstPerson = false }) {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
             </svg>
-            {copied ? "Copied & Opening…" : "Post to LinkedIn"}
+            {copied ? "Copied & Opening…" : "Copy & Post to LinkedIn"}
           </button>
         </div>
       </div>

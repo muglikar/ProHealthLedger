@@ -1165,10 +1165,13 @@ a:hover {
   margin-top: 14px;
   border-top: 1px solid var(--border);
   padding-top: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .profile-vouch-table {
   width: 100%;
+  min-width: 520px;
   border-collapse: collapse;
   font-size: 0.82rem;
 }
@@ -1182,6 +1185,8 @@ a:hover {
   letter-spacing: 0.03em;
   padding: 4px 8px 6px;
   border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  vertical-align: top;
 }
 
 .profile-vouch-table td {
@@ -1189,13 +1194,15 @@ a:hover {
   border-bottom: 1px solid #f0ebe3;
   color: var(--text);
   vertical-align: top;
+  white-space: nowrap;
 }
 
 .profile-vouch-comment {
   font-size: 0.8rem;
   color: var(--text-secondary);
   line-height: 1.45;
-  max-width: 280px;
+  max-width: 220px;
+  white-space: normal;
   word-break: break-word;
 }
 
