@@ -75,7 +75,7 @@ function ShareModal({ data, onClose, firstPerson = false }) {
   );
   const shareText = buildShareText(displayName, data.profile_slug, firstPerson);
   const profileUrl = `${SITE_URL}/profiles?search=${encodeURIComponent(data.profile_slug)}`;
-  const linkedinPostUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(shareText)}`;
+  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`;
 
   const handlePostToLinkedIn = useCallback(async () => {
     try {
@@ -91,9 +91,9 @@ function ShareModal({ data, onClose, firstPerson = false }) {
       document.body.removeChild(ta);
     }
     setCopied(true);
-    window.open(linkedinPostUrl, "_blank", "noopener,noreferrer");
+    window.open(linkedinShareUrl, "_blank", "noopener,noreferrer");
     setTimeout(() => setCopied(false), 3000);
-  }, [shareText, linkedinPostUrl]);
+  }, [shareText, linkedinShareUrl]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -121,7 +121,8 @@ function ShareModal({ data, onClose, firstPerson = false }) {
         <div className="share-modal-body">
           <p className="share-modal-hint">
             Review the text below. Clicking &ldquo;Post to LinkedIn&rdquo; will
-            copy this text to your clipboard and open LinkedIn with it pre-filled.
+            copy this text to your clipboard and open LinkedIn with the profile
+            preview card. Paste the copied text into your post.
           </p>
           <div className="share-modal-text">{shareText}</div>
           <div className="share-modal-links">
@@ -148,22 +149,9 @@ function ShareModal({ data, onClose, firstPerson = false }) {
   );
 }
 
-function normalizeNameForMatch(name) {
-  return (name || "").toLowerCase().replace(/[^a-z]/g, "");
-}
-
-function namesMatch(sessionName, profileName) {
-  const a = normalizeNameForMatch(sessionName);
-  const b = normalizeNameForMatch(profileName);
-  if (a.length < 3 || b.length < 3) return false;
-  if (a === b) return true;
-  return a.includes(b) || b.includes(a);
-}
-
 export default function TransparencyPage() {
   const { data: session } = useSession();
   const currentUserId = session?.userId || "";
-  const currentDisplayName = session?.displayName || "";
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortMode, setSortMode] = useState("flags");
@@ -480,28 +468,18 @@ export default function TransparencyPage() {
                       </span>
                     </td>
                     <td className="audit-col-share">
-                      {(() => {
-                        if (v.vote !== "yes" || !currentUserId) return null;
-                        const isReviewer = currentUserId === v.user;
-                        const profDisplayName = formatProfessionalDisplayName(v.profile_slug, v.public_name);
-                        const isReviewee =
-                          !isReviewer &&
-                          currentDisplayName &&
-                          namesMatch(currentDisplayName, profDisplayName);
-                        if (!isReviewer && !isReviewee) return null;
-                        return (
-                          <button
-                            type="button"
-                            className="share-linkedin-btn"
-                            title={isReviewee ? "Share your vouch on LinkedIn" : "Share this vouch on LinkedIn"}
-                            onClick={() => setShareModalData({ ...v, _firstPerson: isReviewee })}
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                            </svg>
-                          </button>
-                        );
-                      })()}
+                      {v.vote === "yes" && currentUserId ? (
+                        <button
+                          type="button"
+                          className="share-linkedin-btn"
+                          title={currentUserId === v.user ? "Share this vouch on LinkedIn" : "Share your vouch on LinkedIn"}
+                          onClick={() => setShareModalData({ ...v, _firstPerson: currentUserId !== v.user })}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                          </svg>
+                        </button>
+                      ) : null}
                     </td>
                     <td className="audit-table-col-comment">{commentCell(v)}</td>
                     <td>{voterDisplay(v)}</td>
