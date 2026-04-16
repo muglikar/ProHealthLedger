@@ -1215,27 +1215,7 @@ a:hover {
   word-break: break-word;
 }
 
-.profile-share-card-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 8px 16px;
-  background: #0a66c2;
-  color: #ffffff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--font-sans);
-  transition: background 0.15s, transform 0.12s;
-}
 
-.profile-share-card-btn:hover {
-  background: #004182;
-  transform: translateY(-1px);
-}
 
 /* ── Leaderboard ── */
 .leaderboard {
