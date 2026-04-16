@@ -606,7 +606,7 @@ a:hover {
 
 /* ── Home: single column, first fold through karma (desktop fills viewport) ── */
 .main-content:has(.home-above-fold) {
-  padding-top: max(6px, 1.2vw);
+  padding-top: max(4px, 1vw);
   min-height: 0;
 }
 
@@ -615,7 +615,7 @@ a:hover {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: clamp(0.5rem, 2vh, 1rem);
+  gap: clamp(0.35rem, 1.5vh, 1rem);
   padding: 0 0 12px;
   max-width: 800px;
   margin: 0 auto;
@@ -641,7 +641,7 @@ a:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(0.35rem, 1.2vh, 0.65rem);
+  gap: clamp(0.2rem, 1vh, 0.65rem);
   flex-shrink: 0;
 }
 
@@ -669,7 +669,7 @@ a:hover {
 }
 
 .hero-highlight {
-  color: inherit;
+  color: var(--accent);
   font-weight: 700;
   font-style: italic;
 }
@@ -1985,7 +1985,88 @@ a:hover {
   }
 
   .home-above-fold {
-    gap: 0.5rem;
+    gap: 0.3rem;
+  }
+
+  .home-above-fold .hero-badge {
+    padding: 3px 12px;
+    font-size: 0.68rem;
+  }
+
+  .home-above-fold h1 {
+    font-size: 1.1rem;
+    line-height: 1.2;
+  }
+
+  .hero-lede {
+    font-size: 0.84rem;
+    line-height: 1.35;
+  }
+
+  .hero-lede-rest {
+    margin-top: 0.2em;
+  }
+
+  .hero-trust-line {
+    font-size: 0.66rem;
+    line-height: 1.3;
+  }
+
+  .hero-actions {
+    margin-top: 2px;
+  }
+
+  .home-above-fold .btn {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+
+  .home-how-title {
+    font-size: 0.92rem;
+    margin-bottom: 2px;
+  }
+
+  .home-how-sub {
+    font-size: 0.72rem;
+    margin-bottom: 6px;
+  }
+
+  .home-steps-compact {
+    gap: 5px;
+  }
+
+  .home-steps-compact li {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+
+  .home-step-num {
+    width: 20px;
+    height: 20px;
+    font-size: 0.62rem;
+  }
+
+  .home-step-label {
+    font-size: 0.75rem;
+  }
+
+  .karma-box--fold {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .karma-box--fold .karma-icon {
+    font-size: 1.2rem;
+  }
+
+  .karma-box--fold h3 {
+    font-size: 0.82rem;
+    margin-bottom: 2px;
+  }
+
+  .karma-box--fold p {
+    font-size: 0.72rem;
+    line-height: 1.35;
   }
 
   .karma-box:not(.karma-box--fold) {
