@@ -197,9 +197,15 @@
         "vote": "yes",
         "issue": 27,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "rutooj-deshpande",
+        "vote": "yes",
+        "issue": 29,
+        "date": "2026-04-16"
       }
     ],
-    "yes_count": 11,
+    "yes_count": 12,
     "no_count": 8
   },
   {
