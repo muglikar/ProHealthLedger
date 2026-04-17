@@ -67,11 +67,12 @@ function ShareModal({ data, onClose, firstPerson = false }) {
   }, [data]);
 
   const handlePostToLinkedIn = useCallback(async () => {
+    const toCopy = `${shareText}\n\n${profileUrl}`;
     try {
-      await navigator.clipboard.writeText(shareText);
+      await navigator.clipboard.writeText(toCopy);
     } catch {
       const ta = document.createElement("textarea");
-      ta.value = shareText;
+      ta.value = toCopy;
       ta.style.position = "fixed";
       ta.style.opacity = "0";
       document.body.appendChild(ta);
@@ -106,9 +107,9 @@ function ShareModal({ data, onClose, firstPerson = false }) {
         <div className="share-modal-body">
           <p className="share-modal-hint">
             LinkedIn&apos;s <strong>share</strong> link preloads the profile URL as a
-            link preview card. Your browser cannot type into LinkedIn for you, so
-            we copy only the message below — paste it ({pasteKey}) into the post
-            text. (We don&apos;t copy the URL again; it&apos;s already attached.)
+            preview card. We also copy the profile link in the text below so it
+            appears in your post — paste everything ({pasteKey}). If the URL
+            appears twice, delete the duplicate line.
           </p>
           {linkedinPasteStep ? (
             <div className="share-modal-paste-steps" role="status">
@@ -124,7 +125,7 @@ function ShareModal({ data, onClose, firstPerson = false }) {
                 </li>
                 <li>
                   Press <kbd className="share-modal-kbd">{pasteKey}</kbd> to paste your
-                  message, then post.
+                  message and profile link, then post.
                 </li>
               </ol>
               <button
@@ -136,9 +137,9 @@ function ShareModal({ data, onClose, firstPerson = false }) {
               </button>
             </div>
           ) : null}
-          <div className="share-modal-text">{shareText}</div>
+          <div className="share-modal-text">{`${shareText}\n\n${profileUrl}`}</div>
           <div className="share-modal-links">
-            <span className="share-modal-link-label">Profile link (preloaded in LinkedIn as preview):</span>
+            <span className="share-modal-link-label">Profile link (in preview + copied text):</span>
             <a href={profileUrl} target="_blank" rel="noopener noreferrer">{profileUrl}</a>
           </div>
         </div>
@@ -317,6 +318,14 @@ function ProfilesContent() {
                   </div>
                   <div className="submission-count">
                     {total} vote{total !== 1 ? "s" : ""} from the community
+                  </div>
+                  <div className="profile-experience-cta">
+                    <p className="profile-experience-cta-text">
+                      Add your own honest vote to the public ledger.
+                    </p>
+                    <Link href="/submit" className="btn btn-primary profile-experience-cta-btn">
+                      Share your experience
+                    </Link>
                   </div>
                   {deduped.length > 0 && (
                     <div className="profile-vouch-details">
