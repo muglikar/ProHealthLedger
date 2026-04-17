@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
+import CommentReadModal from "@/app/components/CommentReadModal";
 
 const SITE_URL = "https://pro-health-ledger.vercel.app";
 const REPO_BASE = "https://github.com/muglikar/ProHealthLedger";
@@ -188,6 +189,7 @@ function ProfilesContent() {
   const [search, setSearch] = useState(initialSearch);
   const [loading, setLoading] = useState(true);
   const [shareModalData, setShareModalData] = useState(null);
+  const [commentPopup, setCommentPopup] = useState(null);
 
   useEffect(() => {
     fetch("/api/profiles")
@@ -227,6 +229,32 @@ function ProfilesContent() {
       pub.includes(query)
     );
   });
+
+  function profileCommentCell(profile, submission) {
+    if (submission.reason_pending) {
+      return <span className="audit-comment-pending">Pending review</span>;
+    }
+    const raw = String(submission.reason || submission.comment || "").trim();
+    if (!raw) return <span className="audit-comment-empty">—</span>;
+    const profName = formatProfessionalDisplayName(profile.slug, profile.public_name);
+    return (
+      <button
+        type="button"
+        className="audit-comment audit-comment-expandable"
+        title={raw}
+        aria-label={`Open full comment on ${profName}`}
+        onClick={() =>
+          setCommentPopup({
+            text: raw,
+            professional: profName,
+            issue: submission.issue,
+          })
+        }
+      >
+        {raw}
+      </button>
+    );
+  }
 
   return (
     <>
@@ -331,9 +359,7 @@ function ProfilesContent() {
                                 ) : <span>—</span>}
                               </td>
                               <td className="profile-vouch-comment">
-                                {s.reason_pending
-                                  ? <span className="audit-comment-pending">Pending review</span>
-                                  : (s.reason || s.comment || "—")}
+                                {profileCommentCell(profile, s)}
                               </td>
                               <td>{voterDisplay(s)}</td>
                               <td>
@@ -366,6 +392,15 @@ function ProfilesContent() {
           data={shareModalData}
           onClose={() => setShareModalData(null)}
           firstPerson={!!shareModalData._firstPerson}
+        />
+      )}
+
+      {commentPopup && (
+        <CommentReadModal
+          professional={commentPopup.professional}
+          issue={commentPopup.issue}
+          text={commentPopup.text}
+          onClose={() => setCommentPopup(null)}
         />
       )}
     </>

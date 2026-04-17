@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
+import CommentReadModal from "@/app/components/CommentReadModal";
 
 const SITE_URL = "https://pro-health-ledger.vercel.app";
 
@@ -193,6 +194,7 @@ export default function TransparencyPage() {
   const [loading, setLoading] = useState(true);
   const [sortMode, setSortMode] = useState("flags");
   const [shareModalData, setShareModalData] = useState(null);
+  const [commentPopup, setCommentPopup] = useState(null);
   const [scrolledEnd, setScrolledEnd] = useState(false);
   const tableWrapRef = useRef(null);
   const trackRef = useRef(null);
@@ -367,19 +369,35 @@ export default function TransparencyPage() {
 
   const repoBase = "https://github.com/muglikar/ProHealthLedger";
 
-  function commentCell(submission) {
-    if (submission.reason_pending) {
+  function commentCell(row) {
+    if (row.reason_pending) {
       return <span className="audit-comment-pending">Pending review</span>;
     }
     const raw =
-      typeof submission.reason === "string" ? submission.reason.trim() : "";
+      typeof row.reason === "string" ? row.reason.trim() : "";
     if (!raw) {
       return <span className="audit-comment-empty">—</span>;
     }
+    const profName = formatProfessionalDisplayName(
+      row.profile_slug,
+      row.public_name
+    );
     return (
-      <span className="audit-comment" title={raw}>
+      <button
+        type="button"
+        className="audit-comment audit-comment-expandable"
+        title={raw}
+        aria-label={`Open full comment from ${profName}`}
+        onClick={() =>
+          setCommentPopup({
+            text: raw,
+            professional: profName,
+            issue: row.issue,
+          })
+        }
+      >
         {raw}
-      </span>
+      </button>
     );
   }
 
@@ -460,6 +478,7 @@ export default function TransparencyPage() {
           </div>
           <p className="audit-table-hint">
             Scroll the table horizontally to see every column, including comments.
+            Hover a comment for a tooltip, or tap / click to read the full text.
           </p>
           <div className="audit-scroll-track" ref={trackRef}>
             <span className="audit-scroll-track-label">← drag or tap to scroll →</span>
@@ -548,6 +567,15 @@ export default function TransparencyPage() {
           data={shareModalData}
           onClose={() => setShareModalData(null)}
           firstPerson={!!shareModalData._firstPerson}
+        />
+      )}
+
+      {commentPopup && (
+        <CommentReadModal
+          professional={commentPopup.professional}
+          issue={commentPopup.issue}
+          text={commentPopup.text}
+          onClose={() => setCommentPopup(null)}
         />
       )}
     </>
