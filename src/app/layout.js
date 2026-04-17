@@ -16,12 +16,8 @@ const monda = Monda({
 
 const siteUrl = "https://pro-health-ledger.vercel.app";
 
-/** New URL per deploy so LinkedIn/Twitter drop stale og:image caches faster. */
-function socialImagePath(pathname) {
-  const tag =
-    process.env.VERCEL_DEPLOYMENT_ID || process.env.VERCEL_GIT_COMMIT_SHA;
-  return tag ? `${pathname}?cb=${encodeURIComponent(tag)}` : pathname;
-}
+/** Plain path: LinkedIn’s composer often drops thumbnails when `og:image` has query strings (Post Inspector still works). */
+const OG_BANNER = "/og_banner.png";
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
@@ -45,9 +41,9 @@ export const metadata = {
     images: [
       {
         /** Static art in `public/og_banner.png` (link preview only; icons use `logo.png`). */
-        url: socialImagePath("/og_banner.png"),
-        width: 1024,
-        height: 540,
+        url: OG_BANNER,
+        width: 1200,
+        height: 630,
         type: "image/png",
         alt: "ProHealthLedger — Know who you are working with before you commit.",
       },
@@ -58,7 +54,7 @@ export const metadata = {
     title: "Professional Health Ledger",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    images: [socialImagePath("/og_banner.png")],
+    images: [OG_BANNER],
   },
 };
 
