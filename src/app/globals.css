@@ -1722,18 +1722,15 @@ button.audit-comment-link:focus-visible {
   border-radius: 2px;
 }
 
-@media (prefers-color-scheme: dark) {
-  button.audit-comment-link {
-    color: #fbbf24;
-  }
+/* Profile cards: same as “View LinkedIn Profile →” under the name. */
+.profile-card .profile-vouch-table button.audit-comment-link {
+  color: var(--text-muted);
+  font-weight: 500;
+}
 
-  button.audit-comment-link:hover {
-    color: #fde047;
-  }
-
-  button.audit-comment-link:focus-visible {
-    outline-color: #fbbf24;
-  }
+.profile-card .profile-vouch-table button.audit-comment-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 .audit-comment-empty {

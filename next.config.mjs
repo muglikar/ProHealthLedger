@@ -3,7 +3,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/api/og-home",
+        source: "/api/og-card",
         headers: [
           {
             key: "Cache-Control",
