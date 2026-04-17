@@ -16,8 +16,8 @@ const monda = Monda({
 
 const siteUrl = "https://pro-health-ledger.vercel.app";
 
-/** Plain path: LinkedIn’s composer often drops thumbnails when `og:image` has query strings (Post Inspector still works). */
-const OG_BANNER = "/og_banner.png";
+/** Absolute URL + secureUrl: some LinkedIn clients ignore relative `og:image`. */
+const OG_IMAGE = `${siteUrl}/og_banner.png`;
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
@@ -41,7 +41,8 @@ export const metadata = {
     images: [
       {
         /** Static art in `public/og_banner.png` (link preview only; icons use `logo.png`). */
-        url: OG_BANNER,
+        url: OG_IMAGE,
+        secureUrl: OG_IMAGE,
         width: 1200,
         height: 630,
         type: "image/png",
@@ -54,7 +55,7 @@ export const metadata = {
     title: "Professional Health Ledger",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    images: [OG_BANNER],
+    images: [OG_IMAGE],
   },
 };
 
