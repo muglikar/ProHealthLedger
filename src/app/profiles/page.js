@@ -2,10 +2,10 @@ import ProfilesClient from "./ProfilesClient";
 
 const SITE_URL = "https://pro-health-ledger.vercel.app";
 
-function socialBannerPath() {
+function socialOgImagePath(pathname) {
   const tag =
     process.env.VERCEL_DEPLOYMENT_ID || process.env.VERCEL_GIT_COMMIT_SHA;
-  return tag ? `/og_banner.png?cb=${encodeURIComponent(tag)}` : "/og_banner.png";
+  return tag ? `${pathname}?cb=${encodeURIComponent(tag)}` : pathname;
 }
 
 const DEFAULT_DESC =
@@ -51,9 +51,9 @@ export async function generateMetadata({ searchParams }) {
       type: "website",
       images: [
         {
-          url: socialBannerPath(),
-          width: 2848,
-          height: 1504,
+          url: socialOgImagePath("/opengraph-image"),
+          width: 1200,
+          height: 630,
           type: "image/png",
           alt: "ProHealthLedger — Know who you are working with before you commit.",
         },
@@ -63,7 +63,7 @@ export async function generateMetadata({ searchParams }) {
       card: "summary_large_image",
       title: `${titleBase} — Professional Health Ledger`,
       description: DEFAULT_DESC,
-      images: [socialBannerPath()],
+      images: [socialOgImagePath("/twitter-image")],
     },
   };
 }
