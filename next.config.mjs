@@ -3,16 +3,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/opengraph-image",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=0, must-revalidate",
-          },
-        ],
-      },
-      {
-        source: "/twitter-image",
+        source: "/api/og-home",
         headers: [
           {
             key: "Cache-Control",
