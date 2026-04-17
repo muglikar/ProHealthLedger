@@ -51,9 +51,9 @@ export async function generateMetadata({ searchParams }) {
       type: "website",
       images: [
         {
-          url: socialOgImagePath("/opengraph-image"),
-          width: 1200,
-          height: 630,
+          url: socialOgImagePath("/og_banner.png"),
+          width: 1024,
+          height: 540,
           type: "image/png",
           alt: "ProHealthLedger — Know who you are working with before you commit.",
         },
@@ -63,7 +63,7 @@ export async function generateMetadata({ searchParams }) {
       card: "summary_large_image",
       title: `${titleBase} — Professional Health Ledger`,
       description: DEFAULT_DESC,
-      images: [socialOgImagePath("/twitter-image")],
+      images: [socialOgImagePath("/og_banner.png")],
     },
   };
 }
