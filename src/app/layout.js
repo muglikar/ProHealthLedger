@@ -36,7 +36,9 @@ export const metadata = {
     title: "Professional Health Ledger — Know Who You're Working With",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
+    url: siteUrl,
     siteName: "Professional Health Ledger",
+    locale: "en_US",
     type: "website",
     images: [
       {
@@ -55,7 +57,14 @@ export const metadata = {
     title: "Professional Health Ledger",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    images: [OG_IMAGE],
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: "ProHealthLedger — Know who you are working with before you commit.",
+      },
+    ],
   },
 };
 
