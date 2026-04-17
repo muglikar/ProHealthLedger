@@ -44,6 +44,7 @@ export async function generateMetadata({ searchParams }) {
       description: DEFAULT_DESC,
       url: canonical,
       siteName: "Professional Health Ledger",
+      locale: "en_US",
       type: "website",
       images: [
         {
@@ -60,7 +61,14 @@ export async function generateMetadata({ searchParams }) {
       card: "summary_large_image",
       title: `${titleBase} — Professional Health Ledger`,
       description: DEFAULT_DESC,
-      images: [OG_IMAGE],
+      images: [
+        {
+          url: OG_IMAGE,
+          width: 1200,
+          height: 630,
+          alt: "ProHealthLedger — Know who you are working with before you commit.",
+        },
+      ],
     },
   };
 }
