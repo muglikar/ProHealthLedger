@@ -2794,6 +2794,59 @@ a:hover {
   margin: 0;
 }
 
+.share-modal-paste-steps {
+  background: #fff8e6;
+  border: 1px solid #e8c96b;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #1a1a1a;
+}
+
+.share-modal-paste-steps strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #7c2d12;
+}
+
+.share-modal-paste-steps ol {
+  margin: 0 0 12px;
+  padding-left: 1.25rem;
+}
+
+.share-modal-paste-steps li {
+  margin-bottom: 6px;
+}
+
+.share-modal-kbd {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid #c4b8a8;
+  border-radius: 4px;
+  background: #fff;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+}
+
+.share-modal-reopen-linkedin {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.share-modal-reopen-linkedin:hover {
+  color: #b45309;
+}
+
 .share-modal-text {
   background: #f8f4ee;
   border: 1px solid #e8e0d4;
