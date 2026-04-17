@@ -2,6 +2,12 @@ import ProfilesClient from "./ProfilesClient";
 
 const SITE_URL = "https://pro-health-ledger.vercel.app";
 
+function socialBannerPath() {
+  const tag =
+    process.env.VERCEL_DEPLOYMENT_ID || process.env.VERCEL_GIT_COMMIT_SHA;
+  return tag ? `/og_banner.png?cb=${encodeURIComponent(tag)}` : "/og_banner.png";
+}
+
 const DEFAULT_DESC =
   "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.";
 
@@ -43,11 +49,21 @@ export async function generateMetadata({ searchParams }) {
       url: canonical,
       siteName: "Professional Health Ledger",
       type: "website",
+      images: [
+        {
+          url: socialBannerPath(),
+          width: 2848,
+          height: 1504,
+          type: "image/png",
+          alt: "ProHealthLedger — Know who you are working with before you commit.",
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: `${titleBase} — Professional Health Ledger`,
       description: DEFAULT_DESC,
+      images: [socialBannerPath()],
     },
   };
 }

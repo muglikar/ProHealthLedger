@@ -29,9 +29,9 @@ export const metadata = {
   description:
     "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
   icons: {
-    icon: { url: "/favicon.png", type: "image/png", sizes: "512x512" },
+    icon: { url: "/logo.png", type: "image/png", sizes: "512x512" },
     apple: {
-      url: "/apple-touch-icon.png",
+      url: "/logo.png",
       sizes: "180x180",
       type: "image/png",
     },
@@ -44,9 +44,10 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: socialImagePath("/api/og-card"),
-        width: 1200,
-        height: 630,
+        /** Static banner only for link previews; `logo.png` is for favicon / PWA only. */
+        url: socialImagePath("/og_banner.png"),
+        width: 2848,
+        height: 1504,
         type: "image/png",
         alt: "ProHealthLedger — Know who you are working with before you commit.",
       },
@@ -57,7 +58,7 @@ export const metadata = {
     title: "Professional Health Ledger",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    images: [socialImagePath("/api/og-card")],
+    images: [socialImagePath("/og_banner.png")],
   },
 };
 
