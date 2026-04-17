@@ -4,8 +4,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 import CommentReadModal from "@/app/components/CommentReadModal";
-
-const SITE_URL = "https://pro-health-ledger.vercel.app";
+import ShareVouchModal from "@/app/components/ShareVouchModal";
 
 function parseVoteDate(d) {
   if (!d || typeof d !== "string") return 0;
@@ -46,146 +45,6 @@ function compareByDateThenIssue(a, b) {
   const d = parseVoteDate(b.date) - parseVoteDate(a.date);
   if (d !== 0) return d;
   return (Number(b.issue) || 0) - (Number(a.issue) || 0);
-}
-
-function buildShareText(displayName, profileSlug, firstPerson = false) {
-  if (firstPerson) {
-    return (
-      `I've been vouched for i.e. positively reviewed on Pro-Health Ledger.\n\n` +
-      `Please check it out and share your experiences too!`
-    );
-  }
-  return (
-    `Hey ${displayName}, I have vouched for you i.e. positively reviewed you on Pro-Health Ledger.\n\n` +
-    `Please check it out and share your experiences too!`
-  );
-}
-
-function ShareModal({ data, onClose, firstPerson = false }) {
-  const [copied, setCopied] = useState(false);
-  const [linkedinPasteStep, setLinkedinPasteStep] = useState(false);
-  const pasteKey =
-    typeof navigator !== "undefined" &&
-    (navigator.platform?.includes("Mac") || /Mac|iPhone|iPad/.test(navigator.userAgent || ""))
-      ? "⌘V"
-      : "Ctrl+V";
-
-  const displayName = formatProfessionalDisplayName(
-    data.profile_slug,
-    data.public_name
-  );
-  const shareText = buildShareText(displayName, data.profile_slug, firstPerson);
-  const profileUrl = `${SITE_URL}/profiles?search=${encodeURIComponent(data.profile_slug)}`;
-  const linkedinShareOffsiteUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`;
-
-  useEffect(() => {
-    setLinkedinPasteStep(false);
-    setCopied(false);
-  }, [data]);
-
-  const handlePostToLinkedIn = useCallback(async () => {
-    const toCopy = `${shareText}\n\n${profileUrl}`;
-    try {
-      await navigator.clipboard.writeText(toCopy);
-    } catch {
-      const ta = document.createElement("textarea");
-      ta.value = toCopy;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-    }
-    setCopied(true);
-    setLinkedinPasteStep(true);
-    window.open(
-      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`,
-      "_blank",
-      "noopener,noreferrer"
-    );
-    setTimeout(() => setCopied(false), 4000);
-  }, [shareText, profileUrl]);
-
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-  return (
-    <>
-      <div className="share-modal-backdrop" onClick={onClose} />
-      <div className="share-modal" role="dialog" aria-modal="true" aria-label="Share vouch on LinkedIn">
-        <div className="share-modal-header">
-          <h3>Share this vouch on LinkedIn</h3>
-          <button
-            type="button"
-            className="share-modal-close"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            ✕
-          </button>
-        </div>
-        <div className="share-modal-body">
-          <p className="share-modal-hint">
-            LinkedIn&apos;s <strong>share</strong> link preloads the profile URL as a
-            preview card. We also copy the profile link in the text below so it
-            appears in your post — paste everything ({pasteKey}). If the URL
-            appears twice, delete the duplicate line.
-          </p>
-          {linkedinPasteStep ? (
-            <div className="share-modal-paste-steps" role="status">
-              <strong>Next — in the LinkedIn tab</strong>
-              <ol>
-                <li>
-                  If you see <strong>Sign in</strong>, sign in, then use
-                  &ldquo;Open LinkedIn again&rdquo; below.
-                </li>
-                <li>
-                  You should see a composer with the <strong>profile link preview</strong> already
-                  loaded (small card).
-                </li>
-                <li>
-                  Press <kbd className="share-modal-kbd">{pasteKey}</kbd> to paste your
-                  message and profile link, then post.
-                </li>
-              </ol>
-              <button
-                type="button"
-                className="share-modal-reopen-linkedin"
-                onClick={() => window.open(linkedinShareOffsiteUrl, "_blank", "noopener,noreferrer")}
-              >
-                Open LinkedIn again
-              </button>
-            </div>
-          ) : null}
-          <div className="share-modal-text">{`${shareText}\n\n${profileUrl}`}</div>
-          <div className="share-modal-links">
-            <span className="share-modal-link-label">Profile link (in preview + copied text):</span>
-            <a href={profileUrl} target="_blank" rel="noopener noreferrer">
-              {profileUrl}
-            </a>
-          </div>
-        </div>
-        <div className="share-modal-actions">
-          <button
-            type="button"
-            className="btn-linkedin-open"
-            onClick={handlePostToLinkedIn}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-            </svg>
-            {copied ? "Copied — paste in LinkedIn" : "Copy message & open LinkedIn"}
-          </button>
-        </div>
-      </div>
-    </>
-  );
 }
 
 export default function TransparencyPage() {
@@ -370,6 +229,15 @@ export default function TransparencyPage() {
 
   const repoBase = "https://github.com/muglikar/ProHealthLedger";
 
+  function submitterPlain(submission) {
+    const userId = submission.user || submission.github_username || "";
+    if (!userId) return "—";
+    return (
+      submission.display_name ||
+      (userId.startsWith("github:") ? userId.slice(7) : userId)
+    );
+  }
+
   function commentCell(row) {
     if (row.reason_pending) {
       return <span className="audit-comment-pending">Pending review</span>;
@@ -386,18 +254,29 @@ export default function TransparencyPage() {
     return (
       <button
         type="button"
-        className="audit-comment audit-comment-expandable"
+        className="audit-comment-expandable"
         title={raw}
-        aria-label={`Open full comment from ${profName}`}
+        aria-label={`Open full vote row and comment for ${profName}`}
         onClick={() =>
           setCommentPopup({
             text: raw,
             professional: profName,
+            vote: row.vote,
+            submittedBy: submitterPlain(row),
+            date: row.date || "—",
             issue: row.issue,
+            recordHref:
+              row.issue != null
+                ? `${repoBase}/issues/${row.issue}`
+                : null,
+            linkedinUrl: row.linkedin_url || null,
           })
         }
       >
-        {raw}
+        <span className="audit-comment-expandable-text">{raw}</span>
+        <span className="audit-comment-expandable-badge" aria-hidden>
+          View
+        </span>
       </button>
     );
   }
@@ -479,7 +358,9 @@ export default function TransparencyPage() {
           </div>
           <p className="audit-table-hint">
             Scroll the table horizontally to see every column, including comments.
-            Hover a comment for a tooltip, or tap / click to read the full text.
+            Each comment with text sits in a warm chip with a <strong>View</strong> control;
+            tap or click it for the full vote row (professional, vote, submitter, date,
+            record) plus the full comment.
           </p>
           <div className="audit-scroll-track" ref={trackRef}>
             <span className="audit-scroll-track-label">← drag or tap to scroll →</span>
@@ -564,7 +445,7 @@ export default function TransparencyPage() {
       )}
 
       {shareModalData && (
-        <ShareModal
+        <ShareVouchModal
           data={shareModalData}
           onClose={() => setShareModalData(null)}
           firstPerson={!!shareModalData._firstPerson}
@@ -574,7 +455,12 @@ export default function TransparencyPage() {
       {commentPopup && (
         <CommentReadModal
           professional={commentPopup.professional}
+          vote={commentPopup.vote}
+          submittedBy={commentPopup.submittedBy}
+          date={commentPopup.date}
           issue={commentPopup.issue}
+          recordHref={commentPopup.recordHref}
+          linkedinUrl={commentPopup.linkedinUrl}
           text={commentPopup.text}
           onClose={() => setCommentPopup(null)}
         />

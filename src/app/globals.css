@@ -1078,6 +1078,11 @@ a:hover {
 }
 
 .profile-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -1143,6 +1148,7 @@ a:hover {
 }
 
 .submission-count {
+  flex-grow: 1;
   color: var(--text-muted);
   font-size: 0.8rem;
   display: flex;
@@ -1151,7 +1157,12 @@ a:hover {
   flex-wrap: wrap;
 }
 
+.profile-card:has(.profile-vouch-details) .submission-count {
+  flex-grow: 0;
+}
+
 .profile-experience-cta {
+  flex-shrink: 0;
   margin-top: 14px;
   padding: 12px 14px;
   background: var(--bg-warm);
@@ -1163,6 +1174,12 @@ a:hover {
   gap: 10px;
 }
 
+.profile-vouch-details + .profile-experience-cta {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
 .profile-experience-cta-text {
   margin: 0;
   font-size: 0.82rem;
@@ -1170,11 +1187,68 @@ a:hover {
   line-height: 1.45;
 }
 
+.profile-experience-cta-sub {
+  margin: -4px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.profile-experience-cta-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+@media (min-width: 520px) {
+  .profile-experience-cta-actions--pair {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+  }
+
+  .profile-experience-cta-actions--pair .profile-experience-cta-btn,
+  .profile-experience-cta-actions--pair .profile-experience-linkedin-btn {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+  }
+}
+
 .profile-experience-cta-btn {
   width: 100%;
   justify-content: center;
   text-align: center;
   text-decoration: none;
+}
+
+.profile-experience-linkedin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  border: 1px solid #93c5fd;
+  background: #eff6ff;
+  color: #0a66c2;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: background 0.15s, border-color 0.15s, transform 0.12s;
+}
+
+.profile-experience-linkedin-btn:hover {
+  background: #dbeafe;
+  border-color: #60a5fa;
+  transform: translateY(-1px);
+}
+
+.profile-experience-linkedin-btn:active {
+  transform: translateY(0);
 }
 
 .profile-toggle-details {
@@ -1193,6 +1267,8 @@ a:hover {
 }
 
 .profile-vouch-details {
+  flex-grow: 1;
+  min-height: 0;
   margin-top: 14px;
   border-top: 1px solid var(--border);
   padding-top: 12px;
@@ -1228,11 +1304,6 @@ a:hover {
 
 .profile-vouch-table .pvt-col-vote {
   width: 70px;
-}
-
-.profile-vouch-table .pvt-col-share {
-  width: 40px;
-  text-align: center;
 }
 
 .profile-vouch-table .pvt-col-comment {
@@ -1616,38 +1687,101 @@ a:hover {
   vertical-align: top;
 }
 
-.audit-comment {
-  display: block;
-  max-height: 2.8rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* Expandable table comment: chip + underline so it never reads as plain body text. */
+button.audit-comment-expandable {
+  --audit-comment-accent: var(--accent);
+  font: inherit;
   font-size: 0.82rem;
   line-height: 1.45;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-button.audit-comment-expandable {
-  font: inherit;
-  color: inherit;
-  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   max-width: 100%;
-  border: none;
-  background: transparent;
-  padding: 0;
   margin: 0;
+  padding: 4px 8px 4px 10px;
+  text-align: left;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  border: 1px solid rgba(180, 83, 9, 0.35);
+  border-radius: var(--radius-sm);
+  background: #fff7ed;
+  color: var(--text);
+  border-left-width: 3px;
+  border-left-color: var(--audit-comment-accent);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 button.audit-comment-expandable:hover {
-  color: var(--accent);
+  background: #ffedd5;
+  border-color: rgba(180, 83, 9, 0.5);
 }
 
 button.audit-comment-expandable:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+.audit-comment-expandable-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-height: 2.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--audit-comment-accent);
+  text-underline-offset: 3px;
+}
+
+button.audit-comment-expandable:hover .audit-comment-expandable-text {
+  color: var(--audit-comment-accent);
+  text-decoration-style: solid;
+}
+
+.audit-comment-expandable-badge {
+  flex: 0 0 auto;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(180, 83, 9, 0.14);
+  color: var(--audit-comment-accent);
+  border: 1px solid rgba(180, 83, 9, 0.38);
+}
+
+@media (prefers-color-scheme: dark) {
+  button.audit-comment-expandable {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.28);
+    border-left-color: #fbbf24;
+  }
+
+  button.audit-comment-expandable:hover {
+    background: rgba(251, 191, 36, 0.18);
+    border-color: rgba(251, 191, 36, 0.42);
+  }
+
+  .audit-comment-expandable-text {
+    color: #f8fafc;
+    text-decoration-color: #fbbf24;
+  }
+
+  button.audit-comment-expandable:hover .audit-comment-expandable-text {
+    color: #fde047;
+    text-decoration-color: #fde047;
+  }
+
+  .audit-comment-expandable-badge {
+    background: rgba(251, 191, 36, 0.16);
+    color: #fef08a;
+    border-color: rgba(253, 230, 138, 0.4);
+  }
 }
 
 .audit-comment-empty {
@@ -2780,8 +2914,8 @@ button.audit-comment-expandable:focus-visible {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: min(480px, calc(100vw - 32px));
-  max-height: min(70dvh, 520px);
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(80dvh, 640px);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -2808,23 +2942,73 @@ button.audit-comment-expandable:focus-visible {
   color: #1a1a1a;
 }
 
-.comment-read-modal-meta {
+.comment-read-modal-details {
+  margin: 0 16px 14px;
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  background: #fef7ed;
+  border: 1px solid #e8e0d4;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.comment-read-modal-row {
+  display: grid;
+  grid-template-columns: minmax(0, 42%) 1fr;
+  gap: 6px 12px;
+  align-items: start;
+}
+
+.comment-read-modal-k {
   margin: 0;
-  padding: 10px 20px 0;
-  font-size: 0.8rem;
+  font-weight: 700;
+  color: #555555;
+}
+
+.comment-read-modal-v {
+  margin: 0;
+  color: #0f172a;
+  word-break: break-word;
+}
+
+@media (max-width: 420px) {
+  .comment-read-modal-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.comment-read-modal-comment-section {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.comment-read-modal-comment-heading {
+  margin: 0;
+  padding: 12px 20px 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: #666666;
   flex-shrink: 0;
 }
 
 .comment-read-modal-body {
   margin: 0;
-  padding: 14px 20px 20px;
+  padding: 0 20px 20px;
   overflow-y: auto;
   font-size: 0.9rem;
   line-height: 1.55;
   color: #1a1a1a;
   white-space: pre-wrap;
   word-break: break-word;
+  flex: 1;
 }
 
 .share-modal {
@@ -2966,9 +3150,9 @@ button.audit-comment-expandable:focus-visible {
   font-size: 0.8rem;
   color: #888888;
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px 6px;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .share-modal-link-label {
@@ -3098,6 +3282,17 @@ button.audit-comment-expandable:focus-visible {
   }
 
   .share-linkedin-btn:hover {
+    background: rgba(10, 102, 194, 0.25);
+    border-color: rgba(96, 165, 250, 0.5);
+  }
+
+  .profile-experience-linkedin-btn {
+    background: rgba(10, 102, 194, 0.15);
+    border-color: rgba(10, 102, 194, 0.35);
+    color: #60a5fa;
+  }
+
+  .profile-experience-linkedin-btn:hover {
     background: rgba(10, 102, 194, 0.25);
     border-color: rgba(96, 165, 250, 0.5);
   }

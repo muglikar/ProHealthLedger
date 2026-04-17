@@ -16,6 +16,13 @@ const monda = Monda({
 
 const siteUrl = "https://pro-health-ledger.vercel.app";
 
+/** New URL per deploy so LinkedIn/Twitter drop stale og:image caches faster. */
+function socialImagePath(pathname) {
+  const tag =
+    process.env.VERCEL_DEPLOYMENT_ID || process.env.VERCEL_GIT_COMMIT_SHA;
+  return tag ? `${pathname}?cb=${encodeURIComponent(tag)}` : pathname;
+}
+
 export const metadata = {
   metadataBase: new URL(siteUrl),
   title: "Professional Health Ledger — Know Who You're Working With",
@@ -33,16 +40,15 @@ export const metadata = {
     title: "Professional Health Ledger — Know Who You're Working With",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    url: siteUrl,
     siteName: "Professional Health Ledger",
-    type: "article",
+    type: "website",
     images: [
       {
-        url: `${siteUrl}/og-link-preview.png`,
+        url: socialImagePath("/opengraph-image"),
         width: 1200,
         height: 630,
         type: "image/png",
-        alt: "Professional Health Ledger — Know Who You're Working With",
+        alt: "ProHealthLedger — Know who you are working with before you commit.",
       },
     ],
   },
@@ -51,7 +57,7 @@ export const metadata = {
     title: "Professional Health Ledger",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    images: [`${siteUrl}/og-link-preview.png`],
+    images: [socialImagePath("/twitter-image")],
   },
 };
 
