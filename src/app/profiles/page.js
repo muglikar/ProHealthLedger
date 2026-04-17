@@ -2,7 +2,7 @@ import ProfilesClient from "./ProfilesClient";
 
 const SITE_URL = "https://pro-health-ledger.vercel.app";
 
-const OG_BANNER = "/og_banner.png";
+const OG_IMAGE = `${SITE_URL}/og_banner.png`;
 
 const DEFAULT_DESC =
   "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.";
@@ -47,7 +47,8 @@ export async function generateMetadata({ searchParams }) {
       type: "website",
       images: [
         {
-          url: OG_BANNER,
+          url: OG_IMAGE,
+          secureUrl: OG_IMAGE,
           width: 1200,
           height: 630,
           type: "image/png",
@@ -59,7 +60,7 @@ export async function generateMetadata({ searchParams }) {
       card: "summary_large_image",
       title: `${titleBase} — Professional Health Ledger`,
       description: DEFAULT_DESC,
-      images: [OG_BANNER],
+      images: [OG_IMAGE],
     },
   };
 }
