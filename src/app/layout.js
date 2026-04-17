@@ -38,7 +38,7 @@ export const metadata = {
     type: "article",
     images: [
       {
-        url: `${siteUrl}/og-banner.png`,
+        url: `${siteUrl}/og-link-preview.png`,
         width: 1200,
         height: 630,
         type: "image/png",
@@ -51,7 +51,7 @@ export const metadata = {
     title: "Professional Health Ledger",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    images: [`${siteUrl}/og-banner.png`],
+    images: [`${siteUrl}/og-link-preview.png`],
   },
 };
 
