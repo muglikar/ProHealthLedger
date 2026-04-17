@@ -254,7 +254,7 @@ export default function TransparencyPage() {
     return (
       <button
         type="button"
-        className="audit-comment-expandable"
+        className="audit-comment-link"
         title={raw}
         aria-label={`Open full vote row and comment for ${profName}`}
         onClick={() =>
@@ -273,10 +273,7 @@ export default function TransparencyPage() {
           })
         }
       >
-        <span className="audit-comment-expandable-text">{raw}</span>
-        <span className="audit-comment-expandable-badge" aria-hidden>
-          View
-        </span>
+        {raw}
       </button>
     );
   }
