@@ -44,10 +44,10 @@ export const metadata = {
     type: "website",
     images: [
       {
-        /** Static banner only for link previews; `logo.png` is for favicon / PWA only. */
-        url: socialImagePath("/og_banner.png"),
-        width: 2848,
-        height: 1504,
+        /** Generated PNG (no static bitmap) so social caches cannot resurrect old art. */
+        url: socialImagePath("/opengraph-image"),
+        width: 1200,
+        height: 630,
         type: "image/png",
         alt: "ProHealthLedger — Know who you are working with before you commit.",
       },
@@ -58,7 +58,7 @@ export const metadata = {
     title: "Professional Health Ledger",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    images: [socialImagePath("/og_banner.png")],
+    images: [socialImagePath("/twitter-image")],
   },
 };
 
