@@ -1,7 +1,5 @@
 import { ImageResponse } from "next/og";
 
-const SITE_URL = "https://pro-health-ledger.vercel.app";
-
 /** Homepage hero + nav tokens (`globals.css` :root / `.home-above-fold h1` / `.hero-highlight`). */
 const COLORS = {
   pageBg: "#fafafa",
@@ -45,9 +43,10 @@ async function mondaFonts() {
 }
 
 /**
- * Social preview: new raster mark (`/phl-og-mark-v1.png`) + homepage hero line only (Monda).
+ * Social preview: embedded nav mark (apple-touch PNG as data URL) + homepage hero line (Monda).
+ * @param {string} logoDataUrl - `data:image/png;base64,...` from disk (see `/api/og-card`).
  */
-export async function buildOgHomeImageResponse() {
+export async function buildOgHomeImageResponse(logoDataUrl) {
   const fonts = await mondaFonts();
   const fontStack =
     fonts.length > 0 ? "Monda" : "ui-sans-serif, system-ui, -apple-system, sans-serif";
@@ -68,9 +67,9 @@ export async function buildOgHomeImageResponse() {
         }}
       >
         <img
-          src={`${SITE_URL}/phl-og-mark-v1.png`}
-          width={200}
-          height={200}
+          src={logoDataUrl}
+          width={180}
+          height={180}
           alt=""
           style={{ objectFit: "contain" }}
         />

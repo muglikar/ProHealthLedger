@@ -44,7 +44,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: socialImagePath("/api/og-home"),
+        url: socialImagePath("/api/og-card"),
         width: 1200,
         height: 630,
         type: "image/png",
@@ -57,7 +57,7 @@ export const metadata = {
     title: "Professional Health Ledger",
     description:
       "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
-    images: [socialImagePath("/api/og-home")],
+    images: [socialImagePath("/api/og-card")],
   },
 };
 
