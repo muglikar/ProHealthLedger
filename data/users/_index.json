@@ -241,5 +241,19 @@
     ],
     "yes_count": 1,
     "no_count": 0
+  },
+  {
+    "user_id": "linkedin:YPuTuKfNvt",
+    "display_name": "Rohit Kadam",
+    "contributions": [
+      {
+        "profile_slug": "muglikar",
+        "vote": "yes",
+        "issue": 32,
+        "date": "2026-04-18"
+      }
+    ],
+    "yes_count": 1,
+    "no_count": 0
   }
 ]
