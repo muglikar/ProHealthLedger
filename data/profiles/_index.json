@@ -464,7 +464,7 @@
     "linkedin_url": "https://www.linkedin.com/in/muglikar",
     "slug": "muglikar",
     "votes": {
-      "yes": 2,
+      "yes": 3,
       "no": 0
     },
     "submissions": [
@@ -483,6 +483,13 @@
         "issue": 30,
         "date": "2026-04-16",
         "reason": "Amazing Teacher!"
+      },
+      {
+        "user": "linkedin:YPuTuKfNvt",
+        "display_name": "Rohit Kadam",
+        "vote": "yes",
+        "issue": 32,
+        "date": "2026-04-18"
       }
     ]
   },
