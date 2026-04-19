@@ -1,16 +1,9 @@
-const DEFAULT_ADMIN = "github:muglikar";
+import {
+  REPO_MAINTAINER_LINKEDIN_CANONICAL,
+  isRepoMaintainerUserId,
+} from "@/lib/repo-owner-session";
 
-/**
- * OIDC `sub` fragment for the primary maintainer LinkedIn account (matches public ledger
- * `user_id` linkedin:… in data/users). Forks: set DISABLE_BUILTIN_LINKEDIN_ADMIN=1 or
- * BUILTIN_LINKEDIN_ADMIN_SUB= to disable/override.
- */
-function builtinLinkedinAdminSub() {
-  if (process.env.DISABLE_BUILTIN_LINKEDIN_ADMIN === "1") return "";
-  const raw = process.env.BUILTIN_LINKEDIN_ADMIN_SUB;
-  if (raw !== undefined && String(raw).trim() === "") return "";
-  return String(raw ?? "CAOSO1oig0").trim();
-}
+const DEFAULT_ADMIN = "github:muglikar";
 
 function parseList(raw) {
   if (!raw || typeof raw !== "string") return [];
@@ -53,9 +46,12 @@ export function normalizeAdminEmail(raw) {
 function collectSiteAdminUserIds() {
   const set = new Set();
   set.add(canonicalUserIdForAdmin(DEFAULT_ADMIN));
-  const builtinLi = builtinLinkedinAdminSub();
-  if (builtinLi) {
-    set.add(canonicalUserIdForAdmin(`linkedin:${builtinLi}`));
+  if (process.env.DISABLE_BUILTIN_LINKEDIN_ADMIN !== "1") {
+    set.add(REPO_MAINTAINER_LINKEDIN_CANONICAL);
+  }
+  const extraBuiltin = process.env.BUILTIN_LINKEDIN_ADMIN_SUB?.trim();
+  if (extraBuiltin) {
+    set.add(canonicalUserIdForAdmin(`linkedin:${extraBuiltin}`));
   }
   for (const id of parseList(process.env.SITE_ADMIN_USER_IDS)) {
     set.add(canonicalUserIdForAdmin(id));
@@ -130,6 +126,7 @@ export function isSiteAdminForSession({ userId, email, linkedinVanity } = {}) {
 /** Use with getServerSession / useSession result (reads user.email, token-backed authEmail). */
 export function isSessionSiteAdmin(session) {
   if (!session?.userId) return false;
+  if (isRepoMaintainerUserId(session.userId)) return true;
   const email =
     (session.user &&
       typeof session.user.email === "string" &&
