@@ -30,6 +30,21 @@ export function normalizeUserIdForAdmin(id) {
   return `${p}:${rest}`;
 }
 
+/**
+ * LinkedIn `sub` / account id may be a short token (ledger) or `urn:li:person:TOKEN`.
+ * Normalize to `linkedin:<token>` so session ids match public `data/users` entries.
+ */
+export function canonicalUserIdForAdmin(userId) {
+  const norm = normalizeUserIdForAdmin(userId);
+  if (!norm.startsWith("linkedin:")) return norm;
+  const rest = norm.slice("linkedin:".length);
+  const urn = /^urn:li:person:(.+)$/.exec(rest);
+  if (urn && urn[1]) {
+    return normalizeUserIdForAdmin(`linkedin:${urn[1].trim()}`);
+  }
+  return norm;
+}
+
 export function normalizeAdminEmail(raw) {
   if (!raw || typeof raw !== "string") return "";
   return raw.trim().toLowerCase();
@@ -37,16 +52,17 @@ export function normalizeAdminEmail(raw) {
 
 function collectSiteAdminUserIds() {
   const set = new Set();
-  set.add(normalizeUserIdForAdmin(DEFAULT_ADMIN));
+  set.add(canonicalUserIdForAdmin(DEFAULT_ADMIN));
   const builtinLi = builtinLinkedinAdminSub();
   if (builtinLi) {
-    set.add(normalizeUserIdForAdmin(`linkedin:${builtinLi}`));
+    set.add(canonicalUserIdForAdmin(`linkedin:${builtinLi}`));
   }
   for (const id of parseList(process.env.SITE_ADMIN_USER_IDS)) {
-    set.add(normalizeUserIdForAdmin(id));
+    set.add(canonicalUserIdForAdmin(id));
   }
   for (const sub of parseList(process.env.LINKEDIN_ADMIN_SUBS)) {
-    set.add(normalizeUserIdForAdmin(`linkedin:${sub}`));
+    const raw = sub.includes(":") ? sub : `linkedin:${sub}`;
+    set.add(canonicalUserIdForAdmin(raw));
   }
   return set;
 }
@@ -90,7 +106,8 @@ function collectLinkedinAdminInSlugs() {
  * @param {{ userId?: string, email?: string, linkedinVanity?: string }} args
  */
 export function isSiteAdminForSession({ userId, email, linkedinVanity } = {}) {
-  if (userId && collectSiteAdminUserIds().has(normalizeUserIdForAdmin(userId))) {
+  const uid = userId ? canonicalUserIdForAdmin(userId) : "";
+  if (uid && collectSiteAdminUserIds().has(uid)) {
     return true;
   }
   const em = normalizeAdminEmail(email);

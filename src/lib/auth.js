@@ -1,6 +1,9 @@
 import GithubProvider from "next-auth/providers/github";
 import LinkedInProvider from "next-auth/providers/linkedin";
-import { isSiteAdminForSession, normalizeAdminEmail } from "@/lib/site-admins";
+import {
+  isSiteAdminForSession,
+  normalizeAdminEmail,
+} from "@/lib/site-admins";
 
 const linkedInClientId =
   process.env.LINKEDIN_ID?.trim() ||
@@ -100,16 +103,26 @@ export const authOptions = {
         if (account.provider === "github") {
           token.userId = `github:${profile.login}`;
           token.displayName = profile.name || profile.login;
+          token.name = token.displayName;
           token.provider = "github";
           if (profile.email) {
-            token.authEmail = normalizeAdminEmail(String(profile.email));
+            const em = normalizeAdminEmail(String(profile.email));
+            token.authEmail = em;
+            token.email = em;
           }
         } else if (account.provider === "linkedin") {
-          token.userId = `linkedin:${account.providerAccountId}`;
+          const liSub =
+            profile.sub != null
+              ? String(profile.sub)
+              : String(account.providerAccountId);
+          token.userId = `linkedin:${liSub}`;
           token.displayName = profile.name || profile.email || "LinkedIn User";
+          token.name = token.displayName;
           token.provider = "linkedin";
           if (profile.email) {
-            token.authEmail = normalizeAdminEmail(String(profile.email));
+            const em = normalizeAdminEmail(String(profile.email));
+            token.authEmail = em;
+            token.email = em;
           }
           const vanity = await fetchLinkedinVanityName(account.access_token);
           if (vanity) {
@@ -117,6 +130,15 @@ export const authOptions = {
           }
         }
       }
+      const adminEmail =
+        (token.email && normalizeAdminEmail(String(token.email))) ||
+        (token.authEmail && normalizeAdminEmail(String(token.authEmail))) ||
+        "";
+      token.siteAdmin = isSiteAdminForSession({
+        userId: token.userId,
+        email: adminEmail,
+        linkedinVanity: token.linkedinVanity,
+      });
       return token;
     },
     async session({ session, token }) {
@@ -137,11 +159,7 @@ export const authOptions = {
       if (token.linkedinVanity) {
         session.linkedinVanity = String(token.linkedinVanity);
       }
-      session.siteAdmin = isSiteAdminForSession({
-        userId: token.userId,
-        email,
-        linkedinVanity: token.linkedinVanity,
-      });
+      session.siteAdmin = Boolean(token.siteAdmin);
       return session;
     },
   },
