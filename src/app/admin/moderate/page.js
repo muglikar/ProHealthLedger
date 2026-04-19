@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
+import { isRepoMaintainerUserId } from "@/lib/repo-owner-session";
 
 export default function ModeratePage() {
   const { data: session, status } = useSession();
@@ -11,7 +12,9 @@ export default function ModeratePage() {
   const [acting, setActing] = useState(null);
 
   const isAdmin =
-    status === "authenticated" && session?.userId && session.siteAdmin;
+    status === "authenticated" &&
+    session?.userId &&
+    (Boolean(session.siteAdmin) || isRepoMaintainerUserId(session.userId));
 
   const fetchPending = useCallback(async () => {
     try {

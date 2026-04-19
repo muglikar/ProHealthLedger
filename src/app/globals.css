@@ -2070,6 +2070,42 @@ button.audit-comment-link:focus-visible {
   color: #fff;
 }
 
+.nav-admin-bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 2px 2px;
+  margin-right: 2px;
+}
+
+.nav-admin-bell:hover {
+  color: var(--accent-light);
+}
+
+.nav-admin-bell-svg {
+  display: block;
+}
+
+.nav-admin-bell-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #b91c1c;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--bg-card);
+}
+
 .nav-auth-id {
   font-family: var(--font-mono);
   font-size: 0.75rem;
