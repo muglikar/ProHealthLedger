@@ -546,5 +546,24 @@
         "reason_pending": true
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/nikhil-mijar-a150839a",
+    "slug": "nikhil-mijar-a150839a",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "no",
+        "issue": 34,
+        "date": "2026-04-19",
+        "reason": "Embezzled a camera bought for doing their project.",
+        "reason_pending": true
+      }
+    ]
   }
 ]
