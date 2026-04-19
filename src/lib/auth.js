@@ -4,6 +4,7 @@ import {
   isSiteAdminForSession,
   normalizeAdminEmail,
 } from "@/lib/site-admins";
+import { isRepoMaintainerUserId } from "@/lib/repo-owner-session";
 
 const linkedInClientId =
   process.env.LINKEDIN_ID?.trim() ||
@@ -134,11 +135,13 @@ export const authOptions = {
         (token.email && normalizeAdminEmail(String(token.email))) ||
         (token.authEmail && normalizeAdminEmail(String(token.authEmail))) ||
         "";
-      token.siteAdmin = isSiteAdminForSession({
-        userId: token.userId,
-        email: adminEmail,
-        linkedinVanity: token.linkedinVanity,
-      });
+      token.siteAdmin =
+        isSiteAdminForSession({
+          userId: token.userId,
+          email: adminEmail,
+          linkedinVanity: token.linkedinVanity,
+        }) ||
+        (token.userId ? isRepoMaintainerUserId(String(token.userId)) : false);
       return token;
     },
     async session({ session, token }) {
