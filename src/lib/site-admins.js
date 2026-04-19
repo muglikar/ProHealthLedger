@@ -57,6 +57,7 @@ function collectSiteAdminUserIds() {
     set.add(canonicalUserIdForAdmin(id));
   }
   for (const sub of parseList(process.env.LINKEDIN_ADMIN_SUBS)) {
+    if (looksLikeLinkedinVanitySlugForEnv(sub)) continue;
     const raw = sub.includes(":") ? sub : `linkedin:${sub}`;
     set.add(canonicalUserIdForAdmin(raw));
   }
@@ -86,9 +87,27 @@ function normalizeLinkedinInSlug(raw) {
   return t ? t.split(/[/\s]+/).pop().toLowerCase() : "";
 }
 
+/**
+ * Values like `muglikar` are public /in/ handles, not OIDC subs (subs usually contain digits).
+ * So LINKEDIN_ADMIN_SUBS=muglikar should match vanity from /v2/me, not userId linkedin:muglikar.
+ */
+function looksLikeLinkedinVanitySlugForEnv(token) {
+  const t = String(token || "").trim().toLowerCase();
+  if (t.length < 2 || t.length > 100) return false;
+  if (t.startsWith("urn") || t.includes("://") || t.includes("@")) return false;
+  if (!/^[a-z0-9-]+$/.test(t)) return false;
+  if (/\d/.test(t)) return false;
+  return true;
+}
+
 function collectLinkedinAdminInSlugs() {
   const set = new Set();
   for (const raw of parseList(process.env.LINKEDIN_ADMIN_IN_SLUGS)) {
+    const slug = normalizeLinkedinInSlug(raw);
+    if (slug) set.add(slug);
+  }
+  for (const raw of parseList(process.env.LINKEDIN_ADMIN_SUBS)) {
+    if (!looksLikeLinkedinVanitySlugForEnv(raw)) continue;
     const slug = normalizeLinkedinInSlug(raw);
     if (slug) set.add(slug);
   }

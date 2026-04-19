@@ -3,14 +3,19 @@
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { isRepoMaintainerUserId } from "@/lib/repo-owner-session";
 
 export default function OwnerActivityStrip() {
   const { data: session, status } = useSession();
   const [payload, setPayload] = useState(null);
   const [dismissing, setDismissing] = useState(false);
 
+  const isLedgerAdmin =
+    Boolean(session?.siteAdmin) ||
+    (session?.userId ? isRepoMaintainerUserId(session.userId) : false);
+
   const load = useCallback(async () => {
-    if (status !== "authenticated" || !session?.siteAdmin) return;
+    if (status !== "authenticated" || !isLedgerAdmin) return;
     try {
       const r = await fetch("/api/owner-activity");
       if (r.ok) setPayload(await r.json());
@@ -18,10 +23,10 @@ export default function OwnerActivityStrip() {
     } catch {
       setPayload(null);
     }
-  }, [status, session?.siteAdmin]);
+  }, [status, isLedgerAdmin]);
 
   useEffect(() => {
-    if (status !== "authenticated" || !session?.siteAdmin) {
+    if (status !== "authenticated" || !isLedgerAdmin) {
       setPayload(null);
       return;
     }
@@ -37,7 +42,7 @@ export default function OwnerActivityStrip() {
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("focus", load);
     };
-  }, [status, session?.siteAdmin, load]);
+  }, [status, isLedgerAdmin, load]);
 
   const dismiss = async () => {
     setDismissing(true);
@@ -58,7 +63,7 @@ export default function OwnerActivityStrip() {
     setDismissing(false);
   };
 
-  if (status !== "authenticated" || !session?.siteAdmin || !payload) {
+  if (status !== "authenticated" || !isLedgerAdmin || !payload) {
     return null;
   }
   if (payload.newCount < 1) return null;
