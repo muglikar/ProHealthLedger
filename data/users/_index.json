@@ -209,9 +209,15 @@
         "vote": "no",
         "issue": 31,
         "date": "2026-04-18"
+      },
+      {
+        "profile_slug": "nikhil-gupta-590b7442",
+        "vote": "yes",
+        "issue": 33,
+        "date": "2026-04-19"
       }
     ],
-    "yes_count": 12,
+    "yes_count": 13,
     "no_count": 9
   },
   {
