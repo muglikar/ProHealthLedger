@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { readDataFile, readRepoJson, writeRepoJson } from "@/lib/github";
-import { isSiteAdmin } from "@/lib/site-admins";
+import { isSessionSiteAdmin } from "@/lib/site-admins";
 
 const CURSOR_FILE = "data/owner_notification_cursor.json";
 
@@ -49,7 +49,7 @@ function normalizeCursor(raw) {
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session?.userId || !isSiteAdmin(session.userId)) {
+  if (!session?.userId || !isSessionSiteAdmin(session)) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -93,7 +93,7 @@ export async function GET() {
 
 export async function POST() {
   const session = await getServerSession(authOptions);
-  if (!session?.userId || !isSiteAdmin(session.userId)) {
+  if (!session?.userId || !isSessionSiteAdmin(session)) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
