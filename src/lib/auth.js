@@ -44,7 +44,29 @@ if (linkedInClientId && linkedInClientSecret) {
             const body = await res.text();
             throw new Error(`LinkedIn userinfo ${res.status}: ${body}`);
           }
-          return res.json();
+          const data = await res.json();
+          /** Optional: vanity URL segment for /in/{slug}; may fail without extra LinkedIn API products. */
+          let vanityName;
+          try {
+            const meRes = await fetch(
+              "https://api.linkedin.com/v2/me?projection=(vanityName)",
+              {
+                headers: {
+                  Authorization: `Bearer ${tokens.access_token}`,
+                  "X-Restli-Protocol-Version": "2.0.0",
+                },
+              }
+            );
+            if (meRes.ok) {
+              const me = await meRes.json();
+              if (me && typeof me.vanityName === "string") {
+                vanityName = me.vanityName;
+              }
+            }
+          } catch {
+            /* ignore — use LINKEDIN_ADMIN_SUBS instead */
+          }
+          return { ...data, vanityName };
         },
       },
       profile(profile) {
@@ -52,6 +74,10 @@ if (linkedInClientId && linkedInClientSecret) {
         if (!id) {
           throw new Error("LinkedIn userinfo missing `sub`");
         }
+        const vanity =
+          typeof profile.vanityName === "string" && profile.vanityName.trim()
+            ? profile.vanityName.trim().toLowerCase()
+            : undefined;
         return {
           id: String(id),
           name:
@@ -60,6 +86,7 @@ if (linkedInClientId && linkedInClientSecret) {
             null,
           email: profile.email ?? null,
           image: profile.picture ?? null,
+          linkedinVanity: vanity,
         };
       },
     })
@@ -86,6 +113,9 @@ export const authOptions = {
           if (profile.email) {
             token.authEmail = normalizeAdminEmail(String(profile.email));
           }
+          if (profile.linkedinVanity) {
+            token.linkedinVanity = String(profile.linkedinVanity).toLowerCase();
+          }
         }
       }
       return token;
@@ -102,13 +132,13 @@ export const authOptions = {
       if (email) {
         session.authEmail = email;
       }
+      if (token.linkedinVanity) {
+        session.linkedinVanity = String(token.linkedinVanity);
+      }
       session.siteAdmin = isSiteAdminForSession({
         userId: token.userId,
         email,
-        displayName:
-          (typeof token.displayName === "string" && token.displayName) ||
-          (session.user?.name && String(session.user.name)) ||
-          "",
+        linkedinVanity: token.linkedinVanity,
       });
       return session;
     },
