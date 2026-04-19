@@ -235,10 +235,16 @@
         "vote": "yes",
         "issue": 28,
         "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "gururaj-naik-20453717",
+        "vote": "no",
+        "issue": 35,
+        "date": "2026-04-19"
       }
     ],
     "yes_count": 1,
-    "no_count": 0
+    "no_count": 1
   },
   {
     "user_id": "linkedin:BzkLFAyue1",
