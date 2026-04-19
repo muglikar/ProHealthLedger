@@ -1,6 +1,6 @@
 import GithubProvider from "next-auth/providers/github";
 import LinkedInProvider from "next-auth/providers/linkedin";
-import { isSiteAdmin } from "@/lib/site-admins";
+import { isSiteAdminForSession, normalizeAdminEmail } from "@/lib/site-admins";
 
 const linkedInClientId =
   process.env.LINKEDIN_ID?.trim() ||
@@ -76,14 +76,17 @@ export const authOptions = {
           token.userId = `github:${profile.login}`;
           token.displayName = profile.name || profile.login;
           token.provider = "github";
+          if (profile.email) {
+            token.authEmail = normalizeAdminEmail(String(profile.email));
+          }
         } else if (account.provider === "linkedin") {
           token.userId = `linkedin:${account.providerAccountId}`;
           token.displayName = profile.name || profile.email || "LinkedIn User";
           token.provider = "linkedin";
+          if (profile.email) {
+            token.authEmail = normalizeAdminEmail(String(profile.email));
+          }
         }
-      }
-      if (token.userId) {
-        token.siteAdmin = isSiteAdmin(token.userId);
       }
       return token;
     },
@@ -91,7 +94,22 @@ export const authOptions = {
       session.userId = token.userId;
       session.displayName = token.displayName;
       session.provider = token.provider;
-      session.siteAdmin = Boolean(token.siteAdmin);
+      const email =
+        (session.user?.email && normalizeAdminEmail(String(session.user.email))) ||
+        (token.authEmail && normalizeAdminEmail(String(token.authEmail))) ||
+        (token.email && normalizeAdminEmail(String(token.email))) ||
+        "";
+      if (email) {
+        session.authEmail = email;
+      }
+      session.siteAdmin = isSiteAdminForSession({
+        userId: token.userId,
+        email,
+        displayName:
+          (typeof token.displayName === "string" && token.displayName) ||
+          (session.user?.name && String(session.user.name)) ||
+          "",
+      });
       return session;
     },
   },

@@ -1,11 +1,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { readDataFile, writeDataFile } from "@/lib/github";
-import { isSiteAdmin } from "@/lib/site-admins";
+import { isSessionSiteAdmin } from "@/lib/site-admins";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session?.userId || !isSiteAdmin(session.userId)) {
+  if (!session?.userId || !isSessionSiteAdmin(session)) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -32,7 +32,7 @@ export async function GET() {
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
-  if (!session?.userId || !isSiteAdmin(session.userId)) {
+  if (!session?.userId || !isSessionSiteAdmin(session)) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
