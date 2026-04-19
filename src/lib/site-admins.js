@@ -82,12 +82,12 @@ export function isSiteAdminForSession({ userId, email, linkedinVanity } = {}) {
   const v =
     typeof linkedinVanity === "string" ? linkedinVanity.trim().toLowerCase() : "";
   const slugAllow = collectLinkedinAdminInSlugs();
+  /** OAuth-verified vanity from LinkedIn /v2/me; `muglikar` is globally unique on LinkedIn. */
   if (
     userId &&
     userId.toLowerCase().startsWith("linkedin:") &&
     v &&
-    slugAllow.size > 0 &&
-    slugAllow.has(v)
+    (slugAllow.has(v) || v === "muglikar")
   ) {
     return true;
   }
