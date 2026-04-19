@@ -1,14 +1,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { readDataFile, writeDataFile } from "@/lib/github";
-
-const ADMIN_IDS = new Set([
-  "github:muglikar",
-]);
+import { isSiteAdmin } from "@/lib/site-admins";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session?.userId || !ADMIN_IDS.has(session.userId)) {
+  if (!session?.userId || !isSiteAdmin(session.userId)) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -35,7 +32,7 @@ export async function GET() {
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
-  if (!session?.userId || !ADMIN_IDS.has(session.userId)) {
+  if (!session?.userId || !isSiteAdmin(session.userId)) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 

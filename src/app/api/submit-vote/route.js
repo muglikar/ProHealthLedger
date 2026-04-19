@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { readDataFile, writeDataFile, createIssue } from "@/lib/github";
 import { canSubmitNegativeVote } from "@/lib/karma";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
+import { isFlagBlockedForLinkedinUrl } from "@/lib/protected-profiles";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -40,6 +41,16 @@ export async function POST(req) {
           "That doesn't look like a valid LinkedIn URL. Use a link like https://www.linkedin.com/in/jane-doe",
       },
       { status: 400 }
+    );
+  }
+
+  if (vote === "no" && isFlagBlockedForLinkedinUrl(linkedinUrl, slug)) {
+    return Response.json(
+      {
+        error:
+          "Negative votes cannot be submitted for this LinkedIn profile.",
+      },
+      { status: 403 }
     );
   }
 

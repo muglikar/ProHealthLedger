@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 
-const ADMIN_IDS = new Set(["github:muglikar"]);
-
 export default function NavAuth() {
   const { data: session, status } = useSession();
 
@@ -20,7 +18,7 @@ export default function NavAuth() {
     );
   }
 
-  const isAdmin = ADMIN_IDS.has(session.userId);
+  const isAdmin = Boolean(session.siteAdmin);
 
   return (
     <div className="nav-auth-user">

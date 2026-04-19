@@ -1,5 +1,6 @@
 import GithubProvider from "next-auth/providers/github";
 import LinkedInProvider from "next-auth/providers/linkedin";
+import { isSiteAdmin } from "@/lib/site-admins";
 
 const linkedInClientId =
   process.env.LINKEDIN_ID?.trim() ||
@@ -81,12 +82,16 @@ export const authOptions = {
           token.provider = "linkedin";
         }
       }
+      if (token.userId) {
+        token.siteAdmin = isSiteAdmin(token.userId);
+      }
       return token;
     },
     async session({ session, token }) {
       session.userId = token.userId;
       session.displayName = token.displayName;
       session.provider = token.provider;
+      session.siteAdmin = Boolean(token.siteAdmin);
       return session;
     },
   },

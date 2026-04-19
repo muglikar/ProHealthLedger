@@ -4,6 +4,7 @@ import Link from "next/link";
 import Providers from "./providers";
 import SiteNav from "./components/SiteNav";
 import VoteQuotaStrip from "./components/VoteQuotaStrip";
+import OwnerActivityStrip from "./components/OwnerActivityStrip";
 import ReferralCapture from "./components/ReferralCapture";
 import "./globals.css";
 
@@ -81,6 +82,7 @@ export default function RootLayout({ children }) {
         <Providers>
           <SiteNav />
           <VoteQuotaStrip />
+          <OwnerActivityStrip />
           <Suspense fallback={null}>
             <ReferralCapture />
           </Suspense>
