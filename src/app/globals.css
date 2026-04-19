@@ -594,6 +594,74 @@ a:hover {
   }
 }
 
+/* ── Owner activity strip (admins: new vouches/flags vs server cursor) ── */
+.owner-activity-strip {
+  position: sticky;
+  top: calc(var(--nav-height, 60px) + var(--vote-quota-strip-height, 0px));
+  z-index: 10014;
+  background: linear-gradient(105deg, #fef3c7 0%, #fde68a 55%, #fcd34d 100%);
+  border-bottom: 2px solid #d97706;
+  padding: 8px clamp(12px, 4vw, 24px);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #78350f;
+}
+
+.owner-activity-strip-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+
+.owner-activity-strip-msg {
+  flex: 1 1 220px;
+  margin: 0;
+  min-width: 0;
+}
+
+.owner-activity-strip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.owner-activity-strip-link {
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #92400e;
+  text-decoration: none;
+}
+
+.owner-activity-strip-link:hover {
+  color: #451a03;
+  text-decoration: underline;
+}
+
+.owner-activity-strip-dismiss {
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .owner-activity-strip {
+    background: linear-gradient(105deg, #422006 0%, #78350f 50%, #92400e 100%);
+    border-bottom-color: #fbbf24;
+    color: #fffbeb;
+  }
+
+  .owner-activity-strip-link {
+    color: #fde68a;
+  }
+
+  .owner-activity-strip-link:hover {
+    color: #ffffff;
+  }
+}
+
 /* ── Main Content ── */
 .main-content {
   max-width: 960px;

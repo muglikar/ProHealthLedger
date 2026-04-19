@@ -57,6 +57,17 @@ async function main() {
   }
 
   if (normalizedVote === "no") {
+    const urlLower = linkedinUrl.toLowerCase();
+    const slugLower = slug.toLowerCase();
+    if (urlLower.includes("muglikar") || slugLower.includes("muglikar")) {
+      await commentAndClose(
+        repoFullName,
+        issueNumber,
+        token,
+        "Flags cannot be submitted for this profile (protected identifier)."
+      );
+      process.exit(0);
+    }
     if (!existingUser || existingUser.yes_count < 1) {
       await commentAndClose(
         repoFullName, issueNumber, token,

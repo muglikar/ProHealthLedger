@@ -4,8 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 
-const ADMIN_IDS = new Set(["github:muglikar"]);
-
 export default function ModeratePage() {
   const { data: session, status } = useSession();
   const [pending, setPending] = useState([]);
@@ -13,7 +11,7 @@ export default function ModeratePage() {
   const [acting, setActing] = useState(null);
 
   const isAdmin =
-    status === "authenticated" && session?.userId && ADMIN_IDS.has(session.userId);
+    status === "authenticated" && session?.userId && session.siteAdmin;
 
   const fetchPending = useCallback(async () => {
     try {
