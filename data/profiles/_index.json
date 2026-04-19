@@ -527,5 +527,24 @@
         "date": "2026-04-18"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/nikhil-gupta-590b7442",
+    "slug": "nikhil-gupta-590b7442",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "yes",
+        "issue": 33,
+        "date": "2026-04-19",
+        "reason": "Increased my CTC due to delay from the company Magna in date of joining.",
+        "reason_pending": true
+      }
+    ]
   }
 ]
