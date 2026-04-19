@@ -11,6 +11,31 @@ const linkedInClientSecret =
   process.env.LINKEDIN_CLIENT_SECRET?.trim() ||
   "";
 
+/** LinkedIn /v2/me vanityName — read in jwt using access_token (reliable); do not rely on custom profile fields reaching jwt's `profile`. */
+async function fetchLinkedinVanityName(accessToken) {
+  if (!accessToken || typeof accessToken !== "string") return null;
+  try {
+    const meRes = await fetch(
+      "https://api.linkedin.com/v2/me?projection=(vanityName)",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "X-Restli-Protocol-Version": "2.0.0",
+          "LinkedIn-Version": "202401",
+        },
+      }
+    );
+    if (!meRes.ok) return null;
+    const me = await meRes.json();
+    if (me && typeof me.vanityName === "string" && me.vanityName.trim()) {
+      return me.vanityName.trim().toLowerCase();
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
 const providers = [
   GithubProvider({
     clientId: process.env.GITHUB_ID,
@@ -44,30 +69,7 @@ if (linkedInClientId && linkedInClientSecret) {
             const body = await res.text();
             throw new Error(`LinkedIn userinfo ${res.status}: ${body}`);
           }
-          const data = await res.json();
-          /** Optional: vanity URL segment for /in/{slug}; may fail without extra LinkedIn API products. */
-          let vanityName;
-          try {
-            const meRes = await fetch(
-              "https://api.linkedin.com/v2/me?projection=(vanityName)",
-              {
-                headers: {
-                  Authorization: `Bearer ${tokens.access_token}`,
-                  "X-Restli-Protocol-Version": "2.0.0",
-                  "LinkedIn-Version": "202401",
-                },
-              }
-            );
-            if (meRes.ok) {
-              const me = await meRes.json();
-              if (me && typeof me.vanityName === "string") {
-                vanityName = me.vanityName;
-              }
-            }
-          } catch {
-            /* ignore — use LINKEDIN_ADMIN_SUBS instead */
-          }
-          return { ...data, vanityName };
+          return res.json();
         },
       },
       profile(profile) {
@@ -75,10 +77,6 @@ if (linkedInClientId && linkedInClientSecret) {
         if (!id) {
           throw new Error("LinkedIn userinfo missing `sub`");
         }
-        const vanity =
-          typeof profile.vanityName === "string" && profile.vanityName.trim()
-            ? profile.vanityName.trim().toLowerCase()
-            : undefined;
         return {
           id: String(id),
           name:
@@ -87,7 +85,6 @@ if (linkedInClientId && linkedInClientSecret) {
             null,
           email: profile.email ?? null,
           image: profile.picture ?? null,
-          linkedinVanity: vanity,
         };
       },
     })
@@ -114,8 +111,9 @@ export const authOptions = {
           if (profile.email) {
             token.authEmail = normalizeAdminEmail(String(profile.email));
           }
-          if (profile.linkedinVanity) {
-            token.linkedinVanity = String(profile.linkedinVanity).toLowerCase();
+          const vanity = await fetchLinkedinVanityName(account.access_token);
+          if (vanity) {
+            token.linkedinVanity = vanity;
           }
         }
       }
@@ -132,6 +130,9 @@ export const authOptions = {
         "";
       if (email) {
         session.authEmail = email;
+        if (session.user) {
+          session.user.email = session.user.email || email;
+        }
       }
       if (token.linkedinVanity) {
         session.linkedinVanity = String(token.linkedinVanity);
