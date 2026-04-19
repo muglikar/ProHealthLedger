@@ -563,5 +563,24 @@
         "reason": "Embezzled a camera bought for doing their project."
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/gururaj-naik-20453717",
+    "slug": "gururaj-naik-20453717",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:IXYyBWOZrk",
+        "display_name": "Rajashri Shinde Muglikar",
+        "vote": "no",
+        "issue": 35,
+        "date": "2026-04-19",
+        "reason": "Not good intension for people, selfish",
+        "reason_pending": true
+      }
+    ]
   }
 ]
