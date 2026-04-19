@@ -80,6 +80,22 @@ export default function Home() {
         </aside>
       </section>
 
+      <aside className="speak-up-box" aria-label="Your rights">
+        <span className="speak-up-icon" aria-hidden>
+          🛡️
+        </span>
+        <div>
+          <h3>It&apos;s safe to speak up.</h3>
+          <p>
+            &ldquo;Would I work with them again?&rdquo; — only you can answer
+            that. Your honest yes-or-no is a personal opinion, not a factual
+            allegation, and good-faith opinions for public good are protected
+            expression under law. Every reason or comment submission is reviewed
+            by a moderator before publishing.
+          </p>
+        </div>
+      </aside>
+
       <section className="why-section">
         <h2 className="section-title">Why does this exist?</h2>
         <div className="why-grid">

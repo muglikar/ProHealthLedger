@@ -1058,6 +1058,67 @@ a:hover {
   margin: 0;
 }
 
+/* ── Speak-Up Encouragement Box ── */
+.speak-up-box {
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 50%, #ecfeff 100%);
+  border: 1px solid #99f6e4;
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  max-width: 800px;
+  margin: clamp(24px, 4vh, 40px) auto clamp(8px, 2vh, 16px);
+  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.08);
+  transition: box-shadow 0.25s;
+}
+
+.speak-up-box:hover {
+  box-shadow: 0 4px 16px rgba(20, 184, 166, 0.14);
+}
+
+.speak-up-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.speak-up-box h3 {
+  font-size: clamp(0.9rem, 0.6vw + 0.78rem, 1rem);
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #0f766e;
+  line-height: 1.25;
+}
+
+.speak-up-box p {
+  font-size: clamp(0.78rem, 0.45vw + 0.7rem, 0.88rem);
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .speak-up-box {
+    background: linear-gradient(135deg, #042f2e 0%, #083344 50%, #0c4a6e 100%);
+    border-color: #115e59;
+    box-shadow: 0 2px 8px rgba(20, 184, 166, 0.12);
+  }
+
+  .speak-up-box:hover {
+    box-shadow: 0 4px 16px rgba(20, 184, 166, 0.22);
+  }
+
+  .speak-up-box h3 {
+    color: #5eead4;
+  }
+
+  .speak-up-box p {
+    color: #94a3b8;
+  }
+}
+
 /* ── Why Section ── */
 .why-section {
   padding: 48px 0 32px;
