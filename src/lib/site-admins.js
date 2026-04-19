@@ -48,34 +48,47 @@ function collectAdminEmails() {
   return set;
 }
 
-/** LinkedIn OIDC: same browser login as the repo owner without Vercel env. Word-boundary avoids substring false positives. */
-function isTrustedLinkedInMuglikarIdentity({ userId, email, displayName }) {
-  if (process.env.DISABLE_MUGLIKAR_TRUSTED_LINKEDIN_ADMIN === "1") {
-    return false;
+/** Env segment for https://www.linkedin.com/in/{slug}/ — not substring matching on arbitrary text. */
+function normalizeLinkedinInSlug(raw) {
+  if (!raw || typeof raw !== "string") return "";
+  const s = raw.trim();
+  const m = s.match(/linkedin\.com\/in\/([^/?#]+)/i);
+  if (m) return m[1].replace(/\/$/, "").toLowerCase();
+  const t = s.replace(/^\/+|\/+$/g, "");
+  return t ? t.split(/[/\s]+/).pop().toLowerCase() : "";
+}
+
+function collectLinkedinAdminInSlugs() {
+  const set = new Set();
+  for (const raw of parseList(process.env.LINKEDIN_ADMIN_IN_SLUGS)) {
+    const slug = normalizeLinkedinInSlug(raw);
+    if (slug) set.add(slug);
   }
-  if (!userId || !userId.toLowerCase().startsWith("linkedin:")) return false;
-  if (typeof displayName === "string" && /\bmuglikar\b/i.test(displayName)) {
-    return true;
-  }
-  const em = normalizeAdminEmail(email);
-  if (em && /\bmuglikar\b/i.test(em)) return true;
-  return false;
+  return set;
 }
 
 /**
- * @param {{ userId?: string, email?: string, displayName?: string }} args
+ * Admin for LinkedIn: exact OIDC `sub`, exact `/in/` slug (when token carries vanity from API),
+ * or exact email allowlist — not by display name or fuzzy profile matching.
+ *
+ * @param {{ userId?: string, email?: string, linkedinVanity?: string }} args
  */
-export function isSiteAdminForSession({
-  userId,
-  email,
-  displayName,
-} = {}) {
+export function isSiteAdminForSession({ userId, email, linkedinVanity } = {}) {
   if (userId && collectSiteAdminUserIds().has(normalizeUserIdForAdmin(userId))) {
     return true;
   }
   const em = normalizeAdminEmail(email);
   if (em && collectAdminEmails().has(em)) return true;
-  if (isTrustedLinkedInMuglikarIdentity({ userId, email, displayName })) {
+  const v =
+    typeof linkedinVanity === "string" ? linkedinVanity.trim().toLowerCase() : "";
+  const slugAllow = collectLinkedinAdminInSlugs();
+  if (
+    userId &&
+    userId.toLowerCase().startsWith("linkedin:") &&
+    v &&
+    slugAllow.size > 0 &&
+    slugAllow.has(v)
+  ) {
     return true;
   }
   return false;
@@ -90,9 +103,9 @@ export function isSessionSiteAdmin(session) {
       session.user.email) ||
     (typeof session.authEmail === "string" && session.authEmail) ||
     "";
-  const displayName =
-    (typeof session.displayName === "string" && session.displayName) ||
-    (session.user && typeof session.user.name === "string" && session.user.name) ||
-    "";
-  return isSiteAdminForSession({ userId: session.userId, email, displayName });
+  return isSiteAdminForSession({
+    userId: session.userId,
+    email,
+    linkedinVanity: session.linkedinVanity,
+  });
 }
