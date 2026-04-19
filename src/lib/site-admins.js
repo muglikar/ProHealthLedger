@@ -1,5 +1,17 @@
 const DEFAULT_ADMIN = "github:muglikar";
 
+/**
+ * OIDC `sub` fragment for the primary maintainer LinkedIn account (matches public ledger
+ * `user_id` linkedin:… in data/users). Forks: set DISABLE_BUILTIN_LINKEDIN_ADMIN=1 or
+ * BUILTIN_LINKEDIN_ADMIN_SUB= to disable/override.
+ */
+function builtinLinkedinAdminSub() {
+  if (process.env.DISABLE_BUILTIN_LINKEDIN_ADMIN === "1") return "";
+  const raw = process.env.BUILTIN_LINKEDIN_ADMIN_SUB;
+  if (raw !== undefined && String(raw).trim() === "") return "";
+  return String(raw ?? "CAOSO1oig0").trim();
+}
+
 function parseList(raw) {
   if (!raw || typeof raw !== "string") return [];
   return raw
@@ -26,6 +38,10 @@ export function normalizeAdminEmail(raw) {
 function collectSiteAdminUserIds() {
   const set = new Set();
   set.add(normalizeUserIdForAdmin(DEFAULT_ADMIN));
+  const builtinLi = builtinLinkedinAdminSub();
+  if (builtinLi) {
+    set.add(normalizeUserIdForAdmin(`linkedin:${builtinLi}`));
+  }
   for (const id of parseList(process.env.SITE_ADMIN_USER_IDS)) {
     set.add(normalizeUserIdForAdmin(id));
   }
