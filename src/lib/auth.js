@@ -54,6 +54,7 @@ if (linkedInClientId && linkedInClientSecret) {
                 headers: {
                   Authorization: `Bearer ${tokens.access_token}`,
                   "X-Restli-Protocol-Version": "2.0.0",
+                  "LinkedIn-Version": "202401",
                 },
               }
             );
