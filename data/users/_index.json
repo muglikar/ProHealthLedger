@@ -273,5 +273,19 @@
     ],
     "yes_count": 1,
     "no_count": 0
+  },
+  {
+    "user_id": "github:om-varshney",
+    "display_name": "Om Varshney",
+    "contributions": [
+      {
+        "profile_slug": "er-apoorv-gupta",
+        "vote": "yes",
+        "issue": 36,
+        "date": "2026-04-20"
+      }
+    ],
+    "yes_count": 1,
+    "no_count": 0
   }
 ]
