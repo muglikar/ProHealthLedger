@@ -1060,8 +1060,8 @@ a:hover {
 
 /* ── Speak-Up Encouragement Box ── */
 .speak-up-box {
-  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 50%, #ecfeff 100%);
-  border: 1px solid #99f6e4;
+  background: var(--bg-warm);
+  border: 1px solid #f3d5a3;
   border-radius: var(--radius);
   padding: 20px 24px;
   display: flex;
@@ -1069,12 +1069,12 @@ a:hover {
   align-items: flex-start;
   max-width: 800px;
   margin: clamp(24px, 4vh, 40px) auto clamp(8px, 2vh, 16px);
-  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.08);
+  box-shadow: var(--shadow);
   transition: box-shadow 0.25s;
 }
 
 .speak-up-box:hover {
-  box-shadow: 0 4px 16px rgba(20, 184, 166, 0.14);
+  box-shadow: var(--shadow-md);
 }
 
 .speak-up-icon {
@@ -1088,7 +1088,7 @@ a:hover {
   font-size: clamp(0.9rem, 0.6vw + 0.78rem, 1rem);
   font-weight: 700;
   margin-bottom: 6px;
-  color: #0f766e;
+  color: var(--text);
   line-height: 1.25;
 }
 
