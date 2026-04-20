@@ -93,6 +93,25 @@ export default function SubmitPage() {
             </button>
           )}
         </div>
+
+        <aside className="speak-up-box" aria-label="Your rights" style={{ marginTop: 32 }}>
+          <span className="speak-up-icon" aria-hidden>🛡️</span>
+          <div>
+            <h3>It&apos;s safe to speak up.</h3>
+            <p>
+              &ldquo;Would I work with them again?&rdquo; — only you can answer
+              that. Your honest yes-or-no is a personal opinion, not a factual
+              allegation, and good-faith opinions for public good are protected
+              expression under law. Every reason or comment submission is reviewed
+              by a moderator before publishing.
+            </p>
+            <p className="speak-up-disclaimer">
+              This is not legal advice. Laws vary by jurisdiction; consult a
+              qualified lawyer if you have specific concerns.
+            </p>
+          </div>
+        </aside>
+
         <div className="submit-steps" style={{ marginTop: 48 }}>
           <div className="submit-step">
             <h3>Why sign in?</h3>
@@ -133,6 +152,24 @@ export default function SubmitPage() {
           permanent, public, and tied to your identity.
         </p>
       </section>
+
+      <aside className="speak-up-box" aria-label="Your rights">
+        <span className="speak-up-icon" aria-hidden>🛡️</span>
+        <div>
+          <h3>It&apos;s safe to speak up.</h3>
+          <p>
+            &ldquo;Would I work with them again?&rdquo; — only you can answer
+            that. Your honest yes-or-no is a personal opinion, not a factual
+            allegation, and good-faith opinions for public good are protected
+            expression under law. Every reason or comment submission is reviewed
+            by a moderator before publishing.
+          </p>
+          <p className="speak-up-disclaimer">
+            This is not legal advice. Laws vary by jurisdiction; consult a
+            qualified lawyer if you have specific concerns.
+          </p>
+        </div>
+      </aside>
 
       {result ? (
         <div className="result-box result-success">
