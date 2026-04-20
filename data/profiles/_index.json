@@ -104,7 +104,7 @@
     "linkedin_url": "https://www.linkedin.com/in/er-apoorv-gupta",
     "slug": "er-apoorv-gupta",
     "votes": {
-      "yes": 2,
+      "yes": 3,
       "no": 0
     },
     "submissions": [
@@ -121,6 +121,13 @@
         "vote": "yes",
         "issue": 9,
         "date": "2026-03-26"
+      },
+      {
+        "user": "github:om-varshney",
+        "display_name": "Om Varshney",
+        "vote": "yes",
+        "issue": 36,
+        "date": "2026-04-20"
       }
     ]
   },
