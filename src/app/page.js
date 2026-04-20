@@ -93,6 +93,10 @@ export default function Home() {
             expression under law. Every reason or comment submission is reviewed
             by a moderator before publishing.
           </p>
+          <p className="speak-up-disclaimer">
+            This is not legal advice. Laws vary by jurisdiction; consult a
+            qualified lawyer if you have specific concerns.
+          </p>
         </div>
       </aside>
 
