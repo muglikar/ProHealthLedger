@@ -1099,6 +1099,15 @@ a:hover {
   margin: 0;
 }
 
+.speak-up-disclaimer {
+  font-size: 0.7rem !important;
+  color: var(--text-muted) !important;
+  margin-top: 10px !important;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-style: italic;
+}
+
 @media (prefers-color-scheme: dark) {
   .speak-up-box h3 {
     color: #92400e;
