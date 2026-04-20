@@ -1100,22 +1100,8 @@ a:hover {
 }
 
 @media (prefers-color-scheme: dark) {
-  .speak-up-box {
-    background: linear-gradient(135deg, #042f2e 0%, #083344 50%, #0c4a6e 100%);
-    border-color: #115e59;
-    box-shadow: 0 2px 8px rgba(20, 184, 166, 0.12);
-  }
-
-  .speak-up-box:hover {
-    box-shadow: 0 4px 16px rgba(20, 184, 166, 0.22);
-  }
-
   .speak-up-box h3 {
-    color: #5eead4;
-  }
-
-  .speak-up-box p {
-    color: #94a3b8;
+    color: #92400e;
   }
 }
 
