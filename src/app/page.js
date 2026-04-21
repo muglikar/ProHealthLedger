@@ -31,6 +31,34 @@ export default function Home() {
               Look Up Someone
             </Link>
           </div>
+
+          <div className="trust-bar">
+            <a
+              href="https://github.com/muglikar/ProHealthLedger"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="trust-link"
+            >
+              <span aria-hidden="true">🔓</span> Open Source
+            </a>
+            <span className="trust-sep">·</span>
+            <Link href="/transparency" className="trust-link">
+              <span aria-hidden="true">🔍</span> Full Audit Trail
+            </Link>
+            <span className="trust-sep">·</span>
+            <Link href="/privacy" className="trust-link">
+              <span aria-hidden="true">🛡️</span> Privacy Policy
+            </Link>
+            <span className="trust-sep">·</span>
+            <a
+              href="https://www.linkedin.com/in/anandmuglikar/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="trust-link"
+            >
+              <span aria-hidden="true">⭐</span> Built by Anand Muglikar
+            </a>
+          </div>
         </header>
 
         <div
