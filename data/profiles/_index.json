@@ -587,5 +587,24 @@
         "date": "2026-04-19"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/foram-paradkar-9975b613",
+    "slug": "foram-paradkar-9975b613",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "yes",
+        "issue": 37,
+        "date": "2026-04-21",
+        "reason": "Very helpful in my early programming career in Patni as a programmer, especially for Unix/Linux understanding.",
+        "reason_pending": true
+      }
+    ]
   }
 ]
