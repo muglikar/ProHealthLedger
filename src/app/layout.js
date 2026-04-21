@@ -15,7 +15,7 @@ const monda = Monda({
   display: "swap",
 });
 
-const siteUrl = "https://pro-health-ledger.vercel.app";
+const siteUrl = "https://prohealthledger.org";
 
 /** Absolute URL + secureUrl: some LinkedIn clients ignore relative `og:image`. */
 const OG_IMAGE = `${siteUrl}/og_banner.png`;

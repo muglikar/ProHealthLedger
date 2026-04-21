@@ -8,7 +8,7 @@ import {
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://pro-health-ledger.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);

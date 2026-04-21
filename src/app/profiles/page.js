@@ -1,6 +1,6 @@
 import ProfilesClient from "./ProfilesClient";
 
-const SITE_URL = "https://pro-health-ledger.vercel.app";
+const SITE_URL = "https://prohealthledger.org";
 
 const OG_IMAGE = `${SITE_URL}/og_banner.png`;
 

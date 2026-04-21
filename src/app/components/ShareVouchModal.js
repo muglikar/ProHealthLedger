@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 
-const SITE_URL = "https://pro-health-ledger.vercel.app";
+const SITE_URL = "https://prohealthledger.org";
 
 function buildShareText(displayName, profileSlug, firstPerson = false) {
   if (firstPerson) {
