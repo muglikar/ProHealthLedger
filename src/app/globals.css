@@ -314,7 +314,7 @@ a:hover {
 
 @media (prefers-color-scheme: dark) {
   .nav {
-    --nav-bar-bg: linear-gradient(90deg, #e2e8f0 0%, #1e293b 25%, #0b1220 100%);
+    --nav-bar-bg: linear-gradient(90deg, #1e293b 0%, #0f172a 40%, #0b1220 100%);
     --nav-bar-border: #1e3a5f;
     --nav-fg: #f8fafc;
     --nav-fg-muted: #e2e8f0;
@@ -329,6 +329,10 @@ a:hover {
 
   .nav .nav-logo {
     color: var(--nav-fg) !important;
+  }
+
+  .nav .logo-icon {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
   }
 
   .nav-burger {
