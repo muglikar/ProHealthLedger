@@ -221,9 +221,15 @@
         "vote": "no",
         "issue": 34,
         "date": "2026-04-19"
+      },
+      {
+        "profile_slug": "foram-paradkar-9975b613",
+        "vote": "yes",
+        "issue": 37,
+        "date": "2026-04-21"
       }
     ],
-    "yes_count": 13,
+    "yes_count": 14,
     "no_count": 10
   },
   {
