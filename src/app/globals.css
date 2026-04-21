@@ -789,6 +789,51 @@ a:hover {
   font-size: 0.84rem;
 }
 
+.trust-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 10px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.trust-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.trust-link:hover {
+  color: var(--text-primary);
+}
+
+.trust-sep {
+  opacity: 0.4;
+}
+
+@media (max-width: 600px) {
+  .trust-bar {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    text-align: center;
+  }
+  .trust-sep {
+    display: none;
+  }
+}
+
 .home-how-block {
   width: 100%;
   padding-top: 0;
