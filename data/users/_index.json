@@ -227,9 +227,15 @@
         "vote": "yes",
         "issue": 37,
         "date": "2026-04-21"
+      },
+      {
+        "profile_slug": "swagatika-parida-69948846",
+        "vote": "yes",
+        "issue": 38,
+        "date": "2026-04-22"
       }
     ],
-    "yes_count": 14,
+    "yes_count": 15,
     "no_count": 10
   },
   {
