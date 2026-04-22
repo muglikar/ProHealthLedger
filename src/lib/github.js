@@ -28,10 +28,12 @@ export async function writeDataFile(filePath, data, sha, message) {
   const encoded = Buffer.from(
     JSON.stringify(data, null, 2) + "\n"
   ).toString("base64");
+  const payload = { message, content: encoded };
+  if (sha) payload.sha = sha;
   const res = await fetch(url, {
     method: "PUT",
     headers: headers(),
-    body: JSON.stringify({ message, content: encoded, sha }),
+    body: JSON.stringify(payload),
   });
   if (!res.ok) {
     const err = await res.text();

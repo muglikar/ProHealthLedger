@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { href: "/transparency", label: "All Votes" },
   { href: "/contributors", label: "Contributors" },
   { href: "/submit", label: "Submit" },
+  { href: "/referrals", label: "Referrals" },
 ];
 
 export default function SiteNav() {
