@@ -605,5 +605,24 @@
         "reason": "Very helpful in my early programming career in Patni as a programmer, especially for Unix/Linux understanding."
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/swagatika-parida-69948846",
+    "slug": "swagatika-parida-69948846",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "yes",
+        "issue": 38,
+        "date": "2026-04-22",
+        "reason": "Very helpful in my early programming career in Patni as a programmer, especially for Unix/Linux understanding.",
+        "reason_pending": true
+      }
+    ]
   }
 ]
