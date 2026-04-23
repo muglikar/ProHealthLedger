@@ -24,9 +24,9 @@ function buildShareText(displayName, firstPerson = false) {
 
   const thirdPersonOptions = [
     "Traditional reference checks are broken—nobody lists references who won’t say nice things. A professional track record shouldn't vanish when you change companies; it should be portable.\n\n" +
-    `I just staked my own professional reputation on Pro-Health Ledger to officially vouch for ${displayName}'s work ethic.\n\n` +
+    `I just staked my own professional reputation on Pro-Health Ledger to officially vouch for my friend and colleague, ${displayName}'s work ethic.\n\n` +
     "Before you finalize your next hire or partnership, check if they have a public Professional Health Ledger on ProHealthLedger.org. If they aren't there yet, ask them to bring their professional references to the table.\n\n" +
-    `You can see ${displayName}'s real track record here:`,
+    `You can see my vouch for ${displayName} here:`,
 
     "In a world of generic LinkedIn endorsements, I wanted to put something more meaningful on the record for " + displayName + ".\n\n" +
     "I just added my official vouch for them on Pro-Health Ledger. Your reputation is your most valuable asset, and it's time we start actively building public, verified track records.\n\n" +
