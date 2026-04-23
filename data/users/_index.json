@@ -309,9 +309,15 @@
         "vote": "yes",
         "issue": 39,
         "date": "2026-04-23"
+      },
+      {
+        "profile_slug": "omvarshney",
+        "vote": "yes",
+        "issue": 40,
+        "date": "2026-04-23"
       }
     ],
-    "yes_count": 1,
+    "yes_count": 2,
     "no_count": 0
   }
 ]
