@@ -471,7 +471,7 @@
     "linkedin_url": "https://www.linkedin.com/in/muglikar",
     "slug": "muglikar",
     "votes": {
-      "yes": 3,
+      "yes": 4,
       "no": 0
     },
     "submissions": [
@@ -497,6 +497,15 @@
         "vote": "yes",
         "issue": 32,
         "date": "2026-04-18"
+      },
+      {
+        "user": "linkedin:IwyCjgJprL",
+        "display_name": "Apoorv Gupta",
+        "vote": "yes",
+        "issue": 39,
+        "date": "2026-04-23",
+        "reason": "It is rare to find a leader who prioritizes technical resolution and long-term solutions over short-term corporate pressure. I deeply respect his practicality, fortitude, and grit in navigating complex challenges",
+        "reason_pending": true
       }
     ]
   },
