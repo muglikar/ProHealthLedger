@@ -118,14 +118,10 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 0;
-  flex-shrink: 1;
+  flex-shrink: 0;
 }
 
 .nav-logo-text {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -2543,7 +2539,7 @@ button.audit-comment-link:focus-visible {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   .nav-desktop-only {
     display: none !important;
   }
