@@ -1,21 +1,34 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 
 const SITE_URL = "https://prohealthledger.org";
 
-function buildShareText(displayName, profileSlug, firstPerson = false) {
+function buildShareText(displayName, firstPerson = false) {
   if (firstPerson) {
     return (
-      `I've been vouched for i.e. positively reviewed on Pro-Health Ledger.\n\n` +
-      `Please check it out and share your experiences too!`
+      "Your reputation belongs to you—not your last company's HR department.\n\n" +
+      "I'm building my portable reputation on Pro-Health Ledger. Transparency creates accountability, and the best way to do business is out in the open.\n\n" +
+      "Big thanks to those who have already staked their reputation to vouch for my work. If we’ve worked together, I’d be honored to have your honest review on my ledger.\n\n" +
+      "Before your next hire or partnership, look them up. If they aren’t here, ask them to bring their track record to the table.\n\n" +
+      "Check out my public ledger:"
     );
   }
-  return (
-    `Hey ${displayName}, I have vouched for you i.e. positively reviewed you on Pro-Health Ledger.\n\n` +
-    `Please check it out and share your experiences too!`
-  );
+
+  const options = [
+    "Traditional reference checks are broken. Nobody lists someone who won’t say nice things.\n\n" +
+    `I just staked my own reputation on Pro-Health Ledger to officially vouch for ${displayName}. A professional track record shouldn't vanish when you change jobs—it should be portable.\n\n` +
+    "Before you finalize your next hire or partnership, look them up. If they don't have a public ledger, ask them why.\n\n" +
+    `See my verified vouch for ${displayName}:`,
+
+    "Resumes tell you what someone did. A verified vouch tells you *how* they did it.\n\n" +
+    `I just added an official vouch for ${displayName} on Pro-Health Ledger—an immutable record of how people actually work. It's time we start actively building public, portable track records.\n\n` +
+    "Who’s the best person you've worked with recently? Look them up. If they aren't on the ledger yet, be the first to start their portable reputation.\n\n" +
+    `Read my vouch for ${displayName}:`
+  ];
+
+  return options[Math.floor(Math.random() * options.length)];
 }
 
 export default function ShareVouchModal({ data, onClose, firstPerson = false }) {
@@ -33,7 +46,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
     data.profile_slug,
     data.public_name
   );
-  const shareText = buildShareText(displayName, data.profile_slug, firstPerson);
+  const shareText = useMemo(() => buildShareText(displayName, firstPerson), [displayName, firstPerson]);
   const slug = typeof data.profile_slug === "string" ? data.profile_slug.trim() : "";
   const baseProfileUrl = slug
     ? `${SITE_URL}/profiles?search=${encodeURIComponent(slug)}`
