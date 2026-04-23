@@ -299,5 +299,19 @@
     ],
     "yes_count": 1,
     "no_count": 0
+  },
+  {
+    "user_id": "linkedin:IwyCjgJprL",
+    "display_name": "Apoorv Gupta",
+    "contributions": [
+      {
+        "profile_slug": "muglikar",
+        "vote": "yes",
+        "issue": 39,
+        "date": "2026-04-23"
+      }
+    ],
+    "yes_count": 1,
+    "no_count": 0
   }
 ]
