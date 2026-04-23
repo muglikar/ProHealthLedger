@@ -141,12 +141,13 @@ a:hover {
 
 .nav-links {
   display: flex;
-  gap: 28px;
+  gap: 20px;
 }
 
 .nav-links a {
   color: var(--nav-link);
   font-size: 0.9rem;
+  white-space: nowrap;
   font-weight: 500;
   text-decoration: none;
 }
@@ -2148,6 +2149,15 @@ button.audit-comment-link:focus-visible {
   line-height: 18px;
   text-align: center;
   box-shadow: 0 0 0 2px var(--bg-card);
+}
+
+.nav-logo-text {
+  font-family: var(--font-monda);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--nav-fg);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .nav-auth-id {
