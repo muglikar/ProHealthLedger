@@ -2070,6 +2070,7 @@ button.audit-comment-link:focus-visible {
   cursor: pointer;
   font-family: var(--font-sans);
   transition: background 0.2s;
+  white-space: nowrap;
 }
 
 .nav-auth-btn:hover {
@@ -2097,6 +2098,7 @@ button.audit-comment-link:focus-visible {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 .nav-admin-link {
