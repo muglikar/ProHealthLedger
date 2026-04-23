@@ -7,28 +7,39 @@ const SITE_URL = "https://prohealthledger.org";
 
 function buildShareText(displayName, firstPerson = false) {
   if (firstPerson) {
-    return (
-      "Your reputation belongs to you—not your last company's HR department.\n\n" +
+    const firstPersonOptions = [
+      "Your professional career track record belongs to you — not to the HR department of your previous company.\n\n" +
+      "I'm building my portable reputation on Pro-Health Ledger. Massive thanks to the colleagues and partners who have already staked their own reputation to vouch for my work. Transparency creates accountability, and I believe the best way to do business is out in the open.\n\n" +
+      "If we've worked together, I'd be honored if you added your experience to my Professional-Health Ledger. And the next time you're evaluating a partner or hire, look them up.\n\n" +
+      "Check out my track record here:",
+
+      "Your career's reputation belongs to you — not to your previous company's HR department.\n\n" +
       "I'm building my portable reputation on Pro-Health Ledger. Transparency creates accountability, and the best way to do business is out in the open.\n\n" +
-      "Big thanks to those who have already staked their reputation to vouch for my work. If we’ve worked together, I’d be honored to have your honest review on my ledger.\n\n" +
+      "Big thanks to those who have already staked their reputation to vouch for my work. If we’ve worked together, I’d be honored to have your honest review on my Professional Health Ledger.\n\n" +
       "Before your next hire or partnership, look them up. If they aren’t here, ask them to bring their track record to the table.\n\n" +
       "Check out my public ledger:"
-    );
+    ];
+    return firstPersonOptions[Math.floor(Math.random() * firstPersonOptions.length)];
   }
 
-  const options = [
-    "Traditional reference checks are broken. Nobody lists someone who won’t say nice things.\n\n" +
-    `I just staked my own reputation on Pro-Health Ledger to officially vouch for ${displayName}. A professional track record shouldn't vanish when you change jobs—it should be portable.\n\n` +
-    "Before you finalize your next hire or partnership, look them up. If they don't have a public ledger, ask them why.\n\n" +
-    `See my verified vouch for ${displayName}:`,
+  const thirdPersonOptions = [
+    "Traditional reference checks are broken—nobody lists references who won’t say nice things. A professional track record shouldn't vanish when you change companies; it should be portable.\n\n" +
+    `I just staked my own professional reputation on ProHealthLedger to officially vouch for ${displayName}'s work ethic.\n\n` +
+    "Before you finalize your next hire or partnership, check if they have a public Ledger on ProHealthLedger.org. If they aren't there yet, ask them to bring their professional references to the table.\n\n" +
+    `You can see ${displayName}'s real track record here:`,
 
-    "Resumes tell you what someone did. A verified vouch tells you *how* they did it.\n\n" +
+    "In a world of generic LinkedIn endorsements, I wanted to put something more meaningful on the record for " + displayName + ".\n\n" +
+    "I just added my official vouch for them on ProHealthLedger. Your reputation is your most valuable asset, and it's time we start actively building public, verified track records.\n\n" +
+    "Who is the best person you've worked with recently? Look them up. If they aren't on the Ledger yet, be the first one to start their portable reputation.\n\n" +
+    `Read my vouch for ${displayName} here:`,
+
+    "Resumes tell you what someone did. A verified vouch tells you how they did it and how they treat people.\n\n" +
     `I just added an official vouch for ${displayName} on Pro-Health Ledger—an immutable record of how people actually work. It's time we start actively building public, portable track records.\n\n` +
     "Who’s the best person you've worked with recently? Look them up. If they aren't on the ledger yet, be the first to start their portable reputation.\n\n" +
     `Read my vouch for ${displayName}:`
   ];
 
-  return options[Math.floor(Math.random() * options.length)];
+  return thirdPersonOptions[Math.floor(Math.random() * thirdPersonOptions.length)];
 }
 
 export default function ShareVouchModal({ data, onClose, firstPerson = false }) {
