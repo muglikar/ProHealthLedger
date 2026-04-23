@@ -27,24 +27,43 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
       ? "⌘V"
       : "Ctrl+V";
 
+  const [refCode, setRefCode] = useState("");
+
   const displayName = formatProfessionalDisplayName(
     data.profile_slug,
     data.public_name
   );
   const shareText = buildShareText(displayName, data.profile_slug, firstPerson);
   const slug = typeof data.profile_slug === "string" ? data.profile_slug.trim() : "";
-  const ledgerProfileUrl = slug
+  const baseProfileUrl = slug
     ? `${SITE_URL}/profiles?search=${encodeURIComponent(slug)}`
     : `${SITE_URL}/profiles`;
-  /**
-   * LinkedIn `url=` must be this public ledger profile URL (not the site root, not only
-   * linkedin.com) so the preview card and default link target are the reviewee’s page.
-   */
+  
+  const ledgerProfileUrl = refCode ? `${baseProfileUrl}${baseProfileUrl.includes("?") ? "&" : "?"}ref=${refCode}` : baseProfileUrl;
+
   const linkedinShareOffsiteUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(ledgerProfileUrl)}`;
 
   useEffect(() => {
     setLinkedinPasteStep(false);
     setCopied(false);
+    setRefCode("");
+
+    // Generate referral link for tracking
+    fetch("/api/referrals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        profileSlug: data.profile_slug,
+        profileName: data.public_name,
+      }),
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.refCode) {
+          setRefCode(json.refCode);
+        }
+      })
+      .catch((err) => console.error("Failed to generate referral code", err));
   }, [data]);
 
   const handlePostToLinkedIn = useCallback(async () => {
