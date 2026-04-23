@@ -35,7 +35,7 @@
     "linkedin_url": "https://www.linkedin.com/in/omvarshney",
     "slug": "omvarshney",
     "votes": {
-      "yes": 1,
+      "yes": 2,
       "no": 0
     },
     "submissions": [
@@ -45,6 +45,15 @@
         "vote": "yes",
         "issue": 5,
         "date": "2026-03-22"
+      },
+      {
+        "user": "linkedin:IwyCjgJprL",
+        "display_name": "Apoorv Gupta",
+        "vote": "yes",
+        "issue": 40,
+        "date": "2026-04-23",
+        "reason": "Om’s deep expertise in AI technologies and unbending intent while performing actions have created a new perception of approaching things in me. He is a reliable partner whose integrity ensures he consistently honors every commitment.",
+        "reason_pending": true
       }
     ]
   },
