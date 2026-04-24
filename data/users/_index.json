@@ -233,10 +233,16 @@
         "vote": "yes",
         "issue": 38,
         "date": "2026-04-22"
+      },
+      {
+        "profile_slug": "jigneshkumar-vasoya-21066228",
+        "vote": "no",
+        "issue": 41,
+        "date": "2026-04-24"
       }
     ],
     "yes_count": 15,
-    "no_count": 10
+    "no_count": 11
   },
   {
     "user_id": "linkedin:IXYyBWOZrk",
