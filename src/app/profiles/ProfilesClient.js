@@ -199,6 +199,17 @@ function ProfilesContent() {
                     (Number(b.issue) || 0) - (Number(a.issue) || 0) ||
                     String(b.date || "").localeCompare(String(a.date || ""))
                 )[0];
+
+              let isMyProfile = false;
+              if (currentUserId) {
+                if (session?.linkedinVanity && profile.linkedin_url) {
+                  isMyProfile = profile.linkedin_url.toLowerCase().includes(session.linkedinVanity.toLowerCase());
+                }
+                if (!isMyProfile && session?.displayName && profile.public_name) {
+                  isMyProfile = profile.public_name.toLowerCase().trim() === session.displayName.toLowerCase().trim();
+                }
+              }
+
               return (
                 <div key={profile.slug || profile.linkedin_url} className="profile-card">
                   <div className="profile-slug">
@@ -261,40 +272,51 @@ function ProfilesContent() {
                   )}
                   <div className="profile-experience-cta">
                     <p className="profile-experience-cta-text">
-                      Add your own honest vote to the public ledger.
+                      {isMyProfile ? "Share your public ledger to start building your portable reputation." : "Add your own honest vote to the public ledger."}
                     </p>
-                    {myYesVouch ? (
+                    {myYesVouch && !isMyProfile ? (
                       <p className="profile-experience-cta-sub">
-                        You vouched here — share on LinkedIn using this profile&apos;s public ledger link
+                        You vouched here — share on LinkedIn using this profile's public ledger link
                         (not the homepage).
                       </p>
                     ) : null}
                     <div
                       className={
-                        myYesVouch
+                        (myYesVouch || isMyProfile)
                           ? "profile-experience-cta-actions profile-experience-cta-actions--pair"
                           : "profile-experience-cta-actions"
                       }
                     >
-                      <Link href="/submit" className="btn btn-primary profile-experience-cta-btn">
-                        Share your experience
-                      </Link>
-                      {myYesVouch ? (
+                      {!isMyProfile && (
+                        <Link href="/submit" className="btn btn-primary profile-experience-cta-btn">
+                          Share your experience
+                        </Link>
+                      )}
+                      {(myYesVouch || isMyProfile) ? (
                         <button
                           type="button"
-                          className="btn profile-experience-linkedin-btn"
-                          title="Share this vouch on LinkedIn"
-                          onClick={() =>
-                            setShareModalData({
-                              ...myYesVouch,
-                              profile_slug: profile.slug,
-                              public_name: profile.public_name,
-                              linkedin_url: profile.linkedin_url,
-                              _firstPerson: false,
-                            })
-                          }
+                          className={isMyProfile && !myYesVouch ? "btn btn-primary profile-experience-linkedin-btn" : "btn profile-experience-linkedin-btn"}
+                          title={isMyProfile ? "Share your profile on LinkedIn" : "Share this vouch on LinkedIn"}
+                          onClick={() => {
+                            if (isMyProfile) {
+                              setShareModalData({
+                                profile_slug: profile.slug,
+                                public_name: profile.public_name,
+                                linkedin_url: profile.linkedin_url,
+                                _firstPerson: true,
+                              });
+                            } else {
+                              setShareModalData({
+                                ...myYesVouch,
+                                profile_slug: profile.slug,
+                                public_name: profile.public_name,
+                                linkedin_url: profile.linkedin_url,
+                                _firstPerson: false,
+                              });
+                            }
+                          }}
                         >
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                           </svg>
                           Copy and post to LinkedIn
