@@ -639,5 +639,24 @@
         "reason": "Very helpful in my early programming career in Patni as a programmer, especially for Unix/Linux understanding."
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/jigneshkumar-vasoya-21066228",
+    "slug": "jigneshkumar-vasoya-21066228",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "vote": "no",
+        "issue": 41,
+        "date": "2026-04-24",
+        "reason": "Someone who seems to have mastered the art of leveraging connections while leaving both technical depth and professional decorum as areas for future development.",
+        "reason_pending": true
+      }
+    ]
   }
 ]
