@@ -754,6 +754,96 @@ a:hover {
   }
 }
 
+/* ── Link profile prompt (transparency page) ── */
+.link-profile-prompt {
+  margin: 10px 0;
+}
+
+.link-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 102, 194, 0.08);
+  color: #0a66c2;
+  border: 1px dashed rgba(10, 102, 194, 0.35);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  font-family: var(--font-sans);
+}
+
+.link-profile-btn:hover {
+  background: rgba(10, 102, 194, 0.15);
+  border-color: #0a66c2;
+}
+
+.linked-profile-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(39, 174, 96, 0.08);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #1e4a31;
+}
+
+.linked-profile-text strong {
+  color: #0a66c2;
+}
+
+.link-profile-edit-btn {
+  background: none;
+  border: none;
+  color: #0a66c2;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.link-profile-edit-btn:hover {
+  background: rgba(10, 102, 194, 0.12);
+  text-decoration: underline;
+}
+
+@media (prefers-color-scheme: dark) {
+  .link-profile-btn {
+    background: rgba(96, 165, 250, 0.1);
+    color: #93c5fd;
+    border-color: rgba(96, 165, 250, 0.3);
+  }
+
+  .link-profile-btn:hover {
+    background: rgba(96, 165, 250, 0.2);
+    border-color: #60a5fa;
+  }
+
+  .linked-profile-status {
+    background: rgba(39, 174, 96, 0.15);
+    color: #a7f3d0;
+    border-color: rgba(39, 174, 96, 0.4);
+  }
+
+  .linked-profile-text strong {
+    color: #93c5fd;
+  }
+
+  .link-profile-edit-btn {
+    color: #93c5fd;
+  }
+
+  .link-profile-edit-btn:hover {
+    background: rgba(96, 165, 250, 0.2);
+  }
+}
+
 /* ── Main Content ── */
 .main-content {
   max-width: 960px;
