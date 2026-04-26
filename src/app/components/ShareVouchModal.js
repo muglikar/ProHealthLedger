@@ -49,13 +49,14 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
   const [linkedinPasteStep, setLinkedinPasteStep] = useState(false);
   const [postingDirect, setPostingDirect] = useState(false);
   const [directPostResult, setDirectPostResult] = useState(null); // "success" | "error" | null
+  const [directPostErrorDetails, setDirectPostErrorDetails] = useState("");
+  const [refCode, setRefCode] = useState("");
   const pasteKey =
     typeof navigator !== "undefined" &&
     (navigator.platform?.includes("Mac") || /Mac|iPhone|iPad/.test(navigator.userAgent || ""))
       ? "⌘V"
       : "Ctrl+V";
 
-  const [refCode, setRefCode] = useState("");
 
   const displayName = formatProfessionalDisplayName(
     data.profile_slug,
