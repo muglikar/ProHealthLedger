@@ -7,6 +7,8 @@ import { formatProfessionalDisplayName } from "@/lib/profiles";
 const SITE_URL = "https://prohealthledger.org";
 
 function buildShareText(displayName, firstPerson = false) {
+  const hashtags = "\n\n#Transparency #ProfessionalIntegrity #CareerGrowth #WorkCulture #ProHealthLedger #Vouch #Trust";
+
   if (firstPerson) {
     const firstPersonOptions = [
       "Your professional career track record belongs to you — not to the HR department of your previous company.\n\n" +
@@ -20,7 +22,7 @@ function buildShareText(displayName, firstPerson = false) {
       "Before your next hire or partnership, look them up. If they aren’t here, ask them to bring their track record to the table.\n\n" +
       "Check out my public Professional Health Ledger:"
     ];
-    return firstPersonOptions[Math.floor(Math.random() * firstPersonOptions.length)];
+    return firstPersonOptions[Math.floor(Math.random() * firstPersonOptions.length)] + hashtags;
   }
 
   const thirdPersonOptions = [
@@ -40,7 +42,7 @@ function buildShareText(displayName, firstPerson = false) {
     `Read my vouch for ${displayName}:`
   ];
 
-  return thirdPersonOptions[Math.floor(Math.random() * thirdPersonOptions.length)];
+  return thirdPersonOptions[Math.floor(Math.random() * thirdPersonOptions.length)] + hashtags;
 }
 
 export default function ShareVouchModal({ data, onClose, firstPerson = false }) {
