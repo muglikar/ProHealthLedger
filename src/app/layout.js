@@ -48,8 +48,8 @@ export const metadata = {
         /** Static art in `public/og_banner.png` (link preview only; icons use `logo.png`). */
         url: OG_IMAGE,
         secureUrl: OG_IMAGE,
-        width: 1200,
-        height: 630,
+        width: 1024,
+        height: 536,
         type: "image/png",
         alt: "ProHealthLedger — Know who you are working with before you commit.",
       },
@@ -63,8 +63,8 @@ export const metadata = {
     images: [
       {
         url: OG_IMAGE,
-        width: 1200,
-        height: 630,
+        width: 1024,
+        height: 536,
         alt: "ProHealthLedger — Know who you are working with before you commit.",
       },
     ],
