@@ -51,6 +51,11 @@ export async function POST(req) {
     visibility: "PUBLIC",
     distribution: {
       feedDistribution: "MAIN_FEED",
+      targeter: {
+        requestContext: {
+          relevantAudience: "ANYONE",
+        },
+      },
     },
     lifecycleState: "PUBLISHED",
   };
@@ -79,6 +84,7 @@ export async function POST(req) {
           Authorization: `Bearer ${token.linkedinAccessToken}`,
           "Content-Type": "application/json",
           "LinkedIn-Version": "202404",
+          "X-Restli-Method": "create",
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
