@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
@@ -60,7 +60,8 @@ function voterDisplay(submission) {
 
 function ProfilesContent() {
   const searchParams = useSearchParams();
-  const initialSearch = searchParams.get("search") || "";
+  const params = useParams();
+  const initialSearch = searchParams.get("search") || params?.slug || "";
   const { data: session } = useSession();
   const currentUserId = session?.userId || "";
   const [profiles, setProfiles] = useState([]);
