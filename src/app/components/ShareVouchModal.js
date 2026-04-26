@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useSession } from "next-auth/react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 
 const SITE_URL = "https://prohealthledger.org";
@@ -10,35 +9,21 @@ function buildShareText(displayName, firstPerson = false, voucherId = null, vouc
   const mentorTag = voucherId ? `@[${voucherName}](urn:li:person:${voucherId})` : voucherName;
   const vouchedForTag = vouchedForId ? `@[${displayName}](urn:li:person:${vouchedForId})` : displayName;
 
-  const getOgUrl = (vName, vPic, veName, vePic) => {
-    const params = new URLSearchParams();
-    if (vName) params.set('voucherName', vName);
-    if (vPic) params.set('voucherPic', vPic);
-    if (veName) params.set('voucheeName', veName);
-    if (vePic) params.set('voucheePic', vePic);
-    return `${SITE_URL}/api/og?${params.toString()}`;
-  };
-
-  const ogUrl = getOgUrl(voucherName, voucherPic, displayName, voucheePic);
-
   if (firstPerson) {
     const firstPersonOptions = [
       {
         text: "Your professional career track record belongs to you — not to the HR department of your previous company.\n\n" +
           "I'm building my portable reputation on Pro-Health Ledger. Massive thanks to the colleagues and partners like " + mentorTag + " who have already staked their own reputation to vouch for my work. Transparency creates accountability, and I believe the best way to do business is out in the open.\n\n" +
-          "If we've worked together, I'd be honored if you added your experience to my Professional-Health Ledger. And the next time you're evaluating a partner or hire, look them up.\n\n" +
+          "If we've worked together, I'd be honored if you added your experience to my Professional-Health Ledger.\n\n" +
           "Check out my track record here:",
-        tags: "#CareerGrowth #PersonalBranding #Networking #ProfessionalDevelopment #FutureOfWork",
-        ogUrl
+        tags: "#CareerGrowth #PersonalBranding #Networking #ProfessionalDevelopment #FutureOfWork"
       },
       {
         text: "Your career's reputation belongs to you — not to your previous company's HR department.\n\n" +
           "I'm building my portable reputation on Pro-Health Ledger. Transparency creates accountability, and the best way to do business is out in the open.\n\n" +
-          "Big thanks to " + mentorTag + " and others who have already staked their reputation to vouch for my work. If we’ve worked together, I’d be honored to have your honest review on my Professional Health Ledger.\n\n" +
-          "Before your next hire or partnership, look them up. If they aren’t here, ask them to bring their track record to the table.\n\n" +
+          "Big thanks to " + mentorTag + " and others who have already staked their reputation to vouch for my work.\n\n" +
           "Check out my public Professional Health Ledger:",
-        tags: "#ProfessionalIntegrity #WorkplaceCulture #Accountability #Transparency #LeadershipDevelopment",
-        ogUrl
+        tags: "#ProfessionalIntegrity #WorkplaceCulture #Accountability #Transparency #LeadershipDevelopment"
       }
     ];
     return firstPersonOptions[Math.floor(Math.random() * firstPersonOptions.length)];
@@ -47,27 +32,16 @@ function buildShareText(displayName, firstPerson = false, voucherId = null, vouc
   const thirdPersonOptions = [
     {
       text: "Traditional reference checks are broken—nobody lists references who won’t say nice things. A professional track record shouldn't vanish when you change companies; it should be portable.\n\n" +
-        `I just staked my own professional reputation on Pro-Health Ledger to officially vouch for my friend and colleague, ${vouchedForTag}'s work ethic.\n\n` +
-        "Before you finalize your next hire or partnership, check if they have a public Professional Health Ledger on ProHealthLedger.org. If they aren't there yet, ask them to bring their professional references to the table.\n\n" +
-        `You can see my vouch for ${displayName} here:`,
-      tags: "#HiringTransparency #RecruitmentInnovation #FutureOfWork #TalentAcquisition #HRTech",
-      ogUrl
+        `I just staked my own professional reputation on Pro-Health Ledger to officially vouch for my colleague, ${vouchedForTag}'s work ethic.\n\n` +
+        "Before you finalize your next hire or partnership, look up their Professional Health Ledger.\n\n" +
+        `Read my vouch for ${displayName}:`,
+      tags: "#HiringTransparency #RecruitmentInnovation #FutureOfWork #TalentAcquisition #HRTech"
     },
     {
       text: "In a world of generic LinkedIn endorsements, I wanted to put something more meaningful on the record for " + vouchedForTag + ".\n\n" +
         "I just added my official vouch for them on Pro-Health Ledger. Your reputation is your most valuable asset, and it's time we start actively building public, verified track records.\n\n" +
-        "Who is the best person you've worked with recently? Look them up. If they aren't on the Pro-Health Ledger yet, be the first one to start their portable reputation.\n\n" +
-        `Read my vouch for ${displayName} here:`,
-      tags: "#PersonalBranding #CareerGrowth #ProfessionalDevelopment #Transparency #Trust",
-      ogUrl
-    },
-    {
-      text: "Resumes tell you what someone did. A verified vouch tells you how they did it and how they treat people.\n\n" +
-        `I just added an official vouch for ${vouchedForTag} on Pro-Health Ledger — an immutable record of how people actually work. It's time we start actively building public, portable track records.\n\n` +
-        "Who’s the best person you've worked with recently? Look them up. If they aren't on the Pro-Health Ledger yet, be the first to start their portable reputation.\n\n" +
         `Read my vouch for ${displayName}:`,
-      tags: "#OpenSource #BuildInPublic #SoftwareEngineering #TechInnovation #GitHub",
-      ogUrl
+      tags: "#PersonalBranding #CareerGrowth #ProfessionalDevelopment #Transparency #Trust"
     }
   ];
 
@@ -75,264 +49,106 @@ function buildShareText(displayName, firstPerson = false, voucherId = null, vouc
 }
 
 export default function ShareVouchModal({ data, onClose, firstPerson = false }) {
-  const { data: session } = useSession();
   const [copied, setCopied] = useState(false);
-  const [linkedinPasteStep, setLinkedinPasteStep] = useState(false);
   const [postingDirect, setPostingDirect] = useState(false);
-  const [directPostResult, setDirectPostResult] = useState(null); // "success" | "error" | null
-  const [directPostErrorDetails, setDirectPostErrorDetails] = useState("");
   const [refCode, setRefCode] = useState("");
-  const pasteKey =
-    typeof navigator !== "undefined" &&
-    (navigator.platform?.includes("Mac") || /Mac|iPhone|iPad/.test(navigator.userAgent || ""))
-      ? "⌘V"
-      : "Ctrl+V";
 
-  const displayName = formatProfessionalDisplayName(
-    data.profile_slug,
-    data.public_name
-  );
-
-  const voucherId = (typeof data.user === "string" && data.user.startsWith("linkedin:")) ? data.user.slice(9) : null;
-  const voucherName = data.display_name || (typeof data.user === "string" ? (data.user.startsWith("github:") ? data.user.slice(7) : data.user) : "a colleague");
-  const voucherPic = data.display_image || null;
-  
-  // Note: We'll use the profile owner's pic as voucheePic. 
-  // We can get this from session if the user is looking at their own profile.
-  const voucheePic = firstPerson ? session?.user?.image : null;
-  const voucheeId = firstPerson ? (session?.linkedinSub || session?.userId?.replace("linkedin:", "")) : null;
-  
-  const shareData = useMemo(() => buildShareText(displayName, firstPerson, voucherId, voucherName, voucheeId, voucherPic, voucheePic), [displayName, firstPerson, voucherId, voucherName, voucheeId, voucherPic, voucheePic]);
+  const displayName = formatProfessionalDisplayName(data.profile_slug, data.public_name);
+  const voucherName = data.display_name || "a colleague";
   const slug = typeof data.profile_slug === "string" ? data.profile_slug.trim() : "";
-  const baseProfileUrl = slug
-    ? `${SITE_URL}/profiles?search=${encodeURIComponent(slug)}`
-    : `${SITE_URL}/profiles`;
-
-  // --- NEW CLEAN PATH STRATEGY ---
-  // Using a clean path /vouch/VoucherName/VoucheeName/Slug instead of query params 
-  // to bypass LinkedIn cache and guarantee a Hero Card.
-  const cleanVouchPath = `/vouch/${encodeURIComponent(voucherName || "Colleague")}/${encodeURIComponent(displayName || "Professional")}/${encodeURIComponent(slug || "unknown")}`;
-  const ledgerProfileUrl = `${SITE_URL}${cleanVouchPath}${refCode ? `?ref=${refCode}` : ""}`;
-
-  const linkedinShareOffsiteUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(ledgerProfileUrl)}`;
+  
+  // Construct Clean Path for LinkedIn Crawler (validated by Post Inspector)
+  const voucherClean = voucherName.replace(/ /g, "_").replace(/\//g, "-");
+  const voucheeClean = displayName.replace(/ /g, "_").replace(/\//g, "-");
+  
+  const shareData = useMemo(() => buildShareText(displayName, firstPerson, null, voucherName), [displayName, firstPerson, voucherName]);
+  
+  const cleanVouchUrl = `${SITE_URL}/vouch/${encodeURIComponent(voucherClean)}/${encodeURIComponent(voucheeClean)}/${encodeURIComponent(slug || "unknown")}`;
+  const finalShareUrl = refCode ? `${cleanVouchUrl}?ref=${refCode}` : cleanVouchUrl;
 
   useEffect(() => {
-    setLinkedinPasteStep(false);
-    setCopied(false);
-    setRefCode("");
-
-    // Generate referral link for tracking
     fetch("/api/referrals", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        profileSlug: data.profile_slug,
-        profileName: data.public_name,
-      }),
+      body: JSON.stringify({ profileSlug: data.profile_slug, profileName: data.public_name }),
     })
       .then((res) => res.json())
-      .then((json) => {
-        if (json.refCode) {
-          setRefCode(json.refCode);
-        }
-      })
-      .catch((err) => console.error("Failed to generate referral code", err));
+      .then((json) => { if (json.refCode) setRefCode(json.refCode); })
+      .catch((err) => console.error("Referral failed", err));
   }, [data]);
 
-  const handlePostToLinkedIn = useCallback(async () => {
-    const toCopy = `${shareData.text}\n\n${ledgerProfileUrl}\n\n${shareData.tags}`;
-    try {
-      await navigator.clipboard.writeText(toCopy);
-    } catch {
-      const ta = document.createElement("textarea");
-      ta.value = toCopy;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-    }
-    setCopied(true);
-    setLinkedinPasteStep(true);
-    window.open(linkedinShareOffsiteUrl, "_blank", "noopener,noreferrer");
-    setTimeout(() => setCopied(false), 4000);
-  }, [shareData, ledgerProfileUrl, linkedinShareOffsiteUrl]);
-
-  const handleDirectPost = useCallback(async () => {
+  const handleLinkedInShare = () => {
     setPostingDirect(true);
-    setDirectPostResult(null);
-    setDirectPostErrorDetails("");
+    
+    // Copy text to clipboard as a courtesy fallback
+    const toCopy = `${shareData.text}\n\n${finalShareUrl}\n\n${shareData.tags}`;
+    navigator.clipboard.writeText(toCopy).catch(() => {});
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s client-side timeout
-
-    try {
-      const res = await fetch("/api/share-linkedin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          commentary: `${shareData.text}\n\n${ledgerProfileUrl}\n\n${shareData.tags}`,
-          articleUrl: ledgerProfileUrl,
-          articleTitle: firstPerson ? `Professional Health Ledger — ${displayName}` : `Vouch for ${displayName} on PHL`,
-          articleDescription: "Know who you're working with before you commit. One question: “Would you work with them again?”",
-          ogUrl: shareData.ogUrl,
-        }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      let json;
-      try {
-        json = await res.json();
-      } catch (e) {
-        throw new Error("Invalid server response format.");
-      }
-
-      if (res.ok && json.ok) {
-        setDirectPostResult("success");
-      } else {
-        console.error("Direct post failed:", json);
-        setDirectPostResult("error");
-        if (res.status === 403 || json.status === 403) {
-          setDirectPostErrorDetails("Permission denied (403). Ensure you've re-logged in and granted 'Share on LinkedIn' access.");
-        } else if (res.status === 504 || res.status === 502) {
-          setDirectPostErrorDetails("LinkedIn is taking too long to respond. Please try the manual method.");
-        } else {
-          setDirectPostErrorDetails(json.error || "LinkedIn rejected the post.");
-        }
-      }
-    } catch (err) {
-      console.error("Direct post error:", err);
-      setDirectPostResult("error");
-      if (err.name === "AbortError") {
-        setDirectPostErrorDetails("Request timed out. LinkedIn's response is taking too long.");
-      } else {
-        setDirectPostErrorDetails("Network error while reaching our server.");
-      }
-    } finally {
-      clearTimeout(timeoutId);
+    // Open LinkedIn Intent
+    const linkedinIntentUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(finalShareUrl)}`;
+    const width = 800;
+    const height = 650;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+    
+    window.open(linkedinIntentUrl, "linkedin-share", `width=${width},height=${height},top=${top},left=${left},toolbar=no,menubar=no,scrollbars=yes,resizable=yes`);
+    
+    setTimeout(() => {
       setPostingDirect(false);
-    }
-  }, [shareData, ledgerProfileUrl, displayName, shareData]);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    }, 1500);
+  };
 
-  useEffect(() => {
-    let t;
-    if (postingDirect) {
-      t = setTimeout(() => {
-        if (postingDirect) {
-          setPostingDirect(false);
-          setDirectPostResult("error");
-          setDirectPostErrorDetails("Fail-safe: Posting took too long. Please use the manual share option.");
-        }
-      }, 15000); // 15s hard limit
-    }
-    return () => clearTimeout(t);
-  }, [postingDirect]);
-
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  const handleCopyOnly = () => {
+    const toCopy = `${shareData.text}\n\n${finalShareUrl}\n\n${shareData.tags}`;
+    navigator.clipboard.writeText(toCopy).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    });
+  };
 
   return (
     <>
       <div className="share-modal-backdrop" onClick={onClose} />
-      <div className="share-modal" role="dialog" aria-modal="true" aria-label="Share vouch on LinkedIn">
+      <div className="share-modal" role="dialog" aria-modal="true">
         <div className="share-modal-header">
-          <h3>{firstPerson ? "Share your vouch on LinkedIn" : "Share this vouch on LinkedIn"}</h3>
-          <button type="button" className="share-modal-close" onClick={onClose} aria-label="Close">
-            ✕
-          </button>
+          <h3>{firstPerson ? "Share Your Ledger" : "Vouch Shared!"}</h3>
+          <button type="button" className="share-modal-close" onClick={onClose}>✕</button>
         </div>
+        
         <div className="share-modal-body">
-          <p className="share-modal-hint">
-            <strong>Open LinkedIn</strong> opens the composer with a preview of{" "}
-            <strong>this person’s public ledger page</strong> (same URL as below — not the site
-            homepage). Paste the copied message ({pasteKey}) so your note and the profile link both
-            appear in the post.
+          <p className="share-modal-hint" style={{ marginBottom: '20px' }}>
+            {firstPerson 
+              ? "Your professional reputation is portable. Share this updated ledger to your LinkedIn feed." 
+              : "Recognition works best when public. Post this vouch to LinkedIn to build their professional track record."}
           </p>
-          {linkedinPasteStep ? (
-            <div className="share-modal-paste-steps" role="status">
-              <strong>Next — in the LinkedIn tab</strong>
-              <ol>
-                <li>
-                  If you see <strong>Sign in</strong>, sign in, then use &ldquo;Open LinkedIn
-                  again&rdquo; below.
-                </li>
-                <li>
-                  You should see a composer with a preview card for{" "}
-                  <strong>their ledger profile</strong> (URL below).
-                </li>
-                <li>
-                  Press <kbd className="share-modal-kbd">{pasteKey}</kbd> to paste your message and
-                  link, then post.
-                </li>
-              </ol>
-              <button
-                type="button"
-                className="share-modal-reopen-linkedin"
-                onClick={() => window.open(linkedinShareOffsiteUrl, "_blank", "noopener,noreferrer")}
-              >
-                Open LinkedIn again
-              </button>
-            </div>
-          ) : null}
-          <div className="share-modal-text">{`${shareData.text}\n\n${ledgerProfileUrl}\n\n${shareData.tags}`}</div>
-          <div className="share-modal-links">
-            <span className="share-modal-link-label">Public profile link (preview + copied text):</span>
-            <a href={ledgerProfileUrl} target="_blank" rel="noopener noreferrer">
-              {ledgerProfileUrl}
-            </a>
+
+          <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', fontSize: '0.85rem', color: '#475569', marginBottom: '20px', border: '1px solid #e2e8f0', whiteSpace: 'pre-wrap' }}>
+            {shareData.text}{"\n\n"}{finalShareUrl}{"\n\n"}{shareData.tags}
           </div>
         </div>
-        <div className="share-modal-actions">
-          {session?.canPostToLinkedIn ? (
-            <>
-              {directPostResult === "success" ? (
-                <div className="share-modal-success" role="status">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#27ae60" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                  <strong>Posted to your LinkedIn feed!</strong>
-                </div>
-              ) : directPostResult === "error" ? (
-                <div className="share-modal-error" role="alert">
-                  <p><strong>Direct posting failed.</strong></p>
-                  <p className="error-details">{directPostErrorDetails || "LinkedIn rejected the post."}</p>
-                  <div className="error-fallback-cta">
-                    <button type="button" className="btn-linkedin-open" onClick={handlePostToLinkedIn}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                      </svg>
-                      {copied ? "Copied — paste in LinkedIn" : "Copy and post to LinkedIn"}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  className="btn-linkedin-direct"
-                  onClick={handleDirectPost}
-                  disabled={postingDirect}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </svg>
-                  {postingDirect ? "Posting…" : "Post to LinkedIn"}
-                </button>
-              )}
-            </>
-          ) : (
-            <button type="button" className="btn-linkedin-open" onClick={handlePostToLinkedIn}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-              </svg>
-              {copied ? "Copied — paste in LinkedIn" : "Copy and post to LinkedIn"}
-            </button>
-          )}
+
+        <div className="share-modal-actions" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button 
+            type="button" 
+            className="btn-linkedin-direct" 
+            onClick={handleLinkedInShare}
+            disabled={postingDirect}
+            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            {postingDirect ? "Opening LinkedIn..." : "Post to LinkedIn"}
+          </button>
+
+          <button 
+            type="button" 
+            className="btn-copy-manual" 
+            onClick={handleCopyOnly}
+            style={{ width: '100%', background: 'transparent', border: '1px solid #cbd5e1', padding: '10px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem' }}
+          >
+            {copied ? "✓ Copied!" : "Copy Text for Manual Post"}
+          </button>
         </div>
       </div>
     </>
