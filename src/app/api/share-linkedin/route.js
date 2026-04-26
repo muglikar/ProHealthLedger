@@ -178,8 +178,12 @@ export async function POST(req) {
   }
 
   // --- Build the LinkedIn Posts API payload ---
-  const cleanTitle = (articleTitle || "Professional Health Ledger")
-    .split('_').join(' ');
+  // Build clean title: "[Voucher] vouched for [Vouchee] - Professional Health Ledger"
+  const safeVoucher = (cleanVoucher || "").split('_').join(' ');
+  const safeVouchee = (cleanVouchee || "").split('_').join(' ');
+  const cleanTitle = (safeVoucher && safeVouchee)
+    ? `${safeVoucher} vouched for ${safeVouchee} - Professional Health Ledger`
+    : (articleTitle || "Professional Health Ledger").split('_').join(' ');
 
   const postPayload = {
     author: `urn:li:person:${linkedinSub}`,
