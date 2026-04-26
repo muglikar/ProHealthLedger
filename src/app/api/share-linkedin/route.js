@@ -92,7 +92,36 @@ export async function POST(req) {
       });
 
       if (putRes.ok) {
-        imageUrn = urn;
+        // 3. POLL for AVAILABLE status (Race condition fix)
+        let isAvailable = false;
+        let attempts = 0;
+        const maxAttempts = 6;
+        
+        while (!isAvailable && attempts < maxAttempts) {
+          attempts++;
+          // Wait 1.5s between polls
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          
+          try {
+            const statusRes = await fetch(`https://api.linkedin.com/rest/images/${urn}`, {
+              headers: {
+                Authorization: `Bearer ${token.linkedinAccessToken}`,
+                "LinkedIn-Version": "202604",
+              },
+            });
+            
+            if (statusRes.ok) {
+              const statusData = await statusRes.json();
+              if (statusData.status === "AVAILABLE") {
+                isAvailable = true;
+                imageUrn = urn;
+                break;
+              }
+            }
+          } catch (pollErr) {
+            console.error("LinkedIn Image Poll failed:", pollErr);
+          }
+        }
       }
     }
   } catch (err) {
