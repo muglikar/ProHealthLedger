@@ -51,7 +51,7 @@ export async function POST(req) {
         headers: {
           Authorization: `Bearer ${token.linkedinAccessToken}`,
           "Content-Type": "application/json",
-          "LinkedIn-Version": "202401",
+          "LinkedIn-Version": "202404",
         },
         body: JSON.stringify({ initializeUploadRequest: { owner: `urn:li:person:${linkedinSub}` } }),
       });
@@ -71,7 +71,7 @@ export async function POST(req) {
             const statusRes = await fetch(`https://api.linkedin.com/rest/images/${urn}`, {
               headers: {
                 Authorization: `Bearer ${token.linkedinAccessToken}`,
-                "LinkedIn-Version": "202401",
+                "LinkedIn-Version": "202404",
               },
             });
             if (statusRes.ok) {
@@ -122,7 +122,7 @@ export async function POST(req) {
       headers: {
         Authorization: `Bearer ${token.linkedinAccessToken}`,
         "Content-Type": "application/json",
-        "LinkedIn-Version": "202401",
+        "LinkedIn-Version": "202404",
         "X-Restli-Protocol-Version": "2.0.0",
       },
       body: JSON.stringify(postPayload),
