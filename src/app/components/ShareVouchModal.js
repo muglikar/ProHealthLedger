@@ -7,8 +7,6 @@ import { formatProfessionalDisplayName } from "@/lib/profiles";
 const SITE_URL = "https://prohealthledger.org";
 
 function buildShareText(displayName, firstPerson = false) {
-  const hashtags = "\n\n#Transparency #ProfessionalIntegrity #CareerGrowth #WorkCulture #ProHealthLedger #Vouch #Trust";
-
   if (firstPerson) {
     const firstPersonOptions = [
       "Your professional career track record belongs to you — not to the HR department of your previous company.\n\n" +
@@ -22,7 +20,7 @@ function buildShareText(displayName, firstPerson = false) {
       "Before your next hire or partnership, look them up. If they aren’t here, ask them to bring their track record to the table.\n\n" +
       "Check out my public Professional Health Ledger:"
     ];
-    return firstPersonOptions[Math.floor(Math.random() * firstPersonOptions.length)] + hashtags;
+    return firstPersonOptions[Math.floor(Math.random() * firstPersonOptions.length)];
   }
 
   const thirdPersonOptions = [
@@ -42,7 +40,7 @@ function buildShareText(displayName, firstPerson = false) {
     `Read my vouch for ${displayName}:`
   ];
 
-  return thirdPersonOptions[Math.floor(Math.random() * thirdPersonOptions.length)] + hashtags;
+  return thirdPersonOptions[Math.floor(Math.random() * thirdPersonOptions.length)];
 }
 
 export default function ShareVouchModal({ data, onClose, firstPerson = false }) {
@@ -64,7 +62,10 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
     data.profile_slug,
     data.public_name
   );
-  const shareText = useMemo(() => buildShareText(displayName, firstPerson), [displayName, firstPerson]);
+  
+  const hashtags = "#Transparency #ProfessionalIntegrity #CareerGrowth #WorkCulture #ProHealthLedger #Vouch #Trust";
+  
+  const shareTextTemplate = useMemo(() => buildShareText(displayName, firstPerson), [displayName, firstPerson]);
   const slug = typeof data.profile_slug === "string" ? data.profile_slug.trim() : "";
   const baseProfileUrl = slug
     ? `${SITE_URL}/profiles?search=${encodeURIComponent(slug)}`
@@ -98,7 +99,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
   }, [data]);
 
   const handlePostToLinkedIn = useCallback(async () => {
-    const toCopy = `${shareText}\n\n${ledgerProfileUrl}`;
+    const toCopy = `${shareTextTemplate}\n\n${hashtags}\n\n${ledgerProfileUrl}`;
     try {
       await navigator.clipboard.writeText(toCopy);
     } catch {
@@ -130,7 +131,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          commentary: `${shareText}\n\n${ledgerProfileUrl}`,
+          commentary: `${shareTextTemplate}\n\n${hashtags}\n\n${ledgerProfileUrl}`,
           articleUrl: ledgerProfileUrl,
           articleTitle: `Professional Health Ledger — ${displayName}`,
           articleDescription: "See verified professional vouches on Pro-Health Ledger",
@@ -239,7 +240,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
               </button>
             </div>
           ) : null}
-          <div className="share-modal-text">{`${shareText}\n\n${ledgerProfileUrl}`}</div>
+          <div className="share-modal-text">{`${shareTextTemplate}\n\n${hashtags}\n\n${ledgerProfileUrl}`}</div>
           <div className="share-modal-links">
             <span className="share-modal-link-label">Public profile link (preview + copied text):</span>
             <a href={ledgerProfileUrl} target="_blank" rel="noopener noreferrer">
