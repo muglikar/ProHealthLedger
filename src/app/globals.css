@@ -24,8 +24,8 @@
   --blue-bg: #eff6ff;
   --radius: 12px;
   --radius-sm: 8px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   /* --font-monda is set on <html> by next/font; must live on :root so var() resolves here. */
   --font-sans: var(--font-monda), system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
@@ -792,10 +792,7 @@ a:hover {
   .home-above-fold {
     justify-content: space-between;
     gap: clamp(0.75rem, 2.5vh, 1.5rem);
-    min-height: calc(
-      100dvh - var(--nav-height, 60px) -
-        var(--vote-quota-strip-height, 0px) - clamp(18px, 2.5vw, 32px)
-    );
+    min-height: calc(100dvh - var(--nav-height, 60px) - var(--vote-quota-strip-height, 0px) - clamp(18px, 2.5vw, 32px));
     padding-bottom: clamp(8px, 1.5vh, 16px);
   }
 }
@@ -921,6 +918,7 @@ a:hover {
     align-items: center;
     text-align: center;
   }
+
   .trust-sep {
     display: none;
   }
@@ -1330,10 +1328,8 @@ a:hover {
 /* ── Profile Cards ── */
 .profile-grid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(min(100%, 300px), 1fr)
-  );
+  grid-template-columns: repeat(auto-fill,
+      minmax(min(100%, 300px), 1fr));
   gap: 16px;
   min-width: 0;
 }
@@ -1435,7 +1431,7 @@ a:hover {
   gap: 10px;
 }
 
-.profile-vouch-details + .profile-experience-cta {
+.profile-vouch-details+.profile-experience-cta {
   margin-top: 18px;
   padding-top: 16px;
   border-top: 1px solid var(--border);
@@ -2892,7 +2888,8 @@ button.audit-comment-link:focus-visible {
 
   .form-input,
   .form-textarea {
-    font-size: 16px; /* prevents iOS zoom on focus */
+    font-size: 16px;
+    /* prevents iOS zoom on focus */
   }
 
   .page-header {
