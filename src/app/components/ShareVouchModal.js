@@ -136,7 +136,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
       } else {
         console.error("Direct post failed:", json);
         setDirectPostResult("error");
-        setDirectPostErrorDetails(json.error || "LinkedIn rejected the post.");
+        setDirectPostErrorDetails(json.details || json.error || "LinkedIn rejected the post.");
       }
     } catch (err) {
       clearTimeout(timeoutId);
