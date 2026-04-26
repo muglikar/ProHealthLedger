@@ -107,8 +107,9 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
   const baseProfileUrl = slug
     ? `${SITE_URL}/profiles?search=${encodeURIComponent(slug)}`
     : `${SITE_URL}/profiles`;
-  
-  const ledgerProfileUrl = refCode ? `${baseProfileUrl}${baseProfileUrl.includes("?") ? "&" : "?"}ref=${refCode}` : baseProfileUrl;
+
+  // Unique URL for each vouch share to bypass LinkedIn cache and trigger dynamic OG metadata
+  const ledgerProfileUrl = `${baseProfileUrl}${baseProfileUrl.includes('?') ? '&' : '?'}voucher=${encodeURIComponent(voucherName)}&vouchee=${encodeURIComponent(displayName)}&pic=${encodeURIComponent(voucherPic || '')}&vepic=${encodeURIComponent(voucheePic || '')}${refCode ? `&ref=${refCode}` : ''}&v=${Date.now()}`;
 
   const linkedinShareOffsiteUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(ledgerProfileUrl)}`;
 

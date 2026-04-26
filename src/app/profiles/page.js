@@ -25,33 +25,51 @@ function pickSearch(sp) {
 export async function generateMetadata({ searchParams }) {
   const sp = await resolvedSearchParams(searchParams);
   const slug = pickSearch(sp);
+  const voucherName = sp?.voucher;
+  const voucheeName = sp?.vouchee;
+  const voucherPic = sp?.pic;
+  const voucheePic = sp?.vepic;
+
+  let dynamicOgImage = OG_IMAGE;
+  let ogTitle = "";
+  let ogDesc = DEFAULT_DESC;
+
+  if (voucherName && voucheeName) {
+    const ogParams = new URLSearchParams();
+    ogParams.set('voucherName', voucherName);
+    ogParams.set('voucheeName', voucheeName);
+    if (voucherPic) ogParams.set('voucherPic', voucherPic);
+    if (voucheePic) ogParams.set('voucheePic', voucheePic);
+    dynamicOgImage = `${SITE_URL}/api/og?${ogParams.toString()}`;
+    ogTitle = `${voucherName} vouched for ${voucheeName}`;
+    ogDesc = "Know who you're working with before you commit. One question: “Would you work with them again?”";
+  } else {
+    const titleBase = slug.length > 0 ? `Look up — ${slug}` : "Look up a professional";
+    ogTitle = `${titleBase} — Professional Health Ledger`;
+  }
+
   const canonical =
     slug.length > 0
       ? `${SITE_URL}/profiles?search=${encodeURIComponent(slug)}`
       : `${SITE_URL}/profiles`;
-  const titleBase =
-    slug.length > 0
-      ? `Look up — ${slug}`
-      : "Look up a professional";
-  const title = `${titleBase} — Professional Health Ledger`;
 
   return {
-    title,
-    description: DEFAULT_DESC,
+    title: ogTitle,
+    description: ogDesc,
     alternates: { canonical },
     openGraph: {
-      title: `${titleBase} — Professional Health Ledger`,
-      description: DEFAULT_DESC,
+      title: ogTitle,
+      description: ogDesc,
       url: canonical,
       siteName: "Professional Health Ledger",
       locale: "en_US",
       type: "website",
       images: [
         {
-          url: OG_IMAGE,
-          secureUrl: OG_IMAGE,
-          width: 1024,
-          height: 536,
+          url: dynamicOgImage,
+          secureUrl: dynamicOgImage,
+          width: 1200,
+          height: 630,
           type: "image/png",
           alt: "ProHealthLedger — Know who you are working with before you commit.",
         },
@@ -59,13 +77,13 @@ export async function generateMetadata({ searchParams }) {
     },
     twitter: {
       card: "summary_large_image",
-      title: `${titleBase} — Professional Health Ledger`,
-      description: DEFAULT_DESC,
+      title: ogTitle,
+      description: ogDesc,
       images: [
         {
-          url: OG_IMAGE,
-          width: 1024,
-          height: 536,
+          url: dynamicOgImage,
+          width: 1200,
+          height: 630,
           alt: "ProHealthLedger — Know who you are working with before you commit.",
         },
       ],
