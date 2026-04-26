@@ -125,7 +125,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
     setLinkedinPasteStep(true);
     window.open(linkedinShareOffsiteUrl, "_blank", "noopener,noreferrer");
     setTimeout(() => setCopied(false), 4000);
-  }, [shareText, ledgerProfileUrl, linkedinShareOffsiteUrl]);
+  }, [shareData, ledgerProfileUrl, linkedinShareOffsiteUrl]);
 
   const handleDirectPost = useCallback(async () => {
     setPostingDirect(true);
@@ -182,7 +182,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
       clearTimeout(timeoutId);
       setPostingDirect(false);
     }
-  }, [shareText, ledgerProfileUrl, displayName]);
+  }, [shareData, ledgerProfileUrl, displayName, shareData]);
 
   useEffect(() => {
     let t;
