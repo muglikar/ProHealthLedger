@@ -5,9 +5,8 @@ export const runtime = 'edge';
 /**
  * GET /api/og
  *
- * Generates a 1200x630 Hero Card image — light theme, MEGA text,
- * PHL brand logo, and the official homepage tagline.
- * ZERO external fetches — resolves in <50ms.
+ * Generates a 1200x630 Hero Card image — light theme, large readable text,
+ * with PHL logo. ZERO external fetches — resolves in <50ms.
  *
  * Params: ?voucherName=...&voucheeName=...
  */
@@ -32,111 +31,98 @@ export async function GET(request) {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: '#ffffff',
-            backgroundImage: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #eff6ff 100%)',
-            padding: '40px 60px',
+            backgroundImage: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%)',
+            padding: '50px 60px',
             fontFamily: 'sans-serif',
           }}
         >
-          {/* Top: PHL Branding Block */}
+          {/* Top: PHL Logo + Branding */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            marginBottom: '40px',
+            marginBottom: '50px',
           }}>
             <div style={{
-              width: '64px',
-              height: '64px',
-              borderRadius: '16px',
+              width: '56px',
+              height: '56px',
+              borderRadius: '14px',
               backgroundColor: '#059669',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: 'white',
-              fontSize: '40px',
+              fontSize: '32px',
               fontWeight: 'bold',
-              marginRight: '24px',
-              boxShadow: '0 8px 16px rgba(5, 150, 105, 0.25)',
+              marginRight: '20px',
+              boxShadow: '0 4px 12px rgba(5, 150, 105, 0.3)',
             }}>
               ✓
             </div>
             <div style={{
-              fontSize: '32px',
-              fontWeight: '900',
-              color: '#1e293b',
-              letterSpacing: '0.15em',
+              fontSize: '36px',
+              fontWeight: 'bold',
+              color: '#64748b',
+              letterSpacing: '0.1em',
             }}>
               PRO-HEALTH LEDGER
             </div>
           </div>
 
-          {/* Center: MEGA TEXT VOUCH */}
+          {/* Center: [Voucher] vouched for [Vouchee] */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            maxWidth: '1100px',
+            maxWidth: '1050px',
             textAlign: 'center',
             flex: 1,
             justifyContent: 'center',
           }}>
             <div style={{
-              fontSize: '84px',
-              fontWeight: '900',
+              fontSize: '72px',
+              fontWeight: 'bold',
               color: '#0f172a',
-              lineHeight: 1.1,
-              marginBottom: '20px',
+              lineHeight: 1.15,
+              marginBottom: '24px',
             }}>
               {cleanVoucher}
             </div>
             <div style={{
-              fontSize: '84px',
-              fontWeight: '700',
-              fontStyle: 'italic',
+              fontSize: '72px',
+              fontWeight: 'bold',
               color: '#059669',
-              marginBottom: '20px',
-              display: 'flex',
+              fontStyle: 'italic',
+              marginBottom: '24px',
             }}>
               vouched for
             </div>
             <div style={{
-              fontSize: '84px',
-              fontWeight: '900',
+              fontSize: '72px',
+              fontWeight: 'bold',
               color: '#0f172a',
-              lineHeight: 1.1,
+              lineHeight: 1.15,
             }}>
               {cleanVouchee}
             </div>
           </div>
 
-          {/* Bottom: Official Homepage Tagline */}
+          {/* Bottom: Tagline */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            borderTop: '3px solid #f1f5f9',
-            paddingTop: '32px',
-            width: '950px',
-            marginTop: '30px',
+            borderTop: '2px solid #e2e8f0',
+            paddingTop: '28px',
+            maxWidth: '900px',
+            marginTop: '40px',
           }}>
             <div style={{
-              fontSize: '34px',
-              color: '#1e293b',
-              fontWeight: '800',
+              fontSize: '26px',
+              color: '#475569',
+              fontWeight: '500',
               textAlign: 'center',
-              letterSpacing: '-0.02em',
-              marginBottom: '8px',
             }}>
-              Know who you’re working with before you commit.
-            </div>
-            <div style={{
-              fontSize: '24px',
-              color: '#64748b',
-              fontWeight: '600',
-              textAlign: 'center',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-            }}>
-              Verified Professional History
+              Know who you're working with before you commit.
             </div>
           </div>
         </div>

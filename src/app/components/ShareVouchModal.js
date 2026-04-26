@@ -7,8 +7,8 @@ import { formatProfessionalDisplayName } from "@/lib/profiles";
 const SITE_URL = "https://prohealthledger.org";
 
 function buildShareText(displayName, firstPerson = false, voucherId = null, voucherName = "", vouchedForId = null) {
-  const mentorTag = voucherName;
-  const vouchedForTag = displayName;
+  const mentorTag = voucherId ? `@[${voucherName}](urn:li:person:${voucherId})` : voucherName;
+  const vouchedForTag = vouchedForId ? `@[${displayName}](urn:li:person:${vouchedForId})` : displayName;
 
   if (firstPerson) {
     const firstPersonOptions = [
@@ -16,14 +16,14 @@ function buildShareText(displayName, firstPerson = false, voucherId = null, vouc
         text: "Your professional career track record belongs to you — not to the HR department of your previous company.\n\n" +
           "I'm building my portable reputation on Pro-Health Ledger. Massive thanks to the colleagues and partners like " + mentorTag + " who have already staked their own reputation to vouch for my work. Transparency creates accountability, and I believe the best way to do business is out in the open.\n\n" +
           "If we've worked together, I'd be honored if you added your experience to my Professional-Health Ledger.\n\n" +
-          "Check out my track record here:",
+          "Check out my track record here: ",
         tags: "#CareerGrowth #PersonalBranding #Networking #ProfessionalDevelopment #FutureOfWork"
       },
       {
         text: "Your career's reputation belongs to you — not to your previous company's HR department.\n\n" +
           "I'm building my portable reputation on Pro-Health Ledger. Transparency creates accountability, and the best way to do business is out in the open.\n\n" +
           "Big thanks to " + mentorTag + " and others who have already staked their reputation to vouch for my work.\n\n" +
-          "Check out my public Professional Health Ledger:",
+          "Check out my public Professional Health Ledger: ",
         tags: "#ProfessionalIntegrity #WorkplaceCulture #Accountability #Transparency #LeadershipDevelopment"
       }
     ];
@@ -35,13 +35,13 @@ function buildShareText(displayName, firstPerson = false, voucherId = null, vouc
       text: "Traditional reference checks are broken—nobody lists references who won't say nice things. A professional track record shouldn't vanish when you change companies; it should be portable.\n\n" +
         `I just staked my own professional reputation on Pro-Health Ledger to officially vouch for my colleague, ${vouchedForTag}'s work ethic.\n\n` +
         "Before you finalize your next hire or partnership, look up their Professional Health Ledger.\n\n" +
-        `Read my vouch for ${displayName}:`,
+        `Read my vouch for ${displayName}: `,
       tags: "#HiringTransparency #RecruitmentInnovation #FutureOfWork #TalentAcquisition #HRTech"
     },
     {
       text: "In a world of generic LinkedIn endorsements, I wanted to put something more meaningful on the record for " + vouchedForTag + ".\n\n" +
         "I just added my official vouch for them on Pro-Health Ledger. Your reputation is your most valuable asset, and it's time we start actively building public, verified track records.\n\n" +
-        `Read my vouch for ${displayName}:`,
+        `Read my vouch for ${displayName}: `,
       tags: "#PersonalBranding #CareerGrowth #ProfessionalDevelopment #Transparency #Trust"
     }
   ];
@@ -108,7 +108,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          commentary: `${shareData.text} ${finalShareUrl}\n\n${shareData.tags}`,
+          commentary: `${shareData.text}${finalShareUrl}\n\n${shareData.tags}`,
           articleUrl: finalShareUrl,
           articleTitle: firstPerson
             ? `Professional Health Ledger — ${displayName}`
@@ -136,7 +136,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
       } else {
         console.error("Direct post failed:", json);
         setDirectPostResult("error");
-        setDirectPostErrorDetails(json.details || json.error || "LinkedIn rejected the post.");
+        setDirectPostErrorDetails(json.error || "LinkedIn rejected the post.");
       }
     } catch (err) {
       clearTimeout(timeoutId);
@@ -154,7 +154,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
 
   // Manual copy fallback
   const handleCopyOnly = useCallback(() => {
-    const toCopy = `${shareData.text} ${finalShareUrl}\n\n${shareData.tags}`;
+    const toCopy = `${shareData.text}${finalShareUrl}\n\n${shareData.tags}`;
     navigator.clipboard.writeText(toCopy).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
@@ -187,7 +187,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
           </p>
 
           <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', fontSize: '0.85rem', color: '#475569', marginBottom: '20px', border: '1px solid #e2e8f0', whiteSpace: 'pre-wrap', maxHeight: '200px', overflow: 'auto' }}>
-            {shareData.text}{" "}{finalShareUrl}{"\n\n"}{shareData.tags}
+            {shareData.text}{finalShareUrl}{"\n\n"}{shareData.tags}
           </div>
         </div>
 
