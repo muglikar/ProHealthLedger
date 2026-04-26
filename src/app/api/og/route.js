@@ -7,9 +7,6 @@ export const runtime = 'edge';
  * 
  * Generates the professional share card.
  * - Preloads Inter font for guaranteed Bold/Italic rendering.
- * - Brand logo top-left.
- * - Dynamic vouch text center.
- * - Legible tagline bottom.
  */
 export async function GET(request) {
   try {
@@ -20,13 +17,13 @@ export async function GET(request) {
     const cleanVoucher = decodeURIComponent(rawVoucher).split('_').join(' ');
     const cleanVouchee = decodeURIComponent(rawVouchee).split('_').join(' ');
 
-    // Fetch Fonts for guaranteed Bold/Italic support in Satori
+    // Fetch Fonts with absolute URLs for Edge stability
     const fontPrimary = await fetch(
-      new URL('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYMZhrib2Bg-4.ttf', request.url)
+      'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYMZhrib2Bg-4.ttf'
     ).then((res) => res.arrayBuffer());
 
     const fontItalic = await fetch(
-      new URL('https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7W0Q5Z-o.ttf', request.url)
+      'https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7W0Q5Z-o.ttf'
     ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
@@ -40,10 +37,10 @@ export async function GET(request) {
             backgroundColor: '#ffffff',
             backgroundImage: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%)',
             padding: '40px',
-            fontFamily: 'Inter',
+            fontFamily: '"Inter", sans-serif',
           }}
         >
-          {/* Top Left: Logo + Branding */}
+          {/* Brand Shell */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -60,7 +57,6 @@ export async function GET(request) {
               alignItems: 'center',
               justifyContent: 'center',
               marginRight: '15px',
-              boxShadow: '0 4px 8px rgba(5, 150, 105, 0.2)',
             }}>
               <div style={{ color: 'white', fontSize: '36px', fontWeight: 'bold' }}>✓</div>
             </div>
@@ -74,7 +70,7 @@ export async function GET(request) {
             </div>
           </div>
 
-          {/* Dynamic Content Center */}
+          {/* Central Vouch Logic */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -116,7 +112,7 @@ export async function GET(request) {
             </div>
           </div>
 
-          {/* Bottom: Anchor Tagline */}
+          {/* Footer Branding */}
           <div style={{
             display: 'flex',
             width: '100%',
@@ -128,9 +124,10 @@ export async function GET(request) {
               fontSize: '30px',
               color: '#1e293b',
               fontWeight: '600',
+              display: 'flex',
             }}>
-              Know who you're working with{" "}
-              <span style={{ fontWeight: '900', fontStyle: 'italic' }}>
+              {"Know who you're working with "}
+              <span style={{ fontWeight: '900', fontStyle: 'italic', marginLeft: '10px' }}>
                 before you commit.
               </span>
             </div>
