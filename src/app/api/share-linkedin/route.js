@@ -1,12 +1,14 @@
 import { getToken } from "next-auth/jwt";
 
+export const runtime = "edge";
+
 /**
  * POST /api/share-linkedin
  * 
- * robust 2026 Edition handler.
- * - Entity Mapping for mentions.
- * - Media-First for Hero Cards.
- * - Crash-proofed with null-checks.
+ * Edge-compatible handler.
+ * - Uses ArrayBuffer (no Node.js Buffer) for reliability.
+ * - Entity Mapping for 2026 mentions.
+ * - Media-First Hero Cards.
  */
 export async function POST(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -16,13 +18,13 @@ export async function POST(req) {
   }
 
   const linkedinSub = token.linkedinSub || token.userId?.replace("linkedin:", "");
-  if (!linkedinSub) return Response.json({ error: "No LinkedIn identity found." }, { status: 400 });
+  if (!linkedinSub) return Response.json({ error: "No LinkedIn identity." }, { status: 400 });
 
   let body;
   try {
     body = await req.json();
   } catch {
-    return Response.json({ error: "Invalid JSON body." }, { status: 400 });
+    return Response.json({ error: "Invalid JSON." }, { status: 400 });
   }
 
   const {
@@ -37,13 +39,14 @@ export async function POST(req) {
 
   const safeCommentary = commentary || "";
 
-  // --- Step 1: Asset Handshake (6-attempt poll) ---
+  // --- Step 1: Asset Handshake (Edge-Safe ArrayBuffer) ---
   let imageUrn = null;
   try {
     if (ogUrl) {
       const ogRes = await fetch(ogUrl, { signal: AbortSignal.timeout(12000) });
       if (ogRes.ok) {
-        const imageBuffer = Buffer.from(await ogRes.arrayBuffer());
+        const imageArrayBuffer = await ogRes.arrayBuffer(); // Native ArrayBuffer
+        
         const initRes = await fetch("https://api.linkedin.com/rest/images?action=initializeUpload", {
           method: "POST",
           headers: {
@@ -59,7 +62,9 @@ export async function POST(req) {
           const uploadUrl = initData.value.uploadUrl;
           const urn = initData.value.image;
 
-          const putRes = await fetch(uploadUrl, { method: "PUT", body: imageBuffer });
+          // PUT ArrayBuffer directly
+          const putRes = await fetch(uploadUrl, { method: "PUT", body: imageArrayBuffer });
+          
           if (putRes.ok) {
             for (let i = 0; i < 6; i++) {
               await new Promise(r => setTimeout(r, 2000));
@@ -82,10 +87,10 @@ export async function POST(req) {
       }
     }
   } catch (err) {
-    console.error("Asset handshake failure:", err.message);
+    console.error("Asset error:", err.message);
   }
 
-  // --- Step 2: Payload Construction ---
+  // --- Step 2: Final Post Payload ---
   const finalTitle = (articleTitle || "Professional Health Ledger").split('_').join(' ');
   
   const postPayload = {
@@ -104,7 +109,7 @@ export async function POST(req) {
     }
   };
 
-  // Tagging logic with Entity Mapping
+  // 2026 Attribute Mapping
   if (voucherUrn && cleanVoucher && safeCommentary.includes(cleanVoucher)) {
     const startIndex = safeCommentary.indexOf(cleanVoucher);
     postPayload.commentary = {
@@ -140,6 +145,6 @@ export async function POST(req) {
     const errBody = await res.text();
     return Response.json({ error: "LinkedIn Post Failed", details: errBody }, { status: 502 });
   } catch (err) {
-    return Response.json({ error: "Backend error during post" }, { status: 500 });
+    return Response.json({ error: "Backend crash", details: err.message }, { status: 500 });
   }
 }
