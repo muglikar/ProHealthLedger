@@ -1,14 +1,12 @@
 import { getToken } from "next-auth/jwt";
 
-export const runtime = "edge";
-
 /**
  * POST /api/share-linkedin
  * 
- * Edge-compatible handler.
- * - Uses ArrayBuffer (no Node.js Buffer) for reliability.
- * - Entity Mapping for 2026 mentions.
- * - Media-First Hero Cards.
+ * RESTORED TO STABLE NODE.JS RUNTIME.
+ * - Simple string-based commentary.
+ * - Native bracketed @mentions.
+ * - Proven 202604 versioning.
  */
 export async function POST(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -18,13 +16,13 @@ export async function POST(req) {
   }
 
   const linkedinSub = token.linkedinSub || token.userId?.replace("linkedin:", "");
-  if (!linkedinSub) return Response.json({ error: "No LinkedIn identity." }, { status: 400 });
+  if (!linkedinSub) return Response.json({ error: "Identity not found." }, { status: 400 });
 
   let body;
   try {
     body = await req.json();
   } catch {
-    return Response.json({ error: "Invalid JSON." }, { status: 400 });
+    return Response.json({ error: "Invalid request." }, { status: 400 });
   }
 
   const {
@@ -37,15 +35,13 @@ export async function POST(req) {
     cleanVoucher = "",
   } = body;
 
-  const safeCommentary = commentary || "";
-
-  // --- Step 1: Asset Handshake (Edge-Safe ArrayBuffer) ---
+  // --- Step 1: Image Asset Handshake (Node-safe) ---
   let imageUrn = null;
   try {
     if (ogUrl) {
-      const ogRes = await fetch(ogUrl, { signal: AbortSignal.timeout(12000) });
+      const ogRes = await fetch(ogUrl, { shadow: true, signal: AbortSignal.timeout(10000) });
       if (ogRes.ok) {
-        const imageArrayBuffer = await ogRes.arrayBuffer(); // Native ArrayBuffer
+        const imageBuffer = Buffer.from(await ogRes.arrayBuffer());
         
         const initRes = await fetch("https://api.linkedin.com/rest/images?action=initializeUpload", {
           method: "POST",
@@ -62,12 +58,11 @@ export async function POST(req) {
           const uploadUrl = initData.value.uploadUrl;
           const urn = initData.value.image;
 
-          // PUT ArrayBuffer directly
-          const putRes = await fetch(uploadUrl, { method: "PUT", body: imageArrayBuffer });
-          
+          const putRes = await fetch(uploadUrl, { method: "PUT", body: imageBuffer });
           if (putRes.ok) {
-            for (let i = 0; i < 6; i++) {
-              await new Promise(r => setTimeout(r, 2000));
+            // Polling
+            for (let i = 0; i < 5; i++) {
+              await new Promise(r => setTimeout(r, 1500));
               const statusRes = await fetch(`https://api.linkedin.com/rest/images/${urn}`, {
                 headers: {
                   Authorization: `Bearer ${token.linkedinAccessToken}`,
@@ -90,43 +85,28 @@ export async function POST(req) {
     console.error("Asset error:", err.message);
   }
 
-  // --- Step 2: Final Post Payload ---
+  // --- Step 2: Payload Construction (Stable String Approach) ---
+  const mentionText = (voucherUrn && cleanVoucher)
+    ? `Big thanks to @[${cleanVoucher}](urn:li:person:${voucherUrn}) for the vouch!\n\n`
+    : "";
+
   const finalTitle = (articleTitle || "Professional Health Ledger").split('_').join(' ');
-  
+
   const postPayload = {
     author: `urn:li:person:${linkedinSub}`,
-    commentary: safeCommentary,
+    commentary: (mentionText + commentary).trim(),
     visibility: "PUBLIC",
     distribution: { feedDistribution: "MAIN_FEED" },
     lifecycleState: "PUBLISHED",
     content: {
       article: {
-        source: articleUrl,
+        source: articleUrl.trim(),
         title: finalTitle,
         description: articleDescription || "Verified Professional Vouch",
         ...(imageUrn ? { thumbnail: imageUrn } : {}),
-      }
-    }
+      },
+    },
   };
-
-  // 2026 Attribute Mapping
-  if (voucherUrn && cleanVoucher && safeCommentary.includes(cleanVoucher)) {
-    const startIndex = safeCommentary.indexOf(cleanVoucher);
-    postPayload.commentary = {
-      text: safeCommentary,
-      attributes: [
-        {
-          start: startIndex,
-          length: cleanVoucher.length,
-          value: {
-            "com.linkedin.common.MemberMention": {
-              member: `urn:li:person:${voucherUrn}`
-            }
-          }
-        }
-      ]
-    };
-  }
 
   try {
     const res = await fetch("https://api.linkedin.com/rest/posts", {
@@ -140,11 +120,13 @@ export async function POST(req) {
       body: JSON.stringify(postPayload),
     });
 
-    if (res.ok) return Response.json({ ok: true });
+    if (res.status === 201 || res.status === 200) {
+      return Response.json({ ok: true });
+    }
 
-    const errBody = await res.text();
-    return Response.json({ error: "LinkedIn Post Failed", details: errBody }, { status: 502 });
+    const errText = await res.text();
+    return Response.json({ error: "LinkedIn rejected the post.", details: errText }, { status: 502 });
   } catch (err) {
-    return Response.json({ error: "Backend crash", details: err.message }, { status: 500 });
+    return Response.json({ error: "Backend failure", details: err.message }, { status: 500 });
   }
 }
