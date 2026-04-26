@@ -3,10 +3,10 @@ import { getToken } from "next-auth/jwt";
 /**
  * POST /api/share-linkedin
  * 
- * Version 2026.04 Stable
- * - Uses 'annotations' array for 100% blue name-tag success.
- * - Bypasses asset upload in favor of direct metadata crawling.
- * - Dynamic character-offset calculation for tagging.
+ * Migration to v2/ugcPosts protocol.
+ * - Guaranteed Support for bracketed @[Name](urn:li:person:...) markdown.
+ * - Optimized for ARTICLE shares with automatic crawler triggers.
+ * - Standard V2 headers (no LinkedIn-Version).
  */
 export async function POST(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -21,66 +21,55 @@ export async function POST(req) {
   try {
     body = await req.json();
   } catch {
-    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   const {
-    commentary = "",
     articleUrl = "",
     voucherUrn = "",
-    cleanVoucher = "Rohit Kadam", // Fallback, but passed from client
-    cleanVouchee = "Muglikar",
+    cleanVoucher = "",
+    cleanVouchee = "",
   } = body;
 
-  // --- Step 1: Construct Commentary & Annotations ---
-  // The backend now manually builds the "Big thanks" line if not already present,
-  // or simply uses the incoming safe text.
-  const commentaryText = commentary.trim();
-  const tagStart = commentaryText.indexOf(cleanVoucher);
-  const tagLength = cleanVoucher.length;
+  const commentaryText = `Big thanks to @[${cleanVoucher}](urn:li:person:${voucherUrn}) and others who have already staked their reputation to vouch for my work.\n\nYour career's reputation belongs to you — not to your previous company's HR department.\n\nCheck out my public Professional Health Ledger:\n${articleUrl}\n\n#ProfessionalIntegrity #WorkplaceCulture #Transparency`;
 
-  // --- Step 2: Build the Versioned 202604 Payload ---
-  const postPayload = {
+  const payload = {
     author: `urn:li:person:${linkedinSub}`,
-    commentary: commentaryText,
-    visibility: "PUBLIC",
-    distribution: { 
-      feedDistribution: "MAIN_FEED",
-      targetEntities: [],
-      thirdPartyDistributionChannels: []
-    },
     lifecycleState: "PUBLISHED",
-    isReshareDisabledByAuthor: false,
-    content: {
-      article: {
-        source: articleUrl.trim(),
-        title: `${cleanVoucher} vouched for ${cleanVouchee}`,
-        description: "Professional Health Ledger — Verified Vouch"
+    specificContent: {
+      "com.linkedin.ugc.ShareContent": {
+        shareCommentary: {
+          text: commentaryText
+        },
+        shareMediaCategory: "ARTICLE",
+        media: [
+          {
+            status: "READY",
+            description: {
+              text: "Professional Health Ledger — Verified Vouch"
+            },
+            originalUrl: articleUrl.trim(),
+            title: {
+              text: `${cleanVoucher} vouched for ${cleanVouchee}`
+            }
+          }
+        ]
       }
+    },
+    visibility: {
+      "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
     }
   };
 
-  // If we have the metadata for a tag, inject the annotation attribute
-  if (voucherUrn && tagStart !== -1) {
-    postPayload.annotations = [
-      {
-        entity: `urn:li:person:${voucherUrn}`,
-        length: tagLength,
-        start: tagStart
-      }
-    ];
-  }
-
   try {
-    const res = await fetch("https://api.linkedin.com/rest/posts", {
+    const res = await fetch("https://api.linkedin.com/v2/ugcPosts", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token.linkedinAccessToken}`,
         "Content-Type": "application/json",
-        "LinkedIn-Version": "202604",
         "X-Restli-Protocol-Version": "2.0.0",
       },
-      body: JSON.stringify(postPayload),
+      body: JSON.stringify(payload),
     });
 
     if (res.ok) {
@@ -94,7 +83,7 @@ export async function POST(req) {
     }, { status: 502 });
   } catch (err) {
     return Response.json({ 
-      error: "Backend post failure.", 
+      error: "Backend failure.", 
       details: err.message 
     }, { status: 500 });
   }

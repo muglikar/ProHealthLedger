@@ -6,8 +6,11 @@ export async function generateMetadata({ params }) {
     const cleanVoucher = decodeURIComponent(resolvedParams?.voucher || '').split('_').join(' ');
     const cleanVouchee = decodeURIComponent(resolvedParams?.vouchee || '').split('_').join(' ');
     
-    // Switch to static pre-hosted banner for instant crawler recognition
-    const ogUrl = 'https://prohealthledger.org/og_banner.png';
+    const voucherSlug = cleanVoucher.split(' ').join('_');
+    const voucheeSlug = cleanVouchee.split(' ').join('_');
+
+    // Restore dynamic OG route for personalized large previews
+    const ogUrl = `https://prohealthledger.org/api/og?voucherName=${encodeURIComponent(voucherSlug)}&voucheeName=${encodeURIComponent(voucheeSlug)}`;
     const title = `${cleanVoucher} vouched for ${cleanVouchee} on Professional Health Ledger`;
     
     return {
