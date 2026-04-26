@@ -78,8 +78,7 @@ export async function POST(req) {
         headers: {
           Authorization: `Bearer ${token.linkedinAccessToken}`,
           "Content-Type": "application/json",
-          "X-Restli-Protocol-Version": "2.0.0",
-          "LinkedIn-Version": "202401",
+          "LinkedIn-Version": "202404",
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
