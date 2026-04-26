@@ -388,25 +388,6 @@ export default function TransparencyPage() {
             record) plus the full comment.
           </p>
 
-          {currentUserId && (
-            <div className="link-profile-prompt">
-              {!myLinkedSlug ? (
-                <button type="button" className="link-profile-btn" onClick={linkMyProfile}>
-                  🔗 Link my LinkedIn profile to share vouches received about me
-                </button>
-              ) : (
-                <div className="linked-profile-status">
-                  <span className="linked-profile-text">
-                    Linked to view shares for: <strong>{myLinkedSlug}</strong>
-                  </span>
-                  <button type="button" className="link-profile-edit-btn" onClick={linkMyProfile}>
-                    Change
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
           <div className="audit-scroll-track" ref={trackRef}>
             <span className="audit-scroll-track-label">← drag or tap to scroll →</span>
             <div className="audit-scroll-thumb" ref={thumbRef} />
