@@ -82,7 +82,7 @@ if (linkedInClientId && linkedInClientSecret) {
       jwks_endpoint: "https://www.linkedin.com/oauth/openid/jwks",
       authorization: {
         url: "https://www.linkedin.com/oauth/v2/authorization",
-        params: { scope: "openid profile email r_profile_basicinfo" },
+        params: { scope: "openid profile email r_profile_basicinfo w_member_social" },
       },
       token: "https://www.linkedin.com/oauth/v2/accessToken",
       // Custom fetch avoids merged userinfo.params.projection (for /v2/me) breaking OIDC userinfo.
@@ -152,6 +152,9 @@ export const authOptions = {
           if (vanity) {
             token.linkedinVanity = vanity;
           }
+          // Store access token for server-side LinkedIn API calls (e.g. posting)
+          token.linkedinAccessToken = account.access_token;
+          token.linkedinSub = liSub;
         }
       }
       const adminEmail =
@@ -186,6 +189,11 @@ export const authOptions = {
         session.linkedinVanity = String(token.linkedinVanity);
       }
       session.siteAdmin = Boolean(token.siteAdmin);
+      // Flag so the client knows direct LinkedIn posting is available (token stays server-side)
+      session.canPostToLinkedIn = Boolean(token.linkedinAccessToken && token.provider === "linkedin");
+      if (token.linkedinSub) {
+        session.linkedinSub = String(token.linkedinSub);
+      }
       return session;
     },
   },

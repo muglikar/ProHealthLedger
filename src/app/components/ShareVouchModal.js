@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useSession } from "next-auth/react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 
 const SITE_URL = "https://prohealthledger.org";
@@ -43,8 +44,11 @@ function buildShareText(displayName, firstPerson = false) {
 }
 
 export default function ShareVouchModal({ data, onClose, firstPerson = false }) {
+  const { data: session } = useSession();
   const [copied, setCopied] = useState(false);
   const [linkedinPasteStep, setLinkedinPasteStep] = useState(false);
+  const [postingDirect, setPostingDirect] = useState(false);
+  const [directPostResult, setDirectPostResult] = useState(null); // "success" | "error" | null
   const pasteKey =
     typeof navigator !== "undefined" &&
     (navigator.platform?.includes("Mac") || /Mac|iPhone|iPad/.test(navigator.userAgent || ""))
@@ -110,6 +114,35 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
     setTimeout(() => setCopied(false), 4000);
   }, [shareText, ledgerProfileUrl, linkedinShareOffsiteUrl]);
 
+  const handleDirectPost = useCallback(async () => {
+    setPostingDirect(true);
+    setDirectPostResult(null);
+    try {
+      const res = await fetch("/api/share-linkedin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          commentary: `${shareText}\n\n${ledgerProfileUrl}`,
+          articleUrl: ledgerProfileUrl,
+          articleTitle: `Professional Health Ledger — ${displayName}`,
+          articleDescription: "See verified professional vouches on Pro-Health Ledger",
+        }),
+      });
+      const json = await res.json();
+      if (res.ok && json.ok) {
+        setDirectPostResult("success");
+      } else {
+        console.error("Direct post failed:", json);
+        setDirectPostResult("error");
+      }
+    } catch (err) {
+      console.error("Direct post error:", err);
+      setDirectPostResult("error");
+    } finally {
+      setPostingDirect(false);
+    }
+  }, [shareText, ledgerProfileUrl, displayName]);
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
@@ -170,12 +203,45 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
           </div>
         </div>
         <div className="share-modal-actions">
-          <button type="button" className="btn-linkedin-open" onClick={handlePostToLinkedIn}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-            </svg>
-            {copied ? "Copied — paste in LinkedIn" : "Copy and post to LinkedIn"}
-          </button>
+          {session?.canPostToLinkedIn ? (
+            <>
+              {directPostResult === "success" ? (
+                <div className="share-modal-success" role="status">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#27ae60" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <strong>Posted to your LinkedIn feed!</strong>
+                </div>
+              ) : directPostResult === "error" ? (
+                <div className="share-modal-error" role="alert">
+                  <p>Direct posting failed. Try the manual method below.</p>
+                  <button type="button" className="btn-linkedin-open" onClick={handlePostToLinkedIn}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    {copied ? "Copied — paste in LinkedIn" : "Copy and open LinkedIn instead"}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-linkedin-direct"
+                  onClick={handleDirectPost}
+                  disabled={postingDirect}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                  {postingDirect ? "Posting…" : "Post to LinkedIn"}
+                </button>
+              )}
+            </>
+          ) : (
+            <button type="button" className="btn-linkedin-open" onClick={handlePostToLinkedIn}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              {copied ? "Copied — paste in LinkedIn" : "Copy and post to LinkedIn"}
+            </button>
+          )}
         </div>
       </div>
     </>

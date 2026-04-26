@@ -3385,6 +3385,67 @@ button.audit-comment-link:focus-visible {
   text-decoration: none !important;
 }
 
+.btn-linkedin-direct {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #0a66c2 0%, #004182 100%);
+  color: #ffffff !important;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none !important;
+  font-family: var(--font-sans);
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(10, 102, 194, 0.3);
+}
+
+.btn-linkedin-direct:hover:not(:disabled) {
+  background: linear-gradient(135deg, #004182 0%, #002d62 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(10, 102, 194, 0.4);
+}
+
+.btn-linkedin-direct:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.share-modal-success {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: rgba(39, 174, 96, 0.1);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+  border-radius: var(--radius-sm);
+  color: #27ae60;
+  font-size: 0.92rem;
+  width: 100%;
+}
+
+.share-modal-error {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.share-modal-error p {
+  margin: 0;
+  padding: 10px 14px;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.25);
+  border-radius: var(--radius-sm);
+  color: #c0392b;
+  font-size: 0.88rem;
+}
+
 @media (max-width: 480px) {
   .share-modal-actions {
     flex-direction: column;
