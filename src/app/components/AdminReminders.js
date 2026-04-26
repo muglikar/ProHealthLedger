@@ -14,7 +14,7 @@ const REMINDERS = [
     id: "verified-on-linkedin-check-2026-05-06",
     showAfter: "2026-05-06",
     message:
-      "Reminder: Check if "Verified on LinkedIn" has been approved in the LinkedIn Developer Portal. " +
+      "Reminder: Check if 'Verified on LinkedIn' has been approved in the LinkedIn Developer Portal. " +
       "Once approved, the /identityMe endpoint will allow sureshot identity mapping for 1st-person vouch sharing.",
     link: "https://www.linkedin.com/developers/apps",
     linkLabel: "Open Developer Portal",
