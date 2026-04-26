@@ -69,6 +69,9 @@ export async function POST(req) {
   }
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     const liRes = await fetch("https://api.linkedin.com/rest/posts", {
       method: "POST",
       headers: {
@@ -78,15 +81,16 @@ export async function POST(req) {
         "LinkedIn-Version": "202504",
       },
       body: JSON.stringify(postPayload),
+      signal: controller.signal,
     });
 
+    clearTimeout(timeoutId);
+
     if (liRes.status === 201 || liRes.status === 200) {
-      // LinkedIn returns 201 Created with an empty body on success
       const postId = liRes.headers.get("x-restli-id") || "";
       return Response.json({ ok: true, postId });
     }
 
-    // Something went wrong — forward the LinkedIn error
     let errBody;
     try {
       errBody = await liRes.json();
@@ -103,6 +107,12 @@ export async function POST(req) {
       { status: 502 }
     );
   } catch (err) {
+    if (err.name === "AbortError") {
+      return Response.json(
+        { error: "LinkedIn API timed out. Please try again or use manual share." },
+        { status: 504 }
+      );
+    }
     console.error("LinkedIn Posts API fetch error:", err);
     return Response.json(
       { error: "Failed to reach LinkedIn. Please try again." },
