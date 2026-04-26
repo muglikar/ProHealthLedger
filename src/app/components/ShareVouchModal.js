@@ -19,13 +19,13 @@ function buildShareText(displayName, firstPerson = false) {
     const options = [
       {
         text: "Your professional career track record belongs to you — not to the HR department of your previous company.\n\n" +
-          "I'm building my portable reputation on Pro-Health Ledger. Massive thanks to the colleagues and partners who have already staked their own reputation to vouch for my work. Transparency creates accountability, and I believe the best way to do business is out in the open.\n\n" +
+          "I'm building my portable reputation on Professional Health Ledger. Massive thanks to the colleagues and partners who have already staked their own reputation to vouch for my work. Transparency creates accountability, and I believe the best way to do business is out in the open.\n\n" +
           "If we've worked together, I'd be honored if you added your experience to my Professional-Health Ledger. And the next time you're evaluating a partner or hire, look them up.\n\n" +
           "Check out my track record here: "
       },
       {
         text: "Your career's reputation belongs to you — not to your previous company's HR department.\n\n" +
-          "I'm building my portable reputation on Pro-Health Ledger. Transparency creates accountability, and the best way to do business is out in the open.\n\n" +
+          "I'm building my portable reputation on Professional Health Ledger. Transparency creates accountability, and the best way to do business is out in the open.\n\n" +
           "Big thanks to those who have already staked their reputation to vouch for my work. If we’ve worked together, I’d be honored to have your honest review on my Professional Health Ledger.\n\n" +
           "Before your next hire or partnership, look them up. If they aren’t here, ask them to bring their track record to the table.\n\n" +
           "Check out my public Professional Health Ledger: "
@@ -38,20 +38,20 @@ function buildShareText(displayName, firstPerson = false) {
   const options = [
     {
       text: "Traditional reference checks are broken—nobody lists references who won't say nice things. A professional track record shouldn't vanish when you change companies; it should be portable.\n\n" +
-        `I just staked my own professional reputation on Pro-Health Ledger to officially vouch for my friend and colleague, ${displayName}'s work ethic.\n\n` +
+        `I just staked my own professional reputation on Professional Health Ledger to officially vouch for my friend and colleague, ${displayName}'s work ethic.\n\n` +
         "Before you finalize your next hire or partnership, check if they have a public Professional Health Ledger on ProHealthLedger.org. If they aren't there yet, ask them to bring their professional references to the table.\n\n" +
         `You can see my vouch for ${displayName} here: `
     },
     {
       text: `In a world of generic LinkedIn endorsements, I wanted to put something more meaningful on the record for ${displayName}.\n\n` +
-        "I just added my official vouch for them on Pro-Health Ledger. Your reputation is your most valuable asset, and it's time we start actively building public, verified track records.\n\n" +
-        "Who is the best person you've worked with recently? Look them up. If they aren't on the Pro-Health Ledger yet, be the first one to start their portable reputation.\n\n" +
+        "I just added my official vouch for them on Professional Health Ledger. Your reputation is your most valuable asset, and it's time we start actively building public, verified track records.\n\n" +
+        "Who is the best person you've worked with recently? Look them up. If they aren't on the Professional Health Ledger yet, be the first one to start their portable reputation.\n\n" +
         `Read my vouch for ${displayName} here: `
     },
     {
       text: `Resumes tell you what someone did. A verified vouch tells you how they did it and how they treat people.\n\n` +
-        `I just added an official vouch for ${displayName} on Pro-Health Ledger — an immutable record of how people actually work. It's time we start actively building public, portable track records.\n\n` +
-        "Who’s the best person you've worked with recently? Look them up. If they aren't on the Pro-Health Ledger yet, be the first to start their portable reputation.\n\n" +
+        `I just added an official vouch for ${displayName} on Professional Health Ledger — an immutable record of how people actually work. It's time we start actively building public, portable track records.\n\n` +
+        "Who’s the best person you've worked with recently? Look them up. If they aren't on the Professional Health Ledger yet, be the first to start their portable reputation.\n\n" +
         `Read my vouch for ${displayName}: `
     }
   ];
