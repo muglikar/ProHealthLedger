@@ -7,8 +7,8 @@ import { formatProfessionalDisplayName } from "@/lib/profiles";
 const SITE_URL = "https://prohealthledger.org";
 
 function buildShareText(displayName, firstPerson = false, voucherId = null, voucherName = "", vouchedForId = null) {
-  const mentorTag = voucherId ? `@[urn:li:person:${voucherId}]` : voucherName;
-  const vouchedForTag = vouchedForId ? `@[urn:li:person:${vouchedForId}]` : displayName;
+  const mentorTag = voucherId ? `@[${voucherName}](urn:li:person:${voucherId})` : voucherName;
+  const vouchedForTag = vouchedForId ? `@[${displayName}](urn:li:person:${vouchedForId})` : displayName;
 
   if (firstPerson) {
     const firstPersonOptions = [

@@ -1,5 +1,6 @@
 import { getToken } from "next-auth/jwt";
-import { authOptions } from "@/lib/auth";
+import fs from "fs/promises";
+import path from "path";
 
 /**
  * POST /api/share-linkedin
@@ -44,6 +45,45 @@ export async function POST(req) {
     );
   }
 
+  // --- 2026 HANDSHAKE: Register and Upload Image Thumbnail ---
+  let imageUrn = null;
+  try {
+    const bannerPath = path.join(process.cwd(), "public", "og_banner.png");
+    const imageBuffer = await fs.readFile(bannerPath);
+
+    // 1. Initialize Upload
+    const initRes = await fetch("https://api.linkedin.com/rest/images?action=initializeUpload", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token.linkedinAccessToken}`,
+        "Content-Type": "application/json",
+        "LinkedIn-Version": "202604",
+      },
+      body: JSON.stringify({ initializeUploadRequest: { owner: `urn:li:person:${linkedinSub}` } }),
+    });
+
+    if (initRes.ok) {
+      const initData = await initRes.json();
+      const uploadUrl = initData.value.uploadUrl;
+      const urn = initData.value.image;
+
+      // 2. PUT Binary Data
+      const putRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token.linkedinAccessToken}`,
+        },
+        body: imageBuffer,
+      });
+
+      if (putRes.ok) {
+        imageUrn = urn;
+      }
+    }
+  } catch (err) {
+    console.error("LinkedIn Image Handshake failed, falling back to text card:", err);
+  }
+
   // Build the LinkedIn Posts API payload
   const postPayload = {
     author: `urn:li:person:${linkedinSub}`,
@@ -64,6 +104,7 @@ export async function POST(req) {
         description:
           articleDescription ||
           "See verified professional vouches on Pro-Health Ledger",
+        ...(imageUrn ? { thumbnail: imageUrn } : {}),
       },
     };
   }
