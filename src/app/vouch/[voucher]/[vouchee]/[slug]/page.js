@@ -1,4 +1,4 @@
-import ProfilesClient from "../../../profiles/ProfilesClient";
+import ProfilesClient from "@/app/profiles/ProfilesClient";
 import { Suspense } from "react";
 
 const SITE_URL = "https://prohealthledger.org";
