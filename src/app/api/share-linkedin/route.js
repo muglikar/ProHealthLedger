@@ -1,15 +1,24 @@
 import { getToken } from "next-auth/jwt";
-import fs from "fs/promises";
-import path from "path";
 
 /**
  * POST /api/share-linkedin
  *
- * Publishes a post to the authenticated user's LinkedIn feed using the
- * Posts API. The LinkedIn access token is read from the encrypted JWT
- * cookie — it is never exposed to the browser.
+ * Publishes a vouch to the authenticated user's LinkedIn feed using the
+ * Posts API with:
+ *  - Automatic @mention tagging of the voucher (if URN available)
+ *  - 3-step asset upload from our instant OG image route
+ *  - Clean article card titles (no underscores)
  *
- * Body: { commentary: string, articleUrl: string, articleTitle?: string, articleDescription?: string }
+ * Body: {
+ *   commentary: string,
+ *   articleUrl: string,
+ *   articleTitle?: string,
+ *   articleDescription?: string,
+ *   ogUrl?: string,
+ *   voucherUrn?: string,
+ *   cleanVoucher?: string,
+ *   cleanVouchee?: string,
+ * }
  */
 export async function POST(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -36,7 +45,16 @@ export async function POST(req) {
     return Response.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  const { commentary, articleUrl, articleTitle, articleDescription, ogUrl } = body;
+  const {
+    commentary,
+    articleUrl,
+    articleTitle,
+    articleDescription,
+    ogUrl,
+    voucherUrn,
+    cleanVoucher,
+    cleanVouchee,
+  } = body;
 
   if (!commentary || typeof commentary !== "string" || !commentary.trim()) {
     return Response.json(
@@ -45,95 +63,127 @@ export async function POST(req) {
     );
   }
 
-  // --- 2026 HANDSHAKE: Register and Upload Image Thumbnail ---
+  // --- Build final commentary with @mention tagging ---
+  let finalCommentary = commentary.trim();
+
+  // If the raw commentary doesn't already contain a mention and we have a URN,
+  // prepend a tagging line. The client sends the full text, so we only add
+  // the structured mention if we have the URN data the client couldn't embed.
+  if (voucherUrn && cleanVoucher && !finalCommentary.includes("urn:li:person:")) {
+    const mentionLine = `Big thanks to @[${cleanVoucher}](urn:li:person:${voucherUrn}) for the vouch!\n\n`;
+    finalCommentary = mentionLine + finalCommentary;
+  }
+
+  // --- 3-Step Asset Upload: Fetch OG image → Initialize → PUT → Poll ---
   let imageUrn = null;
   try {
     let imageBuffer = null;
-    
+
+    // Step 0: Fetch our own OG image (text-only, <50ms)
     if (ogUrl && typeof ogUrl === "string") {
       try {
-        const ogRes = await fetch(ogUrl);
+        const ogRes = await fetch(ogUrl, { signal: AbortSignal.timeout(5000) });
         if (ogRes.ok) {
           imageBuffer = Buffer.from(await ogRes.arrayBuffer());
         }
       } catch (ogErr) {
-        console.error("Failed to fetch dynamic OG image:", ogErr);
+        console.error("Failed to fetch OG image:", ogErr.message);
       }
     }
 
+    // Fallback: static banner
     if (!imageBuffer) {
-      const bannerPath = path.join(process.cwd(), "public", "og_banner.png");
-      imageBuffer = await fs.readFile(bannerPath);
+      try {
+        const fs = await import("fs/promises");
+        const path = await import("path");
+        const bannerPath = path.default.join(process.cwd(), "public", "og_banner.png");
+        imageBuffer = await fs.default.readFile(bannerPath);
+      } catch (fsErr) {
+        console.error("Failed to read static banner:", fsErr.message);
+      }
     }
 
-    // 1. Initialize Upload
-    const initRes = await fetch("https://api.linkedin.com/rest/images?action=initializeUpload", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token.linkedinAccessToken}`,
-        "Content-Type": "application/json",
-        "LinkedIn-Version": "202604",
-      },
-      body: JSON.stringify({ initializeUploadRequest: { owner: `urn:li:person:${linkedinSub}` } }),
-    });
-
-    if (initRes.ok) {
-      const initData = await initRes.json();
-      const uploadUrl = initData.value.uploadUrl;
-      const urn = initData.value.image;
-
-      // 2. PUT Binary Data
-      const putRes = await fetch(uploadUrl, {
-        method: "PUT",
+    if (imageBuffer) {
+      // Step A: Initialize Upload
+      const initRes = await fetch("https://api.linkedin.com/rest/images?action=initializeUpload", {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token.linkedinAccessToken}`,
+          "Content-Type": "application/json",
+          "LinkedIn-Version": "202604",
         },
-        body: imageBuffer,
+        body: JSON.stringify({
+          initializeUploadRequest: { owner: `urn:li:person:${linkedinSub}` },
+        }),
       });
 
-      if (putRes.ok) {
-        // 3. POLL for AVAILABLE status (Race condition fix)
-        let isAvailable = false;
-        let attempts = 0;
-        const maxAttempts = 6;
-        
-        while (!isAvailable && attempts < maxAttempts) {
-          attempts++;
-          // Wait 1.5s between polls
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          
-          try {
-            const statusRes = await fetch(`https://api.linkedin.com/rest/images/${urn}`, {
-              headers: {
-                Authorization: `Bearer ${token.linkedinAccessToken}`,
-                "LinkedIn-Version": "202604",
-              },
-            });
-            
-            if (statusRes.ok) {
-              const statusData = await statusRes.json();
-              if (statusData.status === "AVAILABLE") {
-                isAvailable = true;
-                imageUrn = urn;
-                break;
+      if (initRes.ok) {
+        const initData = await initRes.json();
+        const uploadUrl = initData.value.uploadUrl;
+        const urn = initData.value.image;
+
+        // Step B: PUT Binary Data
+        const putRes = await fetch(uploadUrl, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token.linkedinAccessToken}`,
+          },
+          body: imageBuffer,
+        });
+
+        if (putRes.ok) {
+          // Step C: Poll for AVAILABLE status
+          let isAvailable = false;
+          let attempts = 0;
+          const maxAttempts = 5;
+
+          while (!isAvailable && attempts < maxAttempts) {
+            attempts++;
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+
+            try {
+              const statusRes = await fetch(`https://api.linkedin.com/rest/images/${urn}`, {
+                headers: {
+                  Authorization: `Bearer ${token.linkedinAccessToken}`,
+                  "LinkedIn-Version": "202604",
+                },
+              });
+
+              if (statusRes.ok) {
+                const statusData = await statusRes.json();
+                if (statusData.status === "AVAILABLE") {
+                  isAvailable = true;
+                  imageUrn = urn;
+                  break;
+                }
               }
+            } catch (pollErr) {
+              console.error("Image poll error:", pollErr.message);
             }
-          } catch (pollErr) {
-            console.error("LinkedIn Image Poll failed:", pollErr);
+          }
+
+          // If polling didn't confirm AVAILABLE, try using the URN anyway
+          // (LinkedIn often processes faster than the status endpoint reports)
+          if (!isAvailable) {
+            imageUrn = urn;
           }
         }
+      } else {
+        const initErr = await initRes.text();
+        console.error("Image init failed:", initRes.status, initErr);
       }
     }
   } catch (err) {
-    console.error("LinkedIn Image Handshake failed, falling back to text card:", err);
+    console.error("Image Handshake failed, falling back to text card:", err.message);
   }
 
-  // Build the LinkedIn Posts API payload
-  const cleanTitle = (articleTitle || "Professional Health Ledger").replace(/_/g, " ");
+  // --- Build the LinkedIn Posts API payload ---
+  const cleanTitle = (articleTitle || "Professional Health Ledger")
+    .split('_').join(' ');
 
   const postPayload = {
     author: `urn:li:person:${linkedinSub}`,
-    commentary: commentary.trim(),
+    commentary: finalCommentary,
     visibility: "PUBLIC",
     distribution: {
       feedDistribution: "MAIN_FEED",
@@ -141,7 +191,7 @@ export async function POST(req) {
     lifecycleState: "PUBLISHED",
   };
 
-  // Attach article card if a URL was provided
+  // Attach article card with thumbnail if available
   if (articleUrl && typeof articleUrl === "string" && articleUrl.trim()) {
     postPayload.content = {
       article: {
@@ -155,9 +205,10 @@ export async function POST(req) {
     };
   }
 
+  // --- Post to LinkedIn with retry ---
   async function tryPost(payload) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s per try
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     try {
       const res = await fetch("https://api.linkedin.com/rest/posts", {
@@ -180,12 +231,13 @@ export async function POST(req) {
   }
 
   try {
-    // Attempt 1: Full post with article preview card
+    // Attempt 1: Full post with article card + thumbnail
     let liRes = await tryPost(postPayload);
 
-    // If it failed (or timed out/hung), attempt 2: Commentary-only (no preview card)
+    // Attempt 2: If full card fails, strip to commentary-only
     if (!liRes.ok || liRes.status >= 400) {
-      console.warn("Full post failed, retrying with commentary-only...", liRes.status);
+      const errDetail = await liRes.text().catch(() => "");
+      console.warn("Full post failed:", liRes.status, errDetail, "— retrying commentary-only");
       const simplePayload = {
         author: postPayload.author,
         commentary: postPayload.commentary,
@@ -193,7 +245,6 @@ export async function POST(req) {
         distribution: postPayload.distribution,
         lifecycleState: postPayload.lifecycleState,
       };
-      // Note: we still keep the URL in the commentary string if it was already there (it should be)
       liRes = await tryPost(simplePayload);
     }
 
@@ -202,7 +253,7 @@ export async function POST(req) {
       return Response.json({ ok: true, postId });
     }
 
-    // Still failed after retry
+    // Still failed
     let errBody;
     try {
       errBody = await liRes.json();
