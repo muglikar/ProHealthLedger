@@ -118,6 +118,10 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
     setPostingDirect(true);
     setDirectPostResult(null);
     setDirectPostErrorDetails("");
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s client-side timeout
+
     try {
       const res = await fetch("/api/share-linkedin", {
         method: "POST",
@@ -128,15 +132,27 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
           articleTitle: `Professional Health Ledger — ${displayName}`,
           articleDescription: "See verified professional vouches on Pro-Health Ledger",
         }),
+        signal: controller.signal,
       });
-      const json = await res.json();
+
+      clearTimeout(timeoutId);
+
+      let json;
+      try {
+        json = await res.json();
+      } catch (e) {
+        throw new Error("Invalid server response format.");
+      }
+
       if (res.ok && json.ok) {
         setDirectPostResult("success");
       } else {
         console.error("Direct post failed:", json);
         setDirectPostResult("error");
         if (res.status === 403 || json.status === 403) {
-          setDirectPostErrorDetails("Permission denied (403). You likely need to sign out and sign back in to grant the 'Share on LinkedIn' permission.");
+          setDirectPostErrorDetails("Permission denied (403). Ensure you've re-logged in and granted 'Share on LinkedIn' access.");
+        } else if (res.status === 504 || res.status === 502) {
+          setDirectPostErrorDetails("LinkedIn is taking too long to respond. Please try the manual method.");
         } else {
           setDirectPostErrorDetails(json.error || "LinkedIn rejected the post.");
         }
@@ -144,8 +160,13 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
     } catch (err) {
       console.error("Direct post error:", err);
       setDirectPostResult("error");
-      setDirectPostErrorDetails("Network error while reaching LinkedIn.");
+      if (err.name === "AbortError") {
+        setDirectPostErrorDetails("Request timed out. LinkedIn's response is taking too long.");
+      } else {
+        setDirectPostErrorDetails("Network error while reaching our server.");
+      }
     } finally {
+      clearTimeout(timeoutId);
       setPostingDirect(false);
     }
   }, [shareText, ledgerProfileUrl, displayName]);
