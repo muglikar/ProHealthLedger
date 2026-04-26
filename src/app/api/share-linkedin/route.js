@@ -63,18 +63,8 @@ export async function POST(req) {
     );
   }
 
-  // --- Build final commentary with @mention tagging ---
-  let finalCommentary = commentary.trim();
-
-  // If the raw commentary doesn't already contain a mention and we have a URN,
-  // prepend a tagging line. The client sends the full text, so we only add
-  // the structured mention if we have the URN data the client couldn't embed.
-  if (voucherUrn && cleanVoucher && !finalCommentary.includes("urn:li:person:")) {
-    const mentionLine = `Big thanks to @[${cleanVoucher}](urn:li:person:${voucherUrn}) for the vouch!\n\n`;
-    finalCommentary = mentionLine + finalCommentary;
-  }
-
   // --- 3-Step Asset Upload: Fetch OG image → Initialize → PUT → Poll ---
+  const finalCommentary = commentary.trim();
   let imageUrn = null;
   try {
     let imageBuffer = null;
