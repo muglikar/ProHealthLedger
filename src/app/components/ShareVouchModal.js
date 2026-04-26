@@ -99,7 +99,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
   }, [data]);
 
   const handlePostToLinkedIn = useCallback(async () => {
-    const toCopy = `${shareTextTemplate}\n\n${hashtags}\n\n${ledgerProfileUrl}`;
+    const toCopy = `${shareTextTemplate}\n\n${ledgerProfileUrl}\n\n${hashtags}`;
     try {
       await navigator.clipboard.writeText(toCopy);
     } catch {
@@ -131,7 +131,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          commentary: `${shareTextTemplate}\n\n${hashtags}\n\n${ledgerProfileUrl}`,
+          commentary: `${shareTextTemplate}\n\n${ledgerProfileUrl}\n\n${hashtags}`,
           articleUrl: ledgerProfileUrl,
           articleTitle: `Professional Health Ledger — ${displayName}`,
           articleDescription: "See verified professional vouches on Pro-Health Ledger",
@@ -240,7 +240,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
               </button>
             </div>
           ) : null}
-          <div className="share-modal-text">{`${shareTextTemplate}\n\n${hashtags}\n\n${ledgerProfileUrl}`}</div>
+          <div className="share-modal-text">{`${shareTextTemplate}\n\n${ledgerProfileUrl}\n\n${hashtags}`}</div>
           <div className="share-modal-links">
             <span className="share-modal-link-label">Public profile link (preview + copied text):</span>
             <a href={ledgerProfileUrl} target="_blank" rel="noopener noreferrer">
