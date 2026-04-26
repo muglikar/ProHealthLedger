@@ -36,7 +36,7 @@ export async function POST(req) {
     return Response.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  const { commentary, articleUrl, articleTitle, articleDescription } = body;
+  const { commentary, articleUrl, articleTitle, articleDescription, ogUrl } = body;
 
   if (!commentary || typeof commentary !== "string" || !commentary.trim()) {
     return Response.json(
@@ -48,8 +48,23 @@ export async function POST(req) {
   // --- 2026 HANDSHAKE: Register and Upload Image Thumbnail ---
   let imageUrn = null;
   try {
-    const bannerPath = path.join(process.cwd(), "public", "og_banner.png");
-    const imageBuffer = await fs.readFile(bannerPath);
+    let imageBuffer = null;
+    
+    if (ogUrl && typeof ogUrl === "string") {
+      try {
+        const ogRes = await fetch(ogUrl);
+        if (ogRes.ok) {
+          imageBuffer = Buffer.from(await ogRes.arrayBuffer());
+        }
+      } catch (ogErr) {
+        console.error("Failed to fetch dynamic OG image:", ogErr);
+      }
+    }
+
+    if (!imageBuffer) {
+      const bannerPath = path.join(process.cwd(), "public", "og_banner.png");
+      imageBuffer = await fs.readFile(bannerPath);
+    }
 
     // 1. Initialize Upload
     const initRes = await fetch("https://api.linkedin.com/rest/images?action=initializeUpload", {

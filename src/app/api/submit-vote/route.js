@@ -149,6 +149,7 @@ export async function POST(req) {
   const submission = {
     user: userId,
     display_name: displayName,
+    display_image: session.user?.image || null,
     vote,
     issue: issueNumber,
     date: today,
