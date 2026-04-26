@@ -66,6 +66,12 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
     ? data.user.slice(9)
     : null;
 
+  // Extract vouchee identity (the person being vouched for)
+  // If firstPerson, it's the current user. If thirdPerson, it's the profile owner.
+  const voucheeId = firstPerson 
+    ? (session?.linkedinSub || session?.userId?.replace("linkedin:", "")) 
+    : (data.linkedin_urn || null);
+
   // Clean names for URL construction
   const voucherClean = voucherName.replace(/ /g, "_").replace(/\//g, "-");
   const voucheeClean = displayName.replace(/ /g, "_").replace(/\//g, "-");
@@ -78,8 +84,8 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
   const ogUrl = `${SITE_URL}/api/og?voucherName=${encodeURIComponent(voucherClean)}&voucheeName=${encodeURIComponent(voucheeClean)}`;
 
   const shareData = useMemo(
-    () => buildShareText(displayName, firstPerson, rawVoucherId, voucherName),
-    [displayName, firstPerson, rawVoucherId, voucherName]
+    () => buildShareText(displayName, firstPerson, rawVoucherId, voucherName, voucheeId),
+    [displayName, firstPerson, rawVoucherId, voucherName, voucheeId]
   );
 
   // Generate referral code on mount
