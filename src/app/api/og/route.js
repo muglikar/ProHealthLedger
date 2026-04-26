@@ -40,18 +40,18 @@ export async function GET(request) {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            marginBottom: '50px',
+            marginBottom: '40px',
           }}>
             <div style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: '14px',
+              width: '64px',
+              height: '64px',
+              borderRadius: '16px',
               backgroundColor: '#059669',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: 'white',
-              fontSize: '32px',
+              fontSize: '38px',
               fontWeight: 'bold',
               marginRight: '20px',
               boxShadow: '0 4px 12px rgba(5, 150, 105, 0.3)',
@@ -59,7 +59,7 @@ export async function GET(request) {
               ✓
             </div>
             <div style={{
-              fontSize: '36px',
+              fontSize: '42px',
               fontWeight: 'bold',
               color: '#64748b',
               letterSpacing: '0.1em',
@@ -79,28 +79,29 @@ export async function GET(request) {
             justifyContent: 'center',
           }}>
             <div style={{
-              fontSize: '72px',
+              fontSize: '84px',
               fontWeight: 'bold',
               color: '#0f172a',
-              lineHeight: 1.15,
-              marginBottom: '24px',
+              lineHeight: 1.1,
+              marginBottom: '20px',
             }}>
               {cleanVoucher}
             </div>
             <div style={{
-              fontSize: '72px',
+              fontSize: '84px',
               fontWeight: 'bold',
               color: '#059669',
               fontStyle: 'italic',
-              marginBottom: '24px',
+              marginBottom: '20px',
+              lineHeight: 1.1,
             }}>
               vouched for
             </div>
             <div style={{
-              fontSize: '72px',
+              fontSize: '84px',
               fontWeight: 'bold',
               color: '#0f172a',
-              lineHeight: 1.15,
+              lineHeight: 1.1,
             }}>
               {cleanVouchee}
             </div>
@@ -112,12 +113,12 @@ export async function GET(request) {
             flexDirection: 'column',
             alignItems: 'center',
             borderTop: '2px solid #e2e8f0',
-            paddingTop: '28px',
+            paddingTop: '25px',
             maxWidth: '900px',
-            marginTop: '40px',
+            marginTop: '30px',
           }}>
             <div style={{
-              fontSize: '26px',
+              fontSize: '30px',
               color: '#475569',
               fontWeight: '500',
               textAlign: 'center',
