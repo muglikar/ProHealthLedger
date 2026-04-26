@@ -5,8 +5,10 @@ export const runtime = 'edge';
 /**
  * GET /api/og
  *
- * Generates a 1200x630 Hero Card image — light theme, large readable text,
- * with PHL logo. ZERO external fetches — resolves in <50ms.
+ * Generates a 1200x630 Hero Card image — light theme, massive readable text,
+ * PHL logo for brand recognition, homepage-matching tagline.
+ *
+ * Only fetches our own logo.png (same domain, <20ms).
  *
  * Params: ?voucherName=...&voucheeName=...
  */
@@ -20,6 +22,19 @@ export async function GET(request) {
     const cleanVoucher = decodeURIComponent(rawVoucher).split('_').join(' ');
     const cleanVouchee = decodeURIComponent(rawVouchee).split('_').join(' ');
 
+    // Fetch our own logo (same domain, fast & reliable)
+    let logoBuffer = null;
+    try {
+      const logoRes = await fetch('https://prohealthledger.org/logo.png', {
+        signal: AbortSignal.timeout(3000),
+      });
+      if (logoRes.ok) {
+        logoBuffer = await logoRes.arrayBuffer();
+      }
+    } catch (e) {
+      // Logo fetch failed; will render without it
+    }
+
     return new ImageResponse(
       (
         <div
@@ -32,97 +47,107 @@ export async function GET(request) {
             justifyContent: 'center',
             backgroundColor: '#ffffff',
             backgroundImage: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%)',
-            padding: '50px 60px',
+            padding: '40px 50px',
             fontFamily: 'sans-serif',
           }}
         >
-          {/* Top: PHL Logo + Branding */}
+          {/* Top: PHL Logo + Brand Name */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            marginBottom: '50px',
+            marginBottom: '35px',
           }}>
+            {logoBuffer ? (
+              <img
+                src={logoBuffer}
+                width="64"
+                height="64"
+                style={{ borderRadius: '50%', marginRight: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
+              />
+            ) : (
+              <div style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                backgroundColor: '#059669',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '36px',
+                fontWeight: 'bold',
+                marginRight: '20px',
+              }}>
+                ✓
+              </div>
+            )}
             <div style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: '14px',
-              backgroundColor: '#059669',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '32px',
-              fontWeight: 'bold',
-              marginRight: '20px',
-              boxShadow: '0 4px 12px rgba(5, 150, 105, 0.3)',
-            }}>
-              ✓
-            </div>
-            <div style={{
-              fontSize: '36px',
+              fontSize: '38px',
               fontWeight: 'bold',
               color: '#64748b',
-              letterSpacing: '0.1em',
+              letterSpacing: '0.08em',
             }}>
               PRO-HEALTH LEDGER
             </div>
           </div>
 
-          {/* Center: [Voucher] vouched for [Vouchee] */}
+          {/* Center: [Voucher] vouched for [Vouchee] — MASSIVE text */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            maxWidth: '1050px',
+            maxWidth: '1080px',
             textAlign: 'center',
             flex: 1,
             justifyContent: 'center',
           }}>
             <div style={{
-              fontSize: '72px',
+              fontSize: '80px',
               fontWeight: 'bold',
               color: '#0f172a',
-              lineHeight: 1.15,
-              marginBottom: '24px',
+              lineHeight: 1.1,
+              marginBottom: '16px',
             }}>
               {cleanVoucher}
             </div>
             <div style={{
-              fontSize: '72px',
+              fontSize: '80px',
               fontWeight: '700',
               fontStyle: 'italic',
               color: '#059669',
-              marginBottom: '24px',
+              marginBottom: '16px',
+              lineHeight: 1.1,
             }}>
               vouched for
             </div>
             <div style={{
-              fontSize: '72px',
+              fontSize: '80px',
               fontWeight: 'bold',
               color: '#0f172a',
-              lineHeight: 1.15,
+              lineHeight: 1.1,
             }}>
               {cleanVouchee}
             </div>
           </div>
 
-          {/* Bottom: Tagline */}
+          {/* Bottom: Homepage-matching tagline */}
           <div style={{
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
             borderTop: '2px solid #e2e8f0',
-            paddingTop: '28px',
-            maxWidth: '900px',
-            marginTop: '40px',
+            paddingTop: '24px',
+            marginTop: '30px',
           }}>
             <div style={{
-              fontSize: '26px',
-              color: '#475569',
-              fontWeight: '500',
+              fontSize: '30px',
+              color: '#1a1a1a',
+              fontWeight: '600',
               textAlign: 'center',
             }}>
-              Know who you're working with before you commit.
+              Know who you&apos;re working with{' '}
+              <span style={{ fontWeight: '800', fontStyle: 'italic' }}>
+                before you commit.
+              </span>
             </div>
           </div>
         </div>
