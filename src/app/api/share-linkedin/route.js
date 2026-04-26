@@ -68,36 +68,61 @@ export async function POST(req) {
     };
   }
 
-  try {
+  async function tryPost(payload) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s per try
 
-    const liRes = await fetch("https://api.linkedin.com/rest/posts", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token.linkedinAccessToken}`,
-        "Content-Type": "application/json",
-        "X-Restli-Protocol-Version": "2.0.0",
-        "LinkedIn-Version": "202401",
-      },
-      body: JSON.stringify(postPayload),
-      signal: controller.signal,
-    });
+    try {
+      const res = await fetch("https://api.linkedin.com/rest/posts", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token.linkedinAccessToken}`,
+          "Content-Type": "application/json",
+          "X-Restli-Protocol-Version": "2.0.0",
+          "LinkedIn-Version": "202401",
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      return res;
+    } catch (err) {
+      clearTimeout(timeoutId);
+      throw err;
+    }
+  }
 
-    clearTimeout(timeoutId);
+  try {
+    // Attempt 1: Full post with article preview card
+    let liRes = await tryPost(postPayload);
+
+    // If it failed (or timed out/hung), attempt 2: Commentary-only (no preview card)
+    if (!liRes.ok || liRes.status >= 400) {
+      console.warn("Full post failed, retrying with commentary-only...", liRes.status);
+      const simplePayload = {
+        author: postPayload.author,
+        commentary: postPayload.commentary,
+        visibility: postPayload.visibility,
+        distribution: postPayload.distribution,
+        lifecycleState: postPayload.lifecycleState,
+      };
+      // Note: we still keep the URL in the commentary string if it was already there (it should be)
+      liRes = await tryPost(simplePayload);
+    }
 
     if (liRes.status === 201 || liRes.status === 200) {
       const postId = liRes.headers.get("x-restli-id") || "";
       return Response.json({ ok: true, postId });
     }
 
+    // Still failed after retry
     let errBody;
     try {
       errBody = await liRes.json();
     } catch {
       errBody = await liRes.text();
     }
-    console.error("LinkedIn Posts API error:", liRes.status, errBody);
+    console.error("LinkedIn Posts API fail after retry:", liRes.status, errBody);
     return Response.json(
       {
         error: "LinkedIn rejected the post.",
@@ -109,11 +134,10 @@ export async function POST(req) {
   } catch (err) {
     if (err.name === "AbortError") {
       return Response.json(
-        { error: "LinkedIn API timed out. Please try again or use manual share." },
+        { error: "LinkedIn API timed out. Please try the manual share." },
         { status: 504 }
       );
     }
-    console.error("LinkedIn Posts API fetch error:", err);
     return Response.json(
       { error: "Failed to reach LinkedIn. Please try again." },
       { status: 502 }
