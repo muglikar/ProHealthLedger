@@ -117,6 +117,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
   const handleDirectPost = useCallback(async () => {
     setPostingDirect(true);
     setDirectPostResult(null);
+    setDirectPostErrorDetails("");
     try {
       const res = await fetch("/api/share-linkedin", {
         method: "POST",
@@ -134,10 +135,16 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
       } else {
         console.error("Direct post failed:", json);
         setDirectPostResult("error");
+        if (res.status === 403 || json.status === 403) {
+          setDirectPostErrorDetails("Permission denied (403). You likely need to sign out and sign back in to grant the 'Share on LinkedIn' permission.");
+        } else {
+          setDirectPostErrorDetails(json.error || "LinkedIn rejected the post.");
+        }
       }
     } catch (err) {
       console.error("Direct post error:", err);
       setDirectPostResult("error");
+      setDirectPostErrorDetails("Network error while reaching LinkedIn.");
     } finally {
       setPostingDirect(false);
     }
@@ -212,13 +219,16 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
                 </div>
               ) : directPostResult === "error" ? (
                 <div className="share-modal-error" role="alert">
-                  <p>Direct posting failed. Try the manual method below.</p>
-                  <button type="button" className="btn-linkedin-open" onClick={handlePostToLinkedIn}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                    {copied ? "Copied — paste in LinkedIn" : "Copy and open LinkedIn instead"}
-                  </button>
+                  <p><strong>Direct posting failed.</strong></p>
+                  <p className="error-details">{directPostErrorDetails || "LinkedIn rejected the post."}</p>
+                  <div className="error-fallback-cta">
+                    <button type="button" className="btn-linkedin-open" onClick={handlePostToLinkedIn}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                      </svg>
+                      {copied ? "Copied! Paste manually now" : "Use manual share instead"}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <button

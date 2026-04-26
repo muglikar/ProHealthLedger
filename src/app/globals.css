@@ -3795,6 +3795,29 @@ button.audit-comment-link:focus-visible {
   color: #b45309;
 }
 
+.share-modal-error {
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: #b91c1c;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.88rem;
+}
+
+.error-details {
+  font-size: 0.78rem;
+  font-style: italic;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+.error-fallback-cta {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
 .share-modal-text {
   background: #f8f4ee;
   border: 1px solid #e8e0d4;
