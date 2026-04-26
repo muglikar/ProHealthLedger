@@ -963,6 +963,27 @@ a:hover {
   min-width: 0;
 }
 
+/* Profiles/Vouch page focus mode: Widens the content area */
+.main-content:has(.profile-grid) {
+  max-width: 1100px;
+}
+
+/* ── Profile Cards ── */
+.profile-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  /* Only switch to grid if we expect multiple cards side-by-side, 
+     but by default, we let them grow wide. */
+  .profile-grid:not(:has(> :nth-child(2))) {
+    display: block;
+  }
+}
+
 /* ── Home: single column, first fold through karma (desktop fills viewport) ── */
 .main-content:has(.home-above-fold) {
   padding-top: max(4px, 1vw);
@@ -1525,13 +1546,7 @@ a:hover {
 }
 
 /* ── Profile Cards ── */
-.profile-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill,
-      minmax(min(100%, 300px), 1fr));
-  gap: 16px;
-  min-width: 0;
-}
+/* Profile Grid styling managed in Main Content section for focus mode */
 
 .profile-card {
   display: flex;
