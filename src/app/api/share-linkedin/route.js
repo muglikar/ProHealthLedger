@@ -182,7 +182,7 @@ export async function POST(req) {
   const safeVoucher = (cleanVoucher || "").split('_').join(' ');
   const safeVouchee = (cleanVouchee || "").split('_').join(' ');
   const cleanTitle = (safeVoucher && safeVouchee)
-    ? `${safeVoucher} vouched for ${safeVouchee} - Professional Health Ledger`
+    ? `${safeVoucher} vouched for ${safeVouchee} on Professional Health Ledger`
     : (articleTitle || "Professional Health Ledger").split('_').join(' ');
 
   const postPayload = {
