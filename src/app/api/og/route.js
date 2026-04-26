@@ -4,27 +4,22 @@ export const runtime = 'edge';
 
 /**
  * GET /api/og
- * 
- * Generates the professional share card.
- * - Preloads Inter font for guaranteed Bold/Italic rendering.
+ *
+ * Generates a 1200x630 Hero Card image — light theme, MEGA text,
+ * PHL brand logo, and the official homepage tagline.
+ * ZERO external fetches — resolves in <50ms.
+ *
+ * Params: ?voucherName=...&voucheeName=...
  */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
+
     const rawVoucher = searchParams.get('voucherName') || 'A Colleague';
     const rawVouchee = searchParams.get('voucheeName') || 'Professional';
 
     const cleanVoucher = decodeURIComponent(rawVoucher).split('_').join(' ');
     const cleanVouchee = decodeURIComponent(rawVouchee).split('_').join(' ');
-
-    // Fetch Fonts with absolute URLs for Edge stability
-    const fontPrimary = await fetch(
-      'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYMZhrib2Bg-4.ttf'
-    ).then((res) => res.arrayBuffer());
-
-    const fontItalic = await fetch(
-      'https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7W0Q5Z-o.ttf'
-    ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
       (
@@ -34,102 +29,114 @@ export async function GET(request) {
             height: '630px',
             display: 'flex',
             flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             backgroundColor: '#ffffff',
-            backgroundImage: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%)',
-            padding: '40px',
-            fontFamily: '"Inter", sans-serif',
+            backgroundImage: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #eff6ff 100%)',
+            padding: '40px 60px',
+            fontFamily: 'sans-serif',
           }}
         >
-          {/* Brand Shell */}
+          {/* Top: PHL Branding Block */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            position: 'absolute',
-            top: '40px',
-            left: '40px',
+            marginBottom: '40px',
           }}>
             <div style={{
-              width: '60px',
-              height: '60px',
-              borderRadius: '15px',
+              width: '64px',
+              height: '64px',
+              borderRadius: '16px',
               backgroundColor: '#059669',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginRight: '15px',
+              color: 'white',
+              fontSize: '40px',
+              fontWeight: 'bold',
+              marginRight: '24px',
+              boxShadow: '0 8px 16px rgba(5, 150, 105, 0.25)',
             }}>
-              <div style={{ color: 'white', fontSize: '36px', fontWeight: 'bold' }}>✓</div>
+              ✓
             </div>
             <div style={{
               fontSize: '32px',
-              fontWeight: '800',
-              color: '#64748b',
-              letterSpacing: '0.05em',
+              fontWeight: '900',
+              color: '#1e293b',
+              letterSpacing: '0.15em',
             }}>
               PRO-HEALTH LEDGER
             </div>
           </div>
 
-          {/* Central Vouch Logic */}
+          {/* Center: MEGA TEXT VOUCH */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
+            maxWidth: '1100px',
+            textAlign: 'center',
             flex: 1,
-            marginTop: '40px',
+            justifyContent: 'center',
           }}>
             <div style={{
               fontSize: '84px',
               fontWeight: '900',
               color: '#0f172a',
-              marginBottom: '15px',
-              textAlign: 'center',
-              maxWidth: '1000px',
+              lineHeight: 1.1,
+              marginBottom: '20px',
             }}>
               {cleanVoucher}
             </div>
-            
             <div style={{
               fontSize: '84px',
               fontWeight: '700',
               fontStyle: 'italic',
               color: '#059669',
-              marginBottom: '15px',
-              textAlign: 'center',
+              marginBottom: '20px',
+              display: 'flex',
             }}>
               vouched for
             </div>
-
             <div style={{
               fontSize: '84px',
               fontWeight: '900',
               color: '#0f172a',
-              textAlign: 'center',
-              maxWidth: '1000px',
+              lineHeight: 1.1,
             }}>
               {cleanVouchee}
             </div>
           </div>
 
-          {/* Footer Branding */}
+          {/* Bottom: Official Homepage Tagline */}
           <div style={{
             display: 'flex',
-            width: '100%',
-            justifyContent: 'center',
-            paddingTop: '30px',
-            borderTop: '2px solid #e2e8f0',
+            flexDirection: 'column',
+            alignItems: 'center',
+            borderTop: '3px solid #f1f5f9',
+            paddingTop: '32px',
+            width: '950px',
+            marginTop: '30px',
           }}>
             <div style={{
-              fontSize: '30px',
+              fontSize: '34px',
               color: '#1e293b',
-              fontWeight: '600',
-              display: 'flex',
+              fontWeight: '800',
+              textAlign: 'center',
+              letterSpacing: '-0.02em',
+              marginBottom: '8px',
             }}>
-              {"Know who you're working with "}
-              <span style={{ fontWeight: '900', fontStyle: 'italic', marginLeft: '10px' }}>
-                before you commit.
-              </span>
+              Know who you’re working with before you commit.
+            </div>
+            <div style={{
+              fontSize: '24px',
+              color: '#64748b',
+              fontWeight: '600',
+              textAlign: 'center',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+            }}>
+              Verified Professional History
             </div>
           </div>
         </div>
@@ -137,20 +144,6 @@ export async function GET(request) {
       {
         width: 1200,
         height: 630,
-        fonts: [
-          {
-            name: 'Inter',
-            data: fontPrimary,
-            weight: 900,
-            style: 'normal',
-          },
-          {
-            name: 'Inter',
-            data: fontItalic,
-            weight: 700,
-            style: 'italic',
-          },
-        ],
       }
     );
   } catch (e) {
