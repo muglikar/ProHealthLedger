@@ -5,10 +5,11 @@ export const runtime = 'edge';
 /**
  * GET /api/og
  *
- * Generates a 1200x630 Hero Card image — light theme, massive readable text,
- * PHL logo for brand recognition, homepage-matching tagline.
+ * Generates a 1200x630 Hero Card image — light theme, massive text,
+ * PHL logo, homepage-matching tagline.
  *
  * Only fetches our own logo.png (same domain, <20ms).
+ * NO HTML entities, NO nested spans — Satori-safe.
  *
  * Params: ?voucherName=...&voucheeName=...
  */
@@ -23,16 +24,18 @@ export async function GET(request) {
     const cleanVouchee = decodeURIComponent(rawVouchee).split('_').join(' ');
 
     // Fetch our own logo (same domain, fast & reliable)
-    let logoBuffer = null;
+    let logoSrc = null;
     try {
       const logoRes = await fetch('https://prohealthledger.org/logo.png', {
         signal: AbortSignal.timeout(3000),
       });
       if (logoRes.ok) {
-        logoBuffer = await logoRes.arrayBuffer();
+        const buf = await logoRes.arrayBuffer();
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+        logoSrc = `data:image/png;base64,${base64}`;
       }
     } catch (e) {
-      // Logo fetch failed; will render without it
+      // Logo fetch failed; will use fallback
     }
 
     return new ImageResponse(
@@ -55,43 +58,43 @@ export async function GET(request) {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            marginBottom: '35px',
+            marginBottom: '30px',
           }}>
-            {logoBuffer ? (
+            {logoSrc ? (
               <img
-                src={logoBuffer}
-                width="64"
-                height="64"
-                style={{ borderRadius: '50%', marginRight: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
+                src={logoSrc}
+                width={60}
+                height={60}
+                style={{ borderRadius: '50%', marginRight: '18px' }}
               />
             ) : (
               <div style={{
-                width: '64px',
-                height: '64px',
+                width: '60px',
+                height: '60px',
                 borderRadius: '50%',
                 backgroundColor: '#059669',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'white',
-                fontSize: '36px',
+                fontSize: '34px',
                 fontWeight: 'bold',
-                marginRight: '20px',
+                marginRight: '18px',
               }}>
-                ✓
+                P
               </div>
             )}
             <div style={{
-              fontSize: '38px',
+              fontSize: '36px',
               fontWeight: 'bold',
               color: '#64748b',
-              letterSpacing: '0.08em',
+              letterSpacing: '0.06em',
             }}>
               PRO-HEALTH LEDGER
             </div>
           </div>
 
-          {/* Center: [Voucher] vouched for [Vouchee] — MASSIVE text */}
+          {/* Center: Voucher / vouched for / Vouchee */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -102,26 +105,26 @@ export async function GET(request) {
             justifyContent: 'center',
           }}>
             <div style={{
-              fontSize: '80px',
+              fontSize: '82px',
               fontWeight: 'bold',
               color: '#0f172a',
               lineHeight: 1.1,
-              marginBottom: '16px',
+              marginBottom: '14px',
             }}>
               {cleanVoucher}
             </div>
             <div style={{
-              fontSize: '80px',
+              fontSize: '82px',
               fontWeight: '700',
               fontStyle: 'italic',
               color: '#059669',
-              marginBottom: '16px',
+              marginBottom: '14px',
               lineHeight: 1.1,
             }}>
               vouched for
             </div>
             <div style={{
-              fontSize: '80px',
+              fontSize: '82px',
               fontWeight: 'bold',
               color: '#0f172a',
               lineHeight: 1.1,
@@ -130,24 +133,28 @@ export async function GET(request) {
             </div>
           </div>
 
-          {/* Bottom: Homepage-matching tagline */}
+          {/* Bottom: Tagline matching homepage */}
           <div style={{
             display: 'flex',
-            alignItems: 'center',
             borderTop: '2px solid #e2e8f0',
-            paddingTop: '24px',
-            marginTop: '30px',
+            paddingTop: '22px',
+            marginTop: '25px',
           }}>
             <div style={{
-              fontSize: '30px',
+              fontSize: '28px',
               color: '#1a1a1a',
-              fontWeight: '600',
-              textAlign: 'center',
+              fontWeight: '500',
             }}>
-              Know who you&apos;re working with{' '}
-              <span style={{ fontWeight: '800', fontStyle: 'italic' }}>
-                before you commit.
-              </span>
+              {"Know who you're working with "}
+            </div>
+            <div style={{
+              fontSize: '28px',
+              color: '#1a1a1a',
+              fontWeight: '800',
+              fontStyle: 'italic',
+              marginLeft: '0px',
+            }}>
+              before you commit.
             </div>
           </div>
         </div>
