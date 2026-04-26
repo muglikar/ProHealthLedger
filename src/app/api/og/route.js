@@ -2,41 +2,32 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-async function fetchImageBuffer(url) {
-  if (!url) return null;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    return await res.arrayBuffer();
-  } catch (e) {
-    console.error("Failed to fetch image buffer:", url, e);
-    return null;
-  }
-}
+// Instant Initials helper for zero-latency rendering
+const getInitials = (name) => {
+  if (!name) return '?';
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .substring(0, 2)
+    .toUpperCase();
+};
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    // Params: ?voucherName=...&voucherPic=...&voucheeName=...&voucheePic=...
+    // Params: ?voucherName=...&voucheeName=...
     const rawVoucherName = searchParams.get('voucherName') || 'A Colleague';
-    const voucherPicUrl = searchParams.get('voucherPic');
     const rawVoucheeName = searchParams.get('voucheeName') || 'Professional';
-    const voucheePicUrl = searchParams.get('voucheePic');
 
     const voucherName = decodeURIComponent(rawVoucherName).split('_').join(' ');
     const voucheeName = decodeURIComponent(rawVoucheeName).split('_').join(' ');
 
-    const siteUrl = 'https://prohealthledger.org';
-    const logoUrl = `${siteUrl}/logo.png`;
+    const voucherInitials = getInitials(voucherName);
+    const voucheeInitials = getInitials(voucheeName);
 
-    // Pre-fetch images to ArrayBuffers for Edge rendering
-    const [voucherBuffer, voucheeBuffer, logoBuffer] = await Promise.all([
-      fetchImageBuffer(voucherPicUrl),
-      fetchImageBuffer(voucheePicUrl),
-      fetchImageBuffer(logoUrl),
-    ]);
-
+    // ZERO ASYNC CALLS HERE - Route resolves in milliseconds
     return new ImageResponse(
       (
         <div
@@ -53,37 +44,36 @@ export async function GET(request) {
             fontFamily: 'sans-serif',
           }}
         >
-          {/* Header with Logo */}
+          {/* Header Branding */}
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '50px' }}>
-            {logoBuffer && (
-              <img
-                src={logoBuffer}
-                width="100"
-                height="100"
-                style={{ borderRadius: '20px', marginRight: '30px' }}
-              />
-            )}
+            <div style={{ width: '80px', height: '80px', borderRadius: '15px', backgroundColor: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '50px', fontWeight: 'bold', marginRight: '30px' }}>
+              ✓
+            </div>
             <div style={{ fontSize: '50px', fontWeight: 'bold', color: '#0f172a', letterSpacing: '-0.04em' }}>
               PRO-HEALTH LEDGER
             </div>
           </div>
 
-          {/* Avatar Row - Constrained Width to prevent clipping */}
+          {/* Initials Row - Guaranteed to fit and render instantly */}
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '900px', marginBottom: '40px' }}>
-            {/* Voucher */}
+            {/* Voucher Pin */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '300px' }}>
-              {voucherBuffer ? (
-                <img
-                  src={voucherBuffer}
-                  width="220"
-                  height="220"
-                  style={{ borderRadius: '110px', border: '8px solid white', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}
-                />
-              ) : (
-                <div style={{ width: '220px', height: '220px', borderRadius: '110px', backgroundColor: '#f1f5f9', border: '8px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '100px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
-                  👤
-                </div>
-              )}
+              <div style={{ 
+                width: '220px', 
+                height: '220px', 
+                borderRadius: '110px', 
+                backgroundColor: '#0f172a', 
+                color: '#ffffff', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                fontSize: '90px', 
+                fontWeight: 'bold',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15)',
+                border: '8px solid white'
+              }}>
+                {voucherInitials}
+              </div>
               <div style={{ marginTop: '25px', fontSize: '40px', fontWeight: 'bold', color: '#1e293b', textAlign: 'center', maxWidth: '350px' }}>
                 {voucherName}
               </div>
@@ -94,35 +84,39 @@ export async function GET(request) {
               <div style={{ fontSize: '24px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '10px' }}>
                 VOUCHED FOR
               </div>
-              <div style={{ fontSize: '80px', color: '#cbd5e1' }}>→</div>
+              <div style={{ fontSize: '100px', color: '#cbd5e1', lineHeight: '1' }}>→</div>
             </div>
 
-            {/* Vouchee */}
+            {/* Vouchee Pin */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '300px' }}>
-              {voucheeBuffer ? (
-                <img
-                  src={voucheeBuffer}
-                  width="220"
-                  height="220"
-                  style={{ borderRadius: '110px', border: '8px solid white', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}
-                />
-              ) : (
-                <div style={{ width: '220px', height: '220px', borderRadius: '110px', backgroundColor: '#f1f5f9', border: '8px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '100px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
-                  👤
-                </div>
-              )}
+              <div style={{ 
+                width: '220px', 
+                height: '220px', 
+                borderRadius: '110px', 
+                backgroundColor: '#1d4ed8', 
+                color: '#ffffff', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                fontSize: '90px', 
+                fontWeight: 'bold',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15)',
+                border: '8px solid white'
+              }}>
+                {voucheeInitials}
+              </div>
               <div style={{ marginTop: '25px', fontSize: '40px', fontWeight: 'bold', color: '#1e293b', textAlign: 'center', maxWidth: '350px' }}>
                 {voucheeName}
               </div>
             </div>
           </div>
 
-          {/* Footer Tagline - Constrained and Centered */}
+          {/* Footer Tagline */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '30px', borderTop: '2px solid #f1f5f9', paddingTop: '40px', width: '800px' }}>
-            <div style={{ fontSize: '30px', color: '#0f172a', fontWeight: '600', marginBottom: '10px', textAlign: 'center' }}>
+            <div style={{ fontSize: '32px', color: '#0f172a', fontWeight: '600', marginBottom: '10px', textAlign: 'center' }}>
               Know who you're working with before you commit.
             </div>
-            <div style={{ fontSize: '26px', color: '#64748b', fontStyle: 'italic', textAlign: 'center' }}>
+            <div style={{ fontSize: '28px', color: '#64748b', fontStyle: 'italic', textAlign: 'center' }}>
               One question: “Would you work with them again?”
             </div>
           </div>
@@ -134,7 +128,7 @@ export async function GET(request) {
       }
     );
   } catch (e) {
-    console.error(e);
+    console.error("OG Generation Error:", e);
     return new Response(`Failed to generate image`, { status: 500 });
   }
 }
