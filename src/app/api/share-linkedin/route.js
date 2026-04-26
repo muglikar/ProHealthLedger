@@ -70,7 +70,7 @@ export async function POST(req) {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
 
     const liRes = await fetch("https://api.linkedin.com/rest/posts", {
       method: "POST",
@@ -78,7 +78,7 @@ export async function POST(req) {
         Authorization: `Bearer ${token.linkedinAccessToken}`,
         "Content-Type": "application/json",
         "X-Restli-Protocol-Version": "2.0.0",
-        "LinkedIn-Version": "202504",
+        "LinkedIn-Version": "202401",
       },
       body: JSON.stringify(postPayload),
       signal: controller.signal,
