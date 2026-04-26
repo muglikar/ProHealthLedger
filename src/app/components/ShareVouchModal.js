@@ -63,7 +63,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
   
   const shareData = useMemo(() => buildShareText(displayName, firstPerson, null, voucherName), [displayName, firstPerson, voucherName]);
   
-  const cleanVouchUrl = `${SITE_URL}/vouch/${encodeURIComponent(voucherClean)}/${encodeURIComponent(voucheeClean)}/${encodeURIComponent(slug || "unknown")}`;
+  const cleanVouchUrl = `${SITE_URL}/p/${encodeURIComponent(voucherClean)}/${encodeURIComponent(voucheeClean)}/${encodeURIComponent(slug || "unknown")}`;
   const finalShareUrl = refCode ? `${cleanVouchUrl}?ref=${refCode}` : cleanVouchUrl;
 
   useEffect(() => {
