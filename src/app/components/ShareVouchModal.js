@@ -108,7 +108,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          commentary: `${shareData.text}\n\n${finalShareUrl}\n\n${shareData.tags}`,
+          commentary: `${shareData.text} ${finalShareUrl}\n\n${shareData.tags}`,
           articleUrl: finalShareUrl,
           articleTitle: firstPerson
             ? `Professional Health Ledger — ${displayName}`
@@ -154,7 +154,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
 
   // Manual copy fallback
   const handleCopyOnly = useCallback(() => {
-    const toCopy = `${shareData.text}\n\n${finalShareUrl}\n\n${shareData.tags}`;
+    const toCopy = `${shareData.text} ${finalShareUrl}\n\n${shareData.tags}`;
     navigator.clipboard.writeText(toCopy).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
@@ -187,7 +187,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
           </p>
 
           <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', fontSize: '0.85rem', color: '#475569', marginBottom: '20px', border: '1px solid #e2e8f0', whiteSpace: 'pre-wrap', maxHeight: '200px', overflow: 'auto' }}>
-            {shareData.text}{"\n\n"}{finalShareUrl}{"\n\n"}{shareData.tags}
+            {shareData.text}{" "}{finalShareUrl}{"\n\n"}{shareData.tags}
           </div>
         </div>
 

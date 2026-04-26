@@ -14,7 +14,7 @@ export async function generateMetadata({ params }) {
     const cleanVouchee = decodeURIComponent(resolvedParams?.vouchee || '').split('_').join(' ');
     const ogUrl = `https://prohealthledger.org/api/og?voucherName=${encodeURIComponent(cleanVoucher)}&voucheeName=${encodeURIComponent(cleanVouchee)}`;
     
-    const title = `${cleanVoucher} vouched for ${cleanVouchee} - Professional Health Ledger`;
+    const title = `${cleanVoucher} vouched for ${cleanVouchee} on Professional Health Ledger`;
     
     return {
       title,

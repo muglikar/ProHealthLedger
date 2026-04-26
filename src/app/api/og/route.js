@@ -88,8 +88,9 @@ export async function GET(request) {
               {cleanVoucher}
             </div>
             <div style={{
-              fontSize: '52px',
+              fontSize: '72px',
               fontWeight: '700',
+              fontStyle: 'italic',
               color: '#059669',
               marginBottom: '24px',
             }}>
