@@ -784,16 +784,18 @@ a:hover {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  background: rgba(39, 174, 96, 0.08);
-  border: 1px solid rgba(39, 174, 96, 0.3);
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  color: #1e4a31;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #166534;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .linked-profile-text strong {
-  color: #0a66c2;
+  color: #0369a1;
+  font-weight: 700;
 }
 
 .link-profile-edit-btn {
@@ -825,15 +827,15 @@ a:hover {
     border-color: #60a5fa;
   }
 
-  .linked-profile-status {
-    background: rgba(39, 174, 96, 0.15);
-    color: #a7f3d0;
-    border-color: rgba(39, 174, 96, 0.4);
-  }
+    .linked-profile-status {
+      background: #064e3b;
+      color: #d1fae5;
+      border-color: #065f46;
+    }
 
-  .linked-profile-text strong {
-    color: #93c5fd;
-  }
+    .linked-profile-text strong {
+      color: #7dd3fc;
+    }
 
   .link-profile-edit-btn {
     color: #93c5fd;
