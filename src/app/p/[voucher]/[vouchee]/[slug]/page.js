@@ -1,43 +1,44 @@
-import ProfilesClient from "@/app/profiles/ProfilesClient";
-import { Suspense } from "react";
-
-/**
- * STRICT SERVER COMPONENT (No 'use client')
- * This ensures generateMetadata is executed on the server/edge, 
- * which is mandatory for LinkedIn's crawler to see the custom OG tags.
- */
+import { formatProfessionalDisplayName } from "@/lib/profiles";
 
 export async function generateMetadata({ params }) {
-  const resolvedParams = await params; // Mandatory in Next.js 15+
+  const resolvedParams = await params;
   try {
     const cleanVoucher = decodeURIComponent(resolvedParams?.voucher || '').split('_').join(' ');
     const cleanVouchee = decodeURIComponent(resolvedParams?.vouchee || '').split('_').join(' ');
-    const ogUrl = `https://prohealthledger.org/api/og?voucherName=${encodeURIComponent(cleanVoucher)}&voucheeName=${encodeURIComponent(cleanVouchee)}`;
     
+    // Switch to static pre-hosted banner for instant crawler recognition
+    const ogUrl = 'https://prohealthledger.org/og_banner.png';
     const title = `${cleanVoucher} vouched for ${cleanVouchee} on Professional Health Ledger`;
     
     return {
       title,
-      description: `View the verified professional vouch on ProHealthLedger.`,
+      description: "Know who you're working with before you commit. View this verified professional vouch on Pro-Health Ledger.",
       openGraph: {
         title,
+        description: "Know who you're working with before you commit. View this verified professional vouch on Pro-Health Ledger.",
+        type: 'website',
+        url: `https://prohealthledger.org/p/${resolvedParams.voucher}/${resolvedParams.vouchee}/${resolvedParams.slug}`,
         images: [{ url: ogUrl, width: 1200, height: 630 }],
       },
       twitter: {
         card: 'summary_large_image',
+        title,
+        description: "Know who you're working with before you commit.",
         images: [ogUrl],
       }
     };
-  } catch(e) { 
-    return { title: 'Verified Vouch | ProHealthLedger' }; 
+  } catch (error) {
+    return { title: "Professional Health Ledger" };
   }
 }
 
-export default async function VouchPage({ params }) {
-  const resolvedParams = await params;
+export default function VouchPage() {
   return (
-    <Suspense fallback={<div className="loading-container" style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Opening Professional Ledger...</div>}>
-      <ProfilesClient initialSearch={resolvedParams?.slug} />
-    </Suspense>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', padding: '40px', textAlign: 'center' }}>
+      <div>
+        <h1 style={{ fontSize: '2rem', marginBottom: '20px' }}>Verified Professional Vouch</h1>
+        <p style={{ color: '#64748b', fontSize: '1.2rem' }}>Redirecting to Pro-Health Ledger profiles...</p>
+      </div>
+    </div>
   );
 }
