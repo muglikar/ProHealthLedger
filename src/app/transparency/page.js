@@ -359,6 +359,15 @@ export default function TransparencyPage() {
             tap or click it for the full vote row (professional, vote, submitter, date,
             record) plus the full comment.
           </p>
+
+          {currentUserId && !myLinkedSlug && (
+            <div className="link-profile-prompt">
+              <button type="button" className="link-profile-btn" onClick={linkMyProfile}>
+                🔗 Link my LinkedIn profile to share vouches received about me
+              </button>
+            </div>
+          )}
+
           <div className="audit-scroll-track" ref={trackRef}>
             <span className="audit-scroll-track-label">← drag or tap to scroll →</span>
             <div className="audit-scroll-thumb" ref={thumbRef} />
