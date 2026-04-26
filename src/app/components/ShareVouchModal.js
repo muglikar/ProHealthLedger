@@ -172,6 +172,20 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
   }, [shareText, ledgerProfileUrl, displayName]);
 
   useEffect(() => {
+    let t;
+    if (postingDirect) {
+      t = setTimeout(() => {
+        if (postingDirect) {
+          setPostingDirect(false);
+          setDirectPostResult("error");
+          setDirectPostErrorDetails("Fail-safe: Posting took too long. Please use the manual share option.");
+        }
+      }, 15000); // 15s hard limit
+    }
+    return () => clearTimeout(t);
+  }, [postingDirect]);
+
+  useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
     };
