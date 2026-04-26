@@ -5,6 +5,7 @@ import Providers from "./providers";
 import SiteNav from "./components/SiteNav";
 import VoteQuotaStrip from "./components/VoteQuotaStrip";
 import OwnerActivityStrip from "./components/OwnerActivityStrip";
+import AdminReminders from "./components/AdminReminders";
 import ReferralCapture from "./components/ReferralCapture";
 import "./globals.css";
 
@@ -83,6 +84,7 @@ export default function RootLayout({ children }) {
           <SiteNav />
           <VoteQuotaStrip />
           <OwnerActivityStrip />
+          <AdminReminders />
           <Suspense fallback={null}>
             <ReferralCapture />
           </Suspense>
