@@ -26,12 +26,17 @@ const linkedInClientSecret =
 async function fetchLinkedinProfileSlug(accessToken) {
   if (!accessToken || typeof accessToken !== "string") return null;
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
     const res = await fetch("https://api.linkedin.com/rest/identityMe", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "LinkedIn-Version": "202504",
+        "LinkedIn-Version": "202401",
       },
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     if (!res.ok) return null;
     const data = await res.json();
     const profileUrl = data?.basicInfo?.profileUrl;
@@ -82,7 +87,7 @@ if (linkedInClientId && linkedInClientSecret) {
       jwks_endpoint: "https://www.linkedin.com/oauth/openid/jwks",
       authorization: {
         url: "https://www.linkedin.com/oauth/v2/authorization",
-        params: { scope: "openid profile email r_profile_basicinfo w_member_social" },
+        params: { scope: "openid profile email r_verify r_profile_basicinfo w_member_social" },
       },
       token: "https://www.linkedin.com/oauth/v2/accessToken",
       // Custom fetch avoids merged userinfo.params.projection (for /v2/me) breaking OIDC userinfo.
