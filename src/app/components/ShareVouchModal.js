@@ -108,8 +108,11 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
     ? `${SITE_URL}/profiles?search=${encodeURIComponent(slug)}`
     : `${SITE_URL}/profiles`;
 
-  // Unique URL for each vouch share to bypass LinkedIn cache and trigger dynamic OG metadata
-  const ledgerProfileUrl = `${baseProfileUrl}${baseProfileUrl.includes('?') ? '&' : '?'}voucher=${encodeURIComponent(voucherName)}&vouchee=${encodeURIComponent(displayName)}&pic=${encodeURIComponent(voucherPic || '')}&vepic=${encodeURIComponent(voucheePic || '')}${refCode ? `&ref=${refCode}` : ''}&v=${Date.now()}`;
+  // --- NEW CLEAN PATH STRATEGY ---
+  // Using a clean path /vouch/VoucherName/VoucheeName/Slug instead of query params 
+  // to bypass LinkedIn cache and guarantee a Hero Card.
+  const cleanVouchPath = `/vouch/${encodeURIComponent(voucherName || "Colleague")}/${encodeURIComponent(displayName || "Professional")}/${encodeURIComponent(slug || "unknown")}`;
+  const ledgerProfileUrl = `${SITE_URL}${cleanVouchPath}${refCode ? `?ref=${refCode}` : ""}`;
 
   const linkedinShareOffsiteUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(ledgerProfileUrl)}`;
 
