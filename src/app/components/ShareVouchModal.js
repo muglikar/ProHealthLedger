@@ -6,9 +6,20 @@ import { formatProfessionalDisplayName } from "@/lib/profiles";
 
 const SITE_URL = "https://prohealthledger.org";
 
-function buildShareText(displayName, firstPerson = false, voucherId = null, voucherName = "", vouchedForId = null) {
+function buildShareText(displayName, firstPerson = false, voucherId = null, voucherName = "", vouchedForId = null, voucherPic = null, voucheePic = null) {
   const mentorTag = voucherId ? `@[${voucherName}](urn:li:person:${voucherId})` : voucherName;
   const vouchedForTag = vouchedForId ? `@[${displayName}](urn:li:person:${vouchedForId})` : displayName;
+
+  const getOgUrl = (vName, vPic, veName, vePic) => {
+    const params = new URLSearchParams();
+    if (vName) params.set('voucherName', vName);
+    if (vPic) params.set('voucherPic', vPic);
+    if (veName) params.set('voucheeName', veName);
+    if (vePic) params.set('voucheePic', vePic);
+    return `${SITE_URL}/api/og?${params.toString()}`;
+  };
+
+  const ogUrl = getOgUrl(voucherName, voucherPic, displayName, voucheePic);
 
   if (firstPerson) {
     const firstPersonOptions = [
@@ -17,7 +28,8 @@ function buildShareText(displayName, firstPerson = false, voucherId = null, vouc
           "I'm building my portable reputation on Pro-Health Ledger. Massive thanks to the colleagues and partners like " + mentorTag + " who have already staked their own reputation to vouch for my work. Transparency creates accountability, and I believe the best way to do business is out in the open.\n\n" +
           "If we've worked together, I'd be honored if you added your experience to my Professional-Health Ledger. And the next time you're evaluating a partner or hire, look them up.\n\n" +
           "Check out my track record here:",
-        tags: "#CareerGrowth #PersonalBranding #Networking #ProfessionalDevelopment #FutureOfWork"
+        tags: "#CareerGrowth #PersonalBranding #Networking #ProfessionalDevelopment #FutureOfWork",
+        ogUrl
       },
       {
         text: "Your career's reputation belongs to you — not to your previous company's HR department.\n\n" +
@@ -25,7 +37,8 @@ function buildShareText(displayName, firstPerson = false, voucherId = null, vouc
           "Big thanks to " + mentorTag + " and others who have already staked their reputation to vouch for my work. If we’ve worked together, I’d be honored to have your honest review on my Professional Health Ledger.\n\n" +
           "Before your next hire or partnership, look them up. If they aren’t here, ask them to bring their track record to the table.\n\n" +
           "Check out my public Professional Health Ledger:",
-        tags: "#ProfessionalIntegrity #WorkplaceCulture #Accountability #Transparency #LeadershipDevelopment"
+        tags: "#ProfessionalIntegrity #WorkplaceCulture #Accountability #Transparency #LeadershipDevelopment",
+        ogUrl
       }
     ];
     return firstPersonOptions[Math.floor(Math.random() * firstPersonOptions.length)];
@@ -37,21 +50,24 @@ function buildShareText(displayName, firstPerson = false, voucherId = null, vouc
         `I just staked my own professional reputation on Pro-Health Ledger to officially vouch for my friend and colleague, ${vouchedForTag}'s work ethic.\n\n` +
         "Before you finalize your next hire or partnership, check if they have a public Professional Health Ledger on ProHealthLedger.org. If they aren't there yet, ask them to bring their professional references to the table.\n\n" +
         `You can see my vouch for ${displayName} here:`,
-      tags: "#HiringTransparency #RecruitmentInnovation #FutureOfWork #TalentAcquisition #HRTech"
+      tags: "#HiringTransparency #RecruitmentInnovation #FutureOfWork #TalentAcquisition #HRTech",
+      ogUrl
     },
     {
       text: "In a world of generic LinkedIn endorsements, I wanted to put something more meaningful on the record for " + vouchedForTag + ".\n\n" +
         "I just added my official vouch for them on Pro-Health Ledger. Your reputation is your most valuable asset, and it's time we start actively building public, verified track records.\n\n" +
         "Who is the best person you've worked with recently? Look them up. If they aren't on the Pro-Health Ledger yet, be the first one to start their portable reputation.\n\n" +
         `Read my vouch for ${displayName} here:`,
-      tags: "#PersonalBranding #CareerGrowth #ProfessionalDevelopment #Transparency #Trust"
+      tags: "#PersonalBranding #CareerGrowth #ProfessionalDevelopment #Transparency #Trust",
+      ogUrl
     },
     {
       text: "Resumes tell you what someone did. A verified vouch tells you how they did it and how they treat people.\n\n" +
         `I just added an official vouch for ${vouchedForTag} on Pro-Health Ledger — an immutable record of how people actually work. It's time we start actively building public, portable track records.\n\n` +
         "Who’s the best person you've worked with recently? Look them up. If they aren't on the Pro-Health Ledger yet, be the first to start their portable reputation.\n\n" +
         `Read my vouch for ${displayName}:`,
-      tags: "#OpenSource #BuildInPublic #SoftwareEngineering #TechInnovation #GitHub"
+      tags: "#OpenSource #BuildInPublic #SoftwareEngineering #TechInnovation #GitHub",
+      ogUrl
     }
   ];
 
@@ -79,12 +95,14 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
 
   const voucherId = (typeof data.user === "string" && data.user.startsWith("linkedin:")) ? data.user.slice(9) : null;
   const voucherName = data.display_name || (typeof data.user === "string" ? (data.user.startsWith("github:") ? data.user.slice(7) : data.user) : "a colleague");
+  const voucherPic = data.display_image || null;
   
-  // Note: We don't have the vouchedForId here easily unless it's in the data.
-  // Assuming for now it's not available for other people's profiles unless they logged in.
-  const vouchedForId = null; 
+  // Note: We'll use the profile owner's pic as voucheePic. 
+  // We can get this from session if the user is looking at their own profile.
+  const voucheePic = firstPerson ? session?.user?.image : null;
+  const voucheeId = firstPerson ? (session?.linkedinSub || session?.userId?.replace("linkedin:", "")) : null;
   
-  const shareData = useMemo(() => buildShareText(displayName, firstPerson, voucherId, voucherName, vouchedForId), [displayName, firstPerson, voucherId, voucherName, vouchedForId]);
+  const shareData = useMemo(() => buildShareText(displayName, firstPerson, voucherId, voucherName, voucheeId, voucherPic, voucheePic), [displayName, firstPerson, voucherId, voucherName, voucheeId, voucherPic, voucheePic]);
   const slug = typeof data.profile_slug === "string" ? data.profile_slug.trim() : "";
   const baseProfileUrl = slug
     ? `${SITE_URL}/profiles?search=${encodeURIComponent(slug)}`
@@ -152,8 +170,9 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
         body: JSON.stringify({
           commentary: `${shareData.text}\n\n${ledgerProfileUrl}\n\n${shareData.tags}`,
           articleUrl: ledgerProfileUrl,
-          articleTitle: `Professional Health Ledger — ${displayName}`,
-          articleDescription: "See verified professional vouches on Pro-Health Ledger",
+          articleTitle: firstPerson ? `Professional Health Ledger — ${displayName}` : `Vouch for ${displayName} on PHL`,
+          articleDescription: "Know who you're working with before you commit. One question: “Would you work with them again?”",
+          ogUrl: shareData.ogUrl,
         }),
         signal: controller.signal,
       });
