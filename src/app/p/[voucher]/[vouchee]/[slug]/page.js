@@ -14,11 +14,13 @@ export async function generateMetadata({ params }) {
     const cleanVouchee = decodeURIComponent(resolvedParams?.vouchee || '').split('_').join(' ');
     const ogUrl = `https://prohealthledger.org/api/og?voucherName=${encodeURIComponent(cleanVoucher)}&voucheeName=${encodeURIComponent(cleanVouchee)}`;
     
+    const title = `${cleanVoucher} vouched for ${cleanVouchee} - Professional Health Ledger`;
+    
     return {
-      title: `${cleanVoucher} vouched for ${cleanVouchee}`,
+      title,
       description: `View the verified professional vouch on ProHealthLedger.`,
       openGraph: {
-        title: `${cleanVoucher} vouched for ${cleanVouchee}`,
+        title,
         images: [{ url: ogUrl, width: 1200, height: 630 }],
       },
       twitter: {
