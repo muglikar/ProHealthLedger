@@ -49,7 +49,7 @@ export default function VerifyReminderStrip() {
         <span className="verify-reminder-icon">🛡️</span>
         <p className="verify-reminder-msg">
           <strong>Verify your identity</strong> to share vouches people have given you. 
-          Paste your LinkedIn URL as a workaround while we wait for official LinkedIn verification approval.
+          Paste your LinkedIn URL to complete the mapping.
         </p>
         <div className="verify-reminder-actions">
           <button type="button" className="verify-reminder-btn" onClick={handleLink}>
