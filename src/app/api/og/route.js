@@ -4,21 +4,30 @@ export const runtime = 'edge';
 
 /**
  * GET /api/og
- *
- * Generates a 1200x630 Hero Card image.
- * Uses robust CSS-only patterns for maximum reliability in Edge runtimes.
- *
- * Params: ?voucherName=...&voucheeName=...
+ * 
+ * Generates the professional share card.
+ * - Preloads Inter font for guaranteed Bold/Italic rendering.
+ * - Brand logo top-left.
+ * - Dynamic vouch text center.
+ * - Legible tagline bottom.
  */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-
     const rawVoucher = searchParams.get('voucherName') || 'A Colleague';
     const rawVouchee = searchParams.get('voucheeName') || 'Professional';
 
     const cleanVoucher = decodeURIComponent(rawVoucher).split('_').join(' ');
     const cleanVouchee = decodeURIComponent(rawVouchee).split('_').join(' ');
+
+    // Fetch Fonts for guaranteed Bold/Italic support in Satori
+    const fontPrimary = await fetch(
+      new URL('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYMZhrib2Bg-4.ttf', request.url)
+    ).then((res) => res.arrayBuffer());
+
+    const fontItalic = await fetch(
+      new URL('https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7W0Q5Z-o.ttf', request.url)
+    ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
       (
@@ -28,112 +37,100 @@ export async function GET(request) {
             height: '630px',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
             backgroundColor: '#ffffff',
             backgroundImage: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%)',
-            padding: '60px',
-            fontFamily: 'sans-serif',
+            padding: '40px',
+            fontFamily: 'Inter',
           }}
         >
-          {/* Header Branding - CSS Logo for 100% Reliability */}
+          {/* Top Left: Logo + Branding */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            marginBottom: '40px',
+            position: 'absolute',
+            top: '40px',
+            left: '40px',
           }}>
             <div style={{
-              width: '70px',
-              height: '70px',
-              borderRadius: '20px',
+              width: '60px',
+              height: '60px',
+              borderRadius: '15px',
               backgroundColor: '#059669',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginRight: '20px',
-              boxShadow: '0 4px 10px rgba(5, 150, 105, 0.2)',
+              marginRight: '15px',
+              boxShadow: '0 4px 8px rgba(5, 150, 105, 0.2)',
             }}>
-              <div style={{ 
-                color: 'white', 
-                fontSize: '40px', 
-                fontWeight: '900',
-              }}>
-                ✓
-              </div>
+              <div style={{ color: 'white', fontSize: '36px', fontWeight: 'bold' }}>✓</div>
             </div>
             <div style={{
-              fontSize: '40px',
-              fontWeight: '900',
-              color: '#475569',
-              letterSpacing: '0.1em',
+              fontSize: '32px',
+              fontWeight: '800',
+              color: '#64748b',
+              letterSpacing: '0.05em',
             }}>
               PRO-HEALTH LEDGER
             </div>
           </div>
 
-          {/* Core Content - Names + Vouch Statement */}
+          {/* Dynamic Content Center */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            textAlign: 'center',
-            flex: 1,
             justifyContent: 'center',
-            width: '1000px',
+            flex: 1,
+            marginTop: '40px',
           }}>
             <div style={{
-              fontSize: '85px',
+              fontSize: '84px',
               fontWeight: '900',
               color: '#0f172a',
-              lineHeight: 1.1,
-              marginBottom: '20px',
+              marginBottom: '15px',
+              textAlign: 'center',
+              maxWidth: '1000px',
             }}>
               {cleanVoucher}
             </div>
             
             <div style={{
-              fontSize: '80px',
-              fontWeight: '800',
+              fontSize: '84px',
+              fontWeight: '700',
               fontStyle: 'italic',
               color: '#059669',
-              marginBottom: '20px',
-              display: 'flex',
+              marginBottom: '15px',
+              textAlign: 'center',
             }}>
               vouched for
             </div>
 
             <div style={{
-              fontSize: '85px',
+              fontSize: '84px',
               fontWeight: '900',
               color: '#0f172a',
-              lineHeight: 1.1,
+              textAlign: 'center',
+              maxWidth: '1000px',
             }}>
               {cleanVouchee}
             </div>
           </div>
 
-          {/* Footer Tagline - Cleaned Spacing */}
+          {/* Bottom: Anchor Tagline */}
           <div style={{
             display: 'flex',
-            borderTop: '2px solid #f1f5f9',
-            paddingTop: '30px',
-            marginTop: '30px',
-            width: '900px',
+            width: '100%',
             justifyContent: 'center',
+            paddingTop: '30px',
+            borderTop: '2px solid #e2e8f0',
           }}>
             <div style={{
-              fontSize: '32px',
+              fontSize: '30px',
               color: '#1e293b',
               fontWeight: '600',
-              display: 'flex',
             }}>
-              {"Know who you're working with "}
-              <span style={{ 
-                fontWeight: '900', 
-                fontStyle: 'italic', 
-                marginLeft: '10px',
-                color: '#0f172a' 
-              }}>
+              Know who you're working with{" "}
+              <span style={{ fontWeight: '900', fontStyle: 'italic' }}>
                 before you commit.
               </span>
             </div>
@@ -143,6 +140,20 @@ export async function GET(request) {
       {
         width: 1200,
         height: 630,
+        fonts: [
+          {
+            name: 'Inter',
+            data: fontPrimary,
+            weight: 900,
+            style: 'normal',
+          },
+          {
+            name: 'Inter',
+            data: fontItalic,
+            weight: 700,
+            style: 'italic',
+          },
+        ],
       }
     );
   } catch (e) {
