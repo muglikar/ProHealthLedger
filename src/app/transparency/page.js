@@ -60,6 +60,34 @@ export default function TransparencyPage() {
   const trackRef = useRef(null);
   const thumbRef = useRef(null);
 
+  // Explicit profile claim for 1st-person vouch sharing.
+  // Priority: session.linkedinVanity (from /identityMe) > localStorage claim.
+  const [myLinkedSlug, setMyLinkedSlug] = useState("");
+  useEffect(() => {
+    if (session?.linkedinVanity) {
+      // /identityMe returned a verified slug — use it and persist it
+      setMyLinkedSlug(session.linkedinVanity);
+      try { localStorage.setItem("phl_my_slug", session.linkedinVanity); } catch {}
+    } else {
+      try { setMyLinkedSlug(localStorage.getItem("phl_my_slug") || ""); } catch {}
+    }
+  }, [session?.linkedinVanity]);
+
+  const linkMyProfile = useCallback(() => {
+    const url = window.prompt(
+      "To share vouches received about you, paste your LinkedIn profile URL:\n\nExample: https://www.linkedin.com/in/your-name"
+    );
+    if (!url) return;
+    const match = url.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/);
+    if (match) {
+      const slug = match[1].toLowerCase();
+      localStorage.setItem("phl_my_slug", slug);
+      setMyLinkedSlug(slug);
+    } else {
+      alert("That doesn't look like a valid LinkedIn profile URL. Please use a link like https://www.linkedin.com/in/your-name");
+    }
+  }, []);
+
   const updateThumb = useCallback(() => {
     const el = tableWrapRef.current;
     const track = trackRef.current;
