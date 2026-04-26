@@ -408,20 +408,7 @@ export default function TransparencyPage() {
                     <td className="audit-col-share">
                       {(() => {
                         const isMyVouchForSomeoneElse = currentUserId && currentUserId === v.user;
-                        let isVouchForMe = Boolean(session?.linkedinVanity && session.linkedinVanity === v.profile_slug);
-                        
-                        // Fallback: LinkedIn's OIDC API no longer returns vanity URLs, so we must reliably match by name.
-                        if (!isVouchForMe && session) {
-                          const myName = String(session.displayName || session.user?.name || "").toLowerCase().replace(/[\s-]/g, "");
-                          const vouchName = String(v.public_name || formatProfessionalDisplayName(v.profile_slug, v.public_name) || "").toLowerCase().replace(/[\s-]/g, "");
-                          const vouchSlug = String(v.profile_slug || "").toLowerCase().replace(/[\s-]/g, "");
-                          
-                          if (myName.length > 3) {
-                            if (vouchName && (myName.includes(vouchName) || vouchName.includes(myName))) isVouchForMe = true;
-                            if (vouchSlug && (myName.includes(vouchSlug) || vouchSlug.includes(myName))) isVouchForMe = true;
-                          }
-                        }
-
+                        const isVouchForMe = Boolean(session?.linkedinVanity && session.linkedinVanity === v.profile_slug);
                         const canShare = v.vote === "yes" && (isMyVouchForSomeoneElse || isVouchForMe);
 
                         if (!canShare) return null;

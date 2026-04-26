@@ -15,27 +15,50 @@ const linkedInClientSecret =
   process.env.LINKEDIN_CLIENT_SECRET?.trim() ||
   "";
 
-/** LinkedIn /v2/me vanityName — read in jwt using access_token (reliable); do not rely on custom profile fields reaching jwt's `profile`. */
-async function fetchLinkedinVanityName(accessToken) {
+/**
+ * Fetch the authenticated member's LinkedIn profile slug via the
+ * "Verified on LinkedIn" /identityMe endpoint.
+ *
+ * Returns the vanity slug (e.g. "muglikar") extracted from
+ * basicInfo.profileUrl, or null if the product isn't enabled or
+ * the call otherwise fails.
+ */
+async function fetchLinkedinProfileSlug(accessToken) {
   if (!accessToken || typeof accessToken !== "string") return null;
   try {
-    const meRes = await fetch(
-      "https://api.linkedin.com/v2/me?projection=(vanityName)",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "X-Restli-Protocol-Version": "2.0.0",
-          "LinkedIn-Version": "202401",
-        },
+    const res = await fetch("https://api.linkedin.com/rest/identityMe", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "LinkedIn-Version": "202504",
+      },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const profileUrl = data?.basicInfo?.profileUrl;
+    if (profileUrl && typeof profileUrl === "string") {
+      // Direct vanity URL: linkedin.com/in/muglikar
+      const directMatch = profileUrl.match(
+        /linkedin\.com\/in\/([a-zA-Z0-9_-]+)/
+      );
+      if (directMatch) return directMatch[1].toLowerCase();
+
+      // Redirect-style URL: follow redirect to resolve the canonical vanity URL
+      try {
+        const redirectRes = await fetch(profileUrl, {
+          method: "HEAD",
+          redirect: "manual",
+        });
+        const location = redirectRes.headers.get("location") || "";
+        const redirectMatch = location.match(
+          /linkedin\.com\/in\/([a-zA-Z0-9_-]+)/
+        );
+        if (redirectMatch) return redirectMatch[1].toLowerCase();
+      } catch {
+        /* redirect resolution failed — non-fatal */
       }
-    );
-    if (!meRes.ok) return null;
-    const me = await meRes.json();
-    if (me && typeof me.vanityName === "string" && me.vanityName.trim()) {
-      return me.vanityName.trim().toLowerCase();
     }
   } catch {
-    /* ignore */
+    /* ignore — product may not be enabled yet */
   }
   return null;
 }
@@ -59,7 +82,7 @@ if (linkedInClientId && linkedInClientSecret) {
       jwks_endpoint: "https://www.linkedin.com/oauth/openid/jwks",
       authorization: {
         url: "https://www.linkedin.com/oauth/v2/authorization",
-        params: { scope: "openid profile email" },
+        params: { scope: "openid profile email r_profile_basicinfo" },
       },
       token: "https://www.linkedin.com/oauth/v2/accessToken",
       // Custom fetch avoids merged userinfo.params.projection (for /v2/me) breaking OIDC userinfo.
@@ -125,7 +148,7 @@ export const authOptions = {
             token.authEmail = em;
             token.email = em;
           }
-          const vanity = await fetchLinkedinVanityName(account.access_token);
+          const vanity = await fetchLinkedinProfileSlug(account.access_token);
           if (vanity) {
             token.linkedinVanity = vanity;
           }
