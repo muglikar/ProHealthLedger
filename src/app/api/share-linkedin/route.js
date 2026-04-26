@@ -100,6 +100,8 @@ export async function POST(req) {
   }
 
   // Build the LinkedIn Posts API payload
+  const cleanTitle = (articleTitle || "Professional Health Ledger").replace(/_/g, " ");
+
   const postPayload = {
     author: `urn:li:person:${linkedinSub}`,
     commentary: commentary.trim(),
@@ -115,7 +117,7 @@ export async function POST(req) {
     postPayload.content = {
       article: {
         source: articleUrl.trim(),
-        title: articleTitle || "Professional Health Ledger",
+        title: cleanTitle,
         description:
           articleDescription ||
           "See verified professional vouches on Pro-Health Ledger",
