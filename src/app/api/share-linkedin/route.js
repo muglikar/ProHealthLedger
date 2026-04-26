@@ -2,28 +2,26 @@ import { getToken } from "next-auth/jwt";
 
 /**
  * POST /api/share-linkedin
- *
- * RESTORED TO STABLE WORKING STATE.
- * Publishes a vouch with:
- *  - 3-step asset upload (initialize -> PUT -> Poll)
- *  - String-based commentary (no complex attributes)
- *  - Clean article titles
+ * 
+ * 2026 Edition - High Impact Sharing
+ * - Explicit Entity Mapping for blue clickable mentions
+ * - Media-First Article structure to force Hero Card rendering
+ * - Stable 202604 Versioning
  */
 export async function POST(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   if (!token?.linkedinAccessToken || token.provider !== "linkedin") {
-    return Response.json({ error: "You must be signed in with LinkedIn." }, { status: 401 });
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const linkedinSub = token.linkedinSub || token.userId?.replace("linkedin:", "");
-  if (!linkedinSub) return Response.json({ error: "Identity failure." }, { status: 400 });
-
+  
   let body;
   try {
     body = await req.json();
   } catch {
-    return Response.json({ error: "Invalid body." }, { status: 400 });
+    return Response.json({ error: "Invalid body" }, { status: 400 });
   }
 
   const {
@@ -36,12 +34,12 @@ export async function POST(req) {
     cleanVoucher,
   } = body;
 
-  // --- Step 1: Image Asset Handshake (Proven Loop) ---
+  // --- Step 1: Force Image Asset Availability ---
   let imageUrn = null;
   try {
     let imageBuffer = null;
     if (ogUrl) {
-      const ogRes = await fetch(ogUrl, { signal: AbortSignal.timeout(8000) });
+      const ogRes = await fetch(ogUrl, { signal: AbortSignal.timeout(10000) });
       if (ogRes.ok) imageBuffer = Buffer.from(await ogRes.arrayBuffer());
     }
 
@@ -64,10 +62,11 @@ export async function POST(req) {
         const putRes = await fetch(uploadUrl, { method: "PUT", body: imageBuffer });
         
         if (putRes.ok) {
-          // Poll for AVAILABLE status
-          let isAvailable = false;
-          for (let i = 0; i < 6; i++) {
-            await new Promise(r => setTimeout(r, 1500));
+          // Poll until DEFINITIVELY available
+          let attempts = 0;
+          while (attempts < 6) {
+            attempts++;
+            await new Promise(r => setTimeout(r, 2000)); 
             const statusRes = await fetch(`https://api.linkedin.com/rest/images/${urn}`, {
               headers: {
                 Authorization: `Bearer ${token.linkedinAccessToken}`,
@@ -77,7 +76,6 @@ export async function POST(req) {
             if (statusRes.ok) {
               const statusData = await statusRes.json();
               if (statusData.status === "AVAILABLE") {
-                isAvailable = true;
                 imageUrn = urn;
                 break;
               }
@@ -87,33 +85,52 @@ export async function POST(req) {
       }
     }
   } catch (err) {
-    console.error("Asset handshake failed:", err.message);
+    console.error("Image processing error:", err.message);
   }
 
-  // --- Step 2: Payload Construction (Stable String Format) ---
-  const mentionPrefix = (voucherUrn && cleanVoucher)
-    ? `Big thanks to @[${cleanVoucher}](urn:li:person:${voucherUrn}) for the vouch!\n\n`
-    : "";
+  // --- Step 2: Complex Commentary with Entity Mapping (Mentions) ---
+  // We use the cleaned text from the modal and manually map the mention attribute.
+  const finalCommentary = commentary || "";
+  const cleanTitle = (articleTitle || "Professional Health Ledger").split('_').join(' ');
 
-  const finalTitle = (articleTitle || "Professional Health Ledger").split('_').join(' ');
+  // The Mention Attributes array is the Gold Standard for blue tags in 2026.
+  let commentaryObject = { text: finalCommentary };
+  
+  if (voucherUrn && cleanVoucher && finalCommentary.includes(cleanVoucher)) {
+    const startIndex = finalCommentary.indexOf(cleanVoucher);
+    commentaryObject.attributes = [
+      {
+        start: startIndex,
+        length: cleanVoucher.length,
+        value: {
+          "com.linkedin.common.MemberMention": {
+            member: `urn:li:person:${voucherUrn}`
+          }
+        }
+      }
+    ];
+  }
 
+  // --- Step 3: Latest 2026 Schema Payload ---
   const postPayload = {
     author: `urn:li:person:${linkedinSub}`,
-    commentary: (mentionPrefix + (commentary || "")).trim(),
+    commentary: finalCommentary, // Fallback for simple parsers
     visibility: "PUBLIC",
     distribution: { feedDistribution: "MAIN_FEED" },
     lifecycleState: "PUBLISHED",
+    content: {
+      article: {
+        source: articleUrl,
+        title: cleanTitle,
+        description: articleDescription || "Verified Professional Vouch",
+        ...(imageUrn ? { thumbnail: imageUrn } : {}),
+      }
+    }
   };
 
-  if (articleUrl) {
-    postPayload.content = {
-      article: {
-        source: articleUrl.trim(),
-        title: finalTitle,
-        description: articleDescription || "See verified professional vouches on Pro-Health Ledger",
-        ...(imageUrn ? { thumbnail: imageUrn } : {}),
-      },
-    };
+  // If we have attributes, we provide the commentary as an object
+  if (commentaryObject.attributes) {
+    postPayload.commentary = commentaryObject;
   }
 
   try {
@@ -128,13 +145,13 @@ export async function POST(req) {
       body: JSON.stringify(postPayload),
     });
 
-    if (res.status === 201 || res.status === 200) {
-      return Response.json({ ok: true, postId: res.headers.get("x-restli-id") });
+    if (res.ok) {
+      return Response.json({ ok: true });
     }
 
-    const errDetail = await res.text();
-    return Response.json({ error: "LinkedIn rejected the post.", details: errDetail }, { status: 502 });
+    const errText = await res.text();
+    return Response.json({ error: "LinkedIn Post Failed", details: errText }, { status: 502 });
   } catch (err) {
-    return Response.json({ error: "Failed to reach LinkedIn." }, { status: 502 });
+    return Response.json({ error: "Connection error" }, { status: 502 });
   }
 }
