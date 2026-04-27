@@ -15,44 +15,51 @@ const SITE_URL = "https://prohealthledger.org";
  */
 function buildShareText(displayName, firstPerson = false) {
   if (firstPerson) {
-    // Styles 4 & 5
+    // Styles 4 & 5 (Self-Share)
+    const hashtags = "#CareerGrowth #PersonalBranding #Networking #ProfessionalDevelopment #FutureOfWork";
     const options = [
       {
         text: "Your professional career track record belongs to you — not to the HR department of your previous company.\n\n" +
           "I'm building my portable reputation on Professional Health Ledger. Massive thanks to the colleagues and partners who have already staked their own reputation to vouch for my work. Transparency creates accountability, and I believe the best way to do business is out in the open.\n\n" +
-          "If we've worked together, I'd be honored if you added your experience to my Professional-Health Ledger. And the next time you're evaluating a partner or hire, look them up.\n\n" +
-          "Check out my track record here: "
+          "If we've worked together, I'd be honored if you added your experience to my Professional Health Ledger. And the next time you're evaluating a partner or hire, look them up.\n\n" +
+          "Check out my track record here: ",
+        tags: hashtags
       },
       {
         text: "Your career's reputation belongs to you — not to your previous company's HR department.\n\n" +
           "I'm building my portable reputation on Professional Health Ledger. Transparency creates accountability, and the best way to do business is out in the open.\n\n" +
           "Big thanks to those who have already staked their reputation to vouch for my work. If we’ve worked together, I’d be honored to have your honest review on my Professional Health Ledger.\n\n" +
           "Before your next hire or partnership, look them up. If they aren’t here, ask them to bring their track record to the table.\n\n" +
-          "Check out my public Professional Health Ledger: "
+          "Check out my public Professional Health Ledger: ",
+        tags: hashtags
       }
     ];
     return options[Math.floor(Math.random() * options.length)];
   }
 
-  // Styles 1, 2 & 3
+  // Styles 1, 2 & 3 (Third Person)
+  const hashtags = "#ProfessionalIntegrity #WorkplaceCulture #Accountability #Transparency #LeadershipDevelopment";
   const options = [
     {
       text: "Traditional reference checks are broken—nobody lists references who won't say nice things. A professional track record shouldn't vanish when you change companies; it should be portable.\n\n" +
         `I just staked my own professional reputation on Professional Health Ledger to officially vouch for my friend and colleague, ${displayName}'s work ethic.\n\n` +
         "Before you finalize your next hire or partnership, check if they have a public Professional Health Ledger on ProHealthLedger.org. If they aren't there yet, ask them to bring their professional references to the table.\n\n" +
-        `You can see my vouch for ${displayName} here: `
+        `You can see my vouch for ${displayName} here: `,
+      tags: hashtags
     },
     {
       text: `In a world of generic LinkedIn endorsements, I wanted to put something more meaningful on the record for ${displayName}.\n\n` +
         "I just added my official vouch for them on Professional Health Ledger. Your reputation is your most valuable asset, and it's time we start actively building public, verified track records.\n\n" +
         "Who is the best person you've worked with recently? Look them up. If they aren't on the Professional Health Ledger yet, be the first one to start their portable reputation.\n\n" +
-        `Read my vouch for ${displayName} here: `
+        `Read my vouch for ${displayName} here: `,
+      tags: hashtags
     },
     {
       text: `Resumes tell you what someone did. A verified vouch tells you how they did it and how they treat people.\n\n` +
         `I just added an official vouch for ${displayName} on Professional Health Ledger — an immutable record of how people actually work. It's time we start actively building public, portable track records.\n\n` +
         "Who’s the best person you've worked with recently? Look them up. If they aren't on the Professional Health Ledger yet, be the first to start their portable reputation.\n\n" +
-        `Read my vouch for ${displayName}: `
+        `Read my vouch for ${displayName}: `,
+      tags: hashtags
     }
   ];
 
@@ -104,7 +111,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          commentary: `${shareData.text}${finalShareUrl}`,
+          commentary: `${shareData.text}${finalShareUrl}\n\n${shareData.tags}`,
           articleUrl: finalShareUrl,
           articleTitle: `${voucherName} vouched for ${displayName} on Professional Health Ledger`,
           articleDescription: "Know who you're working with before you commit.",
@@ -130,7 +137,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
   }, [shareData, finalShareUrl, displayName, voucherName, ogUrl]);
 
   const handleCopyOnly = useCallback(() => {
-    const toCopy = `${shareData.text}${finalShareUrl}`;
+    const toCopy = `${shareData.text}${finalShareUrl}\n\n${shareData.tags}`;
     navigator.clipboard.writeText(toCopy).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
@@ -148,7 +155,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
 
         <div className="share-modal-body">
           <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', fontSize: '0.85rem', color: '#475569', marginBottom: '20px', border: '1px solid #e2e8f0', whiteSpace: 'pre-wrap', maxHeight: '200px', overflow: 'auto' }}>
-            {shareData.text}{finalShareUrl}
+            {shareData.text}{finalShareUrl}{"\n\n"}{shareData.tags}
           </div>
         </div>
 
