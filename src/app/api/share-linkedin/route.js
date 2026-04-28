@@ -5,21 +5,60 @@ import { getToken } from "next-auth/jwt";
  *
  * Publishes a vouch to the authenticated user's LinkedIn feed using the
  * Posts API with:
- *  - Automatic @mention tagging of the voucher (if URN available)
- *  - 3-step asset upload from our instant OG image route
+ *  - 3-step asset upload from our instant OG image route (server-built URL only)
  *  - Clean article card titles (no underscores)
  *
  * Body: {
  *   commentary: string,
- *   articleUrl: string,
+ *   articleUrl: string,        // must be on the configured site origin
  *   articleTitle?: string,
  *   articleDescription?: string,
- *   ogUrl?: string,
- *   voucherUrn?: string,
- *   cleanVoucher?: string,
- *   cleanVouchee?: string,
+ *   cleanVoucher?: string,     // used to build the server-side OG URL
+ *   cleanVouchee?: string,     // used to build the server-side OG URL
  * }
+ *
+ * SSRF hardening: this route never fetches a client-supplied URL. The OG
+ * image URL is constructed on the server from `cleanVoucher` /
+ * `cleanVouchee`, and `articleUrl` is required to be same-origin.
  */
+
+/** Canonical site origin (no trailing slash). Used for SSRF + article-URL allowlists. */
+const SITE_ORIGIN = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org"
+).replace(/\/+$/, "");
+
+/** Hard caps to keep this route boring under load and abuse. */
+const MAX_COMMENTARY = 3000;
+const MAX_TITLE = 200;
+const MAX_DESCRIPTION = 400;
+const MAX_NAME_PART = 120;
+
+function clampString(value, max) {
+  if (typeof value !== "string") return "";
+  const t = value.trim();
+  return t.length > max ? t.slice(0, max) : t;
+}
+
+/** Strict same-origin allowlist for `articleUrl` (the link card LinkedIn renders). */
+function isAllowedSiteUrl(raw) {
+  if (!raw || typeof raw !== "string") return false;
+  let url;
+  try {
+    url = new URL(raw);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "https:") return false;
+  return url.origin === SITE_ORIGIN;
+}
+
+/** Build the OG image URL on the server so the route never fetches a client URL. */
+function buildOgUrl(cleanVoucher, cleanVouchee) {
+  const v = clampString(cleanVoucher || "A_Colleague", MAX_NAME_PART);
+  const u = clampString(cleanVouchee || "Professional", MAX_NAME_PART);
+  return `${SITE_ORIGIN}/api/og?voucherName=${encodeURIComponent(v)}&voucheeName=${encodeURIComponent(u)}`;
+}
+
 export async function POST(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
@@ -50,35 +89,52 @@ export async function POST(req) {
     articleUrl,
     articleTitle,
     articleDescription,
-    ogUrl,
-    voucherUrn,
     cleanVoucher,
     cleanVouchee,
   } = body;
 
-  if (!commentary || typeof commentary !== "string" || !commentary.trim()) {
+  const finalCommentary = clampString(commentary, MAX_COMMENTARY);
+  if (!finalCommentary) {
     return Response.json(
       { error: "Post text (commentary) is required." },
       { status: 400 }
     );
   }
 
+  /**
+   * SSRF guard: `articleUrl` is required and must be on the configured site
+   * origin. We never fetch it server-side, but it does end up as the link card
+   * LinkedIn shows under the user's name; allowing arbitrary URLs would let any
+   * signed-in user post arbitrary external links to their feed under PHL
+   * branding via this route.
+   */
+  if (!isAllowedSiteUrl(articleUrl)) {
+    return Response.json(
+      {
+        error:
+          "articleUrl must be a https URL on the configured site origin.",
+      },
+      { status: 400 }
+    );
+  }
+  const safeArticleUrl = articleUrl.trim();
+
   // --- 3-Step Asset Upload: Fetch OG image → Initialize → PUT → Poll ---
-  const finalCommentary = commentary.trim();
+  // The OG URL is built on the server (no client-provided URL is ever fetched
+  // server-side — that would be SSRF).
+  const ogUrl = buildOgUrl(cleanVoucher, cleanVouchee);
   let imageUrn = null;
   try {
     let imageBuffer = null;
 
-    // Step 0: Fetch our own OG image (text-only, <50ms)
-    if (ogUrl && typeof ogUrl === "string") {
-      try {
-        const ogRes = await fetch(ogUrl, { signal: AbortSignal.timeout(5000) });
-        if (ogRes.ok) {
-          imageBuffer = Buffer.from(await ogRes.arrayBuffer());
-        }
-      } catch (ogErr) {
-        console.error("Failed to fetch OG image:", ogErr.message);
+    // Step 0: Fetch our own OG image (text-only, <50ms). Server-built URL only.
+    try {
+      const ogRes = await fetch(ogUrl, { signal: AbortSignal.timeout(5000) });
+      if (ogRes.ok) {
+        imageBuffer = Buffer.from(await ogRes.arrayBuffer());
       }
+    } catch (ogErr) {
+      console.error("Failed to fetch OG image:", ogErr.message);
     }
 
     // Fallback: static banner
@@ -169,11 +225,29 @@ export async function POST(req) {
 
   // --- Build the LinkedIn Posts API payload ---
   // Build clean title: "[Voucher] vouched for [Vouchee] - Professional Health Ledger"
-  const safeVoucher = (cleanVoucher || "").split('_').join(' ');
-  const safeVouchee = (cleanVouchee || "").split('_').join(' ');
-  const cleanTitle = (safeVoucher && safeVouchee)
-    ? `${safeVoucher} vouched for ${safeVouchee} on Professional Health Ledger`
-    : (articleTitle || "Professional Health Ledger").split('_').join(' ');
+  const safeVoucher = clampString(
+    (cleanVoucher || "").split("_").join(" "),
+    MAX_NAME_PART
+  );
+  const safeVouchee = clampString(
+    (cleanVouchee || "").split("_").join(" "),
+    MAX_NAME_PART
+  );
+  const fallbackTitle = clampString(
+    (articleTitle || "Professional Health Ledger").split("_").join(" "),
+    MAX_TITLE
+  );
+  const cleanTitle =
+    safeVoucher && safeVouchee
+      ? clampString(
+          `${safeVoucher} vouched for ${safeVouchee} on Professional Health Ledger`,
+          MAX_TITLE
+        )
+      : fallbackTitle;
+  const safeDescription = clampString(
+    articleDescription || "See verified professional vouches on Pro-Health Ledger",
+    MAX_DESCRIPTION
+  );
 
   const postPayload = {
     author: `urn:li:person:${linkedinSub}`,
@@ -183,21 +257,15 @@ export async function POST(req) {
       feedDistribution: "MAIN_FEED",
     },
     lifecycleState: "PUBLISHED",
-  };
-
-  // Attach article card with thumbnail if available
-  if (articleUrl && typeof articleUrl === "string" && articleUrl.trim()) {
-    postPayload.content = {
+    content: {
       article: {
-        source: articleUrl.trim(),
+        source: safeArticleUrl,
         title: cleanTitle,
-        description:
-          articleDescription ||
-          "See verified professional vouches on Pro-Health Ledger",
+        description: safeDescription,
         ...(imageUrn ? { thumbnail: imageUrn } : {}),
       },
-    };
-  }
+    },
+  };
 
   // --- Post to LinkedIn with retry ---
   async function tryPost(payload) {

@@ -17,8 +17,9 @@ export async function GET(request) {
     const rawVoucher = searchParams.get('voucherName') || 'A Colleague';
     const rawVouchee = searchParams.get('voucheeName') || 'Professional';
 
-    const cleanVoucher = decodeURIComponent(rawVoucher).split('_').join(' ');
-    const cleanVouchee = decodeURIComponent(rawVouchee).split('_').join(' ');
+    const MAX_NAME = 120;
+    const cleanVoucher = decodeURIComponent(rawVoucher).split('_').join(' ').slice(0, MAX_NAME);
+    const cleanVouchee = decodeURIComponent(rawVouchee).split('_').join(' ').slice(0, MAX_NAME);
 
     return new ImageResponse(
       (
