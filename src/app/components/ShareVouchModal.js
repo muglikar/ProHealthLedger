@@ -83,7 +83,6 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
 
   const cleanPathUrl = `${SITE_URL}/p/${encodeURIComponent(voucherClean)}/${encodeURIComponent(voucheeClean)}/${encodeURIComponent(slug || "unknown")}`;
   const finalShareUrl = refCode ? `${cleanPathUrl}?ref=${refCode}` : cleanPathUrl;
-  const ogUrl = `${SITE_URL}/api/og?voucherName=${encodeURIComponent(voucherClean)}&voucheeName=${encodeURIComponent(voucheeClean)}`;
 
   const shareData = useMemo(
     () => buildShareText(displayName, firstPerson),
@@ -115,7 +114,6 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
           articleUrl: finalShareUrl,
           articleTitle: `${voucherName} vouched for ${displayName} on Professional Health Ledger`,
           articleDescription: "Know who you're working with before you commit.",
-          ogUrl,
           cleanVoucher: voucherName,
           cleanVouchee: displayName,
         }),
@@ -134,7 +132,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
     } finally {
       setPostingDirect(false);
     }
-  }, [shareData, finalShareUrl, displayName, voucherName, ogUrl]);
+  }, [shareData, finalShareUrl, displayName, voucherName]);
 
   const handleCopyOnly = useCallback(() => {
     const toCopy = `${shareData.text}${finalShareUrl}\n\n${shareData.tags}`;
