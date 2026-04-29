@@ -51,14 +51,25 @@ export async function POST(req) {
     "data/profiles/_index.json"
   );
 
+  /**
+   * Kill-switch for policy C ("block on persistent ambiguous").
+   * - Default (unset, "1", "true"): block ambiguous => safer, recommended.
+   * - "0" / "false": allow ambiguous => use this if LinkedIn is rate-limiting
+   *   our egress IP heavily and legit submissions are getting blocked. Pair
+   *   with rate limiting (item 1.6) before flipping permanently.
+   */
+  const blockAmbiguousSlugs = !["0", "false"].includes(
+    String(process.env.SLUG_VERIFY_BLOCK_AMBIGUOUS || "").trim().toLowerCase()
+  );
+
   let slug = initialSlug;
   const alreadyKnownProfile = profiles.find((p) => p.slug === slug);
   if (!alreadyKnownProfile) {
     const verifyResult = await verifyLinkedinSlug(slug);
-    if (
-      verifyResult.verdict === "missing" ||
-      verifyResult.verdict === "ambiguous"
-    ) {
+    const verdict = verifyResult.verdict;
+    const shouldBlock =
+      verdict === "missing" || (blockAmbiguousSlugs && verdict === "ambiguous");
+    if (shouldBlock) {
       return Response.json(
         {
           error:
