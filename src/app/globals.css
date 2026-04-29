@@ -2215,6 +2215,17 @@ button.audit-comment-link:focus-visible {
   font-size: 0.82rem;
 }
 
+.audit-comment-redacted {
+  color: #64748b;
+  font-style: italic;
+  font-size: 0.82rem;
+  background: #f1f5f9;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  padding: 2px 8px;
+  cursor: help;
+}
+
 .form-notice-mod {
   font-weight: 600;
   color: var(--accent);

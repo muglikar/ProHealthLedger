@@ -113,6 +113,18 @@ function ProfilesContent() {
     if (submission.reason_pending) {
       return <span className="audit-comment-pending">Pending review</span>;
     }
+    if (submission.reason_redacted) {
+      const date = (submission.redacted_at || "").slice(0, 10) || "unknown date";
+      const cat = submission.redaction_category || "miscellaneous";
+      return (
+        <span
+          className="audit-comment-redacted"
+          title={`Redacted by moderator on ${date} — category: ${cat}. Original kept in private redactions store; public hash ${submission.reason_hash || "n/a"}.`}
+        >
+          [redacted by moderator on {date} — {cat}]
+        </span>
+      );
+    }
     const raw = String(submission.reason || submission.comment || "").trim();
     if (!raw) return <span className="audit-comment-empty">—</span>;
     const profName = formatProfessionalDisplayName(profile.slug, profile.public_name);

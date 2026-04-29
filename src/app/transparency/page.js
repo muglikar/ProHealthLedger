@@ -270,6 +270,18 @@ export default function TransparencyPage() {
     if (row.reason_pending) {
       return <span className="audit-comment-pending">Pending review</span>;
     }
+    if (row.reason_redacted) {
+      const date = (row.redacted_at || "").slice(0, 10) || "unknown date";
+      const cat = row.redaction_category || "miscellaneous";
+      return (
+        <span
+          className="audit-comment-redacted"
+          title={`Redacted by moderator on ${date} — category: ${cat}. Original kept in private redactions store; public hash ${row.reason_hash || "n/a"}.`}
+        >
+          [redacted by moderator on {date} — {cat}]
+        </span>
+      );
+    }
     const raw =
       typeof row.reason === "string" ? row.reason.trim() : "";
     if (!raw) {
@@ -333,9 +345,17 @@ export default function TransparencyPage() {
       <div className="page-header">
         <h1>Full Transparency — Every Vote</h1>
         <p>
-          Every vote ever cast on the ledger is listed here. Nothing is
-          hidden, nothing is edited. This is the complete, unfiltered public
-          record.
+          Every vote ever cast on the ledger is listed here. Comments that a
+          moderator has redacted are marked as such — never silently removed —
+          and every approve / redact / un-redact action is recorded in the{" "}
+          <a
+            href="https://github.com/muglikar/ProHealthLedger/blob/main/data/moderation_log.json"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            public moderation log
+          </a>
+          .
         </p>
       </div>
 
