@@ -38,6 +38,7 @@ function pendingItem(profile, submission) {
     display_name: submission.display_name,
     vote: submission.vote,
     reason: submission.reason,
+    reason_safety_flags: submission.reason_safety_flags || null,
     date: submission.date,
   };
 }
@@ -171,6 +172,15 @@ export async function POST(req) {
   }
 
   if (action === "approve") {
+    if (target.reason_safety_flags?.block_approve) {
+      return Response.json(
+        {
+          error:
+            "This comment is flagged by the safety detector as high-risk (PII/hate/violence). Use Reject (redact) instead of Approve.",
+        },
+        { status: 409 }
+      );
+    }
     delete target.reason_pending;
     try {
       await writeDataFile(
@@ -191,6 +201,7 @@ export async function POST(req) {
         action: "approve",
         moderator,
         at,
+        category: "approved",
       });
     } catch {
       // Public log write failure is non-fatal: the primary state already updated.

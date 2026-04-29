@@ -5,6 +5,7 @@ import {
   normalizeAdminEmail,
 } from "@/lib/site-admins";
 import { isRepoMaintainerUserId } from "@/lib/repo-owner-session";
+import { fetchLinkedinTrustSignals } from "@/lib/linkedin-trust-signals";
 
 const linkedInClientId =
   process.env.LINKEDIN_ID?.trim() ||
@@ -160,6 +161,9 @@ export const authOptions = {
           // Store access token for server-side LinkedIn API calls (e.g. posting)
           token.linkedinAccessToken = account.access_token;
           token.linkedinSub = liSub;
+          const trust = await fetchLinkedinTrustSignals(account.access_token, liSub);
+          token.linkedinAccountAgeDays = trust.accountAgeDays;
+          token.linkedinConnections = trust.connections;
         }
       }
       const adminEmail =
@@ -198,6 +202,12 @@ export const authOptions = {
       session.canPostToLinkedIn = Boolean(token.linkedinAccessToken && token.provider === "linkedin");
       if (token.linkedinSub) {
         session.linkedinSub = String(token.linkedinSub);
+      }
+      if (Number.isFinite(Number(token.linkedinAccountAgeDays))) {
+        session.linkedinAccountAgeDays = Number(token.linkedinAccountAgeDays);
+      }
+      if (Number.isFinite(Number(token.linkedinConnections))) {
+        session.linkedinConnections = Number(token.linkedinConnections);
       }
       return session;
     },

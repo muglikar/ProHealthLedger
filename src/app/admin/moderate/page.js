@@ -139,6 +139,12 @@ export default function ModeratePage() {
                   </span>
                 </div>
                 <blockquote className="mod-card-reason">{item.reason}</blockquote>
+                {item.reason_safety_flags ? (
+                  <p style={{ fontSize: "0.82rem", color: "#b45309", marginTop: 8 }}>
+                    Safety detector flagged this comment
+                    {item.reason_safety_flags.block_approve ? " (approve is blocked)." : "."}
+                  </p>
+                ) : null}
                 <div className="mod-card-actions">
                   <button
                     className="btn btn-primary btn-sm"
