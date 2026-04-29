@@ -4,6 +4,7 @@ import { readDataFile, writeDataFile, createIssue } from "@/lib/github";
 import { canSubmitNegativeVote } from "@/lib/karma";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 import { isFlagBlockedForLinkedinUrl } from "@/lib/protected-profiles";
+import { verifyLinkedinSlug } from "@/lib/linkedin-slug-verify";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -33,8 +34,8 @@ export async function POST(req) {
     );
   }
 
-  const slug = extractSlug(linkedinUrl);
-  if (!slug) {
+  const initialSlug = extractSlug(linkedinUrl);
+  if (!initialSlug) {
     return Response.json(
       {
         error:
@@ -44,7 +45,38 @@ export async function POST(req) {
     );
   }
 
-  if (vote === "no" && isFlagBlockedForLinkedinUrl(linkedinUrl, slug)) {
+  // Profiles are read first so we can skip LinkedIn verification for slugs
+  // already validated on a previous submission (policy D).
+  const { data: profiles, sha: profilesSha } = await readDataFile(
+    "data/profiles/_index.json"
+  );
+
+  let slug = initialSlug;
+  const alreadyKnownProfile = profiles.find((p) => p.slug === slug);
+  if (!alreadyKnownProfile) {
+    const verifyResult = await verifyLinkedinSlug(slug);
+    if (
+      verifyResult.verdict === "missing" ||
+      verifyResult.verdict === "ambiguous"
+    ) {
+      return Response.json(
+        {
+          error:
+            "That LinkedIn URL doesn't resolve. Please double-check the link.",
+        },
+        { status: 400 }
+      );
+    }
+    if (verifyResult.canonicalSlug && verifyResult.canonicalSlug !== slug) {
+      // LinkedIn redirected `/in/<old>` → `/in/<new>` (policy J): collapse
+      // votes onto the canonical slug so the same person isn't tracked twice.
+      slug = verifyResult.canonicalSlug;
+    }
+  }
+
+  const linkedinUrlCanonical = `https://www.linkedin.com/in/${slug}`;
+
+  if (vote === "no" && isFlagBlockedForLinkedinUrl(linkedinUrlCanonical, slug)) {
     return Response.json(
       {
         error:
@@ -54,9 +86,6 @@ export async function POST(req) {
     );
   }
 
-  const { data: profiles, sha: profilesSha } = await readDataFile(
-    "data/profiles/_index.json"
-  );
   const { data: users, sha: usersSha } = await readDataFile(
     "data/users/_index.json"
   );
@@ -107,7 +136,7 @@ export async function POST(req) {
   const issueBody = [
     `### LinkedIn Profile URL`,
     ``,
-    normalizeUrl(linkedinUrl),
+    linkedinUrlCanonical,
     ``,
     `### Based on your experience, would you work with/for them again?`,
     ``,
@@ -159,7 +188,7 @@ export async function POST(req) {
   let profile = profileForTitle;
   if (!profile) {
     profile = {
-      linkedin_url: normalizeUrl(linkedinUrl),
+      linkedin_url: linkedinUrlCanonical,
       slug,
       votes: { yes: 0, no: 0 },
       submissions: [],
@@ -233,9 +262,4 @@ export async function POST(req) {
 function extractSlug(url) {
   const match = url.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/);
   return match ? match[1].toLowerCase() : null;
-}
-
-function normalizeUrl(url) {
-  const slug = extractSlug(url);
-  return `https://www.linkedin.com/in/${slug}`;
 }
