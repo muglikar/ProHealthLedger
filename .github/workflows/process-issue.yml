@@ -1,57 +1,53 @@
-name: Process Vote Submission
+name: Legacy Vote Issue Acknowledger
 
 on:
   issues:
     types: [opened]
 
 permissions:
-  contents: write
   issues: write
 
 jobs:
-  process-vote:
+  acknowledge-legacy-vote:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if this is a vote submission
-        id: check
-        env:
-          ISSUE_BODY: ${{ github.event.issue.body }}
-        run: |
-          # Website /api/submit-vote already updates JSON; skip to avoid double-counting.
-          if echo "$ISSUE_BODY" | grep -qF "pre-validated (Karma Rule checked"; then
-            echo "is_vote=false" >> "$GITHUB_OUTPUT"
-          elif echo "$ISSUE_BODY" | grep -q "LinkedIn Profile URL" && echo "$ISSUE_BODY" | grep -q "would you work with/for them again"; then
-            echo "is_vote=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "is_vote=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Checkout repository
-        if: steps.check.outputs.is_vote == 'true'
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        if: steps.check.outputs.is_vote == 'true'
-        uses: actions/setup-node@v4
+      - name: Acknowledge legacy vote-style issue
+        uses: actions/github-script@v7
         with:
-          node-version: "20"
+          script: |
+            const issue = context.payload.issue;
+            const body = String(issue?.body || "");
+            const isWebsiteRecord = body.includes("pre-validated (Karma Rule checked");
+            const looksLikeLegacyVote =
+              /LinkedIn Profile URL/i.test(body) &&
+              /would you work with\/for them again/i.test(body);
 
-      - name: Process the vote
-        if: steps.check.outputs.is_vote == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_BODY: ${{ github.event.issue.body }}
-          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
-          REPO_FULL_NAME: ${{ github.repository }}
-        run: node scripts/process-vote.js
+            // Website-submitted records are already authoritative and closed by the API.
+            if (isWebsiteRecord || !looksLikeLegacyVote) {
+              core.info("Not a legacy vote issue; no action taken.");
+              return;
+            }
 
-      - name: Commit and push data changes
-        if: steps.check.outputs.is_vote == 'true'
-        run: |
-          git config user.name "ProHealthLedger Bot"
-          git config user.email "bot@prohealthledger.dev"
-          git add data/
-          git diff --cached --quiet && echo "No changes to commit" && exit 0
-          git commit -m "Update ledger from issue #${{ github.event.issue.number }}"
-          git push
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: [
+                "Thanks for sharing your experience.",
+                "",
+                "This GitHub issue-based vote flow has been retired for security and data-integrity reasons.",
+                "Please submit your vote via the website form instead:",
+                "",
+                "- https://prohealthledger.org/submit",
+                "",
+                "This issue is being closed automatically to keep the ledger single-source-of-truth.",
+              ].join("\\n"),
+            });
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              state: "closed",
+              state_reason: "not_planned",
+            });

@@ -1,0 +1,71 @@
+#data/**/*.json
+*.md
+implementation_plan.md
+task.md# Add directories or file patterns to ignore during indexing (e.g. foo/ or *.csv)
+.next/
+node_modules/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.development
+.env.test
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Coverage
+coverage/
+
+# Logs
+logs/
+*.log
+
+# Mobile/app packages
+*.apk
+*.aab
+*.ipa
+
+# Videos / media
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# Images / generated assets
+generated/
+public/generated/
+*.webp
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Data dumps
+*.jsonl
+*.csv
+*.sqlite
+
+# Temp files
+tmp/
+temp/
+.cache/
+
+# OS junk
+.DS_Store
+
+implementation_plan.md
+task.md
+#data/
