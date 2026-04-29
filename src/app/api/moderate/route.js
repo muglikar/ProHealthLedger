@@ -11,6 +11,12 @@ import {
   recordPrivateUnredaction,
 } from "@/lib/redactions";
 import { appendModerationLog } from "@/lib/moderation-log";
+import {
+  envLimit,
+  getClientIp,
+  rateLimitHeaders,
+  takeRateLimit,
+} from "@/lib/rate-limit";
 
 function moderatorIdFromSession(session) {
   return (
@@ -90,6 +96,20 @@ export async function POST(req) {
   const session = await getServerSession(authOptions);
   if (!session?.userId || !isSessionSiteAdmin(session)) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const modLimit = envLimit("RL_MODERATE_LIMIT", 60);
+  const modWindowMs = envLimit("RL_MODERATE_WINDOW_MS", 60 * 60 * 1000);
+  const modRl = takeRateLimit({
+    key: `moderate:${session.userId}:${getClientIp(req)}`,
+    limit: modLimit,
+    windowMs: modWindowMs,
+  });
+  if (!modRl.allowed) {
+    return Response.json(
+      { error: "Too many moderation actions. Please try again later." },
+      { status: 429, headers: rateLimitHeaders(modRl) }
+    );
   }
 
   let body;

@@ -1,3 +1,5 @@
+import { listProtectedFlagSlugs } from "@/lib/protected-profiles";
+
 export const metadata = {
   title: "Privacy Policy — ProHealthLedger",
   description:
@@ -6,6 +8,7 @@ export const metadata = {
 
 export default function PrivacyPolicyPage() {
   const effectiveDate = "March 15, 2026";
+  const protectedSlugs = listProtectedFlagSlugs();
 
   return (
     <>
@@ -437,11 +440,7 @@ export default function PrivacyPolicyPage() {
           <p>
             You may request deletion of your GitHub username and display name
             from our active data files by{" "}
-            <a
-              href="https://github.com/muglikar/ProHealthLedger/issues/new?template=request-removal.yml"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="/request-removal">
               opening a data deletion request
             </a>
             . Upon receiving your request, we will remove your GitHub data from
@@ -480,6 +479,23 @@ export default function PrivacyPolicyPage() {
             <strong>Votes are permanent and cannot be edited or deleted</strong>{" "}
             once submitted. You are clearly informed of this permanence before
             submitting.
+          </p>
+          <p>
+            For transparency, the denylist for negative votes is an explicit
+            exact-match slug list from environment configuration (no hidden
+            substring logic). Current protected slug
+            {protectedSlugs.length === 1 ? "" : "s"}:{" "}
+            {protectedSlugs.length > 0 ? (
+              protectedSlugs.map((s, idx) => (
+                <span key={s}>
+                  <code>{s}</code>
+                  {idx < protectedSlugs.length - 1 ? ", " : ""}
+                </span>
+              ))
+            ) : (
+              <em>none configured</em>
+            )}
+            .
           </p>
         </section>
 
@@ -540,11 +556,7 @@ export default function PrivacyPolicyPage() {
               <strong>Deletion of authentication data:</strong> you may request
               deletion of all data collected via the GitHub or LinkedIn APIs at
               any time by{" "}
-              <a
-                href="https://github.com/muglikar/ProHealthLedger/issues/new?template=request-removal.yml"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href="/request-removal">
                 opening a data deletion request
               </a>{" "}
               or emailing us. Upon receiving your request, we will delete your
@@ -590,11 +602,7 @@ export default function PrivacyPolicyPage() {
               <strong>Profile removal:</strong> if you are a professional whose
               LinkedIn profile appears on this ledger and you wish to have it
               removed, you may open a{" "}
-              <a
-                href="https://github.com/muglikar/ProHealthLedger/issues/new?template=request-removal.yml"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href="/request-removal">
                 deactivation request
               </a>
               . We will remove your profile from the active ledger.

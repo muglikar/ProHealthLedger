@@ -5,6 +5,12 @@ import { canSubmitNegativeVote } from "@/lib/karma";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 import { isFlagBlockedForLinkedinUrl } from "@/lib/protected-profiles";
 import { verifyLinkedinSlug } from "@/lib/linkedin-slug-verify";
+import {
+  envLimit,
+  getClientIp,
+  rateLimitHeaders,
+  takeRateLimit,
+} from "@/lib/rate-limit";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -12,6 +18,20 @@ export async function POST(req) {
     return Response.json(
       { error: "You must be signed in to vote." },
       { status: 401 }
+    );
+  }
+
+  const voteLimit = envLimit("RL_SUBMIT_VOTE_LIMIT", 5);
+  const voteWindowMs = envLimit("RL_SUBMIT_VOTE_WINDOW_MS", 10 * 60 * 1000);
+  const voteRl = takeRateLimit({
+    key: `submit-vote:${session.userId}:${getClientIp(req)}`,
+    limit: voteLimit,
+    windowMs: voteWindowMs,
+  });
+  if (!voteRl.allowed) {
+    return Response.json(
+      { error: "Too many vote submissions. Please try again shortly." },
+      { status: 429, headers: rateLimitHeaders(voteRl) }
     );
   }
 

@@ -1,4 +1,10 @@
 import { getToken } from "next-auth/jwt";
+import {
+  envLimit,
+  getClientIp,
+  rateLimitHeaders,
+  takeRateLimit,
+} from "@/lib/rate-limit";
 
 /**
  * POST /api/share-linkedin
@@ -66,6 +72,20 @@ export async function POST(req) {
     return Response.json(
       { error: "You must be signed in with LinkedIn to post." },
       { status: 401 }
+    );
+  }
+
+  const shareLimit = envLimit("RL_SHARE_LINKEDIN_LIMIT", 5);
+  const shareWindowMs = envLimit("RL_SHARE_LINKEDIN_WINDOW_MS", 60 * 60 * 1000);
+  const shareRl = takeRateLimit({
+    key: `share-linkedin:${token.userId || "unknown"}:${getClientIp(req)}`,
+    limit: shareLimit,
+    windowMs: shareWindowMs,
+  });
+  if (!shareRl.allowed) {
+    return Response.json(
+      { error: "Too many LinkedIn post attempts. Please try again later." },
+      { status: 429, headers: rateLimitHeaders(shareRl) }
     );
   }
 

@@ -1,4 +1,10 @@
 import { recordClick } from "@/lib/referrals";
+import {
+  envLimit,
+  getClientIp,
+  rateLimitHeaders,
+  takeRateLimit,
+} from "@/lib/rate-limit";
 
 export async function POST(req) {
   const { refCode } = await req.json();
@@ -7,6 +13,20 @@ export async function POST(req) {
     return Response.json(
       { error: "refCode is required." },
       { status: 400 }
+    );
+  }
+
+  const clickLimit = envLimit("RL_REFERRAL_CLICK_LIMIT", 60);
+  const clickWindowMs = envLimit("RL_REFERRAL_CLICK_WINDOW_MS", 60 * 60 * 1000);
+  const clickRl = takeRateLimit({
+    key: `referral-click:${getClientIp(req)}:${refCode}`,
+    limit: clickLimit,
+    windowMs: clickWindowMs,
+  });
+  if (!clickRl.allowed) {
+    return Response.json(
+      { error: "Too many referral click events. Please try again later." },
+      { status: 429, headers: rateLimitHeaders(clickRl) }
     );
   }
 

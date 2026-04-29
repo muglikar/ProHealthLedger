@@ -1,6 +1,12 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { recordSignup } from "@/lib/referrals";
+import {
+  envLimit,
+  getClientIp,
+  rateLimitHeaders,
+  takeRateLimit,
+} from "@/lib/rate-limit";
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -8,6 +14,23 @@ export async function POST(req) {
     return Response.json(
       { error: "You must be signed in." },
       { status: 401 }
+    );
+  }
+
+  const signupLimit = envLimit("RL_REFERRAL_SIGNUP_LIMIT", 15);
+  const signupWindowMs = envLimit(
+    "RL_REFERRAL_SIGNUP_WINDOW_MS",
+    60 * 60 * 1000
+  );
+  const signupRl = takeRateLimit({
+    key: `referral-signup:${session.userId}:${getClientIp(req)}`,
+    limit: signupLimit,
+    windowMs: signupWindowMs,
+  });
+  if (!signupRl.allowed) {
+    return Response.json(
+      { error: "Too many referral signup events. Please try again later." },
+      { status: 429, headers: rateLimitHeaders(signupRl) }
     );
   }
 
