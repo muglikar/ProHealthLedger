@@ -100,6 +100,9 @@ export default function NavAuth() {
           <Link href="/admin/moderate" className="nav-admin-link">
             Moderate
           </Link>
+          <Link href="/admin/removals" className="nav-admin-link">
+            Removals
+          </Link>
           {activityCount > 0 ? (
             <Link
               href="/transparency"

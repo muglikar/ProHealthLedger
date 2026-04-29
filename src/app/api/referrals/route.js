@@ -6,6 +6,12 @@ import {
   getAllReferrals,
 } from "@/lib/referrals";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
+import {
+  envLimit,
+  getClientIp,
+  rateLimitHeaders,
+  takeRateLimit,
+} from "@/lib/rate-limit";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org";
@@ -16,6 +22,20 @@ export async function POST(req) {
     return Response.json(
       { error: "You must be signed in." },
       { status: 401 }
+    );
+  }
+
+  const createLimit = envLimit("RL_REFERRAL_CREATE_LIMIT", 10);
+  const createWindowMs = envLimit("RL_REFERRAL_CREATE_WINDOW_MS", 60 * 60 * 1000);
+  const createRl = takeRateLimit({
+    key: `referral-create:${session.userId}:${getClientIp(req)}`,
+    limit: createLimit,
+    windowMs: createWindowMs,
+  });
+  if (!createRl.allowed) {
+    return Response.json(
+      { error: "Too many referral requests. Please try again later." },
+      { status: 429, headers: rateLimitHeaders(createRl) }
     );
   }
 

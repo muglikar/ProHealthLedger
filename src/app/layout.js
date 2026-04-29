@@ -112,13 +112,7 @@ export default function RootLayout({ children }) {
                 <span className="footer-sep">·</span>
                 <Link href="/privacy">Privacy Policy</Link>
                 <span className="footer-sep">·</span>
-                <a
-                  href="https://github.com/muglikar/ProHealthLedger/issues/new?template=request-removal.yml"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Request Removal
-                </a>
+                <Link href="/request-removal">Request Removal</Link>
               </div>
               <p className="copyright">
                 © {new Date().getFullYear()} Professional Health Ledger —
