@@ -891,6 +891,21 @@ export default function PrivacyPolicyPage() {
               </a>
             </li>
           </ul>
+          <p>
+            India IT Rules compliance contacts:
+            <br />
+            <strong>Grievance Officer:</strong> Anand Muglikar (
+            <a href="mailto:anandmuglikar+phl@gmail.com">
+              anandmuglikar+phl@gmail.com
+            </a>
+            )
+            <br />
+            <strong>Nodal Contact Person:</strong> Anand Muglikar (
+            <a href="mailto:anandmuglikar+phl@gmail.com">
+              anandmuglikar+phl@gmail.com
+            </a>
+            )
+          </p>
         </section>
 
         <hr className="legal-divider" />

@@ -8,6 +8,7 @@ import OwnerActivityStrip from "./components/OwnerActivityStrip";
 import VerifyReminderStrip from "./components/VerifyReminderStrip";
 import AdminReminders from "./components/AdminReminders";
 import ReferralCapture from "./components/ReferralCapture";
+import ComplianceBanner from "./components/ComplianceBanner";
 import "./globals.css";
 
 const monda = Monda({
@@ -87,6 +88,7 @@ export default function RootLayout({ children }) {
           <OwnerActivityStrip />
           <VerifyReminderStrip />
           <AdminReminders />
+          <ComplianceBanner />
           <Suspense fallback={null}>
             <ReferralCapture />
           </Suspense>
@@ -111,6 +113,10 @@ export default function RootLayout({ children }) {
                 </a>
                 <span className="footer-sep">·</span>
                 <Link href="/privacy">Privacy Policy</Link>
+                <span className="footer-sep">·</span>
+                <Link href="/terms">Terms</Link>
+                <span className="footer-sep">·</span>
+                <Link href="/data-rights">Data Rights</Link>
                 <span className="footer-sep">·</span>
                 <Link href="/request-removal">Request Removal</Link>
               </div>

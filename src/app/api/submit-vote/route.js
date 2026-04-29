@@ -5,6 +5,7 @@ import { canSubmitNegativeVote } from "@/lib/karma";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 import { isFlagBlockedForLinkedinUrl } from "@/lib/protected-profiles";
 import { verifyLinkedinSlug } from "@/lib/linkedin-slug-verify";
+import { analyzeReasonSafety } from "@/lib/content-safety";
 import {
   envLimit,
   getClientIp,
@@ -122,6 +123,53 @@ export async function POST(req) {
   );
 
   const existingUser = users.find((u) => u.user_id === userId);
+
+  // 1.12 Sybil hardening (first-time contributors).
+  if (!existingUser) {
+    if (session.provider !== "linkedin") {
+      return Response.json(
+        {
+          error:
+            "First-time contributors must sign in with LinkedIn before submitting a vote.",
+        },
+        { status: 403 }
+      );
+    }
+
+    const minAgeDays = envLimit("SYBIL_LINKEDIN_MIN_AGE_DAYS", 30);
+    const minConnections = envLimit("SYBIL_LINKEDIN_MIN_CONNECTIONS", 10);
+    const ageDays = Number(session.linkedinAccountAgeDays);
+    const connections = Number(session.linkedinConnections);
+
+    if (!Number.isFinite(ageDays) || ageDays < minAgeDays) {
+      return Response.json(
+        {
+          error: `LinkedIn trust check failed: account age must be at least ${minAgeDays} days for first-time contributors.`,
+        },
+        { status: 403 }
+      );
+    }
+    if (!Number.isFinite(connections) || connections < minConnections) {
+      return Response.json(
+        {
+          error: `LinkedIn trust check failed: at least ${minConnections} connections are required for first-time contributors.`,
+        },
+        { status: 403 }
+      );
+    }
+  }
+
+  const weeklyVouchCap = envLimit("SYBIL_VOUCHES_PER_WEEK_CAP", 20);
+  const weeklyYes = countRecentYesVouches(existingUser, 7);
+  if (vote === "yes" && weeklyYes >= weeklyVouchCap) {
+    return Response.json(
+      {
+        error: `Weekly vouch cap reached (${weeklyVouchCap}). Please try again next week.`,
+      },
+      { status: 403 }
+    );
+  }
+
   const alreadyVoted = existingUser?.contributions.some(
     (c) => c.profile_slug === slug
   );
@@ -206,6 +254,9 @@ export async function POST(req) {
   const reasonTrimmed =
     typeof reason === "string" && reason.trim() ? reason.trim() : "";
   const needsModeration = reasonTrimmed.length > 0;
+  const safety = reasonTrimmed
+    ? await analyzeReasonSafety(reasonTrimmed)
+    : { hasRisk: false, blockApprove: false, hits: [], llm: null };
   const submission = {
     user: userId,
     display_name: displayName,
@@ -213,7 +264,21 @@ export async function POST(req) {
     vote,
     issue: issueNumber,
     date: today,
-    ...(reasonTrimmed ? { reason: reasonTrimmed, reason_pending: true } : {}),
+    ...(reasonTrimmed
+      ? {
+          reason: reasonTrimmed,
+          reason_pending: true,
+          ...(safety.hasRisk
+            ? {
+                reason_safety_flags: {
+                  block_approve: Boolean(safety.blockApprove),
+                  hits: safety.hits,
+                  llm: safety.llm,
+                },
+              }
+            : {}),
+        }
+      : {}),
   };
 
   let profile = profileForTitle;
@@ -293,4 +358,18 @@ export async function POST(req) {
 function extractSlug(url) {
   const match = url.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/);
   return match ? match[1].toLowerCase() : null;
+}
+
+function countRecentYesVouches(userEntry, lookbackDays) {
+  if (!userEntry || !Array.isArray(userEntry.contributions)) return 0;
+  const now = Date.now();
+  const windowMs = lookbackDays * 24 * 60 * 60 * 1000;
+  let count = 0;
+  for (const c of userEntry.contributions) {
+    if (c?.vote !== "yes") continue;
+    const t = Date.parse(String(c?.date || ""));
+    if (!Number.isFinite(t)) continue;
+    if (now - t <= windowMs) count += 1;
+  }
+  return count;
 }
