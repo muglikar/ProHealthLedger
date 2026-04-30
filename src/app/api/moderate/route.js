@@ -12,6 +12,10 @@ import {
 } from "@/lib/redactions";
 import { appendModerationLog } from "@/lib/moderation-log";
 import {
+  decideProfileLinkChangeRequest,
+  listProfileLinkChangeRequests,
+} from "@/lib/profile-link-change-requests";
+import {
   envLimit,
   getClientIp,
   rateLimitHeaders,
@@ -70,6 +74,16 @@ export async function GET(req) {
 
   const { data: profiles } = await readDataFile("data/profiles/_index.json");
 
+  if (status === "profile-link-changes") {
+    const { requests } = await listProfileLinkChangeRequests();
+    const pendingRequests = requests
+      .filter((r) => r?.status === "pending")
+      .sort((a, b) =>
+        String(b.requested_at || "").localeCompare(String(a.requested_at || ""))
+      );
+    return Response.json(pendingRequests);
+  }
+
   if (status === "redacted") {
     const out = [];
     for (const p of profiles) {
@@ -122,14 +136,26 @@ export async function POST(req) {
 
   const { issue, action } = body;
   const issueNum = Number(issue);
+  const linkChangeAction = ["approve_link_change", "reject_link_change"].includes(
+    action
+  );
+  if (!linkChangeAction && !Number.isFinite(issueNum)) {
+    return Response.json(
+      {
+        error: "issue (number) is required for this action.",
+      },
+      { status: 400 }
+    );
+  }
   if (
-    !Number.isFinite(issueNum) ||
-    !["approve", "reject", "unredact"].includes(action)
+    !["approve", "reject", "unredact", "approve_link_change", "reject_link_change"].includes(
+      action
+    )
   ) {
     return Response.json(
       {
         error:
-          "issue (number) and action (approve|reject|unredact) are required.",
+          "action must be approve|reject|unredact|approve_link_change|reject_link_change.",
       },
       { status: 400 }
     );
@@ -137,6 +163,59 @@ export async function POST(req) {
 
   const moderator = moderatorIdFromSession(session);
   const at = nowIso();
+
+  if (linkChangeAction) {
+    const requestId = String(body.requestId || "").trim();
+    if (!requestId) {
+      return Response.json({ error: "requestId is required." }, { status: 400 });
+    }
+    const { requests } = await listProfileLinkChangeRequests();
+    const target = requests.find((r) => r?.id === requestId);
+    if (!target) {
+      return Response.json({ error: "Request not found." }, { status: 404 });
+    }
+    if (target.status !== "pending") {
+      return Response.json(
+        { error: "Request is already resolved." },
+        { status: 409 }
+      );
+    }
+
+    if (action === "approve_link_change") {
+      const { data: profilesLink, sha: profilesSha } = await readDataFile(
+        "data/profiles/_index.json"
+      );
+      const profile = profilesLink.find((p) => p.slug === target.profile_slug);
+      if (!profile) {
+        return Response.json(
+          { error: "Profile not found for this request." },
+          { status: 404 }
+        );
+      }
+      profile.linkedin_url = target.proposed_linkedin_url;
+      try {
+        await writeDataFile(
+          "data/profiles/_index.json",
+          profilesLink,
+          profilesSha,
+          `Approve profile link change for ${target.profile_slug} (${requestId})`
+        );
+      } catch {
+        return Response.json(
+          { error: "Failed to write profile link update." },
+          { status: 500 }
+        );
+      }
+    }
+
+    await decideProfileLinkChangeRequest({
+      requestId,
+      action,
+      moderatorId: moderator,
+    });
+
+    return Response.json({ success: true, action, requestId });
+  }
 
   const { data: profiles, sha } = await readDataFile(
     "data/profiles/_index.json"

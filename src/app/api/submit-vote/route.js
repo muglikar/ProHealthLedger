@@ -6,6 +6,7 @@ import { formatProfessionalDisplayName } from "@/lib/profiles";
 import { isFlagBlockedForLinkedinUrl } from "@/lib/protected-profiles";
 import { verifyLinkedinSlug } from "@/lib/linkedin-slug-verify";
 import { analyzeReasonSafety } from "@/lib/content-safety";
+import { createProfileLinkChangeRequest } from "@/lib/profile-link-change-requests";
 import {
   envLimit,
   getClientIp,
@@ -106,7 +107,38 @@ export async function POST(req) {
     }
   }
 
-  const linkedinUrlCanonical = `https://www.linkedin.com/in/${slug}`;
+  const linkedinUrlCanonical = canonicalLinkedinUrl(slug);
+  const profileForTitle = profiles.find((p) => p.slug === slug);
+
+  /**
+   * Anti-impersonation guard:
+   * Once a profile slug is on the ledger, its LinkedIn URL is immutable via
+   * public vote submissions. This prevents users from attempting to "move"
+   * an existing ledger identity to a different LinkedIn target.
+   */
+  if (
+    profileForTitle &&
+    typeof profileForTitle.linkedin_url === "string" &&
+    profileForTitle.linkedin_url &&
+    canonicalLinkedinUrl(extractSlug(profileForTitle.linkedin_url) || slug) !==
+      linkedinUrlCanonical
+  ) {
+    const { request } = await createProfileLinkChangeRequest({
+      profileSlug: slug,
+      currentLinkedinUrl: profileForTitle.linkedin_url,
+      proposedLinkedinUrl: linkedinUrlCanonical,
+      requestedBy: userId,
+      requestedByDisplayName: displayName,
+    });
+    return Response.json(
+      {
+        error:
+          "This profile link change requires moderator approval and has been added to the admin review queue.",
+        requestId: request.id,
+      },
+      { status: 409 }
+    );
+  }
 
   if (vote === "no" && isFlagBlockedForLinkedinUrl(linkedinUrlCanonical, slug)) {
     return Response.json(
@@ -207,7 +239,6 @@ export async function POST(req) {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const profileForTitle = profiles.find((p) => p.slug === slug);
   const titleName =
     formatProfessionalDisplayName(slug, profileForTitle?.public_name) ||
     slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -358,6 +389,10 @@ export async function POST(req) {
 function extractSlug(url) {
   const match = url.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/);
   return match ? match[1].toLowerCase() : null;
+}
+
+function canonicalLinkedinUrl(slug) {
+  return `https://www.linkedin.com/in/${String(slug || "").toLowerCase()}`;
 }
 
 function countRecentYesVouches(userEntry, lookbackDays) {

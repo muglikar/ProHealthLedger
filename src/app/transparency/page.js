@@ -402,10 +402,9 @@ export default function TransparencyPage() {
             </button>
           </div>
           <p className="audit-table-hint">
-            Scroll the table horizontally to see every column, including comments.
-            Each comment with text sits in a warm chip with a <strong>View</strong> control;
-            tap or click it for the full vote row (professional, vote, submitter, date,
-            record) plus the full comment.
+            Sort to inspect flags, vouches, or newest activity. Use{" "}
+            <strong>View</strong> on a comment chip for the complete vote row and full
+            comment details (including pending or redacted states).
           </p>
 
           <div className="audit-scroll-track" ref={trackRef}>
