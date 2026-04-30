@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { isRepoMaintainerUserId } from "@/lib/repo-owner-session";
 import { getProviders } from "next-auth/react";
@@ -96,13 +96,13 @@ export default function NavAuth() {
   if (!session) {
     return (
       <div className="signin-options">
-        <button className="nav-auth-btn" onClick={() => signIn("github")}>
+        <a className="nav-auth-btn" href="/api/auth/signin/github">
           Sign in with GitHub
-        </button>
+        </a>
         {hasLinkedInProvider ? (
-          <button className="nav-auth-btn" onClick={() => signIn("linkedin")}>
+          <a className="nav-auth-btn" href="/api/auth/signin/linkedin">
             Sign in with LinkedIn
-          </button>
+          </a>
         ) : null}
       </div>
     );
