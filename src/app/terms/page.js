@@ -1,3 +1,5 @@
+import ObfuscatedEmail from "@/app/components/ObfuscatedEmail";
+
 export const metadata = {
   title: "Terms of Service — ProHealthLedger",
   description: "Terms governing use of ProHealthLedger.",
@@ -43,9 +45,14 @@ export default function TermsPage() {
             Grievance Officer and Nodal Contact Person:
             <br />
             <strong>Anand Muglikar</strong> —{" "}
-            <a href="mailto:anandmuglikar+phl@gmail.com">
-              anandmuglikar+phl@gmail.com
-            </a>
+            <ObfuscatedEmail
+              userChars={[
+                97, 110, 97, 110, 100, 109, 117, 103, 108, 105, 107, 97, 114,
+                43, 112, 104, 108,
+              ]}
+              domainChars={[103, 109, 97, 105, 108]}
+              tldChars={[99, 111, 109]}
+            />
           </p>
         </section>
       </article>
