@@ -47,6 +47,17 @@ function voterDisplay(submission) {
   const userId = submission.user || submission.github_username || "";
   if (!userId) return <span>—</span>;
   const label = submitterPlain(submission);
+  const submitterLinkedinUrl =
+    typeof submission.submitter_linkedin_url === "string"
+      ? submission.submitter_linkedin_url
+      : "";
+  if (submitterLinkedinUrl) {
+    return (
+      <a href={submitterLinkedinUrl} target="_blank" rel="noopener noreferrer" className="issue-link">
+        {label}
+      </a>
+    );
+  }
   if (userId.startsWith("github:")) {
     const gh = userId.slice(7);
     return (

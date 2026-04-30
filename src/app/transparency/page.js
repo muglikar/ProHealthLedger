@@ -324,6 +324,22 @@ export default function TransparencyPage() {
     const label =
       submission.display_name ||
       (userId.startsWith("github:") ? userId.slice(7) : userId);
+    const submitterLinkedinUrl =
+      typeof submission.submitter_linkedin_url === "string"
+        ? submission.submitter_linkedin_url
+        : "";
+    if (submitterLinkedinUrl) {
+      return (
+        <a
+          href={submitterLinkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="issue-link"
+        >
+          {label}
+        </a>
+      );
+    }
     if (userId.startsWith("github:")) {
       const gh = userId.slice(7);
       return (
