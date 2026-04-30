@@ -60,5 +60,15 @@
     "created_at": "2026-04-30",
     "clicks": 0,
     "signups": []
+  },
+  {
+    "ref_code": "2729d45a",
+    "sharer_id": "linkedin:CAOSO1oig0",
+    "sharer_name": "Anand Muglikar",
+    "profile_slug": "nikhil-gupta-590b7442",
+    "profile_name": "Nikhil Gupta",
+    "created_at": "2026-04-30",
+    "clicks": 0,
+    "signups": []
   }
 ]
