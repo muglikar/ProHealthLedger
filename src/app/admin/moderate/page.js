@@ -17,6 +17,7 @@ export default function ModeratePage() {
   const { data: session, status } = useSession();
   const [pending, setPending] = useState([]);
   const [redacted, setRedacted] = useState([]);
+  const [linkChanges, setLinkChanges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState(null);
   const [categoryByIssue, setCategoryByIssue] = useState({});
@@ -40,15 +41,22 @@ export default function ModeratePage() {
     } catch { /* ignore */ }
   }, []);
 
+  const fetchLinkChanges = useCallback(async () => {
+    try {
+      const res = await fetch("/api/moderate?status=profile-link-changes");
+      if (res.ok) setLinkChanges(await res.json());
+    } catch { /* ignore */ }
+  }, []);
+
   useEffect(() => {
     if (!isAdmin) {
       setLoading(false);
       return;
     }
-    Promise.all([fetchPending(), fetchRedacted()]).finally(() =>
+    Promise.all([fetchPending(), fetchRedacted(), fetchLinkChanges()]).finally(() =>
       setLoading(false)
     );
-  }, [isAdmin, fetchPending, fetchRedacted]);
+  }, [isAdmin, fetchPending, fetchRedacted, fetchLinkChanges]);
 
   const setCategory = (issue, value) =>
     setCategoryByIssue((prev) => ({ ...prev, [issue]: value }));
@@ -80,6 +88,21 @@ export default function ModeratePage() {
     setActing(null);
   };
 
+  const handleLinkChangeAction = async (requestId, action) => {
+    setActing(requestId);
+    try {
+      const res = await fetch("/api/moderate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, requestId }),
+      });
+      if (res.ok) {
+        setLinkChanges((prev) => prev.filter((r) => r.id !== requestId));
+      }
+    } catch { /* ignore */ }
+    setActing(null);
+  };
+
   if (status === "loading" || loading) {
     return <div className="empty-state"><p>Loading…</p></div>;
   }
@@ -100,6 +123,9 @@ export default function ModeratePage() {
         <p>
           {pending.length} comment{pending.length !== 1 ? "s" : ""} pending review
           {redacted.length ? ` · ${redacted.length} previously redacted` : ""}
+          {linkChanges.length
+            ? ` · ${linkChanges.length} profile link change request${linkChanges.length === 1 ? "" : "s"}`
+            : ""}
         </p>
         <p className="submit-hero-sub">
           Rejecting a comment redacts it (it is not silently deleted): the
@@ -184,6 +210,57 @@ export default function ModeratePage() {
           })}
         </div>
       )}
+
+      {linkChanges.length > 0 ? (
+        <>
+          <div className="page-header" style={{ marginTop: 36 }}>
+            <h2>Profile link change requests</h2>
+            <p>
+              These requests appear when a submitted LinkedIn URL conflicts with the
+              ledger record for an existing profile.
+            </p>
+          </div>
+          <div className="mod-list">
+            {linkChanges.map((req) => (
+              <div key={req.id} className="mod-card">
+                <div className="mod-card-header">
+                  <strong>{req.profile_slug}</strong>
+                  <span className="mod-card-meta">
+                    requested by {req.requested_by_display_name || req.requested_by} ·{" "}
+                    {(req.requested_at || "").slice(0, 10)}
+                  </span>
+                </div>
+                <p className="mod-card-meta">
+                  Current: <code>{req.current_linkedin_url}</code>
+                </p>
+                <p className="mod-card-meta">
+                  Proposed: <code>{req.proposed_linkedin_url}</code>
+                </p>
+                <div className="mod-card-actions">
+                  <button
+                    className="btn btn-primary btn-sm"
+                    disabled={acting === req.id}
+                    onClick={() =>
+                      handleLinkChangeAction(req.id, "approve_link_change")
+                    }
+                  >
+                    {acting === req.id ? "…" : "Approve link change"}
+                  </button>
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    disabled={acting === req.id}
+                    onClick={() =>
+                      handleLinkChangeAction(req.id, "reject_link_change")
+                    }
+                  >
+                    {acting === req.id ? "…" : "Reject request"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
 
       {redacted.length > 0 ? (
         <>
