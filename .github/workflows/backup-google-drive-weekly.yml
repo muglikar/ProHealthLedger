@@ -1,0 +1,27 @@
+name: Weekly Google Drive Backup
+
+on:
+  schedule:
+    # Every Monday at 04:00 UTC.
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install rclone
+        run: curl -fsSL https://rclone.org/install.sh | sudo bash
+
+      - name: Run weekly data backup to Google Drive
+        env:
+          BACKUP_PREFIX: weekly
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+        run: bash ./scripts/backup-data-to-gdrive.sh
