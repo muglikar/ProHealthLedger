@@ -16,16 +16,33 @@ export default function ObfuscatedEmail({
   tldChars,
   className,
 }) {
-  const email = useMemo(() => {
+  const { email, display } = useMemo(() => {
     const user = decodeChars(userChars || []);
     const domain = decodeChars(domainChars || []);
     const tld = decodeChars(tldChars || []);
-    return `${user}@${domain}.${tld}`;
+    return {
+      email: `${user}@${domain}.${tld}`,
+      display: `${user} [at] ${domain} [dot] ${tld}`,
+    };
   }, [userChars, domainChars, tldChars]);
 
+  const handleClick = (e) => {
+    e.preventDefault();
+    if (typeof window !== "undefined") {
+      window.location.href = `mailto:${email}`;
+    }
+  };
+
   return (
-    <a className={className} href={`mailto:${email}`}>
-      {email}
+    <a
+      className={className}
+      href="#"
+      onClick={handleClick}
+      rel="nofollow"
+      aria-label="Send email"
+      title="Click to open your email app"
+    >
+      {display}
     </a>
   );
 }
