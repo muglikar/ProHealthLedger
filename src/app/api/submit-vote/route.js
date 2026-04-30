@@ -292,6 +292,13 @@ export async function POST(req) {
     user: userId,
     display_name: displayName,
     display_image: session.user?.image || null,
+    ...(session.provider === "linkedin" && session.linkedinVanity
+      ? {
+          submitter_linkedin_url: `https://www.linkedin.com/in/${String(
+            session.linkedinVanity
+          ).toLowerCase()}`,
+        }
+      : {}),
     vote,
     issue: issueNumber,
     date: today,
