@@ -1,0 +1,9 @@
+Google Drive backup folder link (for: anandmuglikar+phl@gmail.com):
+
+/content/drive/MyDrive/PHL_Backups
+https://drive.google.com/drive/folders/1zNREnJyfzrD_6a8xxiUVBAu_SUF4SQaR?usp=drive_link
+
+Suggested target:
+- Create a Drive folder named: PHL_Backups
+- Share access only with: anandmuglikar+phl@gmail.com (Owner)
+- Keep link sharing OFF (Restricted)

@@ -1,4 +1,5 @@
 import { listProtectedFlagSlugs } from "@/lib/protected-profiles";
+import ObfuscatedEmail from "@/app/components/ObfuscatedEmail";
 
 export const metadata = {
   title: "Privacy Policy — ProHealthLedger",
@@ -886,24 +887,39 @@ export default function PrivacyPolicyPage() {
             </li>
             <li>
               Email:{" "}
-              <a href="mailto:privacy@prohealthledger.com">
-                privacy@prohealthledger.com
-              </a>
+              <ObfuscatedEmail
+                userChars={[112, 114, 105, 118, 97, 99, 121]}
+                domainChars={[
+                  112, 114, 111, 104, 101, 97, 108, 116, 104, 108, 101, 100,
+                  103, 101, 114,
+                ]}
+                tldChars={[99, 111, 109]}
+              />
             </li>
           </ul>
           <p>
             India IT Rules compliance contacts:
             <br />
             <strong>Grievance Officer:</strong> Anand Muglikar (
-            <a href="mailto:anandmuglikar+phl@gmail.com">
-              anandmuglikar+phl@gmail.com
-            </a>
+            <ObfuscatedEmail
+              userChars={[
+                97, 110, 97, 110, 100, 109, 117, 103, 108, 105, 107, 97, 114,
+                43, 112, 104, 108,
+              ]}
+              domainChars={[103, 109, 97, 105, 108]}
+              tldChars={[99, 111, 109]}
+            />
             )
             <br />
             <strong>Nodal Contact Person:</strong> Anand Muglikar (
-            <a href="mailto:anandmuglikar+phl@gmail.com">
-              anandmuglikar+phl@gmail.com
-            </a>
+            <ObfuscatedEmail
+              userChars={[
+                97, 110, 97, 110, 100, 109, 117, 103, 108, 105, 107, 97, 114,
+                43, 112, 104, 108,
+              ]}
+              domainChars={[103, 109, 97, 105, 108]}
+              tldChars={[99, 111, 109]}
+            />
             )
           </p>
         </section>
