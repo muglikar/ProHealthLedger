@@ -4,26 +4,18 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { isRepoMaintainerUserId } from "@/lib/repo-owner-session";
-import { getProviders } from "next-auth/react";
 
 export default function NavAuth() {
   const { data: session, status } = useSession();
   const [activityCount, setActivityCount] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [myLinkedSlug, setMyLinkedSlug] = useState("");
-  const [hasLinkedInProvider, setHasLinkedInProvider] = useState(false);
 
   const isAdmin =
     Boolean(session?.siteAdmin) ||
     (session?.userId ? isRepoMaintainerUserId(session.userId) : false);
 
   // Load linked slug (priority: session > localstorage)
-  useEffect(() => {
-    getProviders()
-      .then((p) => setHasLinkedInProvider(Boolean(p?.linkedin)))
-      .catch(() => setHasLinkedInProvider(false));
-  }, []);
-
   useEffect(() => {
     if (session?.linkedinVanity) {
       setMyLinkedSlug(session.linkedinVanity);
@@ -95,16 +87,9 @@ export default function NavAuth() {
 
   if (!session) {
     return (
-      <div className="signin-options">
-        <a className="nav-auth-btn" href="/api/auth/signin/github">
-          Sign in with GitHub
-        </a>
-        {hasLinkedInProvider ? (
-          <a className="nav-auth-btn" href="/api/auth/signin/linkedin">
-            Sign in with LinkedIn
-          </a>
-        ) : null}
-      </div>
+      <Link className="nav-auth-btn" href="/submit">
+        Sign In
+      </Link>
     );
   }
 
