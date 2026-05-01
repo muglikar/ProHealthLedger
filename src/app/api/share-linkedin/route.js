@@ -1,4 +1,5 @@
 import { getToken } from "next-auth/jwt";
+import { buildVouchOgUrl } from "@/lib/og-vouch-url";
 import {
   envLimit,
   getClientIp,
@@ -70,7 +71,7 @@ const INTERNAL_ORIGIN = process.env.VERCEL_URL
 function buildOgUrl(cleanVoucher, cleanVouchee) {
   const v = clampString(cleanVoucher || "A_Colleague", MAX_NAME_PART);
   const u = clampString(cleanVouchee || "Professional", MAX_NAME_PART);
-  return `${INTERNAL_ORIGIN}/api/og?voucherName=${encodeURIComponent(v)}&voucheeName=${encodeURIComponent(u)}`;
+  return buildVouchOgUrl(INTERNAL_ORIGIN, v, u);
 }
 
 export async function POST(req) {

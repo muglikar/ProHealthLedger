@@ -1,5 +1,21 @@
 import ProfilesClient from "@/app/profiles/ProfilesClient";
+import { buildVouchOgUrl } from "@/lib/og-vouch-url";
 import { Suspense } from "react";
+
+const SITE_ORIGIN = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org"
+).replace(/\/+$/, "");
+
+function segmentToDisplayName(segment) {
+  let s = decodeURIComponent(segment || "")
+    .replace(/_/g, " ")
+    .trim();
+  if (!s) return "";
+  if (!/\s/.test(s)) {
+    s = s.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
+  }
+  return s;
+}
 
 /**
  * STRICT SERVER COMPONENT (No 'use client')
@@ -10,10 +26,10 @@ import { Suspense } from "react";
 export async function generateMetadata({ params }) {
   const resolvedParams = await params; // Mandatory in Next.js 15+
   try {
-    const cleanVoucher = decodeURIComponent(resolvedParams?.voucher || '').split('_').join(' ');
-    const cleanVouchee = decodeURIComponent(resolvedParams?.vouchee || '').split('_').join(' ');
-    const ogUrl = `https://prohealthledger.org/api/og?voucherName=${encodeURIComponent(cleanVoucher)}&voucheeName=${encodeURIComponent(cleanVouchee)}`;
-    const pageUrl = `https://prohealthledger.org/p/${encodeURIComponent(
+    const cleanVoucher = segmentToDisplayName(resolvedParams?.voucher);
+    const cleanVouchee = segmentToDisplayName(resolvedParams?.vouchee);
+    const ogUrl = buildVouchOgUrl(SITE_ORIGIN, cleanVoucher, cleanVouchee);
+    const pageUrl = `${SITE_ORIGIN}/p/${encodeURIComponent(
       resolvedParams?.voucher || ""
     )}/${encodeURIComponent(resolvedParams?.vouchee || "")}/${encodeURIComponent(
       resolvedParams?.slug || ""
