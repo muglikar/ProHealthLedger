@@ -28,9 +28,27 @@ const nextConfig = {
           { key: "Cross-Origin-Resource-Policy", value: "same-site" },
         ],
       },
+      /**
+       * Global CORP is `same-site`, but social feeds load og:image in a cross-site
+       * document (e.g. linkedin.com). Browsers block those images unless CORP
+       * is cross-origin — LinkedIn then falls back to a page screenshot.
+       */
+      {
+        source: "/api/og",
+        headers: [
+          {
+            key: "Cross-Origin-Resource-Policy",
+            value: "cross-origin",
+          },
+        ],
+      },
       {
         source: "/og_banner.png",
         headers: [
+          {
+            key: "Cross-Origin-Resource-Policy",
+            value: "cross-origin",
+          },
           {
             key: "Cache-Control",
             value: "public, max-age=0, must-revalidate",

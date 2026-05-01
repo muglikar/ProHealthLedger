@@ -1,9 +1,9 @@
 /**
  * Social crawlers (especially LinkedIn) cache link previews by og:image URL.
  * When /api/og briefly returned empty bodies, LinkedIn stored a fallback
- * screenshot. Bump this string after any OG output change to force a refetch.
+ * screenshot. Bump after OG output or CORP/header fixes so caches refetch.
  */
-export const OG_VOUCH_PREVIEW_VERSION = "2";
+export const OG_VOUCH_PREVIEW_VERSION = "3";
 
 export function buildVouchOgUrl(origin, voucherName, voucheeName) {
   const base = (origin || "").replace(/\/+$/, "");
