@@ -90,5 +90,15 @@
     "created_at": "2026-04-30",
     "clicks": 3,
     "signups": []
+  },
+  {
+    "ref_code": "5eaa8e2a",
+    "sharer_id": "linkedin:CAOSO1oig0",
+    "sharer_name": "Anand Muglikar",
+    "profile_slug": "savadikar-chinmay",
+    "profile_name": "Savadikar Chinmay",
+    "created_at": "2026-05-01",
+    "clicks": 0,
+    "signups": []
   }
 ]
