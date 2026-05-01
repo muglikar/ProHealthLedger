@@ -29,19 +29,11 @@ const baseSecurityHeaders = [
 const nextConfig = {
   async headers() {
     return [
-      /**
-       * Og images are embedded cross-site (e.g. linkedin.com feed previews).
-       * CORP `same-site` makes browsers refuse to display them; the platform
-       * then falls back to a page screenshot. List this before the catch-all.
-       */
       {
-        source: "/api/og",
+        source: "/(.*)",
         headers: [
           ...baseSecurityHeaders,
-          {
-            key: "Cross-Origin-Resource-Policy",
-            value: "cross-origin",
-          },
+          { key: "Cross-Origin-Resource-Policy", value: "same-site" },
         ],
       },
       {
@@ -57,11 +49,18 @@ const nextConfig = {
           },
         ],
       },
+      /**
+       * Must appear after `/(.*)` so this CORP value overrides the catch-all.
+       * Otherwise linkedin.com cannot embed og:image and uses a screenshot.
+       */
       {
-        source: "/(.*)",
+        source: "/api/og",
         headers: [
           ...baseSecurityHeaders,
-          { key: "Cross-Origin-Resource-Policy", value: "same-site" },
+          {
+            key: "Cross-Origin-Resource-Policy",
+            value: "cross-origin",
+          },
         ],
       },
     ];
