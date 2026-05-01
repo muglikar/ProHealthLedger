@@ -21,6 +21,17 @@ export async function GET(request) {
     const cleanVoucher = decodeURIComponent(rawVoucher).split('_').join(' ').slice(0, MAX_NAME);
     const cleanVouchee = decodeURIComponent(rawVouchee).split('_').join(' ').slice(0, MAX_NAME);
 
+    const VOUCHER_MAX = 56;
+    const VOUCHEE_MAX = 56;
+    const voucherText =
+      cleanVoucher.length > VOUCHER_MAX
+        ? `${cleanVoucher.slice(0, VOUCHER_MAX - 1)}…`
+        : cleanVoucher;
+    const voucheeText =
+      cleanVouchee.length > VOUCHEE_MAX
+        ? `${cleanVouchee.slice(0, VOUCHEE_MAX - 1)}…`
+        : cleanVouchee;
+
     return new ImageResponse(
       (
         <div
@@ -33,15 +44,14 @@ export async function GET(request) {
             justifyContent: 'center',
             backgroundColor: '#ffffff',
             backgroundImage: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%)',
-            padding: '50px 60px',
+            padding: '48px 56px',
             fontFamily: 'sans-serif',
           }}
         >
-          {/* Top: PHL Logo + Branding */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            marginBottom: '50px',
+            marginBottom: '44px',
           }}>
             <div style={{
               width: '56px',
@@ -60,7 +70,7 @@ export async function GET(request) {
               ✓
             </div>
             <div style={{
-              fontSize: '36px',
+              fontSize: '34px',
               fontWeight: 'bold',
               color: '#64748b',
               letterSpacing: '0.1em',
@@ -69,45 +79,43 @@ export async function GET(request) {
             </div>
           </div>
 
-          {/* Center: [Voucher] vouched for [Vouchee] */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            maxWidth: '1050px',
+            maxWidth: '1060px',
             textAlign: 'center',
             flex: 1,
             justifyContent: 'center',
           }}>
             <div style={{
-              fontSize: '72px',
+              fontSize: '64px',
               fontWeight: 'bold',
               color: '#0f172a',
               lineHeight: 1.15,
-              marginBottom: '24px',
+              marginBottom: '18px',
             }}>
-              {cleanVoucher}
+              {voucherText}
             </div>
             <div style={{
-              fontSize: '72px',
-              fontWeight: 'bold',
+              fontSize: '56px',
+              fontWeight: '700',
               color: '#059669',
               fontStyle: 'italic',
-              marginBottom: '24px',
+              marginBottom: '18px',
             }}>
               vouched for
             </div>
             <div style={{
-              fontSize: '72px',
+              fontSize: '64px',
               fontWeight: 'bold',
               color: '#0f172a',
               lineHeight: 1.15,
             }}>
-              {cleanVouchee}
+              {voucheeText}
             </div>
           </div>
 
-          {/* Bottom: Tagline */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -118,7 +126,7 @@ export async function GET(request) {
             marginTop: '40px',
           }}>
             <div style={{
-              fontSize: '26px',
+            fontSize: '24px',
               color: '#475569',
               fontWeight: '500',
               textAlign: 'center',

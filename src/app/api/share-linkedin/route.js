@@ -316,10 +316,42 @@ export async function POST(req) {
     // Attempt 1: Full post with article card + thumbnail
     let liRes = await tryPost(postPayload);
 
-    // Attempt 2: If full card fails, strip to commentary-only
+    // Attempt 2: Keep article card but remove thumbnail if image URN handshake
+    // was the failing part.
     if (!liRes.ok || liRes.status >= 400) {
       const errDetail = await liRes.text().catch(() => "");
-      console.warn("Full post failed:", liRes.status, errDetail, "— retrying commentary-only");
+      console.warn(
+        "Full post failed:",
+        liRes.status,
+        errDetail,
+        "— retrying article card without thumbnail"
+      );
+      const articleNoThumbPayload = {
+        author: postPayload.author,
+        commentary: postPayload.commentary,
+        visibility: postPayload.visibility,
+        distribution: postPayload.distribution,
+        lifecycleState: postPayload.lifecycleState,
+        content: {
+          article: {
+            source: safeArticleUrl,
+            title: cleanTitle,
+            description: safeDescription,
+          },
+        },
+      };
+      liRes = await tryPost(articleNoThumbPayload);
+    }
+
+    // Attempt 3: if card payload still fails, strip to commentary-only.
+    if (!liRes.ok || liRes.status >= 400) {
+      const errDetail = await liRes.text().catch(() => "");
+      console.warn(
+        "Article payload failed:",
+        liRes.status,
+        errDetail,
+        "— retrying commentary-only"
+      );
       const simplePayload = {
         author: postPayload.author,
         commentary: postPayload.commentary,
