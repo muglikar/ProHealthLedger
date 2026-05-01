@@ -2,16 +2,33 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
+function displayFromParam(raw, fallback) {
+  let s = typeof raw === 'string' && raw.trim() ? raw.trim() : fallback;
+  try {
+    s = decodeURIComponent(s);
+  } catch {
+    /* searchParams may already be decoded */
+  }
+  s = s.replace(/\+/g, ' ').replace(/_/g, ' ').trim() || fallback;
+  if (!/\s/.test(s)) {
+    s = s.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+  }
+  return s;
+}
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    const rawVoucher = searchParams.get('voucherName') || 'A Colleague';
-    const rawVouchee = searchParams.get('voucheeName') || 'Professional';
-
     const MAX_NAME = 80;
-    const cleanVoucher = decodeURIComponent(rawVoucher).replace(/_/g, ' ').slice(0, MAX_NAME);
-    const cleanVouchee = decodeURIComponent(rawVouchee).replace(/_/g, ' ').slice(0, MAX_NAME);
+    const cleanVoucher = displayFromParam(
+      searchParams.get('voucherName'),
+      'A Colleague'
+    ).slice(0, MAX_NAME);
+    const cleanVouchee = displayFromParam(
+      searchParams.get('voucheeName'),
+      'Professional'
+    ).slice(0, MAX_NAME);
 
     const DISPLAY_MAX = 48;
     const voucherText =
