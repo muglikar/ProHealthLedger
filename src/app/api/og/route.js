@@ -2,14 +2,6 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-/**
- * GET /api/og
- *
- * Generates a 1200x630 Hero Card image — light theme, large readable text,
- * with PHL logo. ZERO external fetches — resolves in <50ms.
- *
- * Params: ?voucherName=...&voucheeName=...
- */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -17,24 +9,23 @@ export async function GET(request) {
     const rawVoucher = searchParams.get('voucherName') || 'A Colleague';
     const rawVouchee = searchParams.get('voucheeName') || 'Professional';
 
-    const MAX_NAME = 120;
-    const cleanVoucher = decodeURIComponent(rawVoucher).split('_').join(' ').slice(0, MAX_NAME);
-    const cleanVouchee = decodeURIComponent(rawVouchee).split('_').join(' ').slice(0, MAX_NAME);
+    const MAX_NAME = 80;
+    const cleanVoucher = decodeURIComponent(rawVoucher).replace(/_/g, ' ').slice(0, MAX_NAME);
+    const cleanVouchee = decodeURIComponent(rawVouchee).replace(/_/g, ' ').slice(0, MAX_NAME);
 
-    const VOUCHER_MAX = 64;
-    const VOUCHEE_MAX = 64;
+    const DISPLAY_MAX = 48;
     const voucherText =
-      cleanVoucher.length > VOUCHER_MAX
-        ? `${cleanVoucher.slice(0, VOUCHER_MAX - 1)}…`
+      cleanVoucher.length > DISPLAY_MAX
+        ? cleanVoucher.slice(0, DISPLAY_MAX - 1) + '...'
         : cleanVoucher;
     const voucheeText =
-      cleanVouchee.length > VOUCHEE_MAX
-        ? `${cleanVouchee.slice(0, VOUCHEE_MAX - 1)}…`
+      cleanVouchee.length > DISPLAY_MAX
+        ? cleanVouchee.slice(0, DISPLAY_MAX - 1) + '...'
         : cleanVouchee;
 
     const longest = Math.max(voucherText.length, voucheeText.length);
-    const nameSize = longest > 42 ? 54 : longest > 30 ? 62 : 70;
-    const connectorSize = Math.max(42, nameSize - 12);
+    const nameSize = longest > 36 ? 52 : longest > 24 ? 62 : 72;
+    const connectorSize = Math.max(40, nameSize - 14);
 
     return new ImageResponse(
       (
@@ -45,36 +36,36 @@ export async function GET(request) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: '#f8fafc',
-            padding: '34px 40px',
-            fontFamily: 'sans-serif',
+            backgroundColor: '#f0f4f8',
           }}
         >
           <div
             style={{
               width: '1120px',
-              height: '562px',
+              height: '570px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
               backgroundColor: '#ffffff',
               border: '2px solid #e2e8f0',
               borderRadius: '24px',
-              padding: '26px 36px',
+              padding: '40px 50px',
             }}
           >
+            {/* Header */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                alignSelf: 'stretch',
+                justifyContent: 'center',
+                marginBottom: '30px',
               }}
             >
               <div
                 style={{
-                  width: '40px',
-                  height: '40px',
+                  width: '38px',
+                  height: '38px',
                   borderRadius: '10px',
                   backgroundColor: '#059669',
                   display: 'flex',
@@ -82,84 +73,92 @@ export async function GET(request) {
                   justifyContent: 'center',
                   color: 'white',
                   fontSize: '22px',
-                  fontWeight: 'bold',
-                  marginRight: '12px',
+                  fontWeight: 700,
+                  marginRight: '14px',
                 }}
               >
-                ✓
+                PHL
               </div>
               <div
                 style={{
-                  fontSize: '18px',
-                  fontWeight: '700',
+                  display: 'flex',
+                  fontSize: '20px',
+                  fontWeight: 700,
                   color: '#94a3b8',
-                  letterSpacing: '0.08em',
+                  letterSpacing: '0.06em',
                 }}
               >
-                PRO-HEALTH LEDGER
+                PROFESSIONAL HEALTH LEDGER
               </div>
             </div>
 
+            {/* Names */}
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                flex: 1,
-                maxWidth: '1000px',
-                textAlign: 'center',
-                lineHeight: 1.08,
+                flexGrow: 1,
               }}
             >
               <div
                 style={{
-                  fontSize: `${nameSize}px`,
-                  fontWeight: '700',
+                  display: 'flex',
+                  fontSize: nameSize,
+                  fontWeight: 700,
                   color: '#0f172a',
-                  marginBottom: '10px',
+                  marginBottom: '8px',
+                  textAlign: 'center',
                 }}
               >
                 {voucherText}
               </div>
               <div
                 style={{
-                  fontSize: `${connectorSize}px`,
-                  fontWeight: '600',
+                  display: 'flex',
+                  fontSize: connectorSize,
+                  fontWeight: 600,
                   color: '#059669',
                   fontStyle: 'italic',
-                  marginBottom: '10px',
+                  marginBottom: '8px',
                 }}
               >
                 vouched for
               </div>
               <div
                 style={{
-                  fontSize: `${nameSize}px`,
-                  fontWeight: '700',
+                  display: 'flex',
+                  fontSize: nameSize,
+                  fontWeight: 700,
                   color: '#0f172a',
+                  textAlign: 'center',
                 }}
               >
                 {voucheeText}
               </div>
             </div>
 
+            {/* Tagline */}
             <div
               style={{
-                alignSelf: 'stretch',
-                textAlign: 'center',
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: '30px',
+                paddingTop: '20px',
                 borderTop: '1px solid #e2e8f0',
-                paddingTop: '18px',
+                width: '100%',
               }}
             >
               <div
                 style={{
+                  display: 'flex',
                   fontSize: '20px',
                   color: '#64748b',
-                  fontWeight: '500',
+                  fontWeight: 500,
                 }}
               >
-                Know who you're working with before you commit.
+                Know who you are working with before you commit.
               </div>
             </div>
           </div>
@@ -171,7 +170,7 @@ export async function GET(request) {
       }
     );
   } catch (e) {
-    console.error("OG Generation Error:", e);
-    return new Response('Failed to generate image', { status: 500 });
+    console.error('OG image generation error:', e);
+    return new Response('OG generation failed', { status: 500 });
   }
 }
