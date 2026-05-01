@@ -184,6 +184,9 @@ export async function GET(request) {
       {
         width: 1200,
         height: 630,
+        headers: {
+          "Cross-Origin-Resource-Policy": "cross-origin",
+        },
       }
     );
   } catch (e) {
