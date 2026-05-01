@@ -63,6 +63,16 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: "/p/:voucher/:vouchee/:slug/opengraph-image",
+        headers: [
+          ...baseSecurityHeaders,
+          {
+            key: "Cross-Origin-Resource-Policy",
+            value: "cross-origin",
+          },
+        ],
+      },
     ];
   },
 };
