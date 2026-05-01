@@ -21,8 +21,8 @@ export async function GET(request) {
     const cleanVoucher = decodeURIComponent(rawVoucher).split('_').join(' ').slice(0, MAX_NAME);
     const cleanVouchee = decodeURIComponent(rawVouchee).split('_').join(' ').slice(0, MAX_NAME);
 
-    const VOUCHER_MAX = 56;
-    const VOUCHEE_MAX = 56;
+    const VOUCHER_MAX = 64;
+    const VOUCHEE_MAX = 64;
     const voucherText =
       cleanVoucher.length > VOUCHER_MAX
         ? `${cleanVoucher.slice(0, VOUCHER_MAX - 1)}…`
@@ -32,6 +32,10 @@ export async function GET(request) {
         ? `${cleanVouchee.slice(0, VOUCHEE_MAX - 1)}…`
         : cleanVouchee;
 
+    const longest = Math.max(voucherText.length, voucheeText.length);
+    const nameSize = longest > 42 ? 54 : longest > 30 ? 62 : 70;
+    const connectorSize = Math.max(42, nameSize - 12);
+
     return new ImageResponse(
       (
         <div
@@ -39,99 +43,124 @@ export async function GET(request) {
             width: '1200px',
             height: '630px',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: '#ffffff',
-            backgroundImage: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%)',
-            padding: '48px 56px',
+            backgroundColor: '#f8fafc',
+            padding: '34px 40px',
             fontFamily: 'sans-serif',
           }}
         >
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            marginBottom: '44px',
-          }}>
-            <div style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: '14px',
-              backgroundColor: '#059669',
+          <div
+            style={{
+              width: '1120px',
+              height: '562px',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '32px',
-              fontWeight: 'bold',
-              marginRight: '20px',
-              boxShadow: '0 4px 12px rgba(5, 150, 105, 0.3)',
-            }}>
-              ✓
+              justifyContent: 'space-between',
+              backgroundColor: '#ffffff',
+              border: '2px solid #e2e8f0',
+              borderRadius: '24px',
+              padding: '26px 36px',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                alignSelf: 'stretch',
+              }}
+            >
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  backgroundColor: '#059669',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '22px',
+                  fontWeight: 'bold',
+                  marginRight: '12px',
+                }}
+              >
+                ✓
+              </div>
+              <div
+                style={{
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  color: '#94a3b8',
+                  letterSpacing: '0.08em',
+                }}
+              >
+                PRO-HEALTH LEDGER
+              </div>
             </div>
-            <div style={{
-              fontSize: '34px',
-              fontWeight: 'bold',
-              color: '#64748b',
-              letterSpacing: '0.1em',
-            }}>
-              PRO-HEALTH LEDGER
-            </div>
-          </div>
 
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            maxWidth: '1060px',
-            textAlign: 'center',
-            flex: 1,
-            justifyContent: 'center',
-          }}>
-            <div style={{
-              fontSize: '64px',
-              fontWeight: 'bold',
-              color: '#0f172a',
-              lineHeight: 1.15,
-              marginBottom: '18px',
-            }}>
-              {voucherText}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
+                maxWidth: '1000px',
+                textAlign: 'center',
+                lineHeight: 1.08,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: `${nameSize}px`,
+                  fontWeight: '700',
+                  color: '#0f172a',
+                  marginBottom: '10px',
+                }}
+              >
+                {voucherText}
+              </div>
+              <div
+                style={{
+                  fontSize: `${connectorSize}px`,
+                  fontWeight: '600',
+                  color: '#059669',
+                  fontStyle: 'italic',
+                  marginBottom: '10px',
+                }}
+              >
+                vouched for
+              </div>
+              <div
+                style={{
+                  fontSize: `${nameSize}px`,
+                  fontWeight: '700',
+                  color: '#0f172a',
+                }}
+              >
+                {voucheeText}
+              </div>
             </div>
-            <div style={{
-              fontSize: '56px',
-              fontWeight: '700',
-              color: '#059669',
-              fontStyle: 'italic',
-              marginBottom: '18px',
-            }}>
-              vouched for
-            </div>
-            <div style={{
-              fontSize: '64px',
-              fontWeight: 'bold',
-              color: '#0f172a',
-              lineHeight: 1.15,
-            }}>
-              {voucheeText}
-            </div>
-          </div>
 
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            borderTop: '2px solid #e2e8f0',
-            paddingTop: '28px',
-            maxWidth: '900px',
-            marginTop: '40px',
-          }}>
-            <div style={{
-            fontSize: '24px',
-              color: '#475569',
-              fontWeight: '500',
-              textAlign: 'center',
-            }}>
-              Know who you're working with before you commit.
+            <div
+              style={{
+                alignSelf: 'stretch',
+                textAlign: 'center',
+                borderTop: '1px solid #e2e8f0',
+                paddingTop: '18px',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '20px',
+                  color: '#64748b',
+                  fontWeight: '500',
+                }}
+              >
+                Know who you're working with before you commit.
+              </div>
             </div>
           </div>
         </div>
