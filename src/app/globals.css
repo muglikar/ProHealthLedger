@@ -2383,6 +2383,8 @@ button.audit-comment-link:focus-visible {
 
 .nav-auth-btn:hover {
   background: var(--accent-light);
+  color: white;
+  text-decoration: none;
 }
 
 .nav-auth-btn-out {
