@@ -67,11 +67,23 @@ const INTERNAL_ORIGIN = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : SITE_ORIGIN;
 
-/** Build the OG image URL on the server so the route never fetches a client URL. */
-function buildOgUrl(cleanVoucher, cleanVouchee) {
+/**
+ * Prefer the permalink opengraph-image (same pixels as metadata, no query string).
+ * Falls back to /api/og when articleUrl is not a /p/... permalink.
+ */
+function buildOgFetchUrl(articleUrl, cleanVoucher, cleanVouchee) {
+  try {
+    const u = new URL(articleUrl);
+    const parts = u.pathname.split("/").filter(Boolean);
+    if (parts.length === 4 && parts[0] === "p") {
+      return `${INTERNAL_ORIGIN}/${parts.join("/")}/opengraph-image`;
+    }
+  } catch {
+    /* fall through */
+  }
   const v = clampString(cleanVoucher || "A_Colleague", MAX_NAME_PART);
-  const u = clampString(cleanVouchee || "Professional", MAX_NAME_PART);
-  return buildVouchOgUrl(INTERNAL_ORIGIN, v, u);
+  const uv = clampString(cleanVouchee || "Professional", MAX_NAME_PART);
+  return buildVouchOgUrl(INTERNAL_ORIGIN, v, uv);
 }
 
 export async function POST(req) {
@@ -151,7 +163,7 @@ export async function POST(req) {
   // --- 3-Step Asset Upload: Fetch OG image → Initialize → PUT → Poll ---
   // The OG URL is built on the server (no client-provided URL is ever fetched
   // server-side — that would be SSRF).
-  const ogUrl = buildOgUrl(cleanVoucher, cleanVouchee);
+  const ogUrl = buildOgFetchUrl(safeArticleUrl, cleanVoucher, cleanVouchee);
   let imageUrn = null;
   try {
     let imageBuffer = null;
