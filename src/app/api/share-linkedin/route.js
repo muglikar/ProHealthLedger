@@ -58,11 +58,19 @@ function isAllowedSiteUrl(raw) {
   return url.origin === SITE_ORIGIN;
 }
 
+/**
+ * Internal origin for server→server fetches (bypasses Cloudflare).
+ * VERCEL_URL is set automatically on every Vercel deployment.
+ */
+const INTERNAL_ORIGIN = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : SITE_ORIGIN;
+
 /** Build the OG image URL on the server so the route never fetches a client URL. */
 function buildOgUrl(cleanVoucher, cleanVouchee) {
   const v = clampString(cleanVoucher || "A_Colleague", MAX_NAME_PART);
   const u = clampString(cleanVouchee || "Professional", MAX_NAME_PART);
-  return `${SITE_ORIGIN}/api/og?voucherName=${encodeURIComponent(v)}&voucheeName=${encodeURIComponent(u)}`;
+  return `${INTERNAL_ORIGIN}/api/og?voucherName=${encodeURIComponent(v)}&voucheeName=${encodeURIComponent(u)}`;
 }
 
 export async function POST(req) {
@@ -147,14 +155,17 @@ export async function POST(req) {
   try {
     let imageBuffer = null;
 
-    // Step 0: Fetch our own OG image (text-only, <50ms). Server-built URL only.
+    // Step 0: Fetch our own OG image via internal Vercel URL (bypasses Cloudflare).
     try {
-      const ogRes = await fetch(ogUrl, { signal: AbortSignal.timeout(5000) });
+      const ogRes = await fetch(ogUrl, { signal: AbortSignal.timeout(8000) });
       if (ogRes.ok) {
         imageBuffer = Buffer.from(await ogRes.arrayBuffer());
+        console.log("OG image fetched OK:", imageBuffer.length, "bytes from", ogUrl);
+      } else {
+        console.error("OG image fetch non-OK:", ogRes.status, ogRes.statusText, ogUrl);
       }
     } catch (ogErr) {
-      console.error("Failed to fetch OG image:", ogErr.message);
+      console.error("OG image fetch exception:", ogErr.message, ogUrl);
     }
 
     // Fallback: static banner
