@@ -1,4 +1,5 @@
 import ProfilesClient from "@/app/profiles/ProfilesClient";
+import { buildVouchOgUrl } from "@/lib/og-vouch-url";
 import { segmentToDisplayName } from "@/lib/og-vouch-card";
 import { Suspense } from "react";
 
@@ -7,9 +8,8 @@ const SITE_ORIGIN = (
 ).replace(/\/+$/, "");
 
 /**
- * STRICT SERVER COMPONENT (No 'use client')
- * og:image comes from ./opengraph-image.js. Root layout no longer sets a global
- * og:image, so crawlers do not pick the homepage banner for vouch permalinks.
+ * Same metadata pattern as f0620e7: absolute `og:image` → `/api/og?...`
+ * (no opengraph-image route). Keeps camelCase display names + cache-bust `v`.
  */
 
 export async function generateMetadata({ params }) {
@@ -17,6 +17,7 @@ export async function generateMetadata({ params }) {
   try {
     const cleanVoucher = segmentToDisplayName(resolvedParams?.voucher);
     const cleanVouchee = segmentToDisplayName(resolvedParams?.vouchee);
+    const ogUrl = buildVouchOgUrl(SITE_ORIGIN, cleanVoucher, cleanVouchee);
     const pageUrl = `${SITE_ORIGIN}/p/${encodeURIComponent(
       resolvedParams?.voucher || ""
     )}/${encodeURIComponent(resolvedParams?.vouchee || "")}/${encodeURIComponent(
@@ -33,11 +34,22 @@ export async function generateMetadata({ params }) {
         type: "article",
         url: pageUrl,
         siteName: "Professional Health Ledger",
+        images: [
+          {
+            url: ogUrl,
+            secureUrl: ogUrl,
+            width: 1200,
+            height: 630,
+            type: "image/png",
+            alt: title,
+          },
+        ],
       },
       twitter: {
         card: "summary_large_image",
         title,
         description: `View the verified professional vouch on ProHealthLedger.`,
+        images: [ogUrl],
       },
     };
   } catch (e) {
