@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { getMondaFontsForOg } from "@/lib/load-monda-og-fonts";
 import {
   displayFromParam,
   formatVouchOgLines,
@@ -8,7 +7,9 @@ import {
 
 export const runtime = "edge";
 
-/** Legacy query-param OG URL (e.g. share-linkedin internal fetch). */
+/**
+ * Pattern from f6513d3: Edge ImageResponse, no custom font binaries — Satori-safe.
+ */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -28,19 +29,16 @@ export async function GET(request) {
       cleanVouchee
     );
 
-    const fonts = await getMondaFontsForOg();
-
     return new ImageResponse(
       <VouchOgCardJsx
         voucherText={voucherText}
         voucheeText={voucheeText}
         nameSize={nameSize}
-        scale={2}
+        scale={1}
       />,
       {
-        width: 2400,
-        height: 1260,
-        fonts,
+        width: 1200,
+        height: 630,
         headers: {
           "Cross-Origin-Resource-Policy": "cross-origin",
         },

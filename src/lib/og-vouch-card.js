@@ -44,7 +44,8 @@ export function formatVouchOgLines(cleanVoucher, cleanVouchee, rawMax = 100) {
 }
 
 /**
- * Classic PHL vouch card. `scale` 2 => 2400x1260 output for sharper platform downscaling.
+ * Classic PHL vouch card (post–f6513d3 layout). Use `scale={1}` with 1200×630 ImageResponse.
+ * No bundled fonts — matches the stable pre–custom-font OG pipeline.
  */
 export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
   const px = (n) => `${n * scale}px`;
@@ -63,7 +64,7 @@ export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
         backgroundImage:
           "linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%)",
         padding: `${50 * scale}px ${60 * scale}px`,
-        fontFamily: "Monda, sans-serif",
+        fontFamily: "sans-serif",
       }}
     >
       <div
