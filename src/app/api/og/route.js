@@ -41,6 +41,10 @@ export async function GET(request) {
         height: 630,
         headers: {
           "Cross-Origin-Resource-Policy": "cross-origin",
+          // d64ed65-era behavior worked with platform CDNs; avoid max-age=0 so
+          // crawlers (LinkedIn) don't treat the asset as always-stale / fall back to screenshots.
+          "Cache-Control":
+            "public, max-age=3600, s-maxage=86400, stale-while-revalidate=43200",
         },
       }
     );
