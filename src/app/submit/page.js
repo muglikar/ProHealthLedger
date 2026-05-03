@@ -96,7 +96,7 @@ export default function SubmitPage() {
 
         <aside className="speak-up-box" aria-label="Your rights" style={{ marginTop: 32 }}>
           <span className="speak-up-icon" aria-hidden>🛡️</span>
-          <div>
+          <div className="speak-up-body">
             <h3>It&apos;s safe to speak up.</h3>
             <p>
               &ldquo;Would I work with them again?&rdquo; — only you can answer
@@ -155,7 +155,7 @@ export default function SubmitPage() {
 
       <aside className="speak-up-box" aria-label="Your rights">
         <span className="speak-up-icon" aria-hidden>🛡️</span>
-        <div>
+        <div className="speak-up-body">
           <h3>It&apos;s safe to speak up.</h3>
           <p>
             &ldquo;Would I work with them again?&rdquo; — only you can answer
