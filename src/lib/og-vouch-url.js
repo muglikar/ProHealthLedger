@@ -3,7 +3,7 @@
  * When /api/og briefly returned empty bodies, LinkedIn stored a fallback
  * screenshot. Bump after OG output or CORP/header fixes so caches refetch.
  */
-export const OG_VOUCH_PREVIEW_VERSION = "7";
+export const OG_VOUCH_PREVIEW_VERSION = "8";
 
 export function buildVouchOgUrl(origin, voucherName, voucheeName) {
   const base = (origin || "").replace(/\/+$/, "");
