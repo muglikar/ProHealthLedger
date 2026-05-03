@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { getMondaFontsForOg } from "@/lib/load-monda-og-fonts";
 import {
   displayFromParam,
   formatVouchOgLines,
@@ -27,6 +28,8 @@ export async function GET(request) {
       cleanVouchee
     );
 
+    const fonts = await getMondaFontsForOg();
+
     return new ImageResponse(
       <VouchOgCardJsx
         voucherText={voucherText}
@@ -37,6 +40,7 @@ export async function GET(request) {
       {
         width: 2400,
         height: 1260,
+        fonts,
         headers: {
           "Cross-Origin-Resource-Policy": "cross-origin",
         },

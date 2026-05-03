@@ -1420,8 +1420,10 @@ a:hover {
   border-radius: var(--radius);
   padding: 20px 24px;
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
   max-width: 800px;
   margin: clamp(24px, 4vh, 40px) auto clamp(8px, 2vh, 16px);
   box-shadow: var(--shadow);
@@ -1433,16 +1435,22 @@ a:hover {
 }
 
 .speak-up-icon {
-  font-size: 1.6rem;
+  font-size: 1.75rem;
   flex-shrink: 0;
   line-height: 1;
-  margin-top: 2px;
+  margin: 0;
+}
+
+.speak-up-box .speak-up-body {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 .speak-up-box h3 {
   font-size: clamp(0.9rem, 0.6vw + 0.78rem, 1rem);
   font-weight: 700;
-  margin-bottom: 6px;
+  margin: 0 0 8px;
   color: var(--text);
   line-height: 1.25;
 }
@@ -1457,8 +1465,8 @@ a:hover {
 .speak-up-disclaimer {
   font-size: 0.7rem !important;
   color: var(--text-muted) !important;
-  margin-top: 10px !important;
-  padding-top: 8px;
+  margin-top: 12px !important;
+  padding-top: 10px;
   border-top: 1px solid var(--border);
   font-style: italic;
 }

@@ -1,5 +1,34 @@
 import Link from "next/link";
 
+const siteUrl = "https://prohealthledger.org";
+const OG_IMAGE = `${siteUrl}/og_banner.png`;
+
+/** Homepage-only link preview art (root layout intentionally omits default og:image). */
+export const metadata = {
+  openGraph: {
+    images: [
+      {
+        url: OG_IMAGE,
+        secureUrl: OG_IMAGE,
+        width: 1024,
+        height: 536,
+        type: "image/png",
+        alt: "ProHealthLedger — Know who you are working with before you commit.",
+      },
+    ],
+  },
+  twitter: {
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1024,
+        height: 536,
+        alt: "ProHealthLedger — Know who you are working with before you commit.",
+      },
+    ],
+  },
+};
+
 export default function Home() {
   return (
     <>
@@ -112,7 +141,7 @@ export default function Home() {
         <span className="speak-up-icon" aria-hidden>
           🛡️
         </span>
-        <div>
+        <div className="speak-up-body">
           <h3>It&apos;s safe to speak up.</h3>
           <p>
             &ldquo;Would I work with them again?&rdquo; — only you can answer

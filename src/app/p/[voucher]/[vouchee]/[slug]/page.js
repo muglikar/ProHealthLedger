@@ -8,8 +8,8 @@ const SITE_ORIGIN = (
 
 /**
  * STRICT SERVER COMPONENT (No 'use client')
- * Open Graph image URL is provided by ./opengraph-image.js (clean path, no ?query)
- * so crawlers like LinkedIn resolve the same asset as the permalink.
+ * og:image comes from ./opengraph-image.js. Root layout no longer sets a global
+ * og:image, so crawlers do not pick the homepage banner for vouch permalinks.
  */
 
 export async function generateMetadata({ params }) {

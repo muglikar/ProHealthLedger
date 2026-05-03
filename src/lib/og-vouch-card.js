@@ -63,6 +63,7 @@ export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
         backgroundImage:
           "linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%)",
         padding: `${50 * scale}px ${60 * scale}px`,
+        fontFamily: "Monda, sans-serif",
       }}
     >
       <div
