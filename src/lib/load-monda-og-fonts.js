@@ -1,52 +1,70 @@
-/** Load Monda WOFF2 binaries for @vercel/og ImageResponse (cached per runtime). */
+import { readFile } from "fs/promises";
+import path from "path";
 
-let cachePromise = null;
+/**
+ * Vendored WOFF (v1) at `public/fonts/monda-400.woff` + `monda-700.woff`.
+ * Satori rejects WOFF2; variable TTF also fails — static latin WOFF works.
+ */
+let resolvedFonts = null;
 
-async function fetchMondaFontData() {
-  const css = await fetch(
-    "https://fonts.googleapis.com/css2?family=Monda:wght@400;700&display=swap",
-    {
-      headers: {
-        "user-agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      },
-    }
-  ).then((r) => r.text());
-
-  const blocks = [...css.matchAll(/@font-face\s*\{[^}]+\}/g)].map((m) => m[0]);
-  const urlByWeight = new Map();
-
-  for (const block of blocks) {
-    if (!/font-family:\s*['"]Monda['"]/.test(block)) continue;
-    if (!/format\(['"]woff2['"]\)/.test(block)) continue;
-    const w = Number(/font-weight:\s*(\d+)/.exec(block)?.[1]);
-    const url = /url\((https:\/\/fonts\.gstatic\.com[^)]+)\)/.exec(block)?.[1];
-    if (!Number.isFinite(w) || !url) continue;
-    if (!urlByWeight.has(w)) urlByWeight.set(w, url);
-  }
-
-  const fonts = [];
-  for (const weight of [400, 700]) {
-    const url = urlByWeight.get(weight);
-    if (!url) continue;
-    const data = await fetch(url).then((r) => r.arrayBuffer());
-    fonts.push({
-      name: "Monda",
-      data,
-      style: "normal",
-      weight,
-    });
-  }
-
-  if (fonts.length < 1) {
-    throw new Error("Could not load Monda fonts for OG image");
-  }
-  return fonts;
+function fontEntriesFromBuffers(buf400, buf700) {
+  const d400 =
+    buf400 instanceof ArrayBuffer
+      ? buf400
+      : buf400.buffer.slice(buf400.byteOffset, buf400.byteOffset + buf400.byteLength);
+  const d700 =
+    buf700 instanceof ArrayBuffer
+      ? buf700
+      : buf700.buffer.slice(buf700.byteOffset, buf700.byteOffset + buf700.byteLength);
+  return [
+    { name: "Monda", data: d400, style: "normal", weight: 400 },
+    { name: "Monda", data: d700, style: "normal", weight: 700 },
+  ];
 }
 
-export function getMondaFontsForOg() {
-  if (!cachePromise) {
-    cachePromise = fetchMondaFontData();
+async function readLocalPair() {
+  const base = path.join(process.cwd(), "public", "fonts");
+  const [buf400, buf700] = await Promise.all([
+    readFile(path.join(base, "monda-400.woff")),
+    readFile(path.join(base, "monda-700.woff")),
+  ]);
+  return fontEntriesFromBuffers(buf400, buf700);
+}
+
+async function fetchPairFromSite() {
+  const origin = (
+    process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org"
+  ).replace(/\/+$/, "");
+  const [res400, res700] = await Promise.all([
+    fetch(`${origin}/fonts/monda-400.woff`, { signal: AbortSignal.timeout(8000) }),
+    fetch(`${origin}/fonts/monda-700.woff`, { signal: AbortSignal.timeout(8000) }),
+  ]);
+  if (!res400.ok || !res700.ok) {
+    throw new Error(`monda woff HTTP ${res400.status}/${res700.status}`);
   }
-  return cachePromise;
+  const [b400, b700] = await Promise.all([
+    res400.arrayBuffer(),
+    res700.arrayBuffer(),
+  ]);
+  return fontEntriesFromBuffers(Buffer.from(b400), Buffer.from(b700));
+}
+
+export async function getMondaFontsForOg() {
+  if (resolvedFonts) return resolvedFonts;
+
+  try {
+    resolvedFonts = await readLocalPair();
+    return resolvedFonts;
+  } catch {
+    /* Edge: no fs */
+  }
+
+  try {
+    resolvedFonts = await fetchPairFromSite();
+    return resolvedFonts;
+  } catch (e) {
+    console.error("getMondaFontsForOg: fallback sans-serif", e?.message || e);
+    resolvedFonts = [];
+    return resolvedFonts;
+  }
 }
