@@ -3,13 +3,12 @@ import { buildVouchOgUrl } from "@/lib/og-vouch-url";
 import { segmentToDisplayName } from "@/lib/og-vouch-card";
 import { Suspense } from "react";
 
-const SITE_ORIGIN = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org"
-).replace(/\/+$/, "");
+/** Crawlers must see the production host on og:image (matches d64ed65 hardcoded URL). */
+const CANONICAL_ORIGIN = "https://prohealthledger.org";
 
 /**
- * Same metadata pattern as f0620e7: absolute `og:image` → `/api/og?...`
- * (no opengraph-image route). Keeps camelCase display names + cache-bust `v`.
+ * Same metadata pattern as d64ed65 / f0620e7: absolute `og:image` → `/api/og?...`.
+ * Display names use segmentToDisplayName (camelCase segments → readable names).
  */
 
 export async function generateMetadata({ params }) {
@@ -17,8 +16,8 @@ export async function generateMetadata({ params }) {
   try {
     const cleanVoucher = segmentToDisplayName(resolvedParams?.voucher);
     const cleanVouchee = segmentToDisplayName(resolvedParams?.vouchee);
-    const ogUrl = buildVouchOgUrl(SITE_ORIGIN, cleanVoucher, cleanVouchee);
-    const pageUrl = `${SITE_ORIGIN}/p/${encodeURIComponent(
+    const ogUrl = buildVouchOgUrl(CANONICAL_ORIGIN, cleanVoucher, cleanVouchee);
+    const pageUrl = `${CANONICAL_ORIGIN}/p/${encodeURIComponent(
       resolvedParams?.voucher || ""
     )}/${encodeURIComponent(resolvedParams?.vouchee || "")}/${encodeURIComponent(
       resolvedParams?.slug || ""
