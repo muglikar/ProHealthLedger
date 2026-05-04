@@ -43,9 +43,11 @@ export function formatVouchOgLines(cleanVoucher, cleanVouchee, rawMax = 100) {
   return { voucherText, voucheeText, nameSize };
 }
 
+const OG_W = 1200;
+const OG_H = 627; // LinkedIn recommends 1.91:1 → 1200×627
+
 /**
- * Classic PHL vouch card (post–f6513d3 layout). Use `scale={1}` with 1200×630 ImageResponse.
- * No bundled fonts — matches the stable pre–custom-font OG pipeline.
+ * Classic PHL vouch card. Canvas matches `createVouchOgImageResponse` (LinkedIn spec height).
  */
 export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
   const px = (n) => `${n * scale}px`;
@@ -54,8 +56,8 @@ export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
   return (
     <div
       style={{
-        width: px(1200),
-        height: px(630),
+        width: px(OG_W),
+        height: px(OG_H),
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

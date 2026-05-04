@@ -2,7 +2,7 @@
  * Crawlers cache previews by image URL. Bump after OG/CORP fixes so caches refetch.
  * Primary image: `/p/.../opengraph-image?v=…`; fallback API: `/api/og?…&v=…`.
  */
-export const OG_VOUCH_PREVIEW_VERSION = "13";
+export const OG_VOUCH_PREVIEW_VERSION = "14";
 
 /** Permalink opengraph-image (preferred for crawlers). Uses raw path segments. */
 export function buildVouchOpengraphImageUrl(

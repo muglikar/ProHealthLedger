@@ -1,13 +1,17 @@
 import { ImageResponse } from "next/og";
 import { formatVouchOgLines, VouchOgCardJsx } from "@/lib/og-vouch-card";
 
+/** LinkedIn’s documented share image ratio ≈ 1.91:1 → 1200×627. */
+export const VOUCH_OG_WIDTH = 1200;
+export const VOUCH_OG_HEIGHT = 627;
+
 const CACHE_HEADERS = {
   "Cross-Origin-Resource-Policy": "cross-origin",
   "Cache-Control":
     "public, max-age=3600, s-maxage=86400, stale-while-revalidate=43200",
 };
 
-const IMAGE_SIZE = { width: 1200, height: 630 };
+const IMAGE_SIZE = { width: VOUCH_OG_WIDTH, height: VOUCH_OG_HEIGHT };
 
 /**
  * Single implementation for `/api/og` and `opengraph-image` (same PNG bytes).

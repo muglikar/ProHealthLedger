@@ -66,24 +66,52 @@ const INTERNAL_ORIGIN = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : SITE_ORIGIN;
 
-/**
- * Same pixels as `og:image` on the permalink: .../opengraph-image (SSRF-safe:
- * path comes only from validated same-origin `articleUrl`).
- */
-function buildOgFetchUrl(articleUrl, cleanVoucher, cleanVouchee) {
+function vouchArticlePathname(articleUrl) {
   try {
     const u = new URL(articleUrl);
     const path = u.pathname.replace(/\/$/, "");
-    if (/^\/p\/[^/]+\/[^/]+\/[^/]+$/.test(path)) {
-      const base = INTERNAL_ORIGIN.replace(/\/+$/, "");
-      return `${base}${path}/opengraph-image?v=${OG_VOUCH_PREVIEW_VERSION}`;
-    }
+    if (/^\/p\/[^/]+\/[^/]+\/[^/]+$/.test(path)) return path;
   } catch {
-    /* fall through */
+    /* ignore */
   }
-  const v = clampString(cleanVoucher || "A_Colleague", MAX_NAME_PART);
+  return null;
+}
+
+/**
+ * Ordered list of server-safe OG PNG URLs (same-origin only). Prefer the
+ * public hostname first — LinkedIn scrapes that URL; `VERCEL_URL` fetches can fail cold.
+ */
+function buildOgFetchCandidates(articleUrl, cleanVoucher, cleanVouchee) {
+  const path = vouchArticlePathname(articleUrl);
+  const out = [];
+  const v = clampString(cleanVoucher || "A Colleague", MAX_NAME_PART);
   const uv = clampString(cleanVouchee || "Professional", MAX_NAME_PART);
-  return buildVouchOgUrl(INTERNAL_ORIGIN, v, uv);
+  const siteBase = SITE_ORIGIN.replace(/\/+$/, "");
+  const internalBase = INTERNAL_ORIGIN.replace(/\/+$/, "");
+  const q = `v=${OG_VOUCH_PREVIEW_VERSION}`;
+
+  if (path) {
+    out.push(`${siteBase}${path}/opengraph-image?${q}`);
+    if (internalBase !== siteBase) {
+      out.push(`${internalBase}${path}/opengraph-image?${q}`);
+    }
+  }
+  out.push(buildVouchOgUrl(SITE_ORIGIN, v, uv));
+  if (internalBase !== siteBase) {
+    out.push(buildVouchOgUrl(INTERNAL_ORIGIN, v, uv));
+  }
+  return out;
+}
+
+function isPngBuffer(buf) {
+  return (
+    buf &&
+    buf.length > 500 &&
+    buf[0] === 0x89 &&
+    buf[1] === 0x50 &&
+    buf[2] === 0x4e &&
+    buf[3] === 0x47
+  );
 }
 
 export async function POST(req) {
@@ -163,26 +191,40 @@ export async function POST(req) {
   // --- 3-Step Asset Upload: Fetch OG image → Initialize → PUT → Poll ---
   // The OG URL is built on the server (no client-provided URL is ever fetched
   // server-side — that would be SSRF).
-  const ogUrl = buildOgFetchUrl(safeArticleUrl, cleanVoucher, cleanVouchee);
+  const ogCandidates = buildOgFetchCandidates(
+    safeArticleUrl,
+    cleanVoucher,
+    cleanVouchee
+  );
   let imageUrn = null;
   try {
     let imageBuffer = null;
 
-    // Step 0: Fetch our own OG image via internal Vercel URL (bypasses Cloudflare).
-    try {
-      const ogRes = await fetch(ogUrl, { signal: AbortSignal.timeout(8000) });
-      if (ogRes.ok) {
-        imageBuffer = Buffer.from(await ogRes.arrayBuffer());
-        console.log("OG image fetched OK:", imageBuffer.length, "bytes from", ogUrl);
-      } else {
-        console.error("OG image fetch non-OK:", ogRes.status, ogRes.statusText, ogUrl);
+    for (const ogUrl of ogCandidates) {
+      try {
+        const ogRes = await fetch(ogUrl, {
+          signal: AbortSignal.timeout(15_000),
+          headers: { Accept: "image/png,image/*;q=0.8,*/*;q=0.5" },
+        });
+        if (ogRes.ok) {
+          const buf = Buffer.from(await ogRes.arrayBuffer());
+          if (isPngBuffer(buf)) {
+            imageBuffer = buf;
+            console.log("OG image fetched OK:", buf.length, "bytes from", ogUrl);
+            break;
+          }
+          console.error("OG response not a PNG:", buf?.length, ogUrl);
+        } else {
+          console.error("OG image fetch non-OK:", ogRes.status, ogRes.statusText, ogUrl);
+        }
+      } catch (ogErr) {
+        console.error("OG image fetch exception:", ogErr.message, ogUrl);
       }
-    } catch (ogErr) {
-      console.error("OG image fetch exception:", ogErr.message, ogUrl);
     }
 
-    // Fallback: static banner
-    if (!imageBuffer) {
+    // Homepage-style banner only for non-vouch links. For /p/… never upload
+    // the banner or LinkedIn may pair the wrong art with the article card.
+    if (!imageBuffer && !vouchArticlePathname(safeArticleUrl)) {
       try {
         const fs = await import("fs/promises");
         const path = await import("path");
