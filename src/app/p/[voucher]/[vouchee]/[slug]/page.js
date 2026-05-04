@@ -1,5 +1,9 @@
 import ProfilesClient from "@/app/profiles/ProfilesClient";
 import { buildVouchOgUrl } from "@/lib/og-vouch-url";
+import {
+  VOUCH_OG_HEIGHT,
+  VOUCH_OG_WIDTH,
+} from "@/lib/create-vouch-og-image-response";
 import { segmentToDisplayName } from "@/lib/og-vouch-card";
 import { Suspense } from "react";
 
@@ -34,8 +38,8 @@ export async function generateMetadata({ params }) {
           {
             url: ogUrl,
             secureUrl: ogUrl,
-            width: 1200,
-            height: 627,
+            width: VOUCH_OG_WIDTH,
+            height: VOUCH_OG_HEIGHT,
             type: "image/png",
             alt: title,
           },
