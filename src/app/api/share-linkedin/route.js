@@ -258,6 +258,7 @@ export async function POST(req) {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token.linkedinAccessToken}`,
+            "Content-Type": "application/octet-stream",
           },
           body: imageBuffer,
         });
