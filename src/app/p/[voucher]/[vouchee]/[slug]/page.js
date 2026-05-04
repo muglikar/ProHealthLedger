@@ -1,24 +1,19 @@
 import ProfilesClient from "@/app/profiles/ProfilesClient";
-import { buildVouchOpengraphImageUrl } from "@/lib/og-vouch-url";
+import { buildVouchOgUrl } from "@/lib/og-vouch-url";
 import { segmentToDisplayName } from "@/lib/og-vouch-card";
 import { Suspense } from "react";
 
 /** Crawlers must see the production host on og:image. */
 const CANONICAL_ORIGIN = "https://prohealthledger.org";
 
-/** `og:image` / `twitter:image` → `/p/.../opengraph-image` (canonical for share uploads + scrapers). */
+/** `og:image` → `/api/og?voucherName=&voucheeName=` (simple HTTPS URL; LinkedIn often handles this better than dynamic path segments). */
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params; // Mandatory in Next.js 15+
   try {
     const cleanVoucher = segmentToDisplayName(resolvedParams?.voucher);
     const cleanVouchee = segmentToDisplayName(resolvedParams?.vouchee);
-    const ogUrl = buildVouchOpengraphImageUrl(
-      CANONICAL_ORIGIN,
-      resolvedParams?.voucher,
-      resolvedParams?.vouchee,
-      resolvedParams?.slug
-    );
+    const ogUrl = buildVouchOgUrl(CANONICAL_ORIGIN, cleanVoucher, cleanVouchee);
     const pageUrl = `${CANONICAL_ORIGIN}/p/${encodeURIComponent(
       resolvedParams?.voucher || ""
     )}/${encodeURIComponent(resolvedParams?.vouchee || "")}/${encodeURIComponent(
@@ -32,7 +27,7 @@ export async function generateMetadata({ params }) {
       openGraph: {
         title,
         description: `View the verified professional vouch on ProHealthLedger.`,
-        type: "website",
+        type: "article",
         url: pageUrl,
         siteName: "Professional Health Ledger",
         images: [

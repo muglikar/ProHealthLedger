@@ -12,7 +12,7 @@ import {
  *
  * Publishes a vouch to the authenticated user's LinkedIn feed using the
  * Posts API with:
- *  - 3-step asset upload from `…/opengraph-image` on the article path (server-built URL)
+ *  - 3-step asset upload: tries `/api/og` first (same URL as `og:image`), then `…/opengraph-image`
  *  - Clean article card titles (no underscores)
  *
  * Body: {
@@ -24,11 +24,9 @@ import {
  *   cleanVouchee?: string,     // used to build the server-side OG URL
  * }
  *
- * SSRF hardening: never fetch a client-supplied image URL. Thumbnail fetch uses
- * `articleUrl` pathname → `/p/…/opengraph-image` (after same-origin check).
+ * Thumbnail fetch uses names → `/api/og` (matches metadata) and path → `…/opengraph-image`.
  */
 
-/** Canonical site origin (no trailing slash). Used for SSRF + article-URL allowlists. */
 const SITE_ORIGIN = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org"
 ).replace(/\/+$/, "");
@@ -90,15 +88,16 @@ function buildOgFetchCandidates(articleUrl, cleanVoucher, cleanVouchee) {
   const internalBase = INTERNAL_ORIGIN.replace(/\/+$/, "");
   const q = `v=${OG_VOUCH_PREVIEW_VERSION}`;
 
+  /* Same URL order as `og:image` on the permalink (api first), then alternates. */
+  out.push(buildVouchOgUrl(SITE_ORIGIN, v, uv));
   if (path) {
     out.push(`${siteBase}${path}/opengraph-image?${q}`);
-    if (internalBase !== siteBase) {
-      out.push(`${internalBase}${path}/opengraph-image?${q}`);
-    }
   }
-  out.push(buildVouchOgUrl(SITE_ORIGIN, v, uv));
   if (internalBase !== siteBase) {
     out.push(buildVouchOgUrl(INTERNAL_ORIGIN, v, uv));
+    if (path) {
+      out.push(`${internalBase}${path}/opengraph-image?${q}`);
+    }
   }
   return out;
 }
