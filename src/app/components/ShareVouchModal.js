@@ -122,6 +122,11 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
       const json = await res.json();
       if (res.ok && json.ok) {
         setDirectPostResult("success");
+        console.log("[PHL Share] Post success:", {
+          postId: json.postId,
+          thumbnailIncluded: json.thumbnailIncluded,
+          imageUrn: json.imageUrn,
+        });
       } else {
         setDirectPostResult("error");
         setDirectPostErrorDetails(json.error || "LinkedIn rejected the post.");
