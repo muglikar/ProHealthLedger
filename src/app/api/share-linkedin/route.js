@@ -236,53 +236,78 @@ export async function POST(req) {
 
     if (imageBuffer) {
       // Step A: Initialize Upload
-      const initRes = await fetch("https://api.linkedin.com/rest/images?action=initializeUpload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token.linkedinAccessToken}`,
-          "Content-Type": "application/json",
-          "LinkedIn-Version": "202604",
-        },
-        body: JSON.stringify({
-          initializeUploadRequest: { owner: `urn:li:person:${linkedinSub}` },
-        }),
-      });
+      let initData;
+      try {
+        const initRes = await fetch("https://api.linkedin.com/rest/images?action=initializeUpload", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token.linkedinAccessToken}`,
+            "Content-Type": "application/json",
+            "LinkedIn-Version": "202604",
+          },
+          body: JSON.stringify({
+            initializeUploadRequest: { owner: `urn:li:person:${linkedinSub}` },
+          }),
+        });
 
-      if (initRes.ok) {
-        const initData = await initRes.json();
+        if (!initRes.ok) {
+          const errText = await initRes.text().catch(() => "");
+          console.error("Image init failed:", initRes.status, errText);
+          // Continue without thumbnail
+        } else {
+          initData = await initRes.json();
+        }
+      } catch (initErr) {
+        console.error("Image init exception:", initErr.message);
+      }
+
+      if (initData?.value?.uploadUrl && initData?.value?.image) {
         const uploadUrl = initData.value.uploadUrl;
         const urn = initData.value.image;
 
-        // Step B: PUT Binary Data
-        const putRes = await fetch(uploadUrl, {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token.linkedinAccessToken}`,
-            "Content-Type": "application/octet-stream",
-          },
-          body: imageBuffer,
-        });
+        // Step B: PUT Binary Data — explicit Uint8Array + Content-Length
+        const binaryBody = new Uint8Array(imageBuffer);
+        let putOk = false;
+        try {
+          const putRes = await fetch(uploadUrl, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token.linkedinAccessToken}`,
+              "Content-Type": "application/octet-stream",
+              "Content-Length": String(binaryBody.byteLength),
+            },
+            body: binaryBody,
+          });
 
-        if (putRes.ok) {
-          // Step C: Poll for AVAILABLE status
+          putOk = putRes.ok || putRes.status === 201;
+          if (!putOk) {
+            const putErr = await putRes.text().catch(() => "");
+            console.error("Image PUT failed:", putRes.status, putErr);
+          } else {
+            console.log("Image PUT succeeded:", putRes.status, binaryBody.byteLength, "bytes");
+          }
+        } catch (putErr) {
+          console.error("Image PUT exception:", putErr.message);
+        }
+
+        if (putOk) {
+          // Step C: Poll for AVAILABLE status — longer wait, more attempts
           let isAvailable = false;
-          let attempts = 0;
-          const maxAttempts = 5;
-
-          while (!isAvailable && attempts < maxAttempts) {
-            attempts++;
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-
+          for (let attempt = 1; attempt <= 8; attempt++) {
+            await new Promise((resolve) => setTimeout(resolve, 2000));
             try {
-              const statusRes = await fetch(`https://api.linkedin.com/rest/images/${urn}`, {
-                headers: {
-                  Authorization: `Bearer ${token.linkedinAccessToken}`,
-                  "LinkedIn-Version": "202604",
-                },
-              });
-
+              const statusRes = await fetch(
+                `https://api.linkedin.com/rest/images/${encodeURIComponent(urn)}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token.linkedinAccessToken}`,
+                    "LinkedIn-Version": "202604",
+                  },
+                }
+              );
               if (statusRes.ok) {
                 const statusData = await statusRes.json();
+                console.log(`Image poll attempt ${attempt}: status=${statusData.status}`);
                 if (statusData.status === "AVAILABLE") {
                   isAvailable = true;
                   imageUrn = urn;
@@ -290,19 +315,15 @@ export async function POST(req) {
                 }
               }
             } catch (pollErr) {
-              console.error("Image poll error:", pollErr.message);
+              console.error(`Image poll attempt ${attempt} error:`, pollErr.message);
             }
           }
 
-          // If polling didn't confirm AVAILABLE, try using the URN anyway
-          // (LinkedIn often processes faster than the status endpoint reports)
+          // Only use URN if confirmed AVAILABLE — don't gamble with unprocessed URNs
           if (!isAvailable) {
-            imageUrn = urn;
+            console.warn("Image never reached AVAILABLE after 8 polls — posting without thumbnail");
           }
         }
-      } else {
-        const initErr = await initRes.text();
-        console.error("Image init failed:", initRes.status, initErr);
       }
     }
   } catch (err) {
@@ -430,7 +451,12 @@ export async function POST(req) {
 
     if (liRes.status === 201 || liRes.status === 200) {
       const postId = liRes.headers.get("x-restli-id") || "";
-      return Response.json({ ok: true, postId });
+      return Response.json({
+        ok: true,
+        postId,
+        thumbnailIncluded: Boolean(imageUrn),
+        imageUrn: imageUrn || null,
+      });
     }
 
     // Still failed
