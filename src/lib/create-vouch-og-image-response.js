@@ -1,9 +1,10 @@
 import { ImageResponse } from "next/og";
 import { formatVouchOgLines, VouchOgCardJsx } from "@/lib/og-vouch-card";
 
-/** LinkedIn’s documented share image ratio ≈ 1.91:1 → 1200×627. */
-export const VOUCH_OG_WIDTH = 1200;
-export const VOUCH_OG_HEIGHT = 627;
+/** Logical card size (1.91:1). LinkedIn recommends ~1200×627; we raster at 2× for sharp downscale. */
+export const VOUCH_OG_RASTER_SCALE = 2;
+export const VOUCH_OG_WIDTH = 1200 * VOUCH_OG_RASTER_SCALE;
+export const VOUCH_OG_HEIGHT = 627 * VOUCH_OG_RASTER_SCALE;
 
 const CACHE_HEADERS = {
   "Cross-Origin-Resource-Policy": "cross-origin",
@@ -28,7 +29,7 @@ export function createVouchOgImageResponse(cleanVoucher, cleanVouchee) {
       voucherText={voucherText}
       voucheeText={voucheeText}
       nameSize={nameSize}
-      scale={1}
+      scale={VOUCH_OG_RASTER_SCALE}
     />,
     {
       ...IMAGE_SIZE,
