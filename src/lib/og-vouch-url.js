@@ -3,7 +3,7 @@
  * Permalink `og:image` uses `/api/og?…` (simple URL, matches historical working behavior).
  * `buildVouchOpengraphImageUrl` kept for optional tools / parity with `opengraph-image` route.
  */
-export const OG_VOUCH_PREVIEW_VERSION = "16";
+export const OG_VOUCH_PREVIEW_VERSION = "17";
 
 /** Permalink opengraph-image (preferred for crawlers). Uses raw path segments. */
 export function buildVouchOpengraphImageUrl(

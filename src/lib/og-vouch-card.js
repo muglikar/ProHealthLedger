@@ -47,7 +47,8 @@ const OG_W = 1200;
 const OG_H = 627; // LinkedIn recommends 1.91:1 → 1200×627
 
 /**
- * Classic PHL vouch card. Canvas matches `createVouchOgImageResponse` (LinkedIn spec height).
+ * Classic PHL vouch card with Monda font.
+ * Names use Monda Regular (weight 400), "vouched for" uses Monda Italic.
  */
 export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
   const px = (n) => `${n * scale}px`;
@@ -66,9 +67,10 @@ export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
         backgroundImage:
           "linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%)",
         padding: `${50 * scale}px ${60 * scale}px`,
-        fontFamily: "sans-serif",
+        fontFamily: "Monda, sans-serif",
       }}
     >
+      {/* Top: PHL Logo + Branding */}
       <div
         style={{
           display: "flex",
@@ -107,6 +109,7 @@ export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
         </div>
       </div>
 
+      {/* Center: [Voucher] vouched for [Vouchee] */}
       <div
         style={{
           display: "flex",
@@ -118,11 +121,12 @@ export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
           justifyContent: "center",
         }}
       >
+        {/* Voucher Name — Monda Regular */}
         <div
           style={{
             display: "flex",
             fontSize: namePx,
-            fontWeight: 700,
+            fontWeight: 400,
             color: "#0f172a",
             lineHeight: 1.15,
             marginBottom: px(24),
@@ -130,11 +134,12 @@ export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
         >
           {voucherText}
         </div>
+        {/* "vouched for" — Monda Italic */}
         <div
           style={{
             display: "flex",
             fontSize: namePx,
-            fontWeight: 700,
+            fontWeight: 400,
             color: "#059669",
             fontStyle: "italic",
             marginBottom: px(24),
@@ -142,11 +147,12 @@ export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
         >
           vouched for
         </div>
+        {/* Vouchee Name — Monda Regular */}
         <div
           style={{
             display: "flex",
             fontSize: namePx,
-            fontWeight: 700,
+            fontWeight: 400,
             color: "#0f172a",
             lineHeight: 1.15,
           }}
@@ -155,6 +161,7 @@ export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
         </div>
       </div>
 
+      {/* Bottom: Tagline */}
       <div
         style={{
           display: "flex",
@@ -171,7 +178,7 @@ export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
             display: "flex",
             fontSize: px(26),
             color: "#475569",
-            fontWeight: 500,
+            fontWeight: 400,
             textAlign: "center",
           }}
         >
