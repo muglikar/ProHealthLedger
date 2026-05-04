@@ -1,19 +1,15 @@
-import { ImageResponse } from "next/og";
-import {
-  displayFromParam,
-  formatVouchOgLines,
-  VouchOgCardJsx,
-} from "@/lib/og-vouch-card";
+import { displayFromParam } from "@/lib/og-vouch-card";
+import { createVouchOgImageResponse } from "@/lib/create-vouch-og-image-response";
 
 export const runtime = "edge";
 
 /**
- * Pattern from f6513d3: Edge ImageResponse, no custom font binaries — Satori-safe.
+ * GET `/api/og?voucherName=&voucheeName=` — query-style OG (legacy, direct links).
+ * Metadata and LinkedIn share prefer `/p/.../opengraph-image` (see `opengraph-image.js`).
  */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-
     const rawMax = 100;
     const cleanVoucher = displayFromParam(
       searchParams.get("voucherName"),
@@ -24,30 +20,7 @@ export async function GET(request) {
       "Professional"
     ).slice(0, rawMax);
 
-    const { voucherText, voucheeText, nameSize } = formatVouchOgLines(
-      cleanVoucher,
-      cleanVouchee
-    );
-
-    return new ImageResponse(
-      <VouchOgCardJsx
-        voucherText={voucherText}
-        voucheeText={voucheeText}
-        nameSize={nameSize}
-        scale={1}
-      />,
-      {
-        width: 1200,
-        height: 630,
-        headers: {
-          "Cross-Origin-Resource-Policy": "cross-origin",
-          // d64ed65-era behavior worked with platform CDNs; avoid max-age=0 so
-          // crawlers (LinkedIn) don't treat the asset as always-stale / fall back to screenshots.
-          "Cache-Control":
-            "public, max-age=3600, s-maxage=86400, stale-while-revalidate=43200",
-        },
-      }
-    );
+    return createVouchOgImageResponse(cleanVoucher, cleanVouchee);
   } catch (e) {
     console.error("OG image generation error:", e);
     return new Response("OG generation failed", { status: 500 });
