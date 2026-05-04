@@ -32,7 +32,7 @@ export async function generateMetadata({ params }) {
       openGraph: {
         title,
         description: `View the verified professional vouch on ProHealthLedger.`,
-        type: "article",
+        type: "website",
         url: pageUrl,
         siteName: "Professional Health Ledger",
         images: [
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }) {
             url: ogUrl,
             secureUrl: ogUrl,
             width: 1200,
-            height: 630,
+            height: 627,
             type: "image/png",
             alt: title,
           },
