@@ -1,22 +1,24 @@
 import ProfilesClient from "@/app/profiles/ProfilesClient";
-import { buildVouchOgUrl } from "@/lib/og-vouch-url";
+import { buildVouchOpengraphImageUrl } from "@/lib/og-vouch-url";
 import { segmentToDisplayName } from "@/lib/og-vouch-card";
 import { Suspense } from "react";
 
-/** Crawlers must see the production host on og:image (matches d64ed65 hardcoded URL). */
+/** Crawlers must see the production host on og:image. */
 const CANONICAL_ORIGIN = "https://prohealthledger.org";
 
-/**
- * Same metadata pattern as d64ed65 / f0620e7: absolute `og:image` → `/api/og?...`.
- * Display names use segmentToDisplayName (camelCase segments → readable names).
- */
+/** `og:image` / `twitter:image` → `/p/.../opengraph-image` (canonical for share uploads + scrapers). */
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params; // Mandatory in Next.js 15+
   try {
     const cleanVoucher = segmentToDisplayName(resolvedParams?.voucher);
     const cleanVouchee = segmentToDisplayName(resolvedParams?.vouchee);
-    const ogUrl = buildVouchOgUrl(CANONICAL_ORIGIN, cleanVoucher, cleanVouchee);
+    const ogUrl = buildVouchOpengraphImageUrl(
+      CANONICAL_ORIGIN,
+      resolvedParams?.voucher,
+      resolvedParams?.vouchee,
+      resolvedParams?.slug
+    );
     const pageUrl = `${CANONICAL_ORIGIN}/p/${encodeURIComponent(
       resolvedParams?.voucher || ""
     )}/${encodeURIComponent(resolvedParams?.vouchee || "")}/${encodeURIComponent(

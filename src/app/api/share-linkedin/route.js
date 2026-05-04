@@ -1,5 +1,5 @@
 import { getToken } from "next-auth/jwt";
-import { buildVouchOgUrl } from "@/lib/og-vouch-url";
+import { buildVouchOgUrl, OG_VOUCH_PREVIEW_VERSION } from "@/lib/og-vouch-url";
 import {
   envLimit,
   getClientIp,
@@ -12,7 +12,7 @@ import {
  *
  * Publishes a vouch to the authenticated user's LinkedIn feed using the
  * Posts API with:
- *  - 3-step asset upload from our instant OG image route (server-built URL only)
+ *  - 3-step asset upload from `…/opengraph-image` on the article path (server-built URL)
  *  - Clean article card titles (no underscores)
  *
  * Body: {
@@ -24,9 +24,8 @@ import {
  *   cleanVouchee?: string,     // used to build the server-side OG URL
  * }
  *
- * SSRF hardening: this route never fetches a client-supplied URL. The OG
- * image URL is constructed on the server from `cleanVoucher` /
- * `cleanVouchee`, and `articleUrl` is required to be same-origin.
+ * SSRF hardening: never fetch a client-supplied image URL. Thumbnail fetch uses
+ * `articleUrl` pathname → `/p/…/opengraph-image` (after same-origin check).
  */
 
 /** Canonical site origin (no trailing slash). Used for SSRF + article-URL allowlists. */
@@ -67,8 +66,21 @@ const INTERNAL_ORIGIN = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : SITE_ORIGIN;
 
-/** Server-built `/api/og` URL only (SSRF-safe — never fetch client URL). */
-function buildOgFetchUrl(cleanVoucher, cleanVouchee) {
+/**
+ * Same pixels as `og:image` on the permalink: .../opengraph-image (SSRF-safe:
+ * path comes only from validated same-origin `articleUrl`).
+ */
+function buildOgFetchUrl(articleUrl, cleanVoucher, cleanVouchee) {
+  try {
+    const u = new URL(articleUrl);
+    const path = u.pathname.replace(/\/$/, "");
+    if (/^\/p\/[^/]+\/[^/]+\/[^/]+$/.test(path)) {
+      const base = INTERNAL_ORIGIN.replace(/\/+$/, "");
+      return `${base}${path}/opengraph-image?v=${OG_VOUCH_PREVIEW_VERSION}`;
+    }
+  } catch {
+    /* fall through */
+  }
   const v = clampString(cleanVoucher || "A_Colleague", MAX_NAME_PART);
   const uv = clampString(cleanVouchee || "Professional", MAX_NAME_PART);
   return buildVouchOgUrl(INTERNAL_ORIGIN, v, uv);
@@ -151,7 +163,7 @@ export async function POST(req) {
   // --- 3-Step Asset Upload: Fetch OG image → Initialize → PUT → Poll ---
   // The OG URL is built on the server (no client-provided URL is ever fetched
   // server-side — that would be SSRF).
-  const ogUrl = buildOgFetchUrl(cleanVoucher, cleanVouchee);
+  const ogUrl = buildOgFetchUrl(safeArticleUrl, cleanVoucher, cleanVouchee);
   let imageUrn = null;
   try {
     let imageBuffer = null;
