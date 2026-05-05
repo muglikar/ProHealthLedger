@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "strict": false,
+    "declaration": true,
+    "allowJs": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "lib",
+    "examples",
+    "tests"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "typedocOptions": {
+    "entryPoints": ["lib/index.ts"],
+    "out": "docs"
+  }
+}
