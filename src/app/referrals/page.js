@@ -53,6 +53,28 @@ export default function ReferralsPage() {
     );
   }
 
+  const handleCreateGeneralReferral = async () => {
+    setCreating(true);
+    try {
+      const res = await fetch("/api/referrals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          profileSlug: "__home__",
+          profileName: "ProHealthLedger Homepage",
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to create link");
+      fetchReferrals();
+    } catch (err) {
+      alert("Error: " + err.message);
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const generalReferral = referrals.find((r) => r.profile_slug === "__home__");
+
   if (!session) {
     return (
       <section className="submit-hero">
