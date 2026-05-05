@@ -996,5 +996,21 @@
     "url": "https://prohealthledger.org/submit",
     "referrer": "https://prohealthledger.org/",
     "metadata": {}
+  },
+  {
+    "timestamp": "2026-05-05T20:02:44.027Z",
+    "name": "error",
+    "user_id": "linkedin:CAOSO1oig0",
+    "ip": null,
+    "geo": {
+      "city": "Marseille",
+      "region": "PAC",
+      "country": "FR"
+    },
+    "url": "https://prohealthledger.org/referrals",
+    "metadata": {
+      "message": "Uncaught ReferenceError: generalReferral is not defined",
+      "stack": "ReferenceError: generalReferral is not defined\n    at https://prohealthledger.org/_next/static/chunks/0b2tn4e97.utz.js:1:3411\n    at ay (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:63845)\n    at oJ (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:84102)\n    at iu (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:95704)\n    at sd (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:138944)\n    at https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:138789\n    at sf (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:138797)\n    at se (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:134718)\n    at s$ (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:160495)\n    at MessagePort.O (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:8660)"
+    }
   }
 ]
