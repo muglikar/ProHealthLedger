@@ -51,15 +51,10 @@ async function resolveVoucheeUrn(vanitySlug, accessToken) {
     if (map && typeof map === "object" && map[slug]) {
       const id = typeof map[slug] === "object" ? map[slug].urn : map[slug];
       const name = typeof map[slug] === "object" ? map[slug].name : null;
-      
-      if (!name) {
-        diag.strategies.push({ name: "stored_map", result: "found_but_missing_name", urn: id });
-      } else {
-        const fullUrn = String(id).startsWith("urn:li:person:")
-          ? String(id) : `urn:li:person:${id}`;
-        diag.strategies.push({ name: "stored_map", result: "found", urn: fullUrn, extractedName: name });
-        return { urn: fullUrn, name, strategy: "stored_map", diag };
-      }
+      const fullUrn = String(id).startsWith("urn:li:person:")
+        ? String(id) : `urn:li:person:${id}`;
+      diag.strategies.push({ name: "stored_map", result: "found", urn: fullUrn, extractedName: name });
+      return { urn: fullUrn, name, strategy: "stored_map", diag };
     }
     diag.strategies.push({ name: "stored_map", result: "not_found" });
   } catch (e) {
@@ -195,39 +190,16 @@ async function cacheUrn(slug, id, name) {
 
 /**
  * Replace all occurrences of `displayName` in the commentary with
- * the exact name (prefixed by @) and return an annotations array 
- * for the LinkedIn /rest/posts API.
+ * the LinkedIn @mention syntax: @[displayName](urn).
  */
 function injectMentions(commentary, displayName, urn, exactName) {
-  if (!commentary || !displayName || !urn) {
-    return { commentary, annotations: [] };
-  }
+  if (!commentary || !displayName || !urn) return commentary;
   const escaped = displayName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const mentionText = exactName || displayName;
-  const replacementText = `@${mentionText}`;
-  
-  const newCommentary = commentary.replace(
+  return commentary.replace(
     new RegExp(`(?<![@#\\/])\\b${escaped}\\b`, "g"),
-    replacementText
+    `@[${mentionText}](${urn})`
   );
-
-  const annotations = [];
-  let startIndex = 0;
-  
-  while (true) {
-    const offset = newCommentary.indexOf(mentionText, startIndex);
-    if (offset === -1) break;
-    
-    annotations.push({
-      entityUrn: urn,
-      length: mentionText.length,
-      start: offset
-    });
-    
-    startIndex = offset + mentionText.length;
-  }
-
-  return { commentary: newCommentary, annotations };
 }
 
 const SITE_ORIGIN = (
@@ -568,11 +540,9 @@ export async function POST(req) {
   }
 
   // Build commentary — inject @mention syntax if URN resolved
-  const mentionResult = voucheeUrn
+  const effectiveCommentary = voucheeUrn
     ? injectMentions(finalCommentary, safeVouchee, voucheeUrn, exactVoucheeName)
-    : { commentary: finalCommentary, annotations: [] };
-  
-  const effectiveCommentary = mentionResult.commentary;
+    : finalCommentary;
 
   // --- Build the LinkedIn Posts API payload ---
   const safeVoucher = clampString(
@@ -612,10 +582,6 @@ export async function POST(req) {
       },
     },
   };
-
-  if (mentionResult.annotations && mentionResult.annotations.length > 0) {
-    postPayload.annotations = mentionResult.annotations;
-  }
 
   // --- Post to LinkedIn with retry ---
   async function tryPost(payload) {
