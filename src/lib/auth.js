@@ -6,6 +6,7 @@ import {
 } from "@/lib/site-admins";
 import { isRepoMaintainerUserId } from "@/lib/repo-owner-session";
 import { fetchLinkedinTrustSignals } from "@/lib/linkedin-trust-signals";
+import { readRepoJson, writeRepoJson } from "@/lib/github";
 
 const linkedInClientId =
   process.env.LINKEDIN_ID?.trim() ||
@@ -67,6 +68,33 @@ async function fetchLinkedinProfileSlug(accessToken) {
     /* ignore — product may not be enabled yet */
   }
   return null;
+}
+
+/**
+ * Persist a LinkedIn vanity slug → member URN mapping.
+ * Used later to @mention-tag vouchees in LinkedIn auto-posts.
+ * Best-effort: failures are silently ignored (non-critical path).
+ */
+async function persistLinkedinUrn(vanitySlug, linkedinSub) {
+  if (!vanitySlug || !linkedinSub) return;
+  const slug = String(vanitySlug).trim().toLowerCase();
+  const urn = String(linkedinSub).trim();
+  if (!slug || !urn) return;
+
+  try {
+    const filePath = "data/linkedin-urns/_index.json";
+    const { data: existing, sha } = await readRepoJson(filePath);
+    const map = existing && typeof existing === "object" ? existing : {};
+
+    // Skip write if already stored with same value
+    if (map[slug] === urn) return;
+
+    map[slug] = urn;
+    await writeRepoJson(filePath, map, sha || undefined, `chore: map ${slug} → URN`);
+  } catch (e) {
+    // Non-critical — if it fails, tagging just won't work for this user
+    console.warn("persistLinkedinUrn failed:", e.message);
+  }
 }
 
 const providers = [
@@ -161,6 +189,10 @@ export const authOptions = {
           // Store access token for server-side LinkedIn API calls (e.g. posting)
           token.linkedinAccessToken = account.access_token;
           token.linkedinSub = liSub;
+          // Persist slug → URN mapping for @mention tagging in auto-posts
+          if (vanity && liSub) {
+            persistLinkedinUrn(vanity, liSub).catch(() => {});
+          }
           const trust = await fetchLinkedinTrustSignals(account.access_token, liSub);
           token.linkedinAccountAgeDays = trust.accountAgeDays;
           token.linkedinConnections = trust.connections;
