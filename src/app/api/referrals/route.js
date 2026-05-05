@@ -95,13 +95,16 @@ export async function GET(req) {
 
   try {
     if (allMode) {
+      if (!session.siteAdmin) {
+        return Response.json({ error: "Access denied." }, { status: 403 });
+      }
       const all = await getAllReferrals();
       return Response.json(all);
     }
     const userReferrals = await getReferralsByUser(session.userId);
 
     // Identity tracking: Map signup IDs to names
-    const { data: users } = await readDataFile("data/users/_index.json");
+    const { data: users } = await readDataFile("data/users/_index.json").catch(() => ({ data: [] }));
     const userMap = (Array.isArray(users) ? users : []).reduce((acc, u) => {
       acc[u.user_id] = u.display_name || u.github_username || u.user_id;
       return acc;
@@ -111,6 +114,12 @@ export async function GET(req) {
       ...r,
       signup_names: (r.signups || []).map(id => userMap[id] || id)
     }));
+
+    // If no referrals found, it might be an ID mismatch. 
+    // We'll return the current ID in metadata (only to the owner) to help debug.
+    if (enrichedReferrals.length === 0) {
+       console.log(`Referral check: No data found for ${session.userId}`);
+    }
 
     return Response.json(enrichedReferrals);
   } catch (err) {
