@@ -51,10 +51,15 @@ async function resolveVoucheeUrn(vanitySlug, accessToken) {
     if (map && typeof map === "object" && map[slug]) {
       const id = typeof map[slug] === "object" ? map[slug].urn : map[slug];
       const name = typeof map[slug] === "object" ? map[slug].name : null;
-      const fullUrn = String(id).startsWith("urn:li:person:")
-        ? String(id) : `urn:li:person:${id}`;
-      diag.strategies.push({ name: "stored_map", result: "found", urn: fullUrn, extractedName: name });
-      return { urn: fullUrn, name, strategy: "stored_map", diag };
+      
+      if (!name) {
+        diag.strategies.push({ name: "stored_map", result: "found_but_missing_name", urn: id });
+      } else {
+        const fullUrn = String(id).startsWith("urn:li:person:")
+          ? String(id) : `urn:li:person:${id}`;
+        diag.strategies.push({ name: "stored_map", result: "found", urn: fullUrn, extractedName: name });
+        return { urn: fullUrn, name, strategy: "stored_map", diag };
+      }
     }
     diag.strategies.push({ name: "stored_map", result: "not_found" });
   } catch (e) {
