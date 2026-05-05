@@ -33,174 +33,6 @@ import { readRepoJson, writeRepoJson } from "@/lib/github";
  *
  * Body: { postUrn: string }
  */
-/**
- * Look up a vouchee's LinkedIn URN using multiple strategies.
- *
- * Returns { urn: string|null, name: string|null, strategy: string, diag: object }
- */
-async function resolveVoucheeUrn(vanitySlug, accessToken) {
-  const diag = { slug: vanitySlug, strategies: [] };
-  if (!vanitySlug) return { urn: null, name: null, strategy: "none", diag };
-  const slug = String(vanitySlug).trim().toLowerCase();
-  if (!slug || slug.length < 2) return { urn: null, name: null, strategy: "none", diag };
-  diag.slug = slug;
-
-  // --- Strategy 1: stored map (fast, no external call) ---
-  try {
-    const { data: map } = await readRepoJson("data/linkedin-urns/_index.json");
-    if (map && typeof map === "object" && map[slug]) {
-      const id = typeof map[slug] === "object" ? map[slug].urn : map[slug];
-      const name = typeof map[slug] === "object" ? map[slug].name : null;
-      const fullUrn = String(id).startsWith("urn:li:person:")
-        ? String(id) : `urn:li:person:${id}`;
-      diag.strategies.push({ name: "stored_map", result: "found", urn: fullUrn, extractedName: name });
-      return { urn: fullUrn, name, strategy: "stored_map", diag };
-    }
-    diag.strategies.push({ name: "stored_map", result: "not_found" });
-  } catch (e) {
-    diag.strategies.push({ name: "stored_map", result: "error", error: e.message });
-  }
-
-  // --- Strategy 2: LinkedIn API with poster's access token ---
-  if (accessToken) {
-    const apiEndpoints = [
-      // Versioned REST API - profile by vanity name
-      {
-        url: `https://api.linkedin.com/rest/people/(vanityName:${encodeURIComponent(slug)})`,
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "LinkedIn-Version": "202604",
-          "X-Restli-Protocol-Version": "2.0.0",
-        },
-      },
-      // Legacy v2 API
-      {
-        url: `https://api.linkedin.com/v2/people/(vanityName:${encodeURIComponent(slug)})`,
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "X-Restli-Protocol-Version": "2.0.0",
-        },
-      },
-      // Social metadata mentions typeahead
-      {
-        url: `https://api.linkedin.com/rest/socialMetadata/mentions?q=member&member=${encodeURIComponent("urn:li:member:" + slug)}`,
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "LinkedIn-Version": "202604",
-        },
-      },
-    ];
-
-    for (const ep of apiEndpoints) {
-      try {
-        const res = await fetch(ep.url, {
-          headers: ep.headers,
-          signal: AbortSignal.timeout(5000),
-        });
-        const status = res.status;
-        if (res.ok) {
-          const data = await res.json();
-          const id = data.id || data.sub || data.member || data.entityUrn;
-          if (id) {
-            const idStr = String(id);
-            const fullUrn = idStr.startsWith("urn:li:person:")
-              ? idStr : `urn:li:person:${idStr}`;
-            diag.strategies.push({ name: "api", url: ep.url, result: "found", urn: fullUrn });
-            // Cache for next time
-            cacheUrn(slug, idStr, null).catch(() => {});
-            return { urn: fullUrn, name: null, strategy: "api", diag };
-          }
-          diag.strategies.push({ name: "api", url: ep.url, result: "ok_but_no_id", keys: Object.keys(data) });
-        } else {
-          const errText = await res.text().catch(() => "");
-          diag.strategies.push({ name: "api", url: ep.url, result: `${status}`, snippet: errText.slice(0, 200) });
-        }
-      } catch (e) {
-        diag.strategies.push({ name: "api", url: ep.url, result: "error", error: e.message });
-      }
-    }
-  }
-
-  // --- Strategy 3: extract from LinkedIn public profile page ---
-  try {
-    const profileUrl = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
-    const res = await fetch(profileUrl, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-        "Accept-Language": "en-US,en;q=0.9",
-        Accept: "text/html,application/xhtml+xml",
-      },
-      redirect: "follow",
-      signal: AbortSignal.timeout(6000),
-    });
-
-    if (res.ok) {
-      const html = await res.text();
-      const titleMatch = html.match(/<title>(.*?)\s*-.*LinkedIn<\/title>/i) || html.match(/<title>(.*?)<\/title>/i);
-      const extractedName = titleMatch ? titleMatch[1].trim() : null;
-
-      const patterns = [
-        /urn:li:member:(\d{5,})/,
-        /urn:li:fsd_profile:([A-Za-z0-9_-]{8,})/,
-        /data-member-id="(\d{5,})"/,
-        /"member_id"\s*:\s*"?(\d{5,})"?/,
-      ];
-
-      for (const rx of patterns) {
-        const m = html.match(rx);
-        if (m && m[1]) {
-          const id = m[1];
-          const fullUrn = `urn:li:person:${id}`;
-          diag.strategies.push({ name: "profile_page", result: "found", urn: fullUrn, pattern: rx.source, extractedName });
-          cacheUrn(slug, id, extractedName).catch(() => {});
-          return { urn: fullUrn, name: extractedName, strategy: "profile_page", diag };
-        }
-      }
-      diag.strategies.push({ name: "profile_page", result: "no_patterns_matched", htmlLen: html.length });
-    } else {
-      diag.strategies.push({ name: "profile_page", result: `${res.status}` });
-    }
-  } catch (e) {
-    diag.strategies.push({ name: "profile_page", result: "error", error: e.message });
-  }
-
-  console.log("URN resolution failed for slug:", slug, JSON.stringify(diag.strategies));
-  return { urn: null, name: null, strategy: "none", diag };
-}
-
-/** Best-effort cache a slug→URN mapping. */
-async function cacheUrn(slug, id, name) {
-  try {
-    const { data: mapNow, sha } = await readRepoJson("data/linkedin-urns/_index.json");
-    const updated = (mapNow && typeof mapNow === "object") ? mapNow : {};
-    
-    // Convert old string format to object format if adding name
-    const existing = updated[slug];
-    const isDifferentId = typeof existing === "object" ? existing?.urn !== id : existing !== id;
-    const isDifferentName = typeof existing === "object" ? existing?.name !== name : false;
-
-    if (isDifferentId || (name && isDifferentName)) {
-      updated[slug] = name ? { urn: id, name } : id;
-      await writeRepoJson("data/linkedin-urns/_index.json", updated, sha || undefined,
-        `chore: cache URN for ${slug}`);
-    }
-  } catch { /* non-critical */ }
-}
-
-/**
- * Replace all occurrences of `displayName` in the commentary with
- * the LinkedIn @mention syntax: @[displayName](urn).
- */
-function injectMentions(commentary, displayName, urn, exactName) {
-  if (!commentary || !displayName || !urn) return commentary;
-  const escaped = displayName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const mentionText = exactName || displayName;
-  return commentary.replace(
-    new RegExp(`(?<![@#\\/])\\b${escaped}\\b`, "g"),
-    `@[${mentionText}](${urn})`
-  );
-}
 
 const SITE_ORIGIN = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org"
@@ -328,14 +160,12 @@ export async function POST(req) {
   }
 
   const {
-    commentary,
-    articleUrl,
-    articleTitle,
-    articleDescription,
-    cleanVoucher,
-    cleanVouchee,
-    voucheeSlug,
-    tagVouchee,
+    commentary = "",
+    articleUrl = "",
+    cleanVoucher = "Rohit Kadam", // Fallback, but passed from client
+    cleanVouchee = "Muglikar",
+    articleTitle = "",
+    articleDescription = "",
   } = body;
 
   const finalCommentary = clampString(commentary, MAX_COMMENTARY);
@@ -519,30 +349,7 @@ export async function POST(req) {
     handshakeDiag.error = err.message;
   }
 
-  // --- Resolve vouchee URN for @mention tagging ---
-  let voucheeUrn = null;
-  let exactVoucheeName = null;
-  let mentionDiag = null;
-  const safeVouchee = clampString(
-    (cleanVouchee || "").split("_").join(" "),
-    MAX_NAME_PART
-  );
-  if (tagVouchee && voucheeSlug && safeVouchee) {
-    try {
-      const result = await resolveVoucheeUrn(voucheeSlug, token.linkedinAccessToken);
-      voucheeUrn = result.urn;
-      exactVoucheeName = result.name;
-      mentionDiag = { strategy: result.strategy, ...result.diag };
-    } catch (e) {
-      console.warn("Vouchee URN resolution error:", e.message);
-      mentionDiag = { error: e.message };
-    }
-  }
-
-  // Build commentary — inject @mention syntax if URN resolved
-  const effectiveCommentary = voucheeUrn
-    ? injectMentions(finalCommentary, safeVouchee, voucheeUrn, exactVoucheeName)
-    : finalCommentary;
+  const effectiveCommentary = finalCommentary;
 
   // --- Build the LinkedIn Posts API payload ---
   const safeVoucher = clampString(
