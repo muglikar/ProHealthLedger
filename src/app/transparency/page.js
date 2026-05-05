@@ -471,9 +471,10 @@ export default function TransparencyPage() {
                       </td>
                       <td className="audit-col-share">
                         {(() => {
+                          const isSignedIn = !!session;
                           const isMyVouchForSomeoneElse = currentUserId && currentUserId === v.user;
                           const isVouchForMe = Boolean(myLinkedSlug && myLinkedSlug === v.profile_slug);
-                          const canShare = v.vote === "yes" && (isMyVouchForSomeoneElse || isVouchForMe);
+                          const canShare = isSignedIn && v.vote === "yes" && (isMyVouchForSomeoneElse || isVouchForMe);
 
                           if (!canShare) return null;
 
