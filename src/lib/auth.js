@@ -18,12 +18,12 @@ const linkedInClientSecret =
   "";
 
 /**
- * Fetch the authenticated member's LinkedIn profile slug via the
+ * Fetch the authenticated member's LinkedIn profile data via the
  * "Verified on LinkedIn" /identityMe endpoint.
  *
- * Returns the vanity slug (e.g. "muglikar") extracted from
- * basicInfo.profileUrl, or null if the product isn't enabled or
- * the call otherwise fails.
+ * Returns an object { slug, profileUrl } where slug is the vanity slug
+ * extracted from basicInfo.profileUrl, and profileUrl is the persistent
+ * redirect URL, or null if the product isn't enabled.
  */
 async function fetchLinkedinProfileSlug(accessToken) {
   if (!accessToken || typeof accessToken !== "string") return null;
@@ -34,7 +34,7 @@ async function fetchLinkedinProfileSlug(accessToken) {
     const res = await fetch("https://api.linkedin.com/rest/identityMe", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "LinkedIn-Version": "202401",
+        "LinkedIn-Version": "202604",
       },
       signal: controller.signal,
     });
@@ -43,26 +43,30 @@ async function fetchLinkedinProfileSlug(accessToken) {
     const data = await res.json();
     const profileUrl = data?.basicInfo?.profileUrl;
     if (profileUrl && typeof profileUrl === "string") {
+      let slug = null;
       // Direct vanity URL: linkedin.com/in/muglikar
       const directMatch = profileUrl.match(
         /linkedin\.com\/in\/([a-zA-Z0-9_-]+)/
       );
-      if (directMatch) return directMatch[1].toLowerCase();
-
-      // Redirect-style URL: follow redirect to resolve the canonical vanity URL
-      try {
-        const redirectRes = await fetch(profileUrl, {
-          method: "HEAD",
-          redirect: "manual",
-        });
-        const location = redirectRes.headers.get("location") || "";
-        const redirectMatch = location.match(
-          /linkedin\.com\/in\/([a-zA-Z0-9_-]+)/
-        );
-        if (redirectMatch) return redirectMatch[1].toLowerCase();
-      } catch {
-        /* redirect resolution failed — non-fatal */
+      if (directMatch) {
+        slug = directMatch[1].toLowerCase();
+      } else {
+        // Redirect-style URL: follow redirect to resolve the canonical vanity URL
+        try {
+          const redirectRes = await fetch(profileUrl, {
+            method: "HEAD",
+            redirect: "manual",
+          });
+          const location = redirectRes.headers.get("location") || "";
+          const redirectMatch = location.match(
+            /linkedin\.com\/in\/([a-zA-Z0-9_-]+)/
+          );
+          if (redirectMatch) slug = redirectMatch[1].toLowerCase();
+        } catch {
+          /* redirect resolution failed — non-fatal */
+        }
       }
+      return { slug, profileUrl };
     }
   } catch {
     /* ignore — product may not be enabled yet */
@@ -182,16 +186,17 @@ export const authOptions = {
             token.authEmail = em;
             token.email = em;
           }
-          const vanity = await fetchLinkedinProfileSlug(account.access_token);
-          if (vanity) {
-            token.linkedinVanity = vanity;
+          const profileData = await fetchLinkedinProfileSlug(account.access_token);
+          if (profileData) {
+            if (profileData.slug) token.linkedinVanity = profileData.slug;
+            if (profileData.profileUrl) token.linkedinProfileUrl = profileData.profileUrl;
           }
           // Store access token for server-side LinkedIn API calls (e.g. posting)
           token.linkedinAccessToken = account.access_token;
           token.linkedinSub = liSub;
           // Persist slug → URN mapping for @mention tagging in auto-posts
-          if (vanity && liSub) {
-            persistLinkedinUrn(vanity, liSub).catch(() => {});
+          if (profileData?.slug && liSub) {
+            persistLinkedinUrn(profileData.slug, liSub).catch(() => {});
           }
           const trust = await fetchLinkedinTrustSignals(account.access_token, liSub);
           token.linkedinAccountAgeDays = trust.accountAgeDays;
@@ -228,6 +233,9 @@ export const authOptions = {
       }
       if (token.linkedinVanity) {
         session.linkedinVanity = String(token.linkedinVanity);
+      }
+      if (token.linkedinProfileUrl) {
+        session.linkedinProfileUrl = String(token.linkedinProfileUrl);
       }
       session.siteAdmin = Boolean(token.siteAdmin);
       // Flag so the client knows direct LinkedIn posting is available (token stays server-side)
