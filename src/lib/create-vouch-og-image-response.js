@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { formatVouchOgLines, VouchOgCardJsx } from "@/lib/og-vouch-card";
+import { formatVouchOgLines, VouchOgCardJsx, GeneralOgCardJsx } from "@/lib/og-vouch-card";
 
 /** LinkedIn spec: 1200×627 (1.91 : 1). */
 export const VOUCH_OG_WIDTH = 1200;
@@ -19,6 +19,17 @@ const IMAGE_SIZE = { width: VOUCH_OG_WIDTH, height: VOUCH_OG_HEIGHT };
  * Uses the default system font (Noto Sans) bundled with next/og — fast and reliable.
  */
 export function createVouchOgImageResponse(cleanVoucher, cleanVouchee) {
+  // If no names provided, show general PHL branding
+  if (!cleanVoucher && !cleanVouchee) {
+    return new ImageResponse(
+      <GeneralOgCardJsx scale={1} />,
+      {
+        ...IMAGE_SIZE,
+        headers: CACHE_HEADERS,
+      }
+    );
+  }
+
   const { voucherText, voucheeText, nameSize } = formatVouchOgLines(
     cleanVoucher || "",
     cleanVouchee || ""
