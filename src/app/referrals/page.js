@@ -8,15 +8,25 @@ export default function ReferralsPage() {
   const { data: session, status } = useSession();
   const [referrals, setReferrals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (status !== "authenticated") return;
     fetch("/api/referrals")
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({ error: "Unknown error" }));
+          throw new Error(err.error || `HTTP ${r.status}`);
+        }
+        return r.json();
+      })
       .then((data) => {
         setReferrals(Array.isArray(data) ? data : []);
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error("Referral fetch error:", err);
+        setError(err.message);
+      })
       .finally(() => setLoading(false));
   }, [status]);
 
@@ -74,6 +84,13 @@ export default function ReferralsPage() {
       {loading ? (
         <div className="empty-state">
           <p>Loading referral data…</p>
+        </div>
+      ) : error ? (
+        <div className="empty-state error-state">
+          <p style={{ color: "var(--red)" }}>Error loading referrals: {error}</p>
+          <button className="btn btn-secondary" onClick={() => window.location.reload()}>
+            Try Again
+          </button>
         </div>
       ) : referrals.length === 0 ? (
         <div className="empty-state">
