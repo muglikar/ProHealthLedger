@@ -471,8 +471,6 @@ export async function POST(req) {
         ok: true,
         postId,
         thumbnailIncluded: Boolean(imageUrn),
-        mentionUsed: Boolean(voucheeUrn),
-        mentionDiag: mentionDiag || null,
         handshake: handshakeDiag,
       });
     }
