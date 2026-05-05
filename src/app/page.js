@@ -80,12 +80,12 @@ export default function Home() {
             </Link>
             <span className="trust-sep">·</span>
             <a
-              href="https://www.linkedin.com/in/muglikar/"
+              href="https://StomatoBot.com"
               target="_blank"
               rel="noopener noreferrer"
               className="trust-link"
             >
-              <span aria-hidden="true">⭐</span> Built by Anand Muglikar
+              <span aria-hidden="true">⭐</span> Powered by StomatoBot
             </a>
           </div>
         </header>
