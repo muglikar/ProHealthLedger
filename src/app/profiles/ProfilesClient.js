@@ -96,12 +96,12 @@ function ProfilesContent() {
   }, []);
 
   useEffect(() => {
-    if (!query) return;
+    if (!search) return;
     const timer = setTimeout(() => {
-      trackEvent("profile_search", { query });
+      trackEvent("profile_search", { query: search });
     }, 1500); // 1.5s debounce to avoid noise while typing
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [search]);
 
   const normalizeQuery = (q) => {
     const lower = q.toLowerCase().trim();
