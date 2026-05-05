@@ -12,10 +12,7 @@ export default function ReferralsPage() {
   const [activeTab, setActiveTab] = useState("links"); // "links" or "recruits"
   const [creating, setCreating] = useState(false);
   const [origin, setOrigin] = useState("");
-
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
+  const [mounted, setMounted] = useState(false);
 
   const fetchReferrals = useCallback(() => {
     setLoading(true);
@@ -35,9 +32,20 @@ export default function ReferralsPage() {
         setError(err.message);
       })
       .finally(() => setLoading(false));
-  }, [status]);
+  }, []);
 
-  if (status === "loading") {
+  useEffect(() => {
+    setMounted(true);
+    setOrigin(window.location.origin);
+  }, []);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchReferrals();
+    }
+  }, [status, fetchReferrals]);
+
+  if (!mounted || status === "loading") {
     return (
       <div className="empty-state">
         <p>Loading…</p>
