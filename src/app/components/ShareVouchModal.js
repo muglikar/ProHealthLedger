@@ -115,6 +115,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
           articleDescription: "Know who you're working with before you commit.",
           cleanVoucher: voucherName,
           cleanVouchee: displayName,
+          voucheeSlug: slug,
         }),
       });
 
