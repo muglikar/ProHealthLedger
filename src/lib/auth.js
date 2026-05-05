@@ -101,6 +101,46 @@ async function persistLinkedinUrn(vanitySlug, linkedinSub) {
   }
 }
 
+/**
+ * Scientific Name Verification:
+ * When a user logs in via LinkedIn, we capture their true name from OIDC
+ * and update their corresponding ledger profile (if any) to fix "unbroken string" names.
+ */
+async function updateProfilePublicName(vanitySlug, realName) {
+  if (!vanitySlug || !realName) return;
+  const slug = String(vanitySlug).trim().toLowerCase();
+  const name = String(realName).trim();
+  if (!slug || !name) return;
+
+  try {
+    const filePath = "data/profiles/_index.json";
+    const { data: profiles, sha } = await readRepoJson(filePath);
+    if (!Array.isArray(profiles)) return;
+
+    const profile = profiles.find((p) => p.slug === slug);
+    if (profile) {
+      // Only update if missing or if it's currently just the slug (unbroken string)
+      const currentName = String(profile.public_name || "").trim();
+      const isUnbrokenSlug = currentName.toLowerCase() === slug.replace(/-/g, "").toLowerCase();
+      
+      if (!currentName || isUnbrokenSlug || currentName === slug) {
+        if (currentName === name) return; // No change needed
+        
+        profile.public_name = name;
+        await writeRepoJson(
+          filePath,
+          profiles,
+          sha,
+          `verification: update public_name for ${slug} via OIDC login`
+        );
+        console.log(`Verified name for ${slug}: ${name}`);
+      }
+    }
+  } catch (e) {
+    console.warn("updateProfilePublicName failed:", e.message);
+  }
+}
+
 const providers = [
   GithubProvider({
     clientId: process.env.GITHUB_ID,
@@ -195,8 +235,12 @@ export const authOptions = {
           token.linkedinAccessToken = account.access_token;
           token.linkedinSub = liSub;
           // Persist slug → URN mapping for @mention tagging in auto-posts
-          if (profileData?.slug && liSub) {
-            persistLinkedinUrn(profileData.slug, liSub).catch(() => {});
+          if (profileData?.slug) {
+            if (liSub) {
+              persistLinkedinUrn(profileData.slug, liSub).catch(() => {});
+            }
+            // Scientific name resolution: update profile with real name from OIDC
+            updateProfilePublicName(profileData.slug, profile.name).catch(() => {});
           }
           const trust = await fetchLinkedinTrustSignals(account.access_token, liSub);
           token.linkedinAccountAgeDays = trust.accountAgeDays;
