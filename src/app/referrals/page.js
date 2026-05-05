@@ -11,6 +11,11 @@ export default function ReferralsPage() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("links"); // "links" or "recruits"
   const [creating, setCreating] = useState(false);
+  const [origin, setOrigin] = useState("");
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
   const fetchReferrals = useCallback(() => {
     setLoading(true);
@@ -126,14 +131,15 @@ export default function ReferralsPage() {
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               <input
                 readOnly
-                value={`${window.location.origin}/?ref=${generalReferral.ref_code}`}
+                value={origin ? `${origin}/?ref=${generalReferral.ref_code}` : "Loading link..."}
                 style={{ flex: 1, padding: "8px 12px", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--bg-card)", fontSize: "0.9rem" }}
                 onClick={(e) => e.target.select()}
               />
               <button 
                 className="btn btn-secondary" 
                 onClick={() => {
-                  navigator.clipboard.writeText(`${window.location.origin}/?ref=${generalReferral.ref_code}`);
+                  if (!origin) return;
+                  navigator.clipboard.writeText(`${origin}/?ref=${generalReferral.ref_code}`);
                   alert("Copied to clipboard!");
                 }}
               >

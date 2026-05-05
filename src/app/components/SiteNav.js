@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import NavAuth from "./NavAuth";
+import SharePHLButton from "./SharePHLButton";
 
 const NAV_LINKS = [
   { href: "/profiles", label: "Look Up" },
@@ -58,6 +59,7 @@ export default function SiteNav() {
                 {label}
               </Link>
             ))}
+            <SharePHLButton className="nav-share-btn-desktop" />
           </div>
           <NavAuth />
         </div>
@@ -101,6 +103,9 @@ export default function SiteNav() {
                         </Link>
                       </li>
                     ))}
+                    <li>
+                      <SharePHLButton className="nav-share-btn-mobile" />
+                    </li>
                   </ul>
                   <div className="nav-drawer-auth">
                     <NavAuth />
