@@ -70,7 +70,7 @@ export async function fetchLinkedinTrustSignals(accessToken, linkedinSub) {
   const identityMe = await fetchJson(
     "https://api.linkedin.com/rest/identityMe",
     accessToken,
-    "202401"
+    "202604"
   );
   let accountAgeDays = parseMemberSinceDays(identityMe);
   let connections = parseConnections(identityMe);
