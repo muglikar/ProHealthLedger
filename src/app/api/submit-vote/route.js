@@ -38,13 +38,13 @@ export async function POST(req) {
   }
 
   const body = await req.json();
-  const { linkedinUrl, publicName, vote, reason } = body;
+  const { linkedinUrl, vote, reason } = body;
   const userId = session.userId;
   const displayName = session.displayName || userId;
 
-  if (!linkedinUrl || !vote || !publicName) {
+  if (!linkedinUrl || !vote) {
     return Response.json(
-      { error: "LinkedIn URL, Vote, and Professional's Name are required." },
+      { error: "LinkedIn URL and vote are required." },
       { status: 400 }
     );
   }
@@ -121,7 +121,7 @@ export async function POST(req) {
     typeof profileForTitle.linkedin_url === "string" &&
     profileForTitle.linkedin_url &&
     canonicalLinkedinUrl(extractSlug(profileForTitle.linkedin_url) || slug) !==
-      linkedinUrlCanonical
+    linkedinUrlCanonical
   ) {
     const { request } = await createProfileLinkChangeRequest({
       profileSlug: slug,
@@ -239,7 +239,7 @@ export async function POST(req) {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const titleName = (publicName || "").trim() ||
+  const titleName =
     formatProfessionalDisplayName(slug, profileForTitle?.public_name) ||
     slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
@@ -294,28 +294,28 @@ export async function POST(req) {
     display_image: session.user?.image || null,
     ...(session.provider === "linkedin" && session.linkedinVanity
       ? {
-          submitter_linkedin_url: `https://www.linkedin.com/in/${String(
-            session.linkedinVanity
-          ).toLowerCase()}`,
-        }
+        submitter_linkedin_url: `https://www.linkedin.com/in/${String(
+          session.linkedinVanity
+        ).toLowerCase()}`,
+      }
       : {}),
     vote,
     issue: issueNumber,
     date: today,
     ...(reasonTrimmed
       ? {
-          reason: reasonTrimmed,
-          reason_pending: true,
-          ...(safety.hasRisk
-            ? {
-                reason_safety_flags: {
-                  block_approve: Boolean(safety.blockApprove),
-                  hits: safety.hits,
-                  llm: safety.llm,
-                },
-              }
-            : {}),
-        }
+        reason: reasonTrimmed,
+        reason_pending: true,
+        ...(safety.hasRisk
+          ? {
+            reason_safety_flags: {
+              block_approve: Boolean(safety.blockApprove),
+              hits: safety.hits,
+              llm: safety.llm,
+            },
+          }
+          : {}),
+      }
       : {}),
   };
 
@@ -324,14 +324,10 @@ export async function POST(req) {
     profile = {
       linkedin_url: linkedinUrlCanonical,
       slug,
-      public_name: publicName.trim(),
       votes: { yes: 0, no: 0 },
       submissions: [],
     };
     profiles.push(profile);
-  } else if (!profile.public_name || profile.public_name === slug) {
-    // Scientific solution: update the name if we finally have a real one from a contributor
-    profile.public_name = publicName.trim();
   }
   profile.votes[vote]++;
   profile.submissions.push(submission);
