@@ -6,6 +6,8 @@ import {
   rateLimitHeaders,
   takeRateLimit,
 } from "@/lib/rate-limit";
+import { createVouchOgImageResponse } from "@/lib/create-vouch-og-image-response";
+import { displayFromParam } from "@/lib/og-vouch-card";
 
 /**
  * POST /api/share-linkedin
@@ -187,48 +189,47 @@ export async function POST(req) {
   }
   const safeArticleUrl = articleUrl.trim();
 
-  // --- 3-Step Asset Upload: Fetch OG image → Initialize → PUT → Poll ---
-  // The OG URL is built on the server (no client-provided URL is ever fetched
-  // server-side — that would be SSRF).
-  const ogCandidates = buildOgFetchCandidates(
-    safeArticleUrl,
-    cleanVoucher,
-    cleanVouchee
-  );
+  // --- Generate OG image IN-PROCESS (no HTTP fetch needed) ---
+  // Renders the same PNG as /api/og but without a network hop.
+  const handshakeDiag = { ogGenerated: false, ogBytes: 0, initOk: false, putOk: false, pollResult: "skipped" };
   let imageUrn = null;
   try {
     let imageBuffer = null;
 
-    for (const ogUrl of ogCandidates) {
-      try {
-        const ogRes = await fetch(ogUrl, {
-          signal: AbortSignal.timeout(15_000),
-          headers: { Accept: "image/png,image/*;q=0.8,*/*;q=0.5" },
-        });
-        if (ogRes.ok) {
-          const buf = Buffer.from(await ogRes.arrayBuffer());
-          if (isPngBuffer(buf)) {
-            imageBuffer = buf;
-            console.log("OG image fetched OK:", buf.length, "bytes from", ogUrl);
-            break;
-          }
-          console.error("OG response not a PNG:", buf?.length, ogUrl);
-        } else {
-          console.error("OG image fetch non-OK:", ogRes.status, ogRes.statusText, ogUrl);
-        }
-      } catch (ogErr) {
-        console.error("OG image fetch exception:", ogErr.message, ogUrl);
+    // Generate the vouch card image directly — same function as /api/og
+    const ogVoucher = displayFromParam(
+      clampString((cleanVoucher || "").replace(/_/g, " "), MAX_NAME_PART),
+      "A Colleague"
+    );
+    const ogVouchee = displayFromParam(
+      clampString((cleanVouchee || "").replace(/_/g, " "), MAX_NAME_PART),
+      "Professional"
+    );
+    try {
+      const ogResponse = createVouchOgImageResponse(ogVoucher, ogVouchee);
+      const ab = await ogResponse.arrayBuffer();
+      const buf = Buffer.from(ab);
+      if (isPngBuffer(buf)) {
+        imageBuffer = buf;
+        handshakeDiag.ogGenerated = true;
+        handshakeDiag.ogBytes = buf.length;
+        console.log("OG image generated in-process:", buf.length, "bytes");
+      } else {
+        console.error("In-process OG not a valid PNG:", buf.length);
       }
+    } catch (ogErr) {
+      console.error("In-process OG generation failed:", ogErr.message);
     }
 
-    // Homepage-style banner only for non-vouch links. For /p/… never upload
-    // the banner or LinkedIn may pair the wrong art with the article card.
+    // Fallback: static banner for non-vouch links
     if (!imageBuffer && !vouchArticlePathname(safeArticleUrl)) {
       try {
         const fs = await import("fs/promises");
         const path = await import("path");
         const bannerPath = path.default.join(process.cwd(), "public", "og_banner.png");
         imageBuffer = await fs.default.readFile(bannerPath);
+        handshakeDiag.ogGenerated = true;
+        handshakeDiag.ogBytes = imageBuffer.length;
       } catch (fsErr) {
         console.error("Failed to read static banner:", fsErr.message);
       }
@@ -253,19 +254,22 @@ export async function POST(req) {
         if (!initRes.ok) {
           const errText = await initRes.text().catch(() => "");
           console.error("Image init failed:", initRes.status, errText);
-          // Continue without thumbnail
+          handshakeDiag.initOk = false;
+          handshakeDiag.initError = `${initRes.status}: ${errText.slice(0, 200)}`;
         } else {
           initData = await initRes.json();
+          handshakeDiag.initOk = true;
         }
       } catch (initErr) {
         console.error("Image init exception:", initErr.message);
+        handshakeDiag.initError = initErr.message;
       }
 
       if (initData?.value?.uploadUrl && initData?.value?.image) {
         const uploadUrl = initData.value.uploadUrl;
         const urn = initData.value.image;
 
-        // Step B: PUT Binary Data — explicit Uint8Array + Content-Length
+        // Step B: PUT Binary Data
         const binaryBody = new Uint8Array(imageBuffer);
         let putOk = false;
         try {
@@ -280,20 +284,24 @@ export async function POST(req) {
           });
 
           putOk = putRes.ok || putRes.status === 201;
+          handshakeDiag.putOk = putOk;
+          handshakeDiag.putStatus = putRes.status;
           if (!putOk) {
             const putErr = await putRes.text().catch(() => "");
             console.error("Image PUT failed:", putRes.status, putErr);
+            handshakeDiag.putError = putErr.slice(0, 200);
           } else {
             console.log("Image PUT succeeded:", putRes.status, binaryBody.byteLength, "bytes");
           }
         } catch (putErr) {
           console.error("Image PUT exception:", putErr.message);
+          handshakeDiag.putError = putErr.message;
         }
 
         if (putOk) {
-          // Step C: Poll for AVAILABLE status — longer wait, more attempts
+          // Step C: Poll for AVAILABLE (4 attempts × 2s = 8s — keep within Vercel timeout)
           let isAvailable = false;
-          for (let attempt = 1; attempt <= 8; attempt++) {
+          for (let attempt = 1; attempt <= 4; attempt++) {
             await new Promise((resolve) => setTimeout(resolve, 2000));
             try {
               const statusRes = await fetch(
@@ -311,23 +319,29 @@ export async function POST(req) {
                 if (statusData.status === "AVAILABLE") {
                   isAvailable = true;
                   imageUrn = urn;
+                  handshakeDiag.pollResult = "AVAILABLE";
                   break;
                 }
+                handshakeDiag.pollResult = statusData.status || "unknown";
               }
             } catch (pollErr) {
               console.error(`Image poll attempt ${attempt} error:`, pollErr.message);
+              handshakeDiag.pollResult = `error: ${pollErr.message}`;
             }
           }
 
-          // Only use URN if confirmed AVAILABLE — don't gamble with unprocessed URNs
+          // If not confirmed AVAILABLE, use URN optimistically — LinkedIn often processes fast
           if (!isAvailable) {
-            console.warn("Image never reached AVAILABLE after 8 polls — posting without thumbnail");
+            console.warn("Image not confirmed AVAILABLE after 4 polls — using URN optimistically");
+            imageUrn = urn;
+            handshakeDiag.pollResult = handshakeDiag.pollResult + " (optimistic)";
           }
         }
       }
     }
   } catch (err) {
     console.error("Image Handshake failed, falling back to text card:", err.message);
+    handshakeDiag.error = err.message;
   }
 
   // --- Build the LinkedIn Posts API payload ---
@@ -456,6 +470,7 @@ export async function POST(req) {
         postId,
         thumbnailIncluded: Boolean(imageUrn),
         imageUrn: imageUrn || null,
+        handshake: handshakeDiag,
       });
     }
 
