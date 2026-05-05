@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession, signIn } from "next-auth/react";
 import Link from "next/link";
 
@@ -10,9 +10,10 @@ export default function ReferralsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("links"); // "links" or "recruits"
+  const [creating, setCreating] = useState(false);
 
-  useEffect(() => {
-    if (status !== "authenticated") return;
+  const fetchReferrals = useCallback(() => {
+    setLoading(true);
     fetch("/api/referrals")
       .then(async (r) => {
         if (!r.ok) {
@@ -115,6 +116,42 @@ export default function ReferralsPage() {
         </button>
       </div>
 
+      {activeTab === "links" && (
+        <div className="general-ref-card" style={{ marginBottom: "24px", padding: "20px", background: "var(--accent-bg)", borderRadius: "var(--radius)", border: "1px solid var(--accent-border)" }}>
+          <h3 style={{ margin: "0 0 8px 0", color: "var(--accent)" }}>Share ProHealthLedger</h3>
+          <p style={{ margin: "0 0 16px 0", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+            Use this general link to share the homepage. Any signups will be attributed to your scientific track record.
+          </p>
+          {generalReferral ? (
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <input
+                readOnly
+                value={`${window.location.origin}/?ref=${generalReferral.ref_code}`}
+                style={{ flex: 1, padding: "8px 12px", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--bg-card)", fontSize: "0.9rem" }}
+                onClick={(e) => e.target.select()}
+              />
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/?ref=${generalReferral.ref_code}`);
+                  alert("Copied to clipboard!");
+                }}
+              >
+                Copy Link
+              </button>
+            </div>
+          ) : (
+            <button 
+              className="btn btn-primary" 
+              onClick={handleCreateGeneralReferral}
+              disabled={creating}
+            >
+              {creating ? "Generating..." : "Generate My General Referral Link"}
+            </button>
+          )}
+        </div>
+      )}
+
       {loading ? (
         <div className="empty-state">
           <p>Loading referral data…</p>
@@ -151,9 +188,13 @@ export default function ReferralsPage() {
               </thead>
               <tbody>
                 {referrals.map((r) => (
-                  <tr key={r.ref_code}>
+                  <tr key={r.ref_code} style={r.profile_slug === "__home__" ? { background: "rgba(0, 119, 181, 0.05)" } : {}}>
                     <td className="referral-profile-name">
-                      {r.profile_name || r.profile_slug}
+                      {r.profile_slug === "__home__" ? (
+                        <strong>✨ General Platform Link</strong>
+                      ) : (
+                        r.profile_name || r.profile_slug
+                      )}
                     </td>
                     <td>
                       <code className="ref-code">{r.ref_code}</code>
