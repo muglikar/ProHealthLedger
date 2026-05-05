@@ -45,14 +45,6 @@ export default function ReferralsPage() {
     }
   }, [status, fetchReferrals]);
 
-  if (!mounted || status === "loading") {
-    return (
-      <div className="empty-state">
-        <p>Loading…</p>
-      </div>
-    );
-  }
-
   const handleCreateGeneralReferral = async () => {
     setCreating(true);
     try {
@@ -73,29 +65,15 @@ export default function ReferralsPage() {
     }
   };
 
-  const generalReferral = referrals.find((r) => r.profile_slug === "__home__");
-
-  if (!session) {
-    return (
-      <section className="submit-hero">
-        <h1>Your Referral Stats</h1>
-        <p>Sign in to view your referral link stats and impact.</p>
-        <button className="btn btn-primary" onClick={() => signIn("github")}>
-          Sign in with GitHub
-        </button>
-      </section>
-    );
-  }
-
-  const totalClicks = referrals.reduce((s, r) => s + (r.clicks || 0), 0);
-  const totalSignups = referrals.reduce(
-    (s, r) => s + (r.signups?.length || 0),
-    0
-  );
+  // Move all calculations to the top, before early returns, to avoid ReferenceErrors
+  const safeReferrals = Array.isArray(referrals) ? referrals : [];
+  const generalReferral = safeReferrals.find((r) => r.profile_slug === "__home__");
+  const totalClicks = safeReferrals.reduce((s, r) => s + (r.clicks || 0), 0);
+  const totalSignups = safeReferrals.reduce((s, r) => s + (r.signups?.length || 0), 0);
 
   // Aggregate unique recruits
   const recruitsMap = new Map();
-  for (const r of referrals) {
+  for (const r of safeReferrals) {
     if (Array.isArray(r.signups)) {
       r.signups.forEach((id, idx) => {
         if (!recruitsMap.has(id)) {
@@ -110,6 +88,26 @@ export default function ReferralsPage() {
     }
   }
   const recruitsList = Array.from(recruitsMap.values());
+
+  if (!mounted || status === "loading") {
+    return (
+      <div className="empty-state">
+        <p>Loading…</p>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <section className="submit-hero">
+        <h1>Your Referral Stats</h1>
+        <p>Sign in to view your referral link stats and impact.</p>
+        <button className="btn btn-primary" onClick={() => signIn("github")}>
+          Sign in with GitHub
+        </button>
+      </section>
+    );
+  }
 
   return (
     <>
