@@ -9,6 +9,7 @@ export default function ReferralsPage() {
   const [referrals, setReferrals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("links"); // "links" or "recruits"
 
   useEffect(() => {
     if (status !== "authenticated") return;
@@ -56,6 +57,24 @@ export default function ReferralsPage() {
     0
   );
 
+  // Aggregate unique recruits
+  const recruitsMap = new Map();
+  for (const r of referrals) {
+    if (Array.isArray(r.signups)) {
+      r.signups.forEach((id, idx) => {
+        if (!recruitsMap.has(id)) {
+          recruitsMap.set(id, {
+            id,
+            name: r.signup_names?.[idx] || id,
+            source: r.profile_name || r.profile_slug,
+            date: r.created_at,
+          });
+        }
+      });
+    }
+  }
+  const recruitsList = Array.from(recruitsMap.values());
+
   return (
     <>
       <section className="submit-hero">
@@ -81,6 +100,21 @@ export default function ReferralsPage() {
         </div>
       </div>
 
+      <div className="referral-tabs">
+        <button
+          className={`tab-btn ${activeTab === "links" ? "active" : ""}`}
+          onClick={() => setActiveTab("links")}
+        >
+          Referral Links
+        </button>
+        <button
+          className={`tab-btn ${activeTab === "recruits" ? "active" : ""}`}
+          onClick={() => setActiveTab("recruits")}
+        >
+          My Recruits ({recruitsList.length})
+        </button>
+      </div>
+
       {loading ? (
         <div className="empty-state">
           <p>Loading referral data…</p>
@@ -92,51 +126,79 @@ export default function ReferralsPage() {
             Try Again
           </button>
         </div>
-      ) : referrals.length === 0 ? (
-        <div className="empty-state">
-          <p>
-            No referral links yet. Submit a positive vouch and share it on
-            LinkedIn to get started!
-          </p>
-          <Link href="/submit" className="btn btn-primary">
-            Submit a Vouch
-          </Link>
-        </div>
-      ) : (
-        <div className="referral-table-wrap">
-          <table className="referral-table">
-            <thead>
-              <tr>
-                <th>Profile</th>
-                <th>Ref Code</th>
-                <th>Created</th>
-                <th>Clicks</th>
-                <th>Signups</th>
-              </tr>
-            </thead>
-            <tbody>
-              {referrals.map((r) => (
-                <tr key={r.ref_code}>
-                  <td className="referral-profile-name">
-                    {r.profile_name || r.profile_slug}
-                  </td>
-                  <td>
-                    <code className="ref-code">{r.ref_code}</code>
-                  </td>
-                  <td>{r.created_at}</td>
-                  <td className="referral-num">{r.clicks || 0}</td>
-                  <td className="referral-num">
-                    <div className="signup-count">{r.signups?.length || 0}</div>
-                    {r.signup_names && r.signup_names.length > 0 && (
-                      <div className="signup-names" title={r.signup_names.join(", ")}>
-                        {r.signup_names.join(", ")}
-                      </div>
-                    )}
-                  </td>
+      ) : activeTab === "links" ? (
+        referrals.length === 0 ? (
+          <div className="empty-state">
+            <p>
+              No referral links yet. Submit a positive vouch and share it on
+              LinkedIn to get started!
+            </p>
+            <Link href="/submit" className="btn btn-primary">
+              Submit a Vouch
+            </Link>
+          </div>
+        ) : (
+          <div className="referral-table-wrap">
+            <table className="referral-table">
+              <thead>
+                <tr>
+                  <th>Profile</th>
+                  <th>Ref Code</th>
+                  <th>Created</th>
+                  <th>Clicks</th>
+                  <th>Signups</th>
                 </tr>
+              </thead>
+              <tbody>
+                {referrals.map((r) => (
+                  <tr key={r.ref_code}>
+                    <td className="referral-profile-name">
+                      {r.profile_name || r.profile_slug}
+                    </td>
+                    <td>
+                      <code className="ref-code">{r.ref_code}</code>
+                    </td>
+                    <td>{r.created_at}</td>
+                    <td className="referral-num">{r.clicks || 0}</td>
+                    <td className="referral-num">
+                      <div className="signup-count">{r.signups?.length || 0}</div>
+                      {r.signup_names && r.signup_names.length > 0 && (
+                        <div className="signup-names" title={r.signup_names.join(", ")}>
+                          {r.signup_names.join(", ")}
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      ) : (
+        /* Recruits View */
+        <div className="recruits-view">
+          {recruitsList.length === 0 ? (
+            <div className="empty-state">
+              <p>No recruits yet. Your impact starts here—share your first link!</p>
+            </div>
+          ) : (
+            <div className="recruit-grid">
+              {recruitsList.map((recruit) => (
+                <div key={recruit.id} className="recruit-card">
+                  <div className="recruit-avatar">
+                    {recruit.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="recruit-info">
+                    <div className="recruit-name">{recruit.name}</div>
+                    <div className="recruit-meta">
+                      Joined via <span className="recruit-source">{recruit.source}</span>
+                    </div>
+                    <div className="recruit-meta">ID: {recruit.id}</div>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          )}
         </div>
       )}
     </>
