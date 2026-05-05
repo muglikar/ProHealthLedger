@@ -73,11 +73,6 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
   const [directPostResult, setDirectPostResult] = useState(null);
   const [directPostErrorDetails, setDirectPostErrorDetails] = useState("");
   const [refCode, setRefCode] = useState("");
-  const [tagVouchee, setTagVouchee] = useState(true);
-  // Track the last post for repost-without-tag flow
-  const [lastPostUrn, setLastPostUrn] = useState(null);
-  const [lastMentionUsed, setLastMentionUsed] = useState(false);
-  const [reposting, setReposting] = useState(false);
 
   const displayName = formatProfessionalDisplayName(data.profile_slug, data.public_name);
   const slug = typeof data.profile_slug === "string" ? data.profile_slug.trim() : "";
@@ -105,7 +100,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
       .catch((err) => console.error("Referral failed", err));
   }, [data]);
 
-  const doPost = useCallback(async (shouldTag) => {
+  const doPost = useCallback(async () => {
     setPostingDirect(true);
     setDirectPostResult(null);
     setDirectPostErrorDetails("");
@@ -121,21 +116,15 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
           articleDescription: "Know who you're working with before you commit.",
           cleanVoucher: voucherName,
           cleanVouchee: displayName,
-          voucheeSlug: slug || undefined,
-          tagVouchee: shouldTag,
         }),
       });
 
       const json = await res.json();
       if (res.ok && json.ok) {
         setDirectPostResult("success");
-        setLastPostUrn(json.postId || null);
-        setLastMentionUsed(Boolean(json.mentionUsed));
         console.log("[PHL Share] Post success:", {
           postId: json.postId,
           thumbnailIncluded: json.thumbnailIncluded,
-          mentionUsed: json.mentionUsed,
-          mentionDiag: json.mentionDiag,
           handshake: json.handshake,
         });
       } else {
@@ -151,36 +140,8 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
   }, [shareData, finalShareUrl, displayName, voucherName, slug]);
 
   const handleDirectPost = useCallback(() => {
-    doPost(tagVouchee);
-  }, [doPost, tagVouchee]);
-
-  const handleRepostWithoutTag = useCallback(async () => {
-    if (!lastPostUrn) return;
-    setReposting(true);
-
-    try {
-      // Step 1: Delete the previous post
-      const delRes = await fetch("/api/share-linkedin", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ postUrn: lastPostUrn }),
-      });
-      const delJson = await delRes.json();
-      if (!delRes.ok || !delJson.ok) {
-        console.warn("[PHL Share] Delete failed:", delJson);
-        // Continue with repost anyway — user can manually delete
-      }
-    } catch (e) {
-      console.warn("[PHL Share] Delete error:", e.message);
-    }
-
-    // Step 2: Repost without tagging
-    setLastPostUrn(null);
-    setLastMentionUsed(false);
-    setDirectPostResult(null);
-    await doPost(false);
-    setReposting(false);
-  }, [lastPostUrn, doPost]);
+    doPost();
+  }, [doPost]);
 
   const handleCopyOnly = useCallback(() => {
     const toCopy = `${shareData.text}${finalShareUrl}\n\n${shareData.tags}`;
@@ -207,41 +168,11 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
 
         <div className="share-modal-actions" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {directPostResult === "success" ? (
-            <div>
-              <div style={{ padding: '16px', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0', color: '#15803d', textAlign: 'center', fontWeight: 'bold' }}>
-                ✓ Posted to LinkedIn!
-              </div>
-              {lastMentionUsed && lastPostUrn && (
-                <div style={{ marginTop: '10px', padding: '12px', background: '#fffbeb', borderRadius: '8px', border: '1px solid #fde68a', fontSize: '0.82rem', color: '#92400e' }}>
-                  <span>Tag didn&apos;t work? </span>
-                  <button
-                    type="button"
-                    onClick={handleRepostWithoutTag}
-                    disabled={reposting}
-                    style={{
-                      background: 'none', border: 'none', color: '#b45309',
-                      textDecoration: 'underline', cursor: 'pointer', fontWeight: 'bold',
-                      fontSize: '0.82rem', padding: 0,
-                    }}
-                  >
-                    {reposting ? "Reposting..." : "Delete & repost without tag"}
-                  </button>
-                </div>
-              )}
+            <div style={{ padding: '16px', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0', color: '#15803d', textAlign: 'center', fontWeight: 'bold' }}>
+              ✓ Posted to LinkedIn!
             </div>
           ) : (
             <>
-              {!firstPerson && slug && (
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: '#475569', cursor: 'pointer', userSelect: 'none' }}>
-                  <input
-                    type="checkbox"
-                    checked={tagVouchee}
-                    onChange={(e) => setTagVouchee(e.target.checked)}
-                    style={{ width: '16px', height: '16px', accentColor: '#0077b5', cursor: 'pointer' }}
-                  />
-                  Tag {displayName} on LinkedIn
-                </label>
-              )}
               <button type="button" className="btn-linkedin-direct" onClick={handleDirectPost} disabled={postingDirect} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
                 {postingDirect ? "Posting..." : "Post to LinkedIn"}
