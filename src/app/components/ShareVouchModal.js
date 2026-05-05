@@ -68,7 +68,6 @@ function buildShareText(displayName, firstPerson = false) {
 
 export default function ShareVouchModal({ data, onClose, firstPerson = false }) {
   const { data: session } = useSession();
-  const [copied, setCopied] = useState(false);
   const [postingDirect, setPostingDirect] = useState(false);
   const [directPostResult, setDirectPostResult] = useState(null);
   const [directPostErrorDetails, setDirectPostErrorDetails] = useState("");
@@ -143,13 +142,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
     doPost();
   }, [doPost]);
 
-  const handleCopyOnly = useCallback(() => {
-    const toCopy = `${shareData.text}${finalShareUrl}\n\n${shareData.tags}`;
-    navigator.clipboard.writeText(toCopy).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
-    }).catch(() => { });
-  }, [shareData, finalShareUrl]);
+
 
   return (
     <>
@@ -183,10 +176,6 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
                   If you want to tag the person, you can just edit the post natively on LinkedIn.
                 </div>
               )}
-
-              <button type="button" className="btn-copy-manual" onClick={handleCopyOnly} style={{ width: '100%', background: 'transparent', color: '#0f172a', border: '1px solid #cbd5e1', padding: '10px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '500' }}>
-                {copied ? "✓ Copied!" : "Copy Text for Manual Post"}
-              </button>
             </>
           )}
         </div>
