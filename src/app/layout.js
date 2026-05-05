@@ -110,6 +110,34 @@ export default function RootLayout({ children }) {
             </div>
           </footer>
         </Providers>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('error', function(event) {
+                fetch('/api/telemetry', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    name: 'error',
+                    metadata: { message: event.message, stack: event.error ? event.error.stack : null },
+                    url: window.location.href
+                  })
+                }).catch(() => {});
+              });
+              window.addEventListener('unhandledrejection', function(event) {
+                fetch('/api/telemetry', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    name: 'unhandled_rejection',
+                    metadata: { reason: String(event.reason) },
+                    url: window.location.href
+                  })
+                }).catch(() => {});
+              });
+            `,
+          }}
+        />
       </body>
     </html>
   );
