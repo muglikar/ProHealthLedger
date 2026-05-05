@@ -44,12 +44,14 @@ export async function POST(req) {
     // Simple rotation: Keep only the last 5000 events to prevent file size bloat
     const updatedEvents = [...(Array.isArray(events) ? events : []), event].slice(-5000);
 
+    /* 
     await writeDataFile(
       EVENTS_PATH,
       updatedEvents,
       sha,
       `telemetry: record event ${name}${userId ? ` for ${userId}` : ` from IP ${ip}`} [skip ci]`
     );
+    */
 
     return Response.json({ success: true });
   } catch (err) {
