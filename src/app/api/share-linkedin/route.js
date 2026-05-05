@@ -8,6 +8,7 @@ import {
 } from "@/lib/rate-limit";
 import { createVouchOgImageResponse } from "@/lib/create-vouch-og-image-response";
 import { displayFromParam } from "@/lib/og-vouch-card";
+import { readRepoJson } from "@/lib/github";
 
 /**
  * POST /api/share-linkedin
@@ -34,46 +35,31 @@ import { displayFromParam } from "@/lib/og-vouch-card";
  */
 
 /**
- * Attempt to resolve a LinkedIn vanity slug to a member URN.
- * Tries multiple LinkedIn API endpoints with the poster's token.
- * Returns the full URN string or null.
+ * Look up a vouchee's LinkedIn URN from the stored slug→URN mapping.
+ * This mapping is populated when users sign into PHL via LinkedIn.
+ * Returns the full URN string (e.g. "urn:li:person:ABC123") or null.
  */
-async function resolveVoucheeUrn(accessToken, vanitySlug) {
-  if (!accessToken || !vanitySlug) return null;
+async function resolveVoucheeUrn(vanitySlug) {
+  if (!vanitySlug) return null;
   const slug = String(vanitySlug).trim().toLowerCase();
   if (!slug || slug.length < 2) return null;
 
-  const endpoints = [
-    `https://api.linkedin.com/rest/people/(vanityName:${encodeURIComponent(slug)})`,
-    `https://api.linkedin.com/v2/people/(vanityName:${encodeURIComponent(slug)})?projection=(id)`,
-  ];
+  try {
+    const { data: map } = await readRepoJson("data/linkedin-urns/_index.json");
+    if (!map || typeof map !== "object") return null;
 
-  for (const url of endpoints) {
-    try {
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "LinkedIn-Version": "202604",
-          "X-Restli-Protocol-Version": "2.0.0",
-        },
-        signal: AbortSignal.timeout(5000),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const urn = data.id || data.sub || data.member;
-        if (urn) {
-          const fullUrn = String(urn).startsWith("urn:li:person:")
-            ? String(urn)
-            : `urn:li:person:${urn}`;
-          console.log("Vouchee URN resolved:", fullUrn, "for slug:", slug);
-          return fullUrn;
-        }
-      }
-    } catch (e) {
-      console.warn("Vouchee URN lookup failed for", url, ":", e.message);
+    const urn = map[slug];
+    if (urn) {
+      const fullUrn = String(urn).startsWith("urn:li:person:")
+        ? String(urn)
+        : `urn:li:person:${urn}`;
+      console.log("Vouchee URN found in stored map:", fullUrn, "for slug:", slug);
+      return fullUrn;
     }
+  } catch (e) {
+    console.warn("Vouchee URN lookup from stored map failed:", e.message);
   }
-  console.log("Could not resolve vouchee URN for slug:", slug);
+  console.log("No stored URN for slug:", slug);
   return null;
 }
 
@@ -415,7 +401,7 @@ export async function POST(req) {
   );
   if (tagVouchee && voucheeSlug && safeVouchee) {
     try {
-      voucheeUrn = await resolveVoucheeUrn(token.linkedinAccessToken, voucheeSlug);
+      voucheeUrn = await resolveVoucheeUrn(voucheeSlug);
     } catch (e) {
       console.warn("Vouchee URN resolution error:", e.message);
     }
