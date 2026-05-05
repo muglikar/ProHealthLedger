@@ -38,13 +38,13 @@ export async function POST(req) {
   }
 
   const body = await req.json();
-  const { linkedinUrl, vote, reason } = body;
+  const { linkedinUrl, publicName, vote, reason } = body;
   const userId = session.userId;
   const displayName = session.displayName || userId;
 
-  if (!linkedinUrl || !vote) {
+  if (!linkedinUrl || !vote || !publicName) {
     return Response.json(
-      { error: "LinkedIn URL and vote are required." },
+      { error: "LinkedIn URL, Vote, and Professional's Name are required." },
       { status: 400 }
     );
   }
@@ -239,7 +239,7 @@ export async function POST(req) {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const titleName =
+  const titleName = (publicName || "").trim() ||
     formatProfessionalDisplayName(slug, profileForTitle?.public_name) ||
     slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
@@ -324,10 +324,14 @@ export async function POST(req) {
     profile = {
       linkedin_url: linkedinUrlCanonical,
       slug,
+      public_name: publicName.trim(),
       votes: { yes: 0, no: 0 },
       submissions: [],
     };
     profiles.push(profile);
+  } else if (!profile.public_name || profile.public_name === slug) {
+    // Scientific solution: update the name if we finally have a real one from a contributor
+    profile.public_name = publicName.trim();
   }
   profile.votes[vote]++;
   profile.submissions.push(submission);
