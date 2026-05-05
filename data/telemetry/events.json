@@ -542,5 +542,19 @@
     "url": "https://prohealthledger.org/submit",
     "referrer": "https://prohealthledger.org/referrals",
     "metadata": {}
+  },
+  {
+    "timestamp": "2026-05-05T19:22:48.680Z",
+    "name": "vouch_page_view",
+    "user_id": null,
+    "ip": "172.68.234.97",
+    "geo": {
+      "city": "Marseille",
+      "region": "PAC",
+      "country": "FR"
+    },
+    "url": "https://prohealthledger.org/submit",
+    "referrer": "https://prohealthledger.org/referrals",
+    "metadata": {}
   }
 ]
