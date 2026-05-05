@@ -8,7 +8,7 @@ import {
 } from "@/lib/rate-limit";
 import { createVouchOgImageResponse } from "@/lib/create-vouch-og-image-response";
 import { displayFromParam } from "@/lib/og-vouch-card";
-import { readRepoJson } from "@/lib/github";
+import { readRepoJson, writeRepoJson } from "@/lib/github";
 
 /**
  * POST /api/share-linkedin
@@ -35,31 +35,98 @@ import { readRepoJson } from "@/lib/github";
  */
 
 /**
- * Look up a vouchee's LinkedIn URN from the stored slug→URN mapping.
- * This mapping is populated when users sign into PHL via LinkedIn.
- * Returns the full URN string (e.g. "urn:li:person:ABC123") or null.
+ * Look up a vouchee's LinkedIn URN.
+ *
+ * Strategy:
+ *   1. Check stored slug→URN map (populated when users sign into PHL).
+ *   2. Fallback: fetch the LinkedIn public profile page and extract the
+ *      member ID from the HTML source (works for any public profile).
  */
 async function resolveVoucheeUrn(vanitySlug) {
   if (!vanitySlug) return null;
   const slug = String(vanitySlug).trim().toLowerCase();
   if (!slug || slug.length < 2) return null;
 
+  // --- Strategy 1: stored map (fast, no external call) ---
   try {
     const { data: map } = await readRepoJson("data/linkedin-urns/_index.json");
-    if (!map || typeof map !== "object") return null;
-
-    const urn = map[slug];
-    if (urn) {
-      const fullUrn = String(urn).startsWith("urn:li:person:")
-        ? String(urn)
-        : `urn:li:person:${urn}`;
-      console.log("Vouchee URN found in stored map:", fullUrn, "for slug:", slug);
+    if (map && typeof map === "object" && map[slug]) {
+      const fullUrn = String(map[slug]).startsWith("urn:li:person:")
+        ? String(map[slug])
+        : `urn:li:person:${map[slug]}`;
+      console.log("Vouchee URN from stored map:", fullUrn);
       return fullUrn;
     }
   } catch (e) {
-    console.warn("Vouchee URN lookup from stored map failed:", e.message);
+    console.warn("Stored URN map read failed:", e.message);
   }
-  console.log("No stored URN for slug:", slug);
+
+  // --- Strategy 2: extract from LinkedIn public profile page ---
+  try {
+    const profileUrl = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
+    const res = await fetch(profileUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+        Accept: "text/html,application/xhtml+xml",
+      },
+      redirect: "follow",
+      signal: AbortSignal.timeout(6000),
+    });
+
+    if (res.ok) {
+      const html = await res.text();
+
+      // LinkedIn embeds member URNs in several patterns in the page source
+      const patterns = [
+        // "urn:li:member:123456789"
+        /urn:li:member:(\d{5,})/,
+        // "urn:li:fsd_profile:ACoAABcD1234"
+        /urn:li:fsd_profile:([A-Za-z0-9_-]{8,})/,
+        // data-member-id="123456789"
+        /data-member-id="(\d{5,})"/,
+        // "publicIdentifier":"slug","member_id":"123456"
+        /"member_id"\s*:\s*"?(\d{5,})"?/,
+      ];
+
+      for (const rx of patterns) {
+        const m = html.match(rx);
+        if (m && m[1]) {
+          // member IDs are numeric, fsd_profile IDs are alphanumeric
+          const id = m[1];
+          const fullUrn = /^\d+$/.test(id)
+            ? `urn:li:person:${id}`
+            : `urn:li:person:${id}`;
+          console.log("Vouchee URN extracted from profile page:", fullUrn, "for slug:", slug);
+
+          // Cache it in the stored map for next time (best-effort)
+          try {
+            const { data: mapNow, sha } = await readRepoJson("data/linkedin-urns/_index.json");
+            const updated = (mapNow && typeof mapNow === "object") ? mapNow : {};
+            if (updated[slug] !== id) {
+              updated[slug] = id;
+              await writeRepoJson(
+                "data/linkedin-urns/_index.json",
+                updated,
+                sha || undefined,
+                `chore: cache URN for ${slug}`
+              );
+            }
+          } catch { /* non-critical */ }
+
+          return fullUrn;
+        }
+      }
+      console.log("Profile page fetched but no member URN found for slug:", slug);
+    } else {
+      console.log("LinkedIn profile fetch returned:", res.status, "for slug:", slug);
+    }
+  } catch (e) {
+    console.warn("Profile page URN extraction failed:", e.message);
+  }
+
+  console.log("No URN resolved for slug:", slug);
   return null;
 }
 
