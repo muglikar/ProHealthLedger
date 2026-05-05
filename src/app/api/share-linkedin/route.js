@@ -12,22 +12,83 @@ import { displayFromParam } from "@/lib/og-vouch-card";
 /**
  * POST /api/share-linkedin
  *
- * Publishes a vouch to the authenticated user's LinkedIn feed using the
- * Posts API with:
- *  - 3-step asset upload: tries `/api/og` first (same URL as `og:image`), then `…/opengraph-image`
- *  - Clean article card titles (no underscores)
+ * Publishes a vouch to the authenticated user's LinkedIn feed.
+ * Supports @mention tagging of the vouchee (opt-in via `tagVouchee` flag).
  *
  * Body: {
  *   commentary: string,
- *   articleUrl: string,        // must be on the configured site origin
+ *   articleUrl: string,
  *   articleTitle?: string,
  *   articleDescription?: string,
- *   cleanVoucher?: string,     // used to build the server-side OG URL
- *   cleanVouchee?: string,     // used to build the server-side OG URL
+ *   cleanVoucher?: string,
+ *   cleanVouchee?: string,
+ *   voucheeSlug?: string,      // LinkedIn vanity slug for @mention
+ *   tagVouchee?: boolean,      // true to attempt @mention tagging
  * }
  *
- * Thumbnail fetch uses names → `/api/og` (matches metadata) and path → `…/opengraph-image`.
+ * DELETE /api/share-linkedin
+ *
+ * Deletes a LinkedIn post by its URN (for repost-without-tag flow).
+ *
+ * Body: { postUrn: string }
  */
+
+/**
+ * Attempt to resolve a LinkedIn vanity slug to a member URN.
+ * Tries multiple LinkedIn API endpoints with the poster's token.
+ * Returns the full URN string or null.
+ */
+async function resolveVoucheeUrn(accessToken, vanitySlug) {
+  if (!accessToken || !vanitySlug) return null;
+  const slug = String(vanitySlug).trim().toLowerCase();
+  if (!slug || slug.length < 2) return null;
+
+  const endpoints = [
+    `https://api.linkedin.com/rest/people/(vanityName:${encodeURIComponent(slug)})`,
+    `https://api.linkedin.com/v2/people/(vanityName:${encodeURIComponent(slug)})?projection=(id)`,
+  ];
+
+  for (const url of endpoints) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "LinkedIn-Version": "202604",
+          "X-Restli-Protocol-Version": "2.0.0",
+        },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const urn = data.id || data.sub || data.member;
+        if (urn) {
+          const fullUrn = String(urn).startsWith("urn:li:person:")
+            ? String(urn)
+            : `urn:li:person:${urn}`;
+          console.log("Vouchee URN resolved:", fullUrn, "for slug:", slug);
+          return fullUrn;
+        }
+      }
+    } catch (e) {
+      console.warn("Vouchee URN lookup failed for", url, ":", e.message);
+    }
+  }
+  console.log("Could not resolve vouchee URN for slug:", slug);
+  return null;
+}
+
+/**
+ * Replace all occurrences of `displayName` in the commentary with
+ * the LinkedIn @mention syntax: @[displayName](urn).
+ */
+function injectMentions(commentary, displayName, urn) {
+  if (!commentary || !displayName || !urn) return commentary;
+  const escaped = displayName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return commentary.replace(
+    new RegExp(`(?<![@#\\/])\\b${escaped}\\b`, "g"),
+    `@[${displayName}](${urn})`
+  );
+}
 
 const SITE_ORIGIN = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org"
@@ -161,6 +222,8 @@ export async function POST(req) {
     articleDescription,
     cleanVoucher,
     cleanVouchee,
+    voucheeSlug,
+    tagVouchee,
   } = body;
 
   const finalCommentary = clampString(commentary, MAX_COMMENTARY);
@@ -344,14 +407,28 @@ export async function POST(req) {
     handshakeDiag.error = err.message;
   }
 
-  // --- Build the LinkedIn Posts API payload ---
-  // Build clean title: "[Voucher] vouched for [Vouchee] - Professional Health Ledger"
-  const safeVoucher = clampString(
-    (cleanVoucher || "").split("_").join(" "),
-    MAX_NAME_PART
-  );
+  // --- Resolve vouchee URN for @mention tagging ---
+  let voucheeUrn = null;
   const safeVouchee = clampString(
     (cleanVouchee || "").split("_").join(" "),
+    MAX_NAME_PART
+  );
+  if (tagVouchee && voucheeSlug && safeVouchee) {
+    try {
+      voucheeUrn = await resolveVoucheeUrn(token.linkedinAccessToken, voucheeSlug);
+    } catch (e) {
+      console.warn("Vouchee URN resolution error:", e.message);
+    }
+  }
+
+  // Build commentary — inject @mention syntax if URN resolved
+  const effectiveCommentary = voucheeUrn
+    ? injectMentions(finalCommentary, safeVouchee, voucheeUrn)
+    : finalCommentary;
+
+  // --- Build the LinkedIn Posts API payload ---
+  const safeVoucher = clampString(
+    (cleanVoucher || "").split("_").join(" "),
     MAX_NAME_PART
   );
   const fallbackTitle = clampString(
@@ -361,9 +438,9 @@ export async function POST(req) {
   const cleanTitle =
     safeVoucher && safeVouchee
       ? clampString(
-          `${safeVoucher} vouched for ${safeVouchee} on Professional Health Ledger`,
-          MAX_TITLE
-        )
+        `${safeVoucher} vouched for ${safeVouchee} on Professional Health Ledger`,
+        MAX_TITLE
+      )
       : fallbackTitle;
   const safeDescription = clampString(
     articleDescription || "See verified professional vouches on Pro-Health Ledger",
@@ -372,7 +449,7 @@ export async function POST(req) {
 
   const postPayload = {
     author: `urn:li:person:${linkedinSub}`,
-    commentary: finalCommentary,
+    commentary: effectiveCommentary,
     visibility: "PUBLIC",
     distribution: {
       feedDistribution: "MAIN_FEED",
@@ -469,7 +546,7 @@ export async function POST(req) {
         ok: true,
         postId,
         thumbnailIncluded: Boolean(imageUrn),
-        imageUrn: imageUrn || null,
+        mentionUsed: Boolean(voucheeUrn),
         handshake: handshakeDiag,
       });
     }
@@ -494,11 +571,65 @@ export async function POST(req) {
     if (err.name === "AbortError") {
       return Response.json(
         { error: "LinkedIn API timed out. Please try the manual share." },
-        { status: 504 }
       );
     }
     return Response.json(
       { error: "Failed to reach LinkedIn. Please try again." },
+      { status: 502 }
+    );
+  }
+}
+
+/**
+ * DELETE /api/share-linkedin
+ *
+ * Deletes a previously created LinkedIn post so the user can repost
+ * without @mention tagging (repost-without-tag flow).
+ */
+export async function DELETE(req) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (!token?.linkedinAccessToken || token.provider !== "linkedin") {
+    return Response.json({ error: "Not authenticated." }, { status: 401 });
+  }
+
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json({ error: "Invalid body." }, { status: 400 });
+  }
+
+  const { postUrn } = body;
+  if (!postUrn || !String(postUrn).startsWith("urn:li:share:")) {
+    return Response.json({ error: "Invalid postUrn." }, { status: 400 });
+  }
+
+  try {
+    const res = await fetch(
+      `https://api.linkedin.com/rest/posts/${encodeURIComponent(postUrn)}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token.linkedinAccessToken}`,
+          "LinkedIn-Version": "202604",
+          "X-Restli-Protocol-Version": "2.0.0",
+        },
+      }
+    );
+
+    if (res.status === 204 || res.ok) {
+      return Response.json({ ok: true, deleted: postUrn });
+    }
+
+    const errBody = await res.text().catch(() => "");
+    console.error("LinkedIn delete failed:", res.status, errBody);
+    return Response.json(
+      { error: "Could not delete the post.", status: res.status },
+      { status: 502 }
+    );
+  } catch (err) {
+    return Response.json(
+      { error: "Failed to reach LinkedIn for deletion." },
       { status: 502 }
     );
   }
