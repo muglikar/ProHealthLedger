@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { isRepoMaintainerUserId } from "@/lib/repo-owner-session";
+import VerifiedBadge from "./VerifiedBadge";
 
 export default function NavAuth() {
   const { data: session, status } = useSession();
@@ -147,15 +148,12 @@ export default function NavAuth() {
             {session.displayName || session.userId}
           </span>
           {myLinkedSlug ? (
-            <span className="nav-auth-verified-badge" title="LinkedIn Profile Linked">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="#0072b1">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-              </svg>
-            </span>
+            <VerifiedBadge size={16} className="nav-auth-verified-badge" />
           ) : (
             <span className="nav-auth-unverified-badge" title="Verify using your LinkedIn profile URL">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="#e11d48">
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" fill="#fecaca" />
+                <path d="M15 9L9 15M9 9l6 6" stroke="#b91c1c" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
             </span>
           )}
