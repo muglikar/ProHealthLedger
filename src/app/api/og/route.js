@@ -13,11 +13,11 @@ export async function GET(request) {
     const rawMax = 100;
     const cleanVoucher = displayFromParam(
       searchParams.get("voucherName"),
-      "A Colleague"
+      ""
     ).slice(0, rawMax);
     const cleanVouchee = displayFromParam(
       searchParams.get("voucheeName"),
-      "Professional"
+      ""
     ).slice(0, rawMax);
 
     return createVouchOgImageResponse(cleanVoucher, cleanVouchee);
