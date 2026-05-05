@@ -109,7 +109,12 @@ export default function ReferralsPage() {
                   <td>{r.created_at}</td>
                   <td className="referral-num">{r.clicks || 0}</td>
                   <td className="referral-num">
-                    {r.signups?.length || 0}
+                    <div className="signup-count">{r.signups?.length || 0}</div>
+                    {r.signup_names && r.signup_names.length > 0 && (
+                      <div className="signup-names" title={r.signup_names.join(", ")}>
+                        {r.signup_names.join(", ")}
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

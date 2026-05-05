@@ -7,6 +7,7 @@ import Link from "next/link";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 import CommentReadModal from "@/app/components/CommentReadModal";
 import ShareVouchModal from "@/app/components/ShareVouchModal";
+import { trackEvent } from "@/lib/telemetry";
 
 const REPO_BASE = "https://github.com/muglikar/ProHealthLedger";
 
@@ -93,6 +94,14 @@ function ProfilesContent() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (!query) return;
+    const timer = setTimeout(() => {
+      trackEvent("profile_search", { query });
+    }, 1500); // 1.5s debounce to avoid noise while typing
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const normalizeQuery = (q) => {
     const lower = q.toLowerCase().trim();

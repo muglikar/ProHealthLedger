@@ -3550,7 +3550,21 @@ button.audit-comment-link:focus-visible {
 .referral-num {
   font-variant-numeric: tabular-nums;
   font-weight: 700;
-  text-align: center;
+  text-align: right;
+}
+
+.signup-count {
+  font-size: 1rem;
+}
+
+.signup-names {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 639px) {

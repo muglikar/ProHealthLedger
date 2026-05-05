@@ -99,7 +99,20 @@ export async function GET(req) {
       return Response.json(all);
     }
     const userReferrals = await getReferralsByUser(session.userId);
-    return Response.json(userReferrals);
+
+    // Identity tracking: Map signup IDs to names
+    const { data: users } = await readDataFile("data/users/_index.json");
+    const userMap = (Array.isArray(users) ? users : []).reduce((acc, u) => {
+      acc[u.user_id] = u.display_name || u.github_username || u.user_id;
+      return acc;
+    }, {});
+
+    const enrichedReferrals = userReferrals.map(r => ({
+      ...r,
+      signup_names: (r.signups || []).map(id => userMap[id] || id)
+    }));
+
+    return Response.json(enrichedReferrals);
   } catch (err) {
     console.error("Failed to fetch referrals:", err);
     return Response.json(

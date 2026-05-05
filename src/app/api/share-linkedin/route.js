@@ -9,6 +9,7 @@ import {
 import { createVouchOgImageResponse } from "@/lib/create-vouch-og-image-response";
 import { displayFromParam } from "@/lib/og-vouch-card";
 import { readRepoJson, writeRepoJson } from "@/lib/github";
+import { logServerEvent } from "@/lib/telemetry-server";
 
 /**
  * POST /api/share-linkedin
@@ -55,16 +56,20 @@ async function resolveVoucheeName(vanitySlug) {
         const html = await res.text();
         const titleMatch = html.match(/<title>(.*?)\s*-.*LinkedIn<\/title>/i) || html.match(/<title>(.*?)<\/title>/i);
         if (titleMatch && titleMatch[1] && !titleMatch[1].toLowerCase().includes("security") && !titleMatch[1].toLowerCase().includes("captcha")) {
-          return titleMatch[1].trim();
+          const name = titleMatch[1].trim();
+          await logServerEvent("scraper_success", { slug, method: "ScraperAPI", name });
+          return name;
         }
       }
     } catch (e) {
+      await logServerEvent("scraper_error", { slug, method: "ScraperAPI", error: e.message });
       console.warn("ScraperAPI failed:", e.message);
     }
   }
 
   // --- Attempt 2: Direct Fetch (Works in dev, blocked on some cloud IPs) ---
   try {
+    await logServerEvent("scraper_attempt", { slug, method: "Direct" });
     const res = await fetch(linkedinUrl, {
       headers: {
         "User-Agent":
@@ -80,15 +85,19 @@ async function resolveVoucheeName(vanitySlug) {
       const html = await res.text();
       const titleMatch = html.match(/<title>(.*?)\s*-.*LinkedIn<\/title>/i) || html.match(/<title>(.*?)<\/title>/i);
       if (titleMatch && titleMatch[1] && !titleMatch[1].toLowerCase().includes("security") && !titleMatch[1].toLowerCase().includes("captcha")) {
-        return titleMatch[1].trim();
+        const name = titleMatch[1].trim();
+        await logServerEvent("scraper_success", { slug, method: "Direct", name });
+        return name;
       }
     }
   } catch (e) {
+    await logServerEvent("scraper_error", { slug, method: "Direct", error: e.message });
     console.warn("Direct fetch failed:", e.message);
   }
 
   // --- Attempt 3: Search Engine Fallback (Scientific Option #4) ---
   try {
+    await logServerEvent("scraper_attempt", { slug, method: "DuckDuckGo" });
     const ddgUrl = `https://duckduckgo.com/html/?q=site:linkedin.com/in/${encodeURIComponent(slug)}`;
     const res = await fetch(ddgUrl, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" },
@@ -99,12 +108,17 @@ async function resolveVoucheeName(vanitySlug) {
       // Look for the first result title which usually contains the name
       const ddgMatch = html.match(/class="result__a"[^>]*>([^<]+)\s*-.*LinkedIn/i);
       if (ddgMatch && ddgMatch[1]) {
-        return ddgMatch[1].trim();
+        const name = ddgMatch[1].trim();
+        await logServerEvent("scraper_success", { slug, method: "DuckDuckGo", name });
+        return name;
       }
     }
   } catch (e) {
+    await logServerEvent("scraper_error", { slug, method: "DuckDuckGo", error: e.message });
     console.warn("Search fallback failed:", e.message);
   }
+
+  await logServerEvent("scraper_failure_all", { slug });
 
   return null;
 }
