@@ -20,11 +20,17 @@ export async function POST(req) {
     const ip = getClientIp(req);
     const timestamp = new Date().toISOString();
 
+    // Silent Geolocation via Vercel Edge Headers
+    const city = req.headers.get("x-vercel-ip-city") || "unknown";
+    const country = req.headers.get("x-vercel-ip-country") || "unknown";
+    const region = req.headers.get("x-vercel-ip-country-region") || "unknown";
+
     const event = {
       timestamp,
       name,
       user_id: userId,
-      ip: userId ? null : ip, // Only store IP for un-authenticated users as requested
+      ip: userId ? null : ip,
+      geo: { city, region, country },
       url,
       referrer,
       metadata,
