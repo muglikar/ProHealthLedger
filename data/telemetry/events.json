@@ -270,5 +270,19 @@
       "message": "Uncaught ReferenceError: Cannot access 'S' before initialization",
       "stack": "ReferenceError: Cannot access 'S' before initialization\n    at p (https://prohealthledger.org/_next/static/chunks/01q5df80uhv_v.js:21:4145)\n    at ay (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:63845)\n    at oJ (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:84102)\n    at iu (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:95704)\n    at sd (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:138944)\n    at https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:138789\n    at sf (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:138797)\n    at se (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:134718)\n    at s$ (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:160495)\n    at MessagePort.O (https://prohealthledger.org/_next/static/chunks/10~x95jhs6ns3.js:1:8660)"
     }
+  },
+  {
+    "timestamp": "2026-05-05T19:05:48.899Z",
+    "name": "vouch_page_view",
+    "user_id": "linkedin:CAOSO1oig0",
+    "ip": null,
+    "geo": {
+      "city": "Marseille",
+      "region": "PAC",
+      "country": "FR"
+    },
+    "url": "https://prohealthledger.org/submit",
+    "referrer": "https://prohealthledger.org/",
+    "metadata": {}
   }
 ]
