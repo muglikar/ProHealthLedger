@@ -42,9 +42,30 @@ async function resolveVoucheeName(vanitySlug) {
   const slug = String(vanitySlug).trim().toLowerCase();
   if (!slug || slug.length < 2) return null;
 
+  const scraperApiKey = process.env.SCRAPER_API_KEY;
+  const linkedinUrl = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
+
+  // --- Attempt 1: Official Scraper API (Scientific Option #2) ---
+  if (scraperApiKey) {
+    try {
+      console.log(`Attempting ScraperAPI for ${slug}...`);
+      const scraperUrl = `http://api.scraperapi.com?api_key=${scraperApiKey}&url=${encodeURIComponent(linkedinUrl)}&render=false`;
+      const res = await fetch(scraperUrl, { signal: AbortSignal.timeout(10000) });
+      if (res.ok) {
+        const html = await res.text();
+        const titleMatch = html.match(/<title>(.*?)\s*-.*LinkedIn<\/title>/i) || html.match(/<title>(.*?)<\/title>/i);
+        if (titleMatch && titleMatch[1] && !titleMatch[1].toLowerCase().includes("security") && !titleMatch[1].toLowerCase().includes("captcha")) {
+          return titleMatch[1].trim();
+        }
+      }
+    } catch (e) {
+      console.warn("ScraperAPI failed:", e.message);
+    }
+  }
+
+  // --- Attempt 2: Direct Fetch (Works in dev, blocked on some cloud IPs) ---
   try {
-    const profileUrl = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
-    const res = await fetch(profileUrl, {
+    const res = await fetch(linkedinUrl, {
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
@@ -58,13 +79,33 @@ async function resolveVoucheeName(vanitySlug) {
     if (res.ok) {
       const html = await res.text();
       const titleMatch = html.match(/<title>(.*?)\s*-.*LinkedIn<\/title>/i) || html.match(/<title>(.*?)<\/title>/i);
-      if (titleMatch && titleMatch[1]) {
+      if (titleMatch && titleMatch[1] && !titleMatch[1].toLowerCase().includes("security") && !titleMatch[1].toLowerCase().includes("captcha")) {
         return titleMatch[1].trim();
       }
     }
   } catch (e) {
-    console.warn("Failed to scrape vouchee name:", e.message);
+    console.warn("Direct fetch failed:", e.message);
   }
+
+  // --- Attempt 3: Search Engine Fallback (Scientific Option #4) ---
+  try {
+    const ddgUrl = `https://duckduckgo.com/html/?q=site:linkedin.com/in/${encodeURIComponent(slug)}`;
+    const res = await fetch(ddgUrl, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (res.ok) {
+      const html = await res.text();
+      // Look for the first result title which usually contains the name
+      const ddgMatch = html.match(/class="result__a"[^>]*>([^<]+)\s*-.*LinkedIn/i);
+      if (ddgMatch && ddgMatch[1]) {
+        return ddgMatch[1].trim();
+      }
+    }
+  } catch (e) {
+    console.warn("Search fallback failed:", e.message);
+  }
+
   return null;
 }
 
