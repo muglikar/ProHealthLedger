@@ -36,24 +36,25 @@ import { readRepoJson, writeRepoJson } from "@/lib/github";
 /**
  * Look up a vouchee's LinkedIn URN using multiple strategies.
  *
- * Returns { urn: string|null, strategy: string, diag: object }
+ * Returns { urn: string|null, name: string|null, strategy: string, diag: object }
  */
 async function resolveVoucheeUrn(vanitySlug, accessToken) {
   const diag = { slug: vanitySlug, strategies: [] };
-  if (!vanitySlug) return { urn: null, strategy: "none", diag };
+  if (!vanitySlug) return { urn: null, name: null, strategy: "none", diag };
   const slug = String(vanitySlug).trim().toLowerCase();
-  if (!slug || slug.length < 2) return { urn: null, strategy: "none", diag };
+  if (!slug || slug.length < 2) return { urn: null, name: null, strategy: "none", diag };
   diag.slug = slug;
 
   // --- Strategy 1: stored map (fast, no external call) ---
   try {
     const { data: map } = await readRepoJson("data/linkedin-urns/_index.json");
     if (map && typeof map === "object" && map[slug]) {
-      const id = map[slug];
+      const id = typeof map[slug] === "object" ? map[slug].urn : map[slug];
+      const name = typeof map[slug] === "object" ? map[slug].name : null;
       const fullUrn = String(id).startsWith("urn:li:person:")
         ? String(id) : `urn:li:person:${id}`;
-      diag.strategies.push({ name: "stored_map", result: "found", urn: fullUrn });
-      return { urn: fullUrn, strategy: "stored_map", diag };
+      diag.strategies.push({ name: "stored_map", result: "found", urn: fullUrn, extractedName: name });
+      return { urn: fullUrn, name, strategy: "stored_map", diag };
     }
     diag.strategies.push({ name: "stored_map", result: "not_found" });
   } catch (e) {
@@ -106,8 +107,8 @@ async function resolveVoucheeUrn(vanitySlug, accessToken) {
               ? idStr : `urn:li:person:${idStr}`;
             diag.strategies.push({ name: "api", url: ep.url, result: "found", urn: fullUrn });
             // Cache for next time
-            cacheUrn(slug, idStr).catch(() => {});
-            return { urn: fullUrn, strategy: "api", diag };
+            cacheUrn(slug, idStr, null).catch(() => {});
+            return { urn: fullUrn, name: null, strategy: "api", diag };
           }
           diag.strategies.push({ name: "api", url: ep.url, result: "ok_but_no_id", keys: Object.keys(data) });
         } else {
@@ -136,6 +137,9 @@ async function resolveVoucheeUrn(vanitySlug, accessToken) {
 
     if (res.ok) {
       const html = await res.text();
+      const titleMatch = html.match(/<title>(.*?)\s*-.*LinkedIn<\/title>/i) || html.match(/<title>(.*?)<\/title>/i);
+      const extractedName = titleMatch ? titleMatch[1].trim() : null;
+
       const patterns = [
         /urn:li:member:(\d{5,})/,
         /urn:li:fsd_profile:([A-Za-z0-9_-]{8,})/,
@@ -148,9 +152,9 @@ async function resolveVoucheeUrn(vanitySlug, accessToken) {
         if (m && m[1]) {
           const id = m[1];
           const fullUrn = `urn:li:person:${id}`;
-          diag.strategies.push({ name: "profile_page", result: "found", urn: fullUrn, pattern: rx.source });
-          cacheUrn(slug, id).catch(() => {});
-          return { urn: fullUrn, strategy: "profile_page", diag };
+          diag.strategies.push({ name: "profile_page", result: "found", urn: fullUrn, pattern: rx.source, extractedName });
+          cacheUrn(slug, id, extractedName).catch(() => {});
+          return { urn: fullUrn, name: extractedName, strategy: "profile_page", diag };
         }
       }
       diag.strategies.push({ name: "profile_page", result: "no_patterns_matched", htmlLen: html.length });
@@ -162,16 +166,22 @@ async function resolveVoucheeUrn(vanitySlug, accessToken) {
   }
 
   console.log("URN resolution failed for slug:", slug, JSON.stringify(diag.strategies));
-  return { urn: null, strategy: "none", diag };
+  return { urn: null, name: null, strategy: "none", diag };
 }
 
 /** Best-effort cache a slug→URN mapping. */
-async function cacheUrn(slug, id) {
+async function cacheUrn(slug, id, name) {
   try {
     const { data: mapNow, sha } = await readRepoJson("data/linkedin-urns/_index.json");
     const updated = (mapNow && typeof mapNow === "object") ? mapNow : {};
-    if (updated[slug] !== id) {
-      updated[slug] = id;
+    
+    // Convert old string format to object format if adding name
+    const existing = updated[slug];
+    const isDifferentId = typeof existing === "object" ? existing?.urn !== id : existing !== id;
+    const isDifferentName = typeof existing === "object" ? existing?.name !== name : false;
+
+    if (isDifferentId || (name && isDifferentName)) {
+      updated[slug] = name ? { urn: id, name } : id;
       await writeRepoJson("data/linkedin-urns/_index.json", updated, sha || undefined,
         `chore: cache URN for ${slug}`);
     }
@@ -182,12 +192,13 @@ async function cacheUrn(slug, id) {
  * Replace all occurrences of `displayName` in the commentary with
  * the LinkedIn @mention syntax: @[displayName](urn).
  */
-function injectMentions(commentary, displayName, urn) {
+function injectMentions(commentary, displayName, urn, exactName) {
   if (!commentary || !displayName || !urn) return commentary;
   const escaped = displayName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const mentionText = exactName || displayName;
   return commentary.replace(
     new RegExp(`(?<![@#\\/])\\b${escaped}\\b`, "g"),
-    `@[${displayName}](${urn})`
+    `@[${mentionText}](${urn})`
   );
 }
 
@@ -510,6 +521,7 @@ export async function POST(req) {
 
   // --- Resolve vouchee URN for @mention tagging ---
   let voucheeUrn = null;
+  let exactVoucheeName = null;
   let mentionDiag = null;
   const safeVouchee = clampString(
     (cleanVouchee || "").split("_").join(" "),
@@ -519,6 +531,7 @@ export async function POST(req) {
     try {
       const result = await resolveVoucheeUrn(voucheeSlug, token.linkedinAccessToken);
       voucheeUrn = result.urn;
+      exactVoucheeName = result.name;
       mentionDiag = { strategy: result.strategy, ...result.diag };
     } catch (e) {
       console.warn("Vouchee URN resolution error:", e.message);
@@ -528,7 +541,7 @@ export async function POST(req) {
 
   // Build commentary — inject @mention syntax if URN resolved
   const effectiveCommentary = voucheeUrn
-    ? injectMentions(finalCommentary, safeVouchee, voucheeUrn)
+    ? injectMentions(finalCommentary, safeVouchee, voucheeUrn, exactVoucheeName)
     : finalCommentary;
 
   // --- Build the LinkedIn Posts API payload ---
