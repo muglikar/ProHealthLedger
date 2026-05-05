@@ -184,7 +184,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
                 </div>
               )}
 
-              <button type="button" className="btn-copy-manual" onClick={handleCopyOnly} style={{ width: '100%', background: 'transparent', border: '1px solid #cbd5e1', padding: '10px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+              <button type="button" className="btn-copy-manual" onClick={handleCopyOnly} style={{ width: '100%', background: 'transparent', color: '#0f172a', border: '1px solid #cbd5e1', padding: '10px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '500' }}>
                 {copied ? "✓ Copied!" : "Copy Text for Manual Post"}
               </button>
             </>
