@@ -188,3 +188,109 @@ export function VouchOgCardJsx({ voucherText, voucheeText, nameSize, scale }) {
     </div>
   );
 }
+export function GeneralOgCardJsx({ scale }) {
+  const px = (n) => `${n * scale}px`;
+
+  return (
+    <div
+      style={{
+        width: px(OG_W),
+        height: px(OG_H),
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#ffffff",
+        backgroundImage:
+          "linear-gradient(135deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%)",
+        padding: `${50 * scale}px ${60 * scale}px`,
+        fontFamily: "Monda, sans-serif",
+      }}
+    >
+      {/* PHL Logo + Branding */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: px(80),
+        }}
+      >
+        <div
+          style={{
+            width: px(80),
+            height: px(80),
+            borderRadius: px(20),
+            backgroundColor: "#059669",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            fontSize: px(32),
+            fontWeight: 700,
+            marginRight: px(28),
+            boxShadow: "0 8px 20px rgba(5, 150, 105, 0.3)",
+          }}
+        >
+          PHL
+        </div>
+        <div
+          style={{
+            display: "flex",
+            fontSize: px(48),
+            fontWeight: 700,
+            color: "#1e293b",
+            letterSpacing: "0.1em",
+          }}
+        >
+          PRO-HEALTH LEDGER
+        </div>
+      </div>
+
+      {/* Center: Tagline */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          maxWidth: px(1000),
+          textAlign: "center",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            fontSize: px(52),
+            fontWeight: 400,
+            color: "#334155",
+            marginBottom: px(20),
+          }}
+        >
+          Know who you're working with
+        </div>
+        <div
+          style={{
+            display: "flex",
+            fontSize: px(64),
+            fontWeight: 700,
+            color: "#059669",
+            fontStyle: "italic",
+          }}
+        >
+          before you commit.
+        </div>
+      </div>
+
+      {/* Bottom accent bar */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: px(12),
+          background: "linear-gradient(90deg, #059669 0%, #34d399 100%)",
+        }}
+      />
+    </div>
+  );
+}

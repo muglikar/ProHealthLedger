@@ -159,15 +159,25 @@ export default function ReferralsPage() {
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               <input
                 readOnly
-                value={origin ? `${origin}/?ref=${generalReferral.ref_code}` : "Loading link..."}
-                style={{ flex: 1, padding: "8px 12px", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--bg-card)", fontSize: "0.9rem" }}
+                value={`${origin || "https://prohealthledger.org"}/?ref=${generalReferral.ref_code}`}
+                style={{ 
+                  flex: 1, 
+                  padding: "10px 14px", 
+                  borderRadius: "6px", 
+                  border: "2px solid var(--accent-border)", 
+                  background: "#fff", 
+                  color: "#0f172a",
+                  fontSize: "0.95rem",
+                  fontWeight: "500",
+                  boxShadow: "inset 0 1px 2px rgba(0,0,0,0.05)"
+                }}
                 onClick={(e) => e.target.select()}
               />
               <button 
                 className="btn btn-secondary" 
                 onClick={() => {
-                  if (!origin) return;
-                  navigator.clipboard.writeText(`${origin}/?ref=${generalReferral.ref_code}`);
+                  const base = origin || "https://prohealthledger.org";
+                  navigator.clipboard.writeText(`${base}/?ref=${generalReferral.ref_code}`);
                   alert("Copied to clipboard!");
                 }}
               >

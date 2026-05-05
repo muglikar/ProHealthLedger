@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const siteUrl = "https://prohealthledger.org";
-const OG_IMAGE = `${siteUrl}/og_banner.png`;
+const OG_IMAGE = `${siteUrl}/api/og`;
 
 /** Homepage-only link preview art (root layout intentionally omits default og:image). */
 export const metadata = {
