@@ -356,6 +356,10 @@ export async function POST(req) {
     (cleanVoucher || "").split("_").join(" "),
     MAX_NAME_PART
   );
+  const safeVouchee = clampString(
+    (cleanVouchee || "").split("_").join(" "),
+    MAX_NAME_PART
+  );
   const fallbackTitle = clampString(
     (articleTitle || "Professional Health Ledger").split("_").join(" "),
     MAX_TITLE
