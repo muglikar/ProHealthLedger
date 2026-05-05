@@ -195,16 +195,41 @@ async function cacheUrn(slug, id, name) {
 
 /**
  * Replace all occurrences of `displayName` in the commentary with
- * the LinkedIn @mention syntax: @[displayName](urn).
+ * the exact name (prefixed by @) and return an annotations array 
+ * for the LinkedIn /rest/posts API.
  */
 function injectMentions(commentary, displayName, urn, exactName) {
-  if (!commentary || !displayName || !urn) return commentary;
+  if (!commentary || !displayName || !urn) {
+    return { commentary, annotations: [] };
+  }
   const escaped = displayName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const mentionText = exactName || displayName;
-  return commentary.replace(
+  const replacementText = `@${mentionText}`;
+  
+  const newCommentary = commentary.replace(
     new RegExp(`(?<![@#\\/])\\b${escaped}\\b`, "g"),
-    `@[${mentionText}](${urn})`
+    replacementText
   );
+
+  const annotations = [];
+  let startIndex = 0;
+  
+  while (true) {
+    const offset = newCommentary.indexOf(mentionText, startIndex);
+    if (offset === -1) break;
+    
+    annotations.push({
+      entity: urn,
+      entityUrn: urn,
+      length: mentionText.length,
+      characterOffset: offset,
+      location: offset
+    });
+    
+    startIndex = offset + mentionText.length;
+  }
+
+  return { commentary: newCommentary, annotations };
 }
 
 const SITE_ORIGIN = (
@@ -545,9 +570,11 @@ export async function POST(req) {
   }
 
   // Build commentary — inject @mention syntax if URN resolved
-  const effectiveCommentary = voucheeUrn
+  const mentionResult = voucheeUrn
     ? injectMentions(finalCommentary, safeVouchee, voucheeUrn, exactVoucheeName)
-    : finalCommentary;
+    : { commentary: finalCommentary, annotations: [] };
+  
+  const effectiveCommentary = mentionResult.commentary;
 
   // --- Build the LinkedIn Posts API payload ---
   const safeVoucher = clampString(
@@ -587,6 +614,10 @@ export async function POST(req) {
       },
     },
   };
+
+  if (mentionResult.annotations && mentionResult.annotations.length > 0) {
+    postPayload.annotations = mentionResult.annotations;
+  }
 
   // --- Post to LinkedIn with retry ---
   async function tryPost(payload) {
