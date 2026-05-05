@@ -8,7 +8,8 @@ export default function SubmitPage() {
   const { data: session, status } = useSession();
   const [hasLinkedIn, setHasLinkedIn] = useState(false);
   const [linkedinUrl, setLinkedinUrl] = useState("");
-  const [vote, setVote] = useState("");
+  const [publicName, setPublicName] = useState("");
+  const [vote, setVote] = useState("yes");
   const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
@@ -28,7 +29,7 @@ export default function SubmitPage() {
       const res = await fetch("/api/submit-vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ linkedinUrl, vote, reason }),
+        body: JSON.stringify({ linkedinUrl, publicName, vote, reason }),
       });
 
       const data = await res.json();
@@ -213,6 +214,22 @@ export default function SubmitPage() {
             />
             <span className="form-hint">
               Paste the full LinkedIn profile link of the person.
+            </span>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="publicName">Professional&apos;s Name</label>
+            <input
+              id="publicName"
+              type="text"
+              className="form-input"
+              placeholder="e.g. Jane Doe"
+              value={publicName}
+              onChange={(e) => setPublicName(e.target.value)}
+              required
+            />
+            <span className="form-hint">
+              Enter their name exactly as it appears on their LinkedIn profile.
             </span>
           </div>
 
