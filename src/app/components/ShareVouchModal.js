@@ -126,6 +126,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
           postId: json.postId,
           thumbnailIncluded: json.thumbnailIncluded,
           imageUrn: json.imageUrn,
+          handshake: json.handshake,
         });
       } else {
         setDirectPostResult("error");
