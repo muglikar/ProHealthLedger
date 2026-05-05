@@ -219,11 +219,9 @@ function injectMentions(commentary, displayName, urn, exactName) {
     if (offset === -1) break;
     
     annotations.push({
-      entity: urn,
       entityUrn: urn,
       length: mentionText.length,
-      characterOffset: offset,
-      location: offset
+      start: offset
     });
     
     startIndex = offset + mentionText.length;
