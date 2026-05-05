@@ -1418,14 +1418,14 @@ a:hover {
   background: var(--bg-warm);
   border: 1px solid #f3d5a3;
   border-radius: var(--radius);
-  padding: 20px 24px;
+  padding: 14px 20px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  flex-direction: row;
+  align-items: flex-start;
+  text-align: left;
   gap: 12px;
   max-width: 800px;
-  margin: clamp(24px, 4vh, 40px) auto clamp(8px, 2vh, 16px);
+  margin: clamp(16px, 3vh, 28px) auto clamp(8px, 2vh, 16px);
   box-shadow: var(--shadow);
   transition: box-shadow 0.25s;
 }
@@ -1435,38 +1435,37 @@ a:hover {
 }
 
 .speak-up-icon {
-  font-size: 1.75rem;
+  font-size: 1.3rem;
   flex-shrink: 0;
   line-height: 1;
-  margin: 0;
+  margin-top: 2px;
 }
 
 .speak-up-box .speak-up-body {
   width: 100%;
   max-width: 640px;
-  margin: 0 auto;
 }
 
 .speak-up-box h3 {
-  font-size: clamp(0.9rem, 0.6vw + 0.78rem, 1rem);
+  font-size: 0.88rem;
   font-weight: 700;
-  margin: 0 0 8px;
+  margin: 0 0 4px;
   color: var(--text);
   line-height: 1.25;
 }
 
 .speak-up-box p {
-  font-size: clamp(0.78rem, 0.45vw + 0.7rem, 0.88rem);
-  line-height: 1.55;
+  font-size: 0.78rem;
+  line-height: 1.45;
   color: var(--text-secondary);
   margin: 0;
 }
 
 .speak-up-disclaimer {
-  font-size: 0.7rem !important;
+  font-size: 0.68rem !important;
   color: var(--text-muted) !important;
-  margin-top: 12px !important;
-  padding-top: 10px;
+  margin-top: 6px !important;
+  padding-top: 6px;
   border-top: 1px solid var(--border);
   font-style: italic;
 }
