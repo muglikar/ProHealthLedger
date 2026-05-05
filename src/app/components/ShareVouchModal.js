@@ -135,6 +135,7 @@ export default function ShareVouchModal({ data, onClose, firstPerson = false }) 
           postId: json.postId,
           thumbnailIncluded: json.thumbnailIncluded,
           mentionUsed: json.mentionUsed,
+          mentionDiag: json.mentionDiag,
           handshake: json.handshake,
         });
       } else {
