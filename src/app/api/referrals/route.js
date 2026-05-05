@@ -12,6 +12,7 @@ import {
   rateLimitHeaders,
   takeRateLimit,
 } from "@/lib/rate-limit";
+import { readDataFile } from "@/lib/github";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org";
@@ -94,15 +95,6 @@ export async function GET(req) {
   const allMode = searchParams.get("all") === "true";
 
   try {
-    if (allMode) {
-      if (!session.siteAdmin) {
-        return Response.json({ error: "Access denied." }, { status: 403 });
-      }
-      const all = await getAllReferrals();
-      return Response.json(all);
-    }
-    const userReferrals = await getReferralsByUser(session.userId);
-
     // Identity tracking: Map signup IDs to names
     const { data: users } = await readDataFile("data/users/_index.json").catch(() => ({ data: [] }));
     const userMap = (Array.isArray(users) ? users : []).reduce((acc, u) => {
@@ -110,13 +102,22 @@ export async function GET(req) {
       return acc;
     }, {});
 
-    const enrichedReferrals = userReferrals.map(r => ({
+    const enrich = (list) => list.map(r => ({
       ...r,
       signup_names: (r.signups || []).map(id => userMap[id] || id)
     }));
 
-    // If no referrals found, it might be an ID mismatch. 
-    // We'll return the current ID in metadata (only to the owner) to help debug.
+    if (allMode) {
+      if (!session.siteAdmin) {
+        return Response.json({ error: "Access denied." }, { status: 403 });
+      }
+      const all = await getAllReferrals();
+      return Response.json(enrich(all));
+    }
+
+    const userReferrals = await getReferralsByUser(session.userId);
+    const enrichedReferrals = enrich(userReferrals);
+
     if (enrichedReferrals.length === 0) {
        console.log(`Referral check: No data found for ${session.userId}`);
     }
