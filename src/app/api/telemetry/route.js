@@ -48,7 +48,7 @@ export async function POST(req) {
       EVENTS_PATH,
       updatedEvents,
       sha,
-      `telemetry: record event ${name}${userId ? ` for ${userId}` : ` from IP ${ip}`}`
+      `telemetry: record event ${name}${userId ? ` for ${userId}` : ` from IP ${ip}`} [skip ci]`
     );
 
     return Response.json({ success: true });
