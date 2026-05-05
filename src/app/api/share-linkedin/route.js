@@ -34,6 +34,40 @@ import { readRepoJson, writeRepoJson } from "@/lib/github";
  * Body: { postUrn: string }
  */
 
+/**
+ * Scrape the true display name from a member's public LinkedIn profile.
+ */
+async function resolveVoucheeName(vanitySlug) {
+  if (!vanitySlug) return null;
+  const slug = String(vanitySlug).trim().toLowerCase();
+  if (!slug || slug.length < 2) return null;
+
+  try {
+    const profileUrl = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
+    const res = await fetch(profileUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+        Accept: "text/html,application/xhtml+xml",
+      },
+      redirect: "follow",
+      signal: AbortSignal.timeout(6000),
+    });
+
+    if (res.ok) {
+      const html = await res.text();
+      const titleMatch = html.match(/<title>(.*?)\s*-.*LinkedIn<\/title>/i) || html.match(/<title>(.*?)<\/title>/i);
+      if (titleMatch && titleMatch[1]) {
+        return titleMatch[1].trim();
+      }
+    }
+  } catch (e) {
+    console.warn("Failed to scrape vouchee name:", e.message);
+  }
+  return null;
+}
+
 const SITE_ORIGIN = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org"
 ).replace(/\/+$/, "");
@@ -164,6 +198,7 @@ export async function POST(req) {
     articleUrl = "",
     cleanVoucher = "Rohit Kadam", // Fallback, but passed from client
     cleanVouchee = "Muglikar",
+    voucheeSlug = "",
     articleTitle = "",
     articleDescription = "",
   } = body;
@@ -349,21 +384,37 @@ export async function POST(req) {
     handshakeDiag.error = err.message;
   }
 
-  const effectiveCommentary = finalCommentary;
-
-  // --- Build the LinkedIn Posts API payload ---
   const safeVoucher = clampString(
     (cleanVoucher || "").split("_").join(" "),
     MAX_NAME_PART
   );
-  const safeVouchee = clampString(
+  let safeVouchee = clampString(
     (cleanVouchee || "").split("_").join(" "),
     MAX_NAME_PART
   );
+
+  // --- Real-time Name Resolution Fallback ---
+  // If the vouchee's name is just the unbroken slug, try to scrape it
+  let scrapedName = null;
+  if (voucheeSlug && safeVouchee.toLowerCase() === voucheeSlug.replace(/-/g, '').toLowerCase()) {
+    scrapedName = await resolveVoucheeName(voucheeSlug);
+  }
+
+  // If we successfully scraped the true name, update the local variables
+  // so that the effectiveCommentary and cleanTitle use the correct spacing.
+  let effectiveCommentary = finalCommentary;
+  if (scrapedName && scrapedName.toLowerCase() !== safeVouchee.toLowerCase()) {
+    // Replace all occurrences of the unbroken string with the properly spaced string
+    const escapedVouchee = safeVouchee.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    effectiveCommentary = effectiveCommentary.replace(new RegExp(escapedVouchee, 'g'), scrapedName);
+    safeVouchee = scrapedName; // Use scraped name for OG image title
+  }
+
   const fallbackTitle = clampString(
     (articleTitle || "Professional Health Ledger").split("_").join(" "),
     MAX_TITLE
   );
+  // Re-generate the articleTitle with the corrected safeVouchee name if applicable
   const cleanTitle =
     safeVoucher && safeVouchee
       ? clampString(
@@ -371,6 +422,7 @@ export async function POST(req) {
         MAX_TITLE
       )
       : fallbackTitle;
+  
   const safeDescription = clampString(
     articleDescription || "See verified professional vouches on Pro-Health Ledger",
     MAX_DESCRIPTION
