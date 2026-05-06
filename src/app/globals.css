@@ -4454,3 +4454,80 @@ button.audit-comment-link:focus-visible {
   text-transform: uppercase !important;
 }
 
+
+/* --- Nav & Modal Polish --- */
+
+.share-phl-nav-btn {
+  white-space: nowrap !important;
+  padding: 0.5rem 1rem !important;
+  min-width: fit-content !important;
+}
+
+.feedback-modal {
+  backdrop-filter: none !important; /* Prevent internal blurring */
+  background: #ffffff !important;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 20px 50px rgba(0,0,0,0.2) !important;
+}
+
+.feedback-modal * {
+  text-shadow: none !important;
+}
+
+.feedback-modal h3 {
+  color: #0f172a !important;
+}
+
+.feedback-login-gate p, 
+.feedback-form label {
+  color: #334155 !important;
+  opacity: 1 !important;
+}
+
+.feedback-form select,
+.feedback-form textarea {
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  background: #fff !important;
+}
+
+
+/* --- Modal Contrast & Clarity --- */
+
+.share-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.75) !important; /* Darker backdrop */
+  backdrop-filter: blur(8px) !important;
+  z-index: 1050 !important;
+}
+
+.feedback-modal {
+  background: #ffffff !important;
+  border-radius: 1.25rem !important;
+  padding: 0 !important; /* Managed by children */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid #ffffff !important; /* White border for extra pop */
+}
+
+.comment-read-modal-header {
+  background: #f8fafc !important;
+  padding: 1.25rem 1.5rem !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.feedback-form label, 
+.feedback-login-gate p {
+  color: #1e293b !important; /* Dark Slate for high contrast */
+  font-weight: 600 !important;
+}
+
+.feedback-form select,
+.feedback-form textarea {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1.5px solid #cbd5e1 !important;
+}
+

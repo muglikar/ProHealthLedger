@@ -106,7 +106,7 @@ export default function SharePHLButton({ className = "" }) {
 
       <style jsx>{`
         .share-phl-nav-btn {
-          padding: 6px 12px;
+          padding: 6px 14px;
           background: var(--accent);
           color: white;
           border: none;
@@ -115,6 +115,7 @@ export default function SharePHLButton({ className = "" }) {
           font-size: 0.85rem;
           cursor: pointer;
           transition: transform 0.1s;
+          white-space: nowrap;
         }
         .share-phl-nav-btn:hover {
           transform: scale(1.05);

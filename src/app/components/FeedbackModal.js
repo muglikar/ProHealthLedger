@@ -43,8 +43,8 @@ export default function FeedbackModal({ onClose }) {
 
   return (
     <>
-      <div className="share-modal-backdrop" onClick={onClose} style={{ backdropFilter: "blur(8px)" }} />
-      <div className="comment-read-modal feedback-modal" role="dialog" aria-modal="true">
+      <div className="share-modal-backdrop" onClick={onClose} />
+      <div className="feedback-modal-container feedback-modal" role="dialog" aria-modal="true">
         <div className="comment-read-modal-header">
           <h3>Share Feedback</h3>
           <button type="button" className="share-modal-close" onClick={onClose}>✕</button>
