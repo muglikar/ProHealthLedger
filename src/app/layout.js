@@ -76,7 +76,9 @@ export default function RootLayout({ children }) {
           <Suspense fallback={null}>
             <ReferralCapture />
           </Suspense>
-          <FeedbackFAB />
+          <Suspense fallback={null}>
+            <FeedbackFAB />
+          </Suspense>
           <main className="main-content">{children}</main>
           <footer className="footer">
             <div className="footer-inner">
