@@ -4378,3 +4378,79 @@ button.audit-comment-link:focus-visible {
   font-weight: 800;
 }
 
+
+/* --- PHL v1.0 Premium UI Restoration --- */
+
+.feedback-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+  background: #b45309 !important;
+  color: white !important;
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.5rem !important;
+  box-shadow: 0 10px 25px -5px rgba(180, 83, 9, 0.5) !important;
+  cursor: pointer !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 3px solid white !important;
+}
+
+.feedback-modal {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 90% !important;
+  max-width: 480px !important;
+  background: #ffffff !important;
+  border-radius: 1.5rem !important;
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3) !important;
+  z-index: 2000 !important;
+  overflow: hidden !important;
+  color: #1a1a1a !important;
+}
+
+.support-card {
+  margin: 4rem auto !important;
+  max-width: 650px !important;
+  background: #ffffff !important;
+  border-radius: 2rem !important;
+  padding: 3rem !important;
+  border: 1px solid #e2e8f0 !important;
+  text-align: center !important;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05) !important;
+}
+
+.support-metrics {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 1.5rem !important;
+  margin-bottom: 2.5rem !important;
+}
+
+.support-metric {
+  background: #f8fafc !important;
+  padding: 1.5rem !important;
+  border-radius: 1.25rem !important;
+  border: 1px solid #f1f5f9 !important;
+}
+
+.support-metric-val {
+  display: block !important;
+  font-size: 2rem !important;
+  font-weight: 900 !important;
+  color: #b45309 !important;
+}
+
+.support-metric-label {
+  font-size: 0.75rem !important;
+  color: #64748b !important;
+  text-transform: uppercase !important;
+}
+
