@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const siteUrl = "https://prohealthledger.org";
-const OG_IMAGE = `${siteUrl}/api/og`;
+const OG_IMAGE = `${siteUrl}/og_banner.png`;
 
 /** Homepage-only link preview art (root layout intentionally omits default og:image). */
 export const metadata = {
@@ -9,10 +9,8 @@ export const metadata = {
     images: [
       {
         url: OG_IMAGE,
-        secureUrl: OG_IMAGE,
-        width: 1024,
-        height: 536,
-        type: "image/png",
+        width: 1200,
+        height: 627,
         alt: "ProHealthLedger — Know who you are working with before you commit.",
       },
     ],
@@ -21,8 +19,8 @@ export const metadata = {
     images: [
       {
         url: OG_IMAGE,
-        width: 1024,
-        height: 536,
+        width: 1200,
+        height: 627,
         alt: "ProHealthLedger — Know who you are working with before you commit.",
       },
     ],
