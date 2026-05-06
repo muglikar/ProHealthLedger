@@ -107,7 +107,6 @@ export default function FeedbackModal({ onClose }) {
           </form>
         )}
       </div>
-      </div>
     </>
   );
 }
