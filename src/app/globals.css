@@ -4690,3 +4690,59 @@ button.audit-comment-link:focus-visible {
   color: #0f172a !important;
 }
 
+
+/* --- Feedback Success Premium UI --- */
+
+.feedback-success-container {
+  padding: 3.5rem 2rem !important;
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 1rem !important;
+}
+
+.feedback-success-icon {
+  font-size: 4rem !important;
+  margin-bottom: 1rem !important;
+  filter: drop-shadow(0 0 10px rgba(180, 83, 9, 0.3)) !important;
+}
+
+.feedback-success-container h4 {
+  font-size: 1.5rem !important;
+  font-weight: 900 !important;
+  color: #0f172a !important;
+  margin: 0 !important;
+}
+
+.feedback-success-container p {
+  color: #475569 !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+  max-width: 320px !important;
+  margin: 0 !important;
+}
+
+.feedback-success-auto-close {
+  font-size: 0.8rem !important;
+  color: #94a3b8 !important;
+  margin-top: 2rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* --- Support Icon Scaling --- */
+
+.support-card-icon {
+  font-size: 3rem !important; /* Scaled up from tiny */
+  display: block !important;
+  margin-bottom: 0.75rem !important;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)) !important;
+}
+
+.support-card-header h3 {
+  font-size: 2rem !important;
+  letter-spacing: -0.02em !important;
+}
+
