@@ -75,9 +75,11 @@ export default function FeedbackModal({ onClose }) {
             </div>
           </div>
         ) : success ? (
-          <div className="feedback-success">
-            <div className="feedback-success-icon">✅</div>
-            <p>Thank you! Your feedback has been recorded.</p>
+          <div className="feedback-success-container">
+            <div className="feedback-success-icon">✨</div>
+            <h4>Feedback Received!</h4>
+            <p>Thank you for helping us build a more transparent professional world. Your handle has been logged for the audit trail.</p>
+            <div className="feedback-success-auto-close">Closing in a few seconds...</div>
           </div>
         ) : (
           <form className="feedback-form" onSubmit={handleSubmit}>
