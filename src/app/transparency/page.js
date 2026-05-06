@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 import CommentReadModal from "@/app/components/CommentReadModal";
 import ShareVouchModal from "@/app/components/ShareVouchModal";
+import SupportSection from "@/app/components/SupportSection";
 
 function parseVoteDate(d) {
   if (!d || typeof d !== "string") return 0;
@@ -535,6 +536,7 @@ export default function TransparencyPage() {
           onClose={() => setCommentPopup(null)}
         />
       )}
+      <SupportSection />
     </>
   );
 }

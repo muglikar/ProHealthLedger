@@ -9,6 +9,7 @@ import VerifyReminderStrip from "./components/VerifyReminderStrip";
 import AdminReminders from "./components/AdminReminders";
 import ReferralCapture from "./components/ReferralCapture";
 import ComplianceBanner from "./components/ComplianceBanner";
+import FeedbackFAB from "./components/FeedbackFAB";
 import "./globals.css";
 
 const monda = Monda({
@@ -75,6 +76,7 @@ export default function RootLayout({ children }) {
           <Suspense fallback={null}>
             <ReferralCapture />
           </Suspense>
+          <FeedbackFAB />
           <main className="main-content">{children}</main>
           <footer className="footer">
             <div className="footer-inner">
