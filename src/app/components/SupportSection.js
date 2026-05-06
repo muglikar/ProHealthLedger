@@ -14,7 +14,7 @@ export default function SupportSection() {
         </div>
         
         <p className="support-card-text">
-          If you liked this idea / website, can you buy me a few Coffees?
+          If you liked this idea / website, can you buy me a few cups of Coffee?
         </p>
         
         <div className="support-metrics">
