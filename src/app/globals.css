@@ -4620,3 +4620,73 @@ button.audit-comment-link:focus-visible {
   margin-top: 1rem !important;
 }
 
+
+/* --- Support Card Spacing & QR --- */
+
+.support-card {
+  padding: 4rem 3rem !important;
+}
+
+.support-metrics {
+  margin-bottom: 3.5rem !important; /* More space below cards */
+}
+
+.support-metric {
+  padding: 2rem !important; /* Bigger metric cards */
+}
+
+.support-card-footer {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 1.5rem !important;
+  margin-top: 2rem !important;
+}
+
+.support-card-subtext {
+  font-size: 1.125rem !important;
+  color: #475569 !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+}
+
+.support-actions .btn-upi {
+  padding: 1rem 2.5rem !important;
+  font-size: 1.125rem !important;
+  letter-spacing: 0.01em !important;
+}
+
+.support-qr-container {
+  margin-top: 3rem !important;
+  padding: 2.5rem !important;
+  background: #f8fafc !important;
+  border-radius: 1.5rem !important;
+  border: 2px solid #e2e8f0 !important;
+  animation: slideDown 0.4s ease-out !important;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.support-qr-image-wrapper {
+  max-width: 280px !important;
+  margin: 0 auto 1.5rem auto !important;
+  background: #fff !important;
+  padding: 1rem !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+}
+
+.support-qr-image {
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 0.5rem !important;
+}
+
+.support-qr-info strong {
+  font-size: 1.25rem !important;
+  color: #0f172a !important;
+}
+

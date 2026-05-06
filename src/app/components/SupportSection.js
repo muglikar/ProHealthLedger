@@ -28,31 +28,33 @@ export default function SupportSection() {
           </div>
         </div>
 
-        <p className="support-card-subtext">
-          1 Coffee ≈ $1 or ₹100
-        </p>
+        <div className="support-card-footer">
+          <p className="support-card-subtext">
+            1 Coffee ≈ $1 or ₹100
+          </p>
 
-        <div className="support-actions">
-          <button 
-            className="btn btn-primary btn-upi" 
-            onClick={() => setShowQR(!showQR)}
-          >
-            {showQR ? "Hide Payment Details" : "Support via UPI / QR"}
-          </button>
+          <div className="support-actions">
+            <button 
+              className="btn btn-primary btn-upi" 
+              onClick={() => setShowQR(!showQR)}
+            >
+              {showQR ? "Hide Payment Details" : "Support via UPI / QR"}
+            </button>
+          </div>
         </div>
 
         {showQR && (
           <div className="support-qr-container">
-            <div className="support-qr-placeholder">
-              {/* This is where the user will replace with their actual Razorpay/UPI QR image */}
-              <div className="qr-box">
-                <span className="qr-icon">📱</span>
-                <p>Scan UPI QR Code</p>
-              </div>
+            <div className="support-qr-image-wrapper">
+              <img 
+                src="/support_qr.png" 
+                alt="UPI QR Code" 
+                className="support-qr-image"
+              />
             </div>
             <div className="support-qr-info">
-              <p><strong>Razorpay / UPI Payment</strong></p>
-              <p className="text-sm">Scan the QR code with any UPI app (GPay, PhonePe, Paytm) to support the project.</p>
+              <p><strong>Scan with any UPI App</strong></p>
+              <p className="text-sm">GPay, PhonePe, Paytm, or any banking app</p>
             </div>
           </div>
         )}
