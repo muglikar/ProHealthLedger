@@ -1,10 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import FeedbackModal from "./FeedbackModal";
 
 export default function FeedbackFAB() {
   const [isOpen, setIsOpen] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("feedback") === "true") {
+      setIsOpen(true);
+    }
+  }, [searchParams]);
 
   return (
     <>
