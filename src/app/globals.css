@@ -4531,3 +4531,92 @@ button.audit-comment-link:focus-visible {
   border: 1.5px solid #cbd5e1 !important;
 }
 
+
+/* --- Feedback Form Premium Restructuring --- */
+
+.feedback-modal-container {
+  padding: 0 !important;
+}
+
+.feedback-form {
+  padding: 2rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.5rem !important;
+}
+
+.feedback-form .form-group {
+  margin-bottom: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+}
+
+.feedback-form label {
+  font-size: 0.9rem !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.025em !important;
+}
+
+.feedback-form select,
+.feedback-form textarea {
+  width: 100% !important;
+  padding: 0.875rem !important;
+  border-radius: 0.75rem !important;
+  border: 1.5px solid #e2e8f0 !important;
+  font-size: 1rem !important;
+  font-family: inherit !important;
+  background: #f8fafc !important;
+  transition: all 0.2s !important;
+}
+
+.feedback-form select:focus,
+.feedback-form textarea:focus {
+  border-color: #b45309 !important;
+  outline: none !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 4px rgba(180, 83, 9, 0.1) !important;
+}
+
+.feedback-form textarea {
+  min-height: 120px !important;
+  resize: vertical !important;
+}
+
+.form-group-inline {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  padding: 1rem !important;
+  background: #f8fafc !important;
+  border-radius: 0.75rem !important;
+  border: 1px dashed #cbd5e1 !important;
+}
+
+.checkbox-label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  cursor: pointer !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+}
+
+.checkbox-label input {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  accent-color: #b45309 !important;
+}
+
+.feedback-actions .btn-primary {
+  width: 100% !important;
+  padding: 1.125rem !important;
+  font-size: 1.125rem !important;
+  font-weight: 900 !important;
+  border-radius: 0.875rem !important;
+  margin-top: 1rem !important;
+}
+
