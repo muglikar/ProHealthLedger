@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SupportSection from "./components/SupportSection";
 
 const siteUrl = "https://prohealthledger.org";
 const OG_IMAGE = `${siteUrl}/og_banner.png`;
@@ -184,6 +185,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <SupportSection />
     </>
   );
 }
