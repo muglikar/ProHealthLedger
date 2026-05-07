@@ -4833,3 +4833,36 @@ button.audit-comment-link:focus-visible {
   .feedback-table-wrapper { overflow-x: auto !important; }
 }
 
+
+/* --- Admin Dropdown UI --- */
+
+.admin-dropdown-wrap {
+  margin-right: 0.5rem !important;
+}
+
+.nav-admin-toggle {
+  background: rgba(180, 83, 9, 0.08) !important;
+  color: #b45309 !important;
+  border: 1px solid rgba(180, 83, 9, 0.2) !important;
+  padding: 0.5rem 0.85rem !important;
+  font-weight: 700 !important;
+}
+
+.nav-admin-toggle:hover {
+  background: rgba(180, 83, 9, 0.15) !important;
+  border-color: rgba(180, 83, 9, 0.3) !important;
+}
+
+.nav-admin-dot {
+  width: 8px !important;
+  height: 8px !important;
+  background: #ef4444 !important;
+  border-radius: 50% !important;
+  margin-left: 0.5rem !important;
+  box-shadow: 0 0 0 2px #fff, 0 0 8px rgba(239, 68, 68, 0.5) !important;
+}
+
+.nav-admin-toggle .nav-auth-chevron {
+  margin-left: 0.5rem !important;
+}
+
