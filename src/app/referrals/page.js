@@ -89,6 +89,19 @@ export default function ReferralsPage() {
   }
   const recruitsList = Array.from(recruitsMap.values());
 
+  const getProfileLink = (userId) => {
+    if (!userId) return null;
+    if (userId.startsWith("github:")) {
+      return `https://github.com/${userId.split(":")[1]}`;
+    }
+    if (userId.startsWith("linkedin:")) {
+      const sub = userId.split(":")[1];
+      // For LinkedIn, if we don't have the vanity slug handy, we'll use a search query.
+      return `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(sub)}`;
+    }
+    return null;
+  };
+
   if (!mounted || status === "loading") {
     return (
       <div className="empty-state">
@@ -248,8 +261,23 @@ export default function ReferralsPage() {
                     <td className="referral-num">
                       <div className="signup-count">{r.signups?.length || 0}</div>
                       {r.signup_names && r.signup_names.length > 0 && (
-                        <div className="signup-names" title={r.signup_names.join(", ")}>
-                          {r.signup_names.join(", ")}
+                        <div className="signup-names">
+                          {r.signup_names.map((name, nIdx) => {
+                            const signupId = r.signups?.[nIdx];
+                            const profileUrl = signupId ? getProfileLink(signupId) : null;
+                            return (
+                              <span key={nIdx}>
+                                {profileUrl ? (
+                                  <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="recruit-link">
+                                    {name}
+                                  </a>
+                                ) : (
+                                  name
+                                )}
+                                {nIdx < r.signup_names.length - 1 ? ", " : ""}
+                              </span>
+                            );
+                          })}
                         </div>
                       )}
                     </td>
@@ -274,7 +302,15 @@ export default function ReferralsPage() {
                     {recruit.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="recruit-info">
-                    <div className="recruit-name">{recruit.name}</div>
+                    <div className="recruit-name">
+                      {getProfileLink(recruit.id) ? (
+                        <a href={getProfileLink(recruit.id)} target="_blank" rel="noopener noreferrer" className="recruit-link">
+                          {recruit.name}
+                        </a>
+                      ) : (
+                        recruit.name
+                      )}
+                    </div>
                     <div className="recruit-meta">
                       Joined via <span className="recruit-source">{recruit.source}</span>
                     </div>
