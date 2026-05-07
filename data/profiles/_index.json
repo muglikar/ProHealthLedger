@@ -688,5 +688,23 @@
         "submitter_linkedin_url": "https://www.linkedin.com/in/muglikar"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/ankitdm",
+    "slug": "ankitdm",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1779926400&v=beta&t=PIu7WwPGRMRoOK0fau6eyH8gobWPwdWOxLkX5KgbI_Y",
+        "vote": "no",
+        "issue": 42,
+        "date": "2026-05-07"
+      }
+    ]
   }
 ]
