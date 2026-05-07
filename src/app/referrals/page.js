@@ -80,6 +80,7 @@ export default function ReferralsPage() {
           recruitsMap.set(id, {
             id,
             name: r.signup_names?.[idx] || id,
+            profileUrl: r.signup_profiles?.[idx],
             source: r.profile_name || r.profile_slug,
             date: r.created_at,
           });
@@ -264,7 +265,7 @@ export default function ReferralsPage() {
                         <div className="signup-names">
                           {r.signup_names.map((name, nIdx) => {
                             const signupId = r.signups?.[nIdx];
-                            const profileUrl = signupId ? getProfileLink(signupId) : null;
+                            const profileUrl = r.signup_profiles?.[nIdx] || (signupId ? getProfileLink(signupId) : null);
                             return (
                               <span key={nIdx}>
                                 {profileUrl ? (
@@ -303,8 +304,8 @@ export default function ReferralsPage() {
                   </div>
                   <div className="recruit-info">
                     <div className="recruit-name">
-                      {getProfileLink(recruit.id) ? (
-                        <a href={getProfileLink(recruit.id)} target="_blank" rel="noopener noreferrer" className="recruit-link">
+                      {recruit.profileUrl || getProfileLink(recruit.id) ? (
+                        <a href={recruit.profileUrl || getProfileLink(recruit.id)} target="_blank" rel="noopener noreferrer" className="recruit-link">
                           {recruit.name}
                         </a>
                       ) : (

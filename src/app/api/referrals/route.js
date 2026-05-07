@@ -102,9 +102,27 @@ export async function GET(req) {
       return acc;
     }, {});
 
+    // Profile URL mapping: Scan all profiles for submitter_linkedin_url
+    const { data: allProfilesRaw } = await readDataFile("data/profiles/_index.json").catch(() => ({ data: [] }));
+    const userProfileMap = (Array.isArray(allProfilesRaw) ? allProfilesRaw : []).reduce((acc, p) => {
+      if (p.submissions) {
+        p.submissions.forEach(s => {
+          if (s.user && s.submitter_linkedin_url) {
+            acc[s.user] = s.submitter_linkedin_url;
+          }
+        });
+      }
+      return acc;
+    }, {});
+
     const enrich = (list) => list.map(r => ({
       ...r,
-      signup_names: (r.signups || []).map(id => userMap[id] || id)
+      signup_names: (r.signups || []).map(id => userMap[id] || id),
+      signup_profiles: (r.signups || []).map(id => {
+        if (userProfileMap[id]) return userProfileMap[id];
+        if (id.startsWith("github:")) return `https://github.com/${id.split(":")[1]}`;
+        return null;
+      })
     }));
 
     if (allMode) {

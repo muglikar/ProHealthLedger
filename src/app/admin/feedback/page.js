@@ -18,14 +18,29 @@ export default async function AdminFeedbackPage() {
   }
 
   let feedbacks = [];
+  let userProfileMap = {};
   try {
-    const filePath = path.join(process.cwd(), "data", "feedback.json");
-    const data = await fs.readFile(filePath, "utf8");
-    feedbacks = JSON.parse(data);
-    // Sort by timestamp descending
+    const feedbackPath = path.join(process.cwd(), "data", "feedback.json");
+    const feedbackData = await fs.readFile(feedbackPath, "utf8");
+    feedbacks = JSON.parse(feedbackData);
     feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    // Build mapping from existing profiles
+    const profilesPath = path.join(process.cwd(), "data", "profiles", "_index.json");
+    const profilesData = await fs.readFile(profilesPath, "utf8");
+    const profiles = JSON.parse(profilesData);
+    
+    profiles.forEach(p => {
+      if (p.submissions) {
+        p.submissions.forEach(s => {
+          if (s.user && s.submitter_linkedin_url) {
+            userProfileMap[s.user] = s.submitter_linkedin_url;
+          }
+        });
+      }
+    });
   } catch (err) {
-    console.error("Failed to read feedbacks:", err);
+    console.error("Failed to read data:", err);
   }
 
   const getProfileLink = (userId) => {
@@ -33,11 +48,12 @@ export default async function AdminFeedbackPage() {
     if (userId.startsWith("github:")) {
       return `https://github.com/${userId.split(":")[1]}`;
     }
+    // Check our robust mapping first
+    if (userProfileMap[userId]) {
+      return userProfileMap[userId];
+    }
     if (userId.startsWith("linkedin:")) {
       const sub = userId.split(":")[1];
-      // Try to find a profile with this slug/sub if we had a more robust mapping, 
-      // but for now we can at least link to a search or a known pattern.
-      // If the user has a vanity slug, we'd use that.
       return `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(sub)}`;
     }
     return null;
