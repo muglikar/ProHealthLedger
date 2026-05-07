@@ -4802,7 +4802,7 @@ button.audit-comment-link:focus-visible {
 
 .user-info { display: flex !important; flex-direction: column !important; }
 
-.user-name { font-weight: 700 !important; color: var(--text) !important; }
+.user-name { font-weight: 700 !important; color: inherit !important; }
 
 .user-handle { font-size: 0.8rem !important; color: var(--text-muted) !important; }
 
@@ -4867,28 +4867,17 @@ button.audit-comment-link:focus-visible {
 }
 
 
+
 /* --- User Profile Links --- */
 
-.user-link, .recruit-link {
+.user-link, .recruit-link, .target-link {
   text-decoration: none !important;
-  color: inherit !important;
-  transition: color 0.2s ease !important;
-}
-
-.user-link:hover, .recruit-link:hover {
-  text-decoration: underline !important;
-  color: var(--accent) !important;
-}
-
-
-.target-link {
   color: var(--accent) !important;
   font-weight: 600 !important;
-  text-decoration: none !important;
-  transition: opacity 0.2s ease !important;
+  transition: color 0.2s ease, opacity 0.2s ease !important;
 }
 
-.target-link:hover {
+.user-link:hover, .recruit-link:hover, .target-link:hover {
   text-decoration: underline !important;
   opacity: 0.8 !important;
 }
