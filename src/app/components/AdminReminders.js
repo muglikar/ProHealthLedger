@@ -19,6 +19,13 @@ const REMINDERS = [
     link: "https://www.linkedin.com/developers/apps",
     linkLabel: "Open Developer Portal",
   },
+  {
+    id: "admin-feedback-check-2026-05-07",
+    showAfter: "2026-05-07",
+    message: "New feedback portal is live! Monitor user suggestions and bug reports here.",
+    link: "/admin/feedback",
+    linkLabel: "View Feedbacks",
+  },
 ];
 
 const LS_KEY = "phl_dismissed_reminders";
