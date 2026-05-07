@@ -4880,3 +4880,16 @@ button.audit-comment-link:focus-visible {
   color: var(--accent) !important;
 }
 
+
+.target-link {
+  color: var(--accent) !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.target-link:hover {
+  text-decoration: underline !important;
+  opacity: 0.8 !important;
+}
+

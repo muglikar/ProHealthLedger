@@ -251,7 +251,13 @@ export default function ReferralsPage() {
                       {r.profile_slug === "__home__" ? (
                         <strong>✨ General Platform Link</strong>
                       ) : (
-                        r.profile_name || r.profile_slug
+                        r.profile_linkedin_url ? (
+                          <a href={r.profile_linkedin_url} target="_blank" rel="noopener noreferrer" className="target-link">
+                            {r.profile_name || r.profile_slug}
+                          </a>
+                        ) : (
+                          r.profile_name || r.profile_slug
+                        )
                       )}
                     </td>
                     <td>
