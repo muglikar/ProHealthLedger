@@ -28,6 +28,21 @@ export default async function AdminFeedbackPage() {
     console.error("Failed to read feedbacks:", err);
   }
 
+  const getProfileLink = (userId) => {
+    if (!userId) return null;
+    if (userId.startsWith("github:")) {
+      return `https://github.com/${userId.split(":")[1]}`;
+    }
+    if (userId.startsWith("linkedin:")) {
+      const sub = userId.split(":")[1];
+      // Try to find a profile with this slug/sub if we had a more robust mapping, 
+      // but for now we can at least link to a search or a known pattern.
+      // If the user has a vanity slug, we'd use that.
+      return `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(sub)}`;
+    }
+    return null;
+  };
+
   return (
     <div className="admin-container">
       <div className="admin-header">
@@ -51,21 +66,29 @@ export default async function AdminFeedbackPage() {
                 </tr>
               </thead>
               <tbody>
-                {feedbacks.map((f, idx) => (
-                  <tr key={idx} className={`type-${f.type}`}>
-                    <td className="td-date">
-                      {new Date(f.timestamp).toLocaleDateString()}
-                      <br />
-                      <span className="text-xs text-muted">
-                        {new Date(f.timestamp).toLocaleTimeString()}
-                      </span>
-                    </td>
-                    <td className="td-user">
-                      <div className="user-info">
-                        <span className="user-name">{f.display_name}</span>
-                        <span className="user-handle">{f.user_id}</span>
-                      </div>
-                    </td>
+                {feedbacks.map((f, idx) => {
+                  const profileUrl = getProfileLink(f.user_id);
+                  return (
+                    <tr key={idx} className={`type-${f.type}`}>
+                      <td className="td-date">
+                        {new Date(f.timestamp).toLocaleDateString()}
+                        <br />
+                        <span className="text-xs text-muted">
+                          {new Date(f.timestamp).toLocaleTimeString()}
+                        </span>
+                      </td>
+                      <td className="td-user">
+                        <div className="user-info">
+                          {profileUrl ? (
+                            <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="user-link">
+                              <span className="user-name">{f.display_name}</span>
+                            </a>
+                          ) : (
+                            <span className="user-name">{f.display_name}</span>
+                          )}
+                          <span className="user-handle">{f.user_id}</span>
+                        </div>
+                      </td>
                     <td className="td-type">
                       <span className={`badge badge-${f.type}`}>
                         {f.type}
@@ -82,7 +105,8 @@ export default async function AdminFeedbackPage() {
                       )}
                     </td>
                   </tr>
-                ))}
+                );
+              })}
               </tbody>
             </table>
           </div>

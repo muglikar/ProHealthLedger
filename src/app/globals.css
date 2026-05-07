@@ -4866,3 +4866,17 @@ button.audit-comment-link:focus-visible {
   margin-left: 0.5rem !important;
 }
 
+
+/* --- User Profile Links --- */
+
+.user-link, .recruit-link {
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: color 0.2s ease !important;
+}
+
+.user-link:hover, .recruit-link:hover {
+  text-decoration: underline !important;
+  color: var(--accent) !important;
+}
+
