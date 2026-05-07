@@ -4746,3 +4746,90 @@ button.audit-comment-link:focus-visible {
   letter-spacing: -0.02em !important;
 }
 
+
+/* --- Admin Feedback Dashboard --- */
+
+.admin-container {
+  max-width: 1200px !important;
+  margin: 40px auto !important;
+  padding: 0 20px !important;
+}
+
+.admin-header {
+  margin-bottom: 30px !important;
+  border-bottom: 2px solid var(--border) !important;
+  padding-bottom: 20px !important;
+}
+
+.admin-header h1 {
+  color: var(--accent) !important;
+  margin-bottom: 8px !important;
+}
+
+.feedback-table-wrapper {
+  background: var(--bg-card) !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--border) !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+}
+
+.feedback-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: 0.95rem !important;
+}
+
+.feedback-table th {
+  text-align: left !important;
+  padding: 16px !important;
+  background: #f8fafc !important;
+  border-bottom: 1px solid var(--border) !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em !important;
+  color: #475569 !important;
+}
+
+.feedback-table td {
+  padding: 16px !important;
+  border-bottom: 1px solid var(--border) !important;
+  vertical-align: top !important;
+}
+
+.td-date { white-space: nowrap !important; }
+
+.user-info { display: flex !important; flex-direction: column !important; }
+
+.user-name { font-weight: 700 !important; color: var(--text) !important; }
+
+.user-handle { font-size: 0.8rem !important; color: var(--text-muted) !important; }
+
+.badge {
+  display: inline-block !important;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+}
+
+.badge-bug { background: #fee2e2 !important; color: #991b1b !important; }
+.badge-suggestion { background: #dcfce7 !important; color: #166534 !important; }
+.badge-praise { background: #fef9c3 !important; color: #854d0e !important; }
+.badge-other { background: #f1f5f9 !important; color: #475569 !important; }
+
+.message-content {
+  line-height: 1.5 !important;
+  color: var(--text-secondary) !important;
+  max-width: 500px !important;
+}
+
+.recommend-yes { color: #166534 !important; font-weight: 600 !important; }
+.recommend-no { color: #991b1b !important; font-weight: 600 !important; }
+
+@media (max-width: 768px) {
+  .feedback-table-wrapper { overflow-x: auto !important; }
+}
+
