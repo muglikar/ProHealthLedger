@@ -33,7 +33,6 @@ export default function FeedbackModal({ onClose }) {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setSuccess(true);
-      setTimeout(onClose, 2000);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -79,7 +78,6 @@ export default function FeedbackModal({ onClose }) {
             <div className="feedback-success-icon">✨</div>
             <h4>Feedback Received!</h4>
             <p>Thank you for helping us build a more transparent professional world. Your handle has been logged for the audit trail.</p>
-            <div className="feedback-success-auto-close">Closing in a few seconds...</div>
           </div>
         ) : (
           <form className="feedback-form" onSubmit={handleSubmit}>
