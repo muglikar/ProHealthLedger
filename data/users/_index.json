@@ -239,10 +239,16 @@
         "vote": "no",
         "issue": 41,
         "date": "2026-04-24"
+      },
+      {
+        "profile_slug": "ankitdm",
+        "vote": "no",
+        "issue": 42,
+        "date": "2026-05-07"
       }
     ],
     "yes_count": 15,
-    "no_count": 11
+    "no_count": 12
   },
   {
     "user_id": "linkedin:IXYyBWOZrk",
