@@ -9,6 +9,8 @@ export const metadata = {
   title: "Admin Feedback Dashboard | ProHealthLedger",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminFeedbackPage() {
   const session = await getServerSession(authOptions);
   if (!session || !isSessionSiteAdmin(session)) {
