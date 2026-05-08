@@ -124,7 +124,7 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
       />
       
       <div 
-        className={`tour-popover tour-pos-${currentStep.position}`}
+        className={`tour-popover tour-pos-${currentStep.position} mobile-pos-${coords.top > (typeof window !== 'undefined' ? window.innerHeight / 2 : 500) ? 'top' : 'bottom'}`}
         style={{
           top: currentStep.position === "bottom" 
             ? coords.top + coords.height + 24 
@@ -224,11 +224,21 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
             width: auto !important;
             max-width: none !important;
             top: auto !important;
-            bottom: 24px !important;
+            bottom: auto !important;
             transform: none !important;
             margin: 0 !important;
             z-index: 21000 !important;
-            animation: tourSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          }
+          
+          .tour-popover.mobile-pos-bottom {
+            bottom: 24px !important;
+            animation: tourSlideUp 0.4s ease-out !important;
+          }
+          
+          .tour-popover.mobile-pos-top {
+            top: 24px !important;
+            animation: tourSlideDown 0.4s ease-out !important;
           }
           
           .tour-arrow {
@@ -237,7 +247,12 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
         }
 
         @keyframes tourSlideUp {
-          from { opacity: 0; transform: translateY(100%); }
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes tourSlideDown {
+          from { opacity: 0; transform: translateY(-20px); }
           to { opacity: 1; transform: translateY(0); }
         }
 
