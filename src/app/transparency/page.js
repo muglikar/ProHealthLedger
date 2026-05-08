@@ -189,7 +189,21 @@ export default function TransparencyPage() {
     fetch("/api/profiles")
       .then((res) => res.json())
       .then((data) => {
-        setProfiles(Array.isArray(data) ? data : []);
+        const profilesList = Array.isArray(data) ? data : [];
+        setProfiles(profilesList);
+        
+        // Build mapping from existing profiles
+        const upMap = {};
+        profilesList.forEach(p => {
+          if (p.submissions) {
+            p.submissions.forEach(s => {
+              if (s.user && s.submitter_linkedin_url) {
+                upMap[s.user] = s.submitter_linkedin_url;
+              }
+            });
+          }
+        });
+        setUserProfileMap(upMap);
         setLoading(false);
       })
       .catch(() => {
@@ -197,6 +211,8 @@ export default function TransparencyPage() {
         setLoading(false);
       });
   }, []);
+
+  const [userProfileMap, setUserProfileMap] = useState({});
 
   const slugToFlagCount = useMemo(() => {
     const m = new Map();
@@ -325,17 +341,19 @@ export default function TransparencyPage() {
     const label =
       submission.display_name ||
       (userId.startsWith("github:") ? userId.slice(7) : userId);
-    const submitterLinkedinUrl =
-      typeof submission.submitter_linkedin_url === "string"
-        ? submission.submitter_linkedin_url
-        : "";
-    if (submitterLinkedinUrl) {
+    
+    // Priority: 1. Direct field in submission, 2. Our built map, 3. GitHub fallback
+    const linkedinUrl =
+      (typeof submission.submitter_linkedin_url === "string" && submission.submitter_linkedin_url) ||
+      userProfileMap[userId];
+
+    if (linkedinUrl) {
       return (
         <a
-          href={submitterLinkedinUrl}
+          href={linkedinUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="issue-link"
+          className="user-link"
         >
           {label}
         </a>
@@ -348,12 +366,29 @@ export default function TransparencyPage() {
           href={`https://github.com/${gh}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="issue-link"
+          className="user-link"
         >
           {label}
         </a>
       );
     }
+    
+    // Last resort: search fallback for LinkedIn IDs
+    if (userId.startsWith("linkedin:")) {
+      const sub = userId.split(":")[1];
+      const searchUrl = `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(sub)}`;
+      return (
+        <a
+          href={searchUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="user-link"
+        >
+          {label}
+        </a>
+      );
+    }
+
     return <span>{label}</span>;
   }
 
@@ -456,6 +491,7 @@ export default function TransparencyPage() {
                           href={v.linkedin_url}
                           target="_blank"
                           rel="noopener noreferrer"
+                          className="target-link"
                         >
                           {formatProfessionalDisplayName(
                             v.profile_slug,
