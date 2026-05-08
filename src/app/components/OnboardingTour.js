@@ -216,6 +216,31 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
           .tour-pos-top .tour-arrow { border-top-color: #1e293b; }
         }
 
+        @media (max-width: 640px) {
+          .tour-popover {
+            position: fixed !important;
+            left: 16px !important;
+            right: 16px !important;
+            width: auto !important;
+            max-width: none !important;
+            top: auto !important;
+            bottom: 24px !important;
+            transform: none !important;
+            margin: 0 !important;
+            z-index: 21000 !important;
+            animation: tourSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          }
+          
+          .tour-arrow {
+            display: none !important;
+          }
+        }
+
+        @keyframes tourSlideUp {
+          from { opacity: 0; transform: translateY(100%); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
         @keyframes tourFadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
@@ -280,13 +305,6 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
           transform: translateY(-1px);
         }
 
-        @media (max-width: 640px) {
-          .tour-popover {
-            left: 50% !important;
-            transform: translateX(-50%);
-            width: 90vw;
-          }
-        }
       `}</style>
     </div>
   );
