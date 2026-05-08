@@ -4919,3 +4919,44 @@ button.audit-comment-link:focus-visible {
   background: rgba(153, 27, 27, 0.08) !important;
 }
 
+
+/* --- Tour Trigger UI --- */
+.submit-hero-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  margin-bottom: 8px !important;
+}
+
+.btn-tour-trigger {
+  background: rgba(var(--accent-rgb), 0.1) !important;
+  color: var(--accent) !important;
+  border: 1px dashed var(--accent) !important;
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-tour-trigger:hover {
+  background: var(--accent) !important;
+  color: white !important;
+  border-style: solid !important;
+  transform: translateY(-1px) !important;
+}
+
+@media (max-width: 640px) {
+  .submit-hero-header {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+}
+
