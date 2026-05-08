@@ -460,7 +460,6 @@ export default function TransparencyPage() {
           </p>
 
           <div className="audit-scroll-track" ref={trackRef}>
-            <span className="audit-scroll-track-label">← drag or tap to scroll →</span>
             <div className="audit-scroll-thumb" ref={thumbRef} />
           </div>
           <div className={`audit-table-outer${scrolledEnd ? " scrolled-end" : ""}`}>
