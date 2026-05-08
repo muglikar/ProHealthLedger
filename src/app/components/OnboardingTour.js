@@ -195,9 +195,10 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
           position: absolute;
           width: 320px;
           background: white;
+          color: #000000;
           border-radius: 16px;
           padding: 24px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.1);
           z-index: 20002;
           pointer-events: auto;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -228,11 +229,11 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
 
         @media (prefers-color-scheme: dark) {
           .tour-popover {
-            background: #1e293b;
-            color: #f1f5f9;
+            background: #0f172a;
+            color: #ffffff;
           }
-          .tour-pos-bottom .tour-arrow { border-bottom-color: #1e293b; }
-          .tour-pos-top .tour-arrow { border-top-color: #1e293b; }
+          .tour-pos-bottom .tour-arrow { border-bottom-color: #0f172a; }
+          .tour-pos-top .tour-arrow { border-top-color: #0f172a; }
         }
 
         @media (max-width: 640px) {
@@ -282,24 +283,27 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
 
         .tour-progress {
           font-size: 0.75rem;
-          font-weight: 700;
+          font-weight: 800;
           text-transform: uppercase;
-          letter-spacing: 0.05em;
+          letter-spacing: 0.08em;
           color: var(--accent);
           margin-bottom: 8px;
         }
 
         .tour-content h3 {
           margin: 0 0 12px;
-          font-size: 1.15rem;
-          font-weight: 800;
+          font-size: 1.25rem;
+          font-weight: 900;
+          color: inherit;
         }
 
         .tour-content p {
           margin: 0 0 24px;
-          font-size: 0.9rem;
+          font-size: 0.95rem;
           line-height: 1.6;
-          color: var(--text-secondary);
+          font-weight: 500;
+          color: inherit;
+          opacity: 0.9;
         }
 
         .tour-actions {
