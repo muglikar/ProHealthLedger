@@ -453,13 +453,8 @@ export default function TransparencyPage() {
               <span className="audit-sort-btn-short">By date</span>
             </button>
           </div>
-          <p className="audit-table-hint">
-            Sort to inspect flags, vouches, or newest activity. Use{" "}
-            <strong>View</strong> on a comment chip for the complete vote row and full
-            comment details (including pending or redacted states).
-          </p>
-
           <div className="audit-scroll-track" ref={trackRef}>
+            <span className="audit-scroll-track-label">← drag or tap to scroll →</span>
             <div className="audit-scroll-thumb" ref={thumbRef} />
           </div>
           <div className={`audit-table-outer${scrolledEnd ? " scrolled-end" : ""}`}>
