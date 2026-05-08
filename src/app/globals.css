@@ -986,7 +986,7 @@ a:hover {
 
 /* ── Home: single column, first fold through karma (desktop fills viewport) ── */
 .main-content:has(.home-above-fold) {
-  padding-top: max(4px, 1vw);
+  padding-top: max(4px, 0.5vw);
   min-height: 0;
 }
 
@@ -1000,8 +1000,8 @@ a:hover {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: clamp(0.35rem, 1.5vh, 1rem);
-  padding: 0 0 12px;
+  gap: clamp(0.2rem, 1vh, 0.75rem);
+  padding: 0 0 8px;
   max-width: 800px;
   margin: 0 auto;
   min-width: 0;
@@ -1010,10 +1010,10 @@ a:hover {
 
 @media (min-width: 768px) {
   .home-above-fold {
-    justify-content: space-between;
-    gap: clamp(0.75rem, 2.5vh, 1.5rem);
-    min-height: calc(100dvh - var(--nav-height, 60px) - var(--vote-quota-strip-height, 0px) - clamp(18px, 2.5vw, 32px));
-    padding-bottom: clamp(8px, 1.5vh, 16px);
+    justify-content: flex-start;
+    gap: clamp(0.5rem, 2vh, 1.25rem);
+    min-height: auto;
+    padding-bottom: clamp(12px, 3vh, 24px);
   }
 }
 
@@ -1470,6 +1470,23 @@ a:hover {
   font-style: italic;
 }
 
+.home-how-block {
+  width: 100%;
+  padding-top: 16px;
+  flex-shrink: 0;
+}
+
+/* --- Why Section --- */
+.why-section {
+  padding: 32px 0 24px;
+  border-top: 1px solid var(--border);
+}
+
+.main-content:has(.home-above-fold) .why-section {
+  padding-top: clamp(24px, 4vh, 40px);
+  scroll-margin-top: var(--nav-height, 60px);
+}
+
 @media (prefers-color-scheme: dark) {
   .speak-up-box h3 {
     color: #92400e;
@@ -1477,15 +1494,6 @@ a:hover {
 }
 
 /* ── Why Section ── */
-.why-section {
-  padding: 48px 0 32px;
-  border-top: 1px solid var(--border);
-}
-
-.main-content:has(.home-above-fold) .why-section {
-  padding-top: clamp(40px, 7vh, 72px);
-  scroll-margin-top: var(--nav-height, 60px);
-}
 
 .why-grid {
   display: grid;
@@ -4880,5 +4888,34 @@ button.audit-comment-link:focus-visible {
 .user-link:hover, .recruit-link:hover, .target-link:hover {
   text-decoration: underline !important;
   opacity: 0.8 !important;
+}
+
+
+/* --- Vouch/Flag Labels below buttons --- */
+.vote-option-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex: 1 !important;
+}
+
+.vote-option-label {
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 2px 8px !important;
+  border-radius: 4px !important;
+}
+
+.label-vouch {
+  color: #166534 !important;
+  background: rgba(22, 101, 52, 0.08) !important;
+}
+
+.label-flag {
+  color: #991b1b !important;
+  background: rgba(153, 27, 27, 0.08) !important;
 }
 
