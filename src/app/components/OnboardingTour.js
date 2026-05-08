@@ -128,10 +128,12 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
         style={{
           top: currentStep.position === "bottom" 
             ? coords.top + coords.height + 24 
-            : coords.top - 180, // Approximate height for top position
-          left: coords.left + (coords.width / 2) - 160, // Center horizontally (width is 320)
+            : coords.top - 24, 
+          left: coords.left + (coords.width / 2) - 160,
+          transform: currentStep.position === "top" ? "translateY(-100%)" : "none"
         }}
       >
+        <div className="tour-arrow" />
         <div className="tour-content">
           <div className="tour-progress">
             Step {activeStep + 1} of {STEPS.length}
@@ -173,22 +175,45 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
         .tour-popover {
           position: absolute;
           width: 320px;
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
+          background: white;
           border-radius: 16px;
           padding: 24px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1);
           z-index: 20002;
           pointer-events: auto;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           animation: tourFadeIn 0.4s ease-out;
         }
 
+        .tour-arrow {
+          position: absolute;
+          width: 0;
+          height: 0;
+          border-left: 10px solid transparent;
+          border-right: 10px solid transparent;
+        }
+
+        .tour-pos-bottom .tour-arrow {
+          top: -10px;
+          left: 50%;
+          transform: translateX(-50%);
+          border-bottom: 10px solid white;
+        }
+
+        .tour-pos-top .tour-arrow {
+          bottom: -10px;
+          left: 50%;
+          transform: translateX(-50%);
+          border-top: 10px solid white;
+        }
+
         @media (prefers-color-scheme: dark) {
           .tour-popover {
-            background: rgba(30, 41, 59, 0.95);
+            background: #1e293b;
             color: #f1f5f9;
           }
+          .tour-pos-bottom .tour-arrow { border-bottom-color: #1e293b; }
+          .tour-pos-top .tour-arrow { border-top-color: #1e293b; }
         }
 
         @keyframes tourFadeIn {
