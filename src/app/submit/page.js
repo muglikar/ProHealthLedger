@@ -15,6 +15,7 @@ export default function SubmitPage() {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     getProviders().then((p) => setHasLinkedIn(Boolean(p?.linkedin)));
@@ -152,9 +153,14 @@ export default function SubmitPage() {
 
   return (
     <>
-      {!result && <OnboardingTour />}
+      {!result && <OnboardingTour isOpen={showTour} onClose={() => setShowTour(false)} />}
       <section className="submit-hero" data-tour="step-welcome">
-        <h1>Share Your Experience</h1>
+        <div className="submit-hero-header">
+          <h1>Share Your Experience</h1>
+          <button className="btn-tour-trigger" onClick={() => setShowTour(true)}>
+            <span aria-hidden="true">💡</span> Take a tour
+          </button>
+        </div>
         <p className="submit-hero-sub">
           <Link href="/">What the heck is this?</Link>
         </p>

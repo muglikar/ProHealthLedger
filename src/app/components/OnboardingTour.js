@@ -35,18 +35,25 @@ const STEPS = [
   }
 ];
 
-export default function OnboardingTour() {
+export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
   const [activeStep, setActiveStep] = useState(-1);
   const [isVisible, setIsVisible] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, height: 0 });
 
   useEffect(() => {
-    const hasCompleted = localStorage.getItem("phl_onboarding_completed");
-    if (!hasCompleted) {
+    if (forcedOpen) {
       setActiveStep(0);
       setIsVisible(true);
     }
-  }, []);
+  }, [forcedOpen]);
+
+  useEffect(() => {
+    const hasCompleted = localStorage.getItem("phl_onboarding_completed");
+    if (!hasCompleted && !forcedOpen) {
+      setActiveStep(0);
+      setIsVisible(true);
+    }
+  }, [forcedOpen]);
 
   const updateCoords = useCallback(() => {
     if (activeStep < 0 || activeStep >= STEPS.length) return;
@@ -97,6 +104,7 @@ export default function OnboardingTour() {
   const completeTour = () => {
     setIsVisible(false);
     localStorage.setItem("phl_onboarding_completed", "true");
+    if (onClose) onClose();
   };
 
   if (!isVisible || activeStep === -1) return null;
