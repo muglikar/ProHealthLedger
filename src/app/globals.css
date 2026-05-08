@@ -4922,41 +4922,77 @@ button.audit-comment-link:focus-visible {
 
 /* --- Tour Trigger UI --- */
 .submit-hero-header {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-bottom: 12px !important;
+}
+
+.submit-hero-title-wrap {
+  position: relative !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 16px !important;
-  margin-bottom: 8px !important;
+  width: 100% !important;
+  min-height: 48px !important;
+}
+
+.submit-hero-title-wrap h1 {
+  margin: 0 !important;
+  padding: 0 40px !important; /* Give space for button */
+  text-align: center !important;
 }
 
 .btn-tour-trigger {
-  background: rgba(var(--accent-rgb), 0.1) !important;
+  position: absolute !important;
+  right: 0 !important;
+  background: white !important;
   color: var(--accent) !important;
-  border: 1px dashed var(--accent) !important;
-  padding: 6px 12px !important;
+  border: 1.5px solid var(--accent) !important;
+  padding: 8px 16px !important;
   border-radius: 999px !important;
-  font-size: 0.72rem !important;
-  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  letter-spacing: 0.06em !important;
   cursor: pointer !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 6px !important;
-  transition: all 0.2s ease !important;
+  gap: 8px !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.1) !important;
+  white-space: nowrap !important;
+}
+
+.btn-tour-trigger svg {
+  color: var(--accent) !important;
+  stroke-width: 3 !important;
+  filter: drop-shadow(0 0 2px rgba(var(--accent-rgb), 0.2)) !important;
 }
 
 .btn-tour-trigger:hover {
   background: var(--accent) !important;
   color: white !important;
-  border-style: solid !important;
-  transform: translateY(-1px) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25) !important;
 }
 
-@media (max-width: 640px) {
-  .submit-hero-header {
+.btn-tour-trigger:hover svg {
+  color: white !important;
+}
+
+@media (max-width: 900px) {
+  .submit-hero-title-wrap {
     flex-direction: column !important;
-    gap: 12px !important;
+    gap: 16px !important;
+    min-height: auto !important;
+  }
+  
+  .btn-tour-trigger {
+    position: static !important;
+  }
+  
+  .submit-hero-title-wrap h1 {
+    padding: 0 !important;
   }
 }
 
