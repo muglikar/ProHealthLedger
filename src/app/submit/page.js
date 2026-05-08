@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession, signIn, getProviders } from "next-auth/react";
 import Link from "next/link";
 import { trackEvent } from "@/lib/telemetry";
+import OnboardingTour from "../components/OnboardingTour";
 
 export default function SubmitPage() {
   const { data: session, status } = useSession();
@@ -151,7 +152,8 @@ export default function SubmitPage() {
 
   return (
     <>
-      <section className="submit-hero">
+      {!result && <OnboardingTour />}
+      <section className="submit-hero" data-tour="step-welcome">
         <h1>Share Your Experience</h1>
         <p className="submit-hero-sub">
           <Link href="/">What the heck is this?</Link>
@@ -209,8 +211,8 @@ export default function SubmitPage() {
             </div>
           )}
 
-          <div className="form-group">
-            <label htmlFor="linkedin">LinkedIn Profile URL</label>
+          <div className="form-group" data-tour="step-linkedin">
+            <label htmlFor="linkedin">Write Linkedin Profile URL of the person you want to vouch or flag.</label>
             <input
               id="linkedin"
               type="url"
@@ -225,31 +227,37 @@ export default function SubmitPage() {
             </span>
           </div>
 
-          <div className="form-group">
+          <div className="form-group" data-tour="step-vote">
             <label>
               Based on your experience, would you work with/for them again?
             </label>
             <div className="vote-options">
-              <button
-                type="button"
-                className={`vote-option vote-option-yes${vote === "yes" ? " selected" : ""}`}
-                onClick={() => setVote("yes")}
-              >
-                <span className="vote-option-icon">✓</span>
-                <span>Yes, I would</span>
-              </button>
-              <button
-                type="button"
-                className={`vote-option vote-option-no${vote === "no" ? " selected" : ""}`}
-                onClick={() => setVote("no")}
-              >
-                <span className="vote-option-icon">✗</span>
-                <span>No, I would not</span>
-              </button>
+              <div className="vote-option-container">
+                <button
+                  type="button"
+                  className={`vote-option vote-option-yes${vote === "yes" ? " selected" : ""}`}
+                  onClick={() => setVote("yes")}
+                >
+                  <span className="vote-option-icon">✓</span>
+                  <span>Yes, I would</span>
+                </button>
+                <span className="vote-option-label label-vouch">Vouch</span>
+              </div>
+              <div className="vote-option-container">
+                <button
+                  type="button"
+                  className={`vote-option vote-option-no${vote === "no" ? " selected" : ""}`}
+                  onClick={() => setVote("no")}
+                >
+                  <span className="vote-option-icon">✗</span>
+                  <span>No, I would not</span>
+                </button>
+                <span className="vote-option-label label-flag">Flag</span>
+              </div>
             </div>
           </div>
 
-          <div className="form-group">
+          <div className="form-group" data-tour="step-reason">
             <label htmlFor="reason">Brief reason (optional)</label>
             <textarea
               id="reason"
@@ -273,6 +281,7 @@ export default function SubmitPage() {
             type="submit"
             className="btn btn-primary btn-full"
             disabled={submitting || !linkedinUrl || !vote}
+            data-tour="step-submit"
           >
             {submitting
               ? "Submitting…"
