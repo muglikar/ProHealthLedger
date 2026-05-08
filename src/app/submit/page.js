@@ -154,10 +154,10 @@ export default function SubmitPage() {
   return (
     <>
       {!result && <OnboardingTour isOpen={showTour} onClose={() => setShowTour(false)} />}
-      <section className="submit-hero" data-tour="step-welcome">
+      <section className="submit-hero">
         <div className="submit-hero-header">
           <div className="submit-hero-title-wrap">
-            <h1>Share Your Experience</h1>
+            <h1 data-tour="step-welcome">Share Your Experience</h1>
             <button className="btn-tour-trigger" onClick={() => setShowTour(true)} aria-label="Take a guided tour">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5" />
@@ -240,8 +240,8 @@ export default function SubmitPage() {
             </span>
           </div>
 
-          <div className="form-group" data-tour="step-vote">
-            <label>
+          <div className="form-group">
+            <label data-tour="step-vote">
               Based on your experience, would you work with/for them again?
             </label>
             <div className="vote-options">

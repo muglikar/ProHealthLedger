@@ -63,15 +63,34 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
     
     if (element) {
       const rect = element.getBoundingClientRect();
+      const scrollY = window.scrollY;
+      const innerHeight = window.innerHeight;
+      const isMobile = window.innerWidth <= 640;
+      
       setCoords({
-        top: rect.top + window.scrollY,
+        top: rect.top + scrollY,
         left: rect.left + window.scrollX,
         width: rect.width,
         height: rect.height,
       });
       
-      // Scroll into view if needed
-      if (rect.top < 100 || rect.bottom > window.innerHeight - 100) {
+      // Smart scrolling
+      if (isMobile) {
+        // On mobile, we want to scroll the target to a specific third of the screen 
+        // to leave room for the fixed popover.
+        const targetIsLow = rect.top > innerHeight / 2;
+        const targetCenterY = rect.top + (rect.height / 2);
+        
+        // If target is low, popover will be on top, so scroll target to bottom third (~70%)
+        // If target is high, popover will be on bottom, so scroll target to top third (~30%)
+        const idealRatio = targetIsLow ? 0.7 : 0.3;
+        const offset = targetCenterY - (innerHeight * idealRatio);
+        
+        window.scrollTo({
+          top: scrollY + offset,
+          behavior: "smooth"
+        });
+      } else if (rect.top < 100 || rect.bottom > innerHeight - 100) {
         element.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }
