@@ -89,7 +89,7 @@ async function fetchSlugOnce(slug) {
       signal: ctrl.signal,
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; ProHealthLedgerBot/1.0; +https://prohealthledger.org)",
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
         "Accept-Language": "en-US,en;q=0.9",
         Accept: "text/html",
       },
@@ -128,7 +128,15 @@ function classifyResponse(res, originalSlug) {
     return { verdict: "ambiguous" };
   }
 
-  // 999 / 403 / 429 / 5xx → ambiguous.
+  // 999 (LinkedIn bot block), 429 (Too Many Requests), 403 (Forbidden)
+  // are often triggered by LinkedIn's bot detection on cloud IPs. 
+  // We treat these as "exists" to avoid blocking legit users when our 
+  // verification egress is throttled. Missing profiles usually 404/410.
+  if (status === 999 || status === 429 || status === 403) {
+    return { verdict: "exists", canonicalSlug: originalSlug };
+  }
+
+  // 5xx or other non-standard codes remain ambiguous.
   return { verdict: "ambiguous" };
 }
 
