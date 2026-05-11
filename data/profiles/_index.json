@@ -706,5 +706,25 @@
         "date": "2026-05-07"
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/shailendra-kavathekar-b5185346",
+    "slug": "shailendra-kavathekar-b5185346",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1779926400&v=beta&t=PIu7WwPGRMRoOK0fau6eyH8gobWPwdWOxLkX5KgbI_Y",
+        "vote": "yes",
+        "issue": 43,
+        "date": "2026-05-11",
+        "reason": "One of my friends and ex-colleagues is seeking a software UI-UX position.\n\nHe has 13.5 years of experience as a Graphic & Web Designer and UI Designer. \n\nHis skills include Designer, Figma, HTML, CSS, Bootstrap, SASS, WordPress, Adobe XD, \nPhotoshop, Adobe effects and Responsive Design. He also has extensive experience working on mobile layouts and a strong background in the design field.\n\nHe is 90% hearing impaired and in need of a job since 7 months now.\n\nPlease forward if you know someone can hire him.\n\nPFA his resume and his behance portfolio link:\n\nhttps://www.behance.net/shailendradesign",
+        "reason_pending": true
+      }
+    ]
   }
 ]
