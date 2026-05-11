@@ -245,9 +245,15 @@
         "vote": "no",
         "issue": 42,
         "date": "2026-05-07"
+      },
+      {
+        "profile_slug": "shailendra-kavathekar-b5185346",
+        "vote": "yes",
+        "issue": 43,
+        "date": "2026-05-11"
       }
     ],
-    "yes_count": 15,
+    "yes_count": 16,
     "no_count": 12
   },
   {
