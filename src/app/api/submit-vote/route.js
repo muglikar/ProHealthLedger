@@ -38,7 +38,7 @@ export async function POST(req) {
   }
 
   const body = await req.json();
-  const { linkedinUrl, vote, reason } = body;
+  const { linkedinUrl, vote, reason, submitterLinkedinUrl } = body;
   const userId = session.userId;
   const displayName = session.displayName || userId;
 
@@ -298,9 +298,9 @@ export async function POST(req) {
     user: userId,
     display_name: displayName,
     display_image: session.user?.image || null,
-    ...(session.provider === "linkedin" && session.linkedinVanity
+    ...( (session.provider === "linkedin" && session.linkedinVanity) || submitterLinkedinUrl
       ? {
-        submitter_linkedin_url: `https://www.linkedin.com/in/${String(
+        submitter_linkedin_url: submitterLinkedinUrl || `https://www.linkedin.com/in/${String(
           session.linkedinVanity
         ).toLowerCase()}`,
       }
@@ -350,6 +350,11 @@ export async function POST(req) {
     users.push(userEntry);
   }
   userEntry.display_name = displayName;
+  if (submitterLinkedinUrl) {
+    userEntry.linkedin_url = submitterLinkedinUrl;
+  } else if (session.provider === "linkedin" && session.linkedinVanity && !userEntry.linkedin_url) {
+    userEntry.linkedin_url = `https://www.linkedin.com/in/${String(session.linkedinVanity).toLowerCase()}`;
+  }
   userEntry.contributions.push({
     profile_slug: slug,
     vote,

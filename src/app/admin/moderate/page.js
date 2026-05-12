@@ -179,10 +179,7 @@ export default function ModeratePage() {
                   >
                     {acting === item.issue ? "…" : "Approve"}
                   </button>
-                  <label
-                    className="mod-card-category-label"
-                    style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.85rem" }}
-                  >
+                  <label className="mod-card-category-label">
                     Reason:
                     <select
                       value={category}
