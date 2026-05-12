@@ -26,7 +26,7 @@ export default function ComplianceBanner() {
           PHL is not a consumer report and must not be used for credit,
           insurance, housing, or employment eligibility decisions.
         </span>
-        <Link href="/terms">Terms</Link>
+        <Link href="/terms">Terms &amp; Conditions</Link>
         <span>·</span>
         <Link href="/privacy">Privacy</Link>
         <span>·</span>

@@ -299,7 +299,7 @@ export default function SubmitPage() {
             {submitting
               ? "Submitting…"
               : reason.trim()
-                ? "Submit vote (comment pending review)"
+                ? "Submit vote"
                 : "Submit your vote permanently"}
           </button>
         </form>

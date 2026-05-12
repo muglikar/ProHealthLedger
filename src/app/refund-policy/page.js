@@ -26,7 +26,7 @@ export default function RefundPolicyPage() {
         <section className="legal-section">
           <h2>2. Voluntary Contributions</h2>
           <p>
-            Any financial support, "cups of coffee," or contributions made via the platform's support section are strictly voluntary. These contributions are intended to support the independent maintenance, hosting costs, and ongoing development of the open-source ledger.
+            Any financial support, or contributions made via the platform's support section are strictly voluntary. These contributions are intended to support the independent maintenance, hosting costs, and ongoing development of the open-source ledger.
           </p>
         </section>
 
