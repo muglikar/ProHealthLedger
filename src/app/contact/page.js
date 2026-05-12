@@ -48,16 +48,6 @@ export default function ContactPage() {
                 muglikar/ProHealthLedger
               </a>
             </li>
-            <li>
-              <strong>Issues:</strong>{" "}
-              <a 
-                href="https://github.com/muglikar/ProHealthLedger/issues"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Report a bug or request a feature
-              </a>
-            </li>
           </ul>
         </section>
 

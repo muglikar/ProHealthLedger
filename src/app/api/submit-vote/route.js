@@ -157,8 +157,10 @@ export async function POST(req) {
   const existingUser = users.find((u) => u.user_id === userId);
 
   // 1.12 Sybil hardening (first-time contributors).
-  if (!existingUser) {
-    if (session.provider !== "linkedin") {
+  const isFirstTimeContributor = !existingUser;
+  if (isFirstTimeContributor) {
+    const provider = String(session.provider || "").toLowerCase();
+    if (provider !== "linkedin") {
       return Response.json(
         {
           error:
