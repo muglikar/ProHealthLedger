@@ -4743,15 +4743,41 @@ button.audit-comment-link:focus-visible {
 /* --- Support Icon Scaling --- */
 
 .support-card-icon {
-  font-size: 3rem !important; /* Scaled up from tiny */
-  display: block !important;
+  margin-bottom: 1.5rem !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.support-metric-icon {
   margin-bottom: 0.75rem !important;
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)) !important;
+  color: var(--accent) !important;
+  display: flex !important;
+  justify-content: center !important;
+  opacity: 0.8 !important;
+}
+
+.support-metric-label {
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
 }
 
 .support-card-header h3 {
-  font-size: 2rem !important;
-  letter-spacing: -0.02em !important;
+  font-size: 2.5rem !important;
+  letter-spacing: -0.03em !important;
+  font-weight: 900 !important;
+  color: #0f172a !important;
+  margin-bottom: 1rem !important;
+}
+
+.support-card-text {
+  font-size: 1.25rem !important;
+  line-height: 1.6 !important;
+  color: #475569 !important;
+  max-width: 600px !important;
+  margin: 0 auto 3rem auto !important;
 }
 
 
