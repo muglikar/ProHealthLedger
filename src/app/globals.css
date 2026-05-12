@@ -4658,6 +4658,23 @@ button.audit-comment-link:focus-visible {
   margin: 0 !important;
 }
 
+.footer-attribution {
+  font-size: 0.75rem !important;
+  color: #94a3b8 !important;
+  margin-top: 1rem !important;
+  font-weight: 500 !important;
+}
+
+.footer-attribution a {
+  color: inherit !important;
+  text-decoration: underline !important;
+  opacity: 0.8 !important;
+}
+
+.footer-attribution a:hover {
+  opacity: 1 !important;
+}
+
 .support-actions .btn-upi {
   padding: 1rem 2.5rem !important;
   font-size: 1.125rem !important;

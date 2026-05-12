@@ -13,8 +13,8 @@ export default function SupportSection() {
             <img 
               src="/icons/support.png" 
               alt="Support Icon" 
-              width="64" 
-              height="64"
+              width="80" 
+              height="80"
             />
           </div>
           <h3>Support ProHealthLedger.org</h3>
@@ -30,8 +30,8 @@ export default function SupportSection() {
               <img 
                 src="/icons/maintenance.png" 
                 alt="Maintenance Icon" 
-                width="32" 
-                height="32"
+                width="48" 
+                height="48"
               />
             </div>
             <span className="support-metric-label">Maintenance</span>
@@ -41,8 +41,8 @@ export default function SupportSection() {
               <img 
                 src="/icons/software-development.png" 
                 alt="Development Icon" 
-                width="32" 
-                height="32"
+                width="48" 
+                height="48"
               />
             </div>
             <span className="support-metric-label">Ongoing Development</span>
