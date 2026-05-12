@@ -12,6 +12,7 @@ export default function SubmitPage() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [vote, setVote] = useState("");
   const [reason, setReason] = useState("");
+  const [submitterLinkedinUrl, setSubmitterLinkedinUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -29,10 +30,14 @@ export default function SubmitPage() {
     setResult(null);
 
     try {
+      const payload = { linkedinUrl, vote, reason };
+      if (!session?.linkedinProfileUrl) {
+        payload.submitterLinkedinUrl = submitterLinkedinUrl;
+      }
       const res = await fetch("/api/submit-vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ linkedinUrl, vote, reason }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -50,6 +55,7 @@ export default function SubmitPage() {
       setLinkedinUrl("");
       setVote("");
       setReason("");
+      setSubmitterLinkedinUrl("");
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -223,6 +229,29 @@ export default function SubmitPage() {
               <strong>Cannot submit:</strong> {error}
             </div>
           )}
+          
+          {!session.linkedinProfileUrl && (
+            <div className="form-group" style={{ padding: '16px', background: 'var(--bg-warm)', borderRadius: 'var(--radius-sm)', border: '1px dashed var(--accent-light)' }}>
+              <label htmlFor="submitter-linkedin" style={{ color: 'var(--accent)', fontWeight: '700' }}>
+                Your LinkedIn Profile URL
+              </label>
+              <p style={{ fontSize: '0.85rem', marginBottom: '12px', color: 'var(--text-secondary)' }}>
+                We couldn&apos;t automatically verify your profile link. For accountability, please paste your full LinkedIn profile URL below.
+              </p>
+              <input
+                id="submitter-linkedin"
+                type="url"
+                className="form-input"
+                placeholder="https://www.linkedin.com/in/your-profile"
+                value={submitterLinkedinUrl}
+                onChange={(e) => setSubmitterLinkedinUrl(e.target.value)}
+                required
+              />
+              <span className="form-hint">
+                This is required once so your votes can be verified by others.
+              </span>
+            </div>
+          )}
 
           <div className="form-group" data-tour="step-linkedin">
             <label htmlFor="linkedin">Write Linkedin Profile URL of the person you want to vouch or flag.</label>
@@ -293,7 +322,7 @@ export default function SubmitPage() {
           <button
             type="submit"
             className="btn btn-primary btn-full"
-            disabled={submitting || !linkedinUrl || !vote}
+            disabled={submitting || !linkedinUrl || !vote || (!session.linkedinProfileUrl && !submitterLinkedinUrl)}
             data-tour="step-submit"
           >
             {submitting

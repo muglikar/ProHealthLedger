@@ -4242,6 +4242,7 @@ button.audit-comment-link:focus-visible {
 .mod-card-actions {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .btn-sm {
@@ -4256,6 +4257,26 @@ button.audit-comment-link:focus-visible {
 
 .mod-btn-reject:hover {
   background: var(--red-bg);
+}
+
+.mod-card-category-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 480px) {
+  .mod-card-category-label {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .mod-card-category-label select {
+    flex: 1;
+    max-width: 200px;
+  }
 }
 /* --- Feedback & Support Enhancements --- */
 
