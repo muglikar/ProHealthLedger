@@ -501,7 +501,7 @@
     "linkedin_url": "https://www.linkedin.com/in/muglikar",
     "slug": "muglikar",
     "votes": {
-      "yes": 4,
+      "yes": 5,
       "no": 0
     },
     "submissions": [
@@ -537,6 +537,16 @@
         "date": "2026-04-23",
         "reason": "It is rare to find a leader who prioritizes technical resolution and long-term solutions over short-term corporate pressure. I deeply respect his practicality, fortitude, and grit in navigating complex challenges",
         "submitter_linkedin_url": "https://www.linkedin.com/in/er-apoorv-gupta"
+      },
+      {
+        "user": "linkedin:utArU3zenw",
+        "display_name": "Mansi Siddhanti",
+        "display_image": "https://media.licdn.com/dms/image/v2/D5603AQEj0ovaJ_Gt7Q/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1729242971042?e=1779926400&v=beta&t=QW_TjwZywWokb3ankrXSDlYbgSK98XYPWgQds5cjYPA",
+        "vote": "yes",
+        "issue": 44,
+        "date": "2026-05-12",
+        "reason": "I would be happy to work with Anand Sir again because of his supportive mentorship, clear guidance, and encouraging work environment. His approach to teaching and problem-solving helped me strengthen my technical understanding and confidence. Working under his guidance was a valuable learning experience that contributed positively to my professional growth.",
+        "reason_pending": true
       }
     ]
   },
