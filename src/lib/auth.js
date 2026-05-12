@@ -207,6 +207,13 @@ export const authOptions = {
           token.displayName = profile.name || profile.login;
           token.name = token.displayName;
           token.provider = "github";
+          // Clear stale LinkedIn trust signals if they exist from a previous session
+          delete token.linkedinAccountAgeDays;
+          delete token.linkedinConnections;
+          delete token.linkedinVanity;
+          delete token.linkedinProfileUrl;
+          delete token.linkedinAccessToken;
+          delete token.linkedinSub;
           if (profile.email) {
             const em = normalizeAdminEmail(String(profile.email));
             token.authEmail = em;
@@ -287,11 +294,15 @@ export const authOptions = {
       if (token.linkedinSub) {
         session.linkedinSub = String(token.linkedinSub);
       }
-      if (Number.isFinite(Number(token.linkedinAccountAgeDays))) {
+      if (token.linkedinAccountAgeDays != null && Number.isFinite(Number(token.linkedinAccountAgeDays))) {
         session.linkedinAccountAgeDays = Number(token.linkedinAccountAgeDays);
+      } else if (token.linkedinAccountAgeDays === null) {
+        session.linkedinAccountAgeDays = null;
       }
-      if (Number.isFinite(Number(token.linkedinConnections))) {
+      if (token.linkedinConnections != null && Number.isFinite(Number(token.linkedinConnections))) {
         session.linkedinConnections = Number(token.linkedinConnections);
+      } else if (token.linkedinConnections === null) {
+        session.linkedinConnections = null;
       }
       return session;
     },
