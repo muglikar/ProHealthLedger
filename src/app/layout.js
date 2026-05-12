@@ -111,6 +111,12 @@ export default function RootLayout({ children }) {
                 © {new Date().getFullYear()} Professional Health Ledger —
                 Open Source, Zero Cost, Fully Transparent.
               </p>
+              <p className="footer-attribution">
+                Icons by Flaticon —{" "}
+                <a href="https://www.flaticon.com/free-icons/help" title="help icons" target="_blank" rel="noopener noreferrer">
+                  Help icons created by Freepik - Flaticon
+                </a>
+              </p>
             </div>
           </footer>
         </Providers>
