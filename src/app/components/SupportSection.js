@@ -2,6 +2,69 @@
 
 import { useState } from "react";
 
+const SUPPORT_TIERS = [
+  { 
+    name: "Supporter", 
+    amount: "₹99", 
+    description: "Covers server infrastructure hosting for 1 month.",
+    icon: "🌟"
+  },
+  { 
+    name: "Evangelist", 
+    amount: "₹299", 
+    description: "Sustains high-availability cloud hosting for 3 months.",
+    icon: "📣"
+  },
+  { 
+    name: "Advocate", 
+    amount: "₹599", 
+    description: "Supports technical maintenance and database scaling for 6 months.",
+    icon: "🛡️"
+  },
+  { 
+    name: "Patron", 
+    amount: "₹1,199", 
+    description: "Funds backend security optimizations and maintenance for 6 months.",
+    icon: "🚀"
+  },
+  { 
+    name: "Shot in the arm", 
+    amount: "₹1,199", 
+    description: "Funds the development of a specific new feature or API update.",
+    icon: "💉"
+  },
+  { 
+    name: "Steward", 
+    amount: "₹2,499", 
+    description: "Funds comprehensive system integrity monitoring for 1 year.",
+    icon: "🤝"
+  },
+  { 
+    name: "Founding Member", 
+    amount: "₹4,999", 
+    description: "Ensures long-term sustainability and baseline technical support.",
+    icon: "💎"
+  },
+  { 
+    name: "Infrastructure Guardian", 
+    amount: "₹9,999", 
+    description: "Funds deeper security audits and performance tuning for the ledger.",
+    icon: "🏰"
+  },
+  { 
+    name: "Architecture Partner", 
+    amount: "₹24,999", 
+    description: "Supports R&D for advanced trust algorithms and cross-platform syncing.",
+    icon: "🏗️"
+  },
+  { 
+    name: "Ecosystem Anchor", 
+    amount: "₹49,999", 
+    description: "Provides foundational support for enterprise-grade scalability.",
+    icon: "⚓"
+  }
+];
+
 export default function SupportSection() {
   const [showQR, setShowQR] = useState(false);
 
@@ -25,6 +88,17 @@ export default function SupportSection() {
           If you value this SaaS utility and technical accountability tool, support the maintenance and ongoing development of this open-source ledger provided by an independent developer.
         </p>
         
+        <div className="support-tiers-grid">
+          {SUPPORT_TIERS.map((tier) => (
+            <div key={tier.name} className="support-tier-card">
+              <div className="support-tier-icon">{tier.icon}</div>
+              <div className="support-tier-name">{tier.name}</div>
+              <div className="support-tier-amount">{tier.amount}</div>
+              <div className="support-tier-desc">{tier.description}</div>
+            </div>
+          ))}
+        </div>
+
         <div className="support-metrics">
           <div className="support-metric">
             <div className="support-metric-icon">

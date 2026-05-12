@@ -115,7 +115,7 @@ export default function RootLayout({ children }) {
               </div>
               <p className="copyright">
                 © {new Date().getFullYear()} Professional Health Ledger —
-                Open Source, Zero Cost, Fully Transparent.
+                IT & Software Services: Maintenance & Support — Professional Sponsorship Tiers for Maintenance, Fully Transparent.
               </p>
               <p className="footer-attribution">
                 Icons by Flaticon —{" "}
