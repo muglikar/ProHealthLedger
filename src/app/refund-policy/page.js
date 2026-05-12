@@ -19,7 +19,7 @@ export default function RefundPolicyPage() {
         <section className="legal-section">
           <h2>1. Service Nature</h2>
           <p>
-            ProHealthLedger is an open-source SaaS utility and technical accountability tool provided by an independent developer. The core platform is provided free of charge ("Zero Cost") to all users.
+            ProHealthLedger is an open-source SaaS utility and technical accountability tool provided by an independent developer. The core platform is provided via Professional Sponsorship Tiers for Maintenance to all users.
           </p>
         </section>
 

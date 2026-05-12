@@ -96,7 +96,7 @@ export default function Home() {
           <h2 id="home-how-heading" className="home-how-title">
             How does it work?
           </h2>
-          <p className="home-how-sub">Three steps. No subscription or fees.</p>
+          <p className="home-how-sub">Three steps. Supported by professional sponsorship tiers.</p>
           <ol className="home-steps-compact" role="list">
             <li>
               <span className="home-step-num">1</span>
