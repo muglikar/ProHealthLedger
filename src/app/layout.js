@@ -83,10 +83,12 @@ export default function RootLayout({ children }) {
           <footer className="footer">
             <div className="footer-inner">
               <p className="disclaimer">
-                This ledger is a collection of subjective professional
-                experiences. The platform does not author, verify, or endorse
-                any rating. Every vote reflects one individual&apos;s personal
-                opinion. Use at your own discretion.
+                ProHealthLedger is an open-source SaaS utility and technical
+                accountability tool provided by an independent developer. This
+                ledger is a collection of subjective professional experiences.
+                The platform does not author, verify, or endorse any rating.
+                Every vote reflects one individual&apos;s personal opinion. Use
+                at your own discretion.
               </p>
               <div className="footer-links">
                 <Link href="/transparency">Full Audit Trail</Link>
@@ -101,11 +103,15 @@ export default function RootLayout({ children }) {
                 <span className="footer-sep">·</span>
                 <Link href="/privacy">Privacy Policy</Link>
                 <span className="footer-sep">·</span>
-                <Link href="/terms">Terms</Link>
+                <Link href="/terms">Terms &amp; Conditions</Link>
+                <span className="footer-sep">·</span>
+                <Link href="/refund-policy">Refund Policy</Link>
                 <span className="footer-sep">·</span>
                 <Link href="/data-rights">Data Rights</Link>
                 <span className="footer-sep">·</span>
                 <Link href="/request-removal">Request Removal</Link>
+                <span className="footer-sep">·</span>
+                <Link href="/contact">Contact Us</Link>
               </div>
               <p className="copyright">
                 © {new Date().getFullYear()} Professional Health Ledger —

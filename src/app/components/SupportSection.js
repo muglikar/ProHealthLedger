@@ -17,11 +17,12 @@ export default function SupportSection() {
               height="80"
             />
           </div>
+          <span className="hero-badge" style={{ marginBottom: '0.75rem' }}>Support the Developer</span>
           <h3>Support ProHealthLedger.org</h3>
         </div>
         
         <p className="support-card-text">
-          If you liked this idea / website, support the maintenance and ongoing development of this open-source ledger.
+          If you value this SaaS utility and technical accountability tool, support the maintenance and ongoing development of this open-source ledger provided by an independent developer.
         </p>
         
         <div className="support-metrics">
