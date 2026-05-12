@@ -158,7 +158,9 @@ export async function POST(req) {
 
   // 1.12 Sybil hardening (first-time contributors).
   const isFirstTimeContributor = !existingUser;
-  if (isFirstTimeContributor) {
+  const skipSybil = session.siteAdmin || !isFirstTimeContributor;
+
+  if (isFirstTimeContributor && !session.siteAdmin) {
     const provider = String(session.provider || "").toLowerCase();
     if (provider !== "linkedin") {
       return Response.json(
@@ -172,21 +174,23 @@ export async function POST(req) {
 
     const minAgeDays = envLimit("SYBIL_LINKEDIN_MIN_AGE_DAYS", 30);
     const minConnections = envLimit("SYBIL_LINKEDIN_MIN_CONNECTIONS", 10);
-    const ageDays = Number(session.linkedinAccountAgeDays);
-    const connections = Number(session.linkedinConnections);
+    const ageDays = session.linkedinAccountAgeDays;
+    const connections = session.linkedinConnections;
 
-    if (!Number.isFinite(ageDays) || ageDays < minAgeDays) {
+    // Only block if we have DEFINITIVE data that fails the check.
+    // If the API returns null (unknown), we allow it to avoid false positives.
+    if (ageDays !== null && Number.isFinite(Number(ageDays)) && Number(ageDays) < minAgeDays) {
       return Response.json(
         {
-          error: `LinkedIn trust check failed: account age must be at least ${minAgeDays} days for first-time contributors.`,
+          error: `LinkedIn trust check failed: your account is too new (${ageDays} days). Account age must be at least ${minAgeDays} days for first-time contributors.`,
         },
         { status: 403 }
       );
     }
-    if (!Number.isFinite(connections) || connections < minConnections) {
+    if (connections !== null && Number.isFinite(Number(connections)) && Number(connections) < minConnections) {
       return Response.json(
         {
-          error: `LinkedIn trust check failed: at least ${minConnections} connections are required for first-time contributors.`,
+          error: `LinkedIn trust check failed: your account has too few connections (${connections}). At least ${minConnections} connections are required for first-time contributors.`,
         },
         { status: 403 }
       );
