@@ -27,6 +27,10 @@
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   /* --font-monda is set on <html> by next/font; must live on :root so var() resolves here. */
+  --fs-xl: clamp(1.2rem, 3vw + 0.5rem, 2.2rem);
+  --fs-lg: clamp(1.05rem, 1.5vw + 0.5rem, 1.25rem);
+  --fs-base: 0.95rem;
+  --fs-sm: 0.78rem;
   --font-sans: var(--font-monda), system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
 }
@@ -1033,14 +1037,14 @@ a:hover {
   color: var(--accent);
   padding: 5px 14px;
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   letter-spacing: 0.03em;
   margin-bottom: 0;
 }
 
 .home-above-fold h1 {
-  font-size: clamp(1.15rem, 2.4vw + 0.45rem, 2.05rem);
+  font-size: var(--fs-xl);
   font-weight: 700;
   line-height: 1.18;
   margin: 0 auto;
@@ -1057,7 +1061,7 @@ a:hover {
 }
 
 .hero-lede {
-  font-size: clamp(0.88rem, 1.1vw + 0.75rem, 0.98rem);
+  font-size: var(--fs-base);
   color: var(--text-secondary);
   max-width: 38rem;
   margin: 0 auto;
@@ -1076,7 +1080,7 @@ a:hover {
 }
 
 .hero-trust-line {
-  font-size: clamp(0.68rem, 0.5vw + 0.62rem, 0.75rem);
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   max-width: 38rem;
   margin: 0 auto;
@@ -1109,7 +1113,7 @@ a:hover {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--text-secondary);
 }
@@ -1151,7 +1155,7 @@ a:hover {
 }
 
 .home-how-title {
-  font-size: clamp(0.95rem, 1vw + 0.8rem, 1.08rem);
+  font-size: var(--fs-lg);
   font-weight: 700;
   margin: 0 0 4px;
   color: var(--text);
@@ -1159,7 +1163,7 @@ a:hover {
 
 .home-how-sub {
   color: var(--text-secondary);
-  font-size: clamp(0.72rem, 0.4vw + 0.65rem, 0.8rem);
+  font-size: var(--fs-sm);
   margin: 0 0 10px;
   line-height: 1.35;
 }
@@ -1184,7 +1188,7 @@ a:hover {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  font-size: 0.76rem;
+  font-size: var(--fs-base);
   line-height: 1.36;
   color: var(--text-secondary);
   box-shadow: var(--shadow);
@@ -1201,7 +1205,7 @@ a:hover {
   background: var(--accent-bg);
   color: var(--accent);
   font-weight: 700;
-  font-size: 0.68rem;
+  font-size: var(--fs-sm);
   flex-shrink: 0;
   margin-top: 1px;
 }
@@ -1209,7 +1213,7 @@ a:hover {
 .home-step-label {
   grid-column: 2;
   grid-row: 1;
-  font-size: 0.8rem;
+  font-size: var(--fs-base);
   color: var(--text);
   font-weight: 600;
 }
@@ -1298,7 +1302,7 @@ a:hover {
 }
 
 .section-title {
-  font-size: clamp(1.15rem, 2vw + 0.5rem, 1.4rem);
+  font-size: var(--fs-lg);
   font-weight: 700;
   margin-bottom: 8px;
   color: var(--text);
@@ -1307,7 +1311,7 @@ a:hover {
 .section-subtitle {
   color: var(--text-secondary);
   margin-bottom: 36px;
-  font-size: 1rem;
+  font-size: var(--fs-base);
 }
 
 .steps-grid {
@@ -1341,19 +1345,19 @@ a:hover {
   background: var(--accent-bg);
   color: var(--accent);
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: var(--fs-base);
   margin-bottom: 14px;
 }
 
 .step-card h3 {
-  font-size: 1rem;
+  font-size: var(--fs-lg);
   margin-bottom: 6px;
   color: var(--text);
 }
 
 .step-card p {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   line-height: 1.6;
 }
 
@@ -1389,13 +1393,13 @@ a:hover {
 }
 
 .karma-box h3 {
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   margin-bottom: 8px;
   color: var(--text);
 }
 
 .karma-box--fold h3 {
-  font-size: clamp(0.85rem, 0.6vw + 0.75rem, 0.95rem);
+  font-size: var(--fs-lg);
   font-weight: 700;
   margin-bottom: 4px;
   line-height: 1.25;
@@ -1404,11 +1408,11 @@ a:hover {
 .karma-box p {
   color: var(--text-secondary);
   line-height: 1.7;
-  font-size: 0.95rem;
+  font-size: var(--fs-base);
 }
 
 .karma-box--fold p {
-  font-size: clamp(0.74rem, 0.45vw + 0.68rem, 0.84rem);
+  font-size: var(--fs-base);
   line-height: 1.45;
   margin: 0;
 }
@@ -1447,7 +1451,7 @@ a:hover {
 }
 
 .speak-up-box h3 {
-  font-size: 0.88rem;
+  font-size: var(--fs-lg);
   font-weight: 700;
   margin: 0 0 4px;
   color: var(--text);
@@ -1455,14 +1459,14 @@ a:hover {
 }
 
 .speak-up-box p {
-  font-size: 0.78rem;
+  font-size: var(--fs-base);
   line-height: 1.45;
   color: var(--text-secondary);
   margin: 0;
 }
 
 .speak-up-disclaimer {
-  font-size: 0.68rem !important;
+  font-size: var(--fs-sm) !important;
   color: var(--text-muted) !important;
   margin-top: 6px !important;
   padding-top: 6px;
@@ -1507,14 +1511,14 @@ a:hover {
 }
 
 .why-card h3 {
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   margin-bottom: 6px;
   color: var(--text);
 }
 
 .why-card p {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   line-height: 1.6;
 }
 
@@ -4774,7 +4778,7 @@ button.audit-comment-link:focus-visible {
 }
 
 .support-metric-label {
-  font-size: 1rem !important;
+  font-size: var(--fs-base) !important;
   font-weight: 800 !important;
   color: #0f172a !important;
   text-transform: uppercase !important;
@@ -4782,7 +4786,7 @@ button.audit-comment-link:focus-visible {
 }
 
 .support-card-header h3 {
-  font-size: 2.5rem !important;
+  font-size: var(--fs-xl) !important;
   letter-spacing: -0.03em !important;
   font-weight: 900 !important;
   color: #0f172a !important;
@@ -4790,11 +4794,11 @@ button.audit-comment-link:focus-visible {
 }
 
 .support-card-text {
-  font-size: 1.25rem !important;
+  font-size: var(--fs-base) !important;
   line-height: 1.6 !important;
   color: #475569 !important;
   max-width: 600px !important;
-  margin: 0 auto 3rem auto !important;
+  margin: 0 auto 2rem auto !important;
 }
 
 
