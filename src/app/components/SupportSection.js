@@ -11,9 +11,9 @@ function RazorpayButton({ buttonId }) {
     const container = containerRef.current;
     if (!container) return;
 
-    // Clear and re-inject exactly as Razorpay expects
     container.innerHTML = "";
     
+    // Exact form/script structure from the user
     const form = document.createElement("form");
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/payment-button.js";
@@ -24,7 +24,7 @@ function RazorpayButton({ buttonId }) {
     container.appendChild(form);
 
     return () => {
-      if (container) container.innerHTML = "";
+      // No cleanup to avoid script removal issues
     };
   }, [buttonId]);
 
