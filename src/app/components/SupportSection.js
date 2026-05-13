@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 function RazorpayButton({ buttonId }) {
   const containerRef = useRef(null);
@@ -126,44 +126,32 @@ export default function SupportSection() {
   const tileCount = SPONSOR_TIERS.length;
   const angleStep = 360 / tileCount;
   
-  // Larger radius for "sitting inside"
-  const radius = Math.round(100 / Math.tan(Math.PI / tileCount)) + 120;
+  // Even smaller radius for closer tiles
+  const radius = Math.round(70 / Math.tan(Math.PI / tileCount)) + 70;
 
-  // Shortest path rotation logic
-  const rotateToId = (id) => {
-    const targetIdx = SPONSOR_TIERS.findIndex(t => t.id === id);
-    const currentRotation = dragRotation;
-    
-    // For inside view, we want to rotate the ring so the target is at 0 degrees
-    const currentTurn = Math.round(currentRotation / 360);
-    const targets = [
-      (currentTurn - 1) * 360 - (targetIdx * angleStep),
-      currentTurn * 360 - (targetIdx * angleStep),
-      (currentTurn + 1) * 360 - (targetIdx * angleStep)
-    ];
-    
-    const bestTarget = targets.reduce((prev, curr) => 
-      Math.abs(curr - currentRotation) < Math.abs(prev - currentRotation) ? curr : prev
-    );
-    
-    setDragRotation(bestTarget);
-    setSelectedTierId(id);
-  };
+  // Helper to snap to the shortest path
+  const snapToSelectedIndex = useCallback((index) => {
+    const targetBaseRotation = -index * angleStep;
+    // Find the shortest distance between current rotation and target visual rotation
+    const current = dragRotation;
+    // Normalize current to be relative to the target's 360-degree window
+    const diff = ((((targetBaseRotation - current) % 360) + 540) % 360) - 180;
+    setDragRotation(current + diff);
+  }, [dragRotation, angleStep]);
 
-  // ... (rest of the logic remains same)
-
-  // In the render:
-  // Ring transform: translateZ(radius) rotateY(dragRotation)
-  // Tile transform: rotateY(rotation + 180) translateZ(radius)
-
-  // Only sync once on mount or when external change happens
-  const lastSyncId = useRef(selectedTierId);
+  // Sync drag rotation with selected index when not dragging
   useEffect(() => {
-    if (!isDragging && selectedTierId !== lastSyncId.current) {
-      rotateToId(selectedTierId);
-      lastSyncId.current = selectedTierId;
+    if (!isDragging) {
+      const targetBaseRotation = -selectedIndex * angleStep;
+      const current = dragRotation;
+      const diff = ((((targetBaseRotation - current) % 360) + 540) % 360) - 180;
+      
+      // Only update if the difference is significant to avoid jitter
+      if (Math.abs(diff) > 0.1) {
+        setDragRotation(current + diff);
+      }
     }
-  }, [selectedTierId, isDragging]);
+  }, [selectedIndex, isDragging, angleStep, dragRotation]);
 
   // Non-passive wheel listener to prevent browser fwd/back
   useEffect(() => {
@@ -207,7 +195,7 @@ export default function SupportSection() {
     // Snap to nearest tier
     const nearestIdx = Math.round(-dragRotation / angleStep);
     const safeIdx = ((nearestIdx % tileCount) + tileCount) % tileCount;
-    rotateToId(SPONSOR_TIERS[safeIdx].id);
+    setSelectedTierId(SPONSOR_TIERS[safeIdx].id);
   };
 
   // Mouse Handlers
@@ -282,21 +270,22 @@ export default function SupportSection() {
           <div 
             className="support-carousel-3d-ring"
             style={{ 
-              transform: `translateZ(${radius}px) rotateY(${dragRotation}deg)`,
+              transform: `rotateY(${dragRotation}deg)`,
               transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)'
             }}
           >
             {SPONSOR_TIERS.map((tier, idx) => {
               const rotation = idx * angleStep;
               
-              // Calculate current absolute rotation relative to viewer
+              // Dynamic opacity based on how "front-facing" the tile is
+              // angleStep * (idx - nearestIdx) should be around 0 for the front tile
+              // We can calculate current absolute rotation of the tile relative to the viewer (0 deg)
               const currentTileRotation = (rotation + dragRotation) % 360;
               const normalizedRotation = ((currentTileRotation + 180) % 360) - 180;
               const absRotation = Math.abs(normalizedRotation);
               
-              // When inside, front tiles are at normalizedRotation 0
-              // But they are facing 180deg towards us
-              const opacity = Math.max(0.05, 1 - (absRotation / 180) * 1.5);
+              // Opacity: 1 at 0deg, 0.1 at 180deg
+              const opacity = Math.max(0.1, 1 - (absRotation / 180) * 1.2);
               const isSelected = selectedTierId === tier.id;
 
               return (
@@ -304,12 +293,12 @@ export default function SupportSection() {
                   key={tier.id}
                   className={`support-3d-tile ${isSelected ? 'is-active' : ''}`}
                   style={{
-                    transform: `rotateY(${rotation + 180}deg) translateZ(${radius}px)`,
+                    transform: `rotateY(${rotation}deg) translateZ(${radius}px)`,
                     opacity: opacity,
                     zIndex: Math.round(100 - absRotation)
                   }}
                   onClick={(e) => {
-                    if (!isDragging) rotateToId(tier.id);
+                    if (!isDragging) setSelectedTierId(tier.id);
                   }}
                 >
                   <span className="tier-tile-icon">{tier.icon}</span>
