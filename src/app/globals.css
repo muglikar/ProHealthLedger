@@ -1071,7 +1071,7 @@ a:hover {
 }
 
 .support-card-content {
-  padding: 3rem;
+  padding: 1rem 2rem;
   text-align: center;
 }
 
@@ -1181,6 +1181,7 @@ a:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
+  margin-bottom: 6px;
 }
 
 .tier-tile-amount {
