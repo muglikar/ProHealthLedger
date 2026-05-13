@@ -1141,20 +1141,21 @@ a:hover {
 
 .support-carousel-container {
   position: relative;
-  height: 320px;
+  height: 340px;
   width: 100%;
   margin: 1rem 0 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   perspective: 2000px;
-  overflow: hidden; /* Prevent tiles from spilling out */
+  overflow: visible; /* Back to visible for better feel */
+  touch-action: pan-y; /* Prevent vertical scroll when interacting */
 }
 
 .support-carousel-3d-ring {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 140px;
+  height: 180px;
   transform-style: preserve-3d;
   transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -1163,26 +1164,35 @@ a:hover {
   position: absolute;
   top: 0;
   left: 0;
-  width: 150px;
-  height: 150px;
+  width: 140px;
+  height: 180px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 1rem;
+  gap: 10px;
+  padding: 1.25rem 0.75rem;
   
-  /* Glassmorphism */
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 20px;
+  /* Premium Glassmorphism */
+  background: linear-gradient(
+    135deg, 
+    rgba(255, 255, 255, 0.15) 0%, 
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  border-left: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
   
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.07),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    
   cursor: grab;
-  backface-visibility: visible; /* User requested a little visibility */
-  transition: opacity 0.4s ease, border-color 0.3s ease, transform 0.4s ease;
+  backface-visibility: visible;
+  transition: opacity 0.3s ease, border-color 0.3s ease, transform 0.4s ease;
   user-select: none;
 }
 
