@@ -305,6 +305,7 @@ export default function SupportSection() {
             })}
           </div>
         </div>
+        <div className="carousel-hint">Drag to spin 360°</div>
 
         <div className="support-tier-details">
           <div className="tier-info-card">
