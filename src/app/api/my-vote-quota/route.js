@@ -16,7 +16,11 @@ export async function GET() {
 
   const { data: users } = await readDataFile("data/users/_index.json");
   const list = Array.isArray(users) ? users : [];
-  const u = list.find((x) => x.user_id === session.userId);
+  const sessionUserId = (session.userId || "").replace("github:", "").replace("linkedin:", "");
+  const u = list.find((x) => {
+    const uid = (x.user_id || x.github_username || "").replace("github:", "").replace("linkedin:", "");
+    return uid === sessionUserId;
+  });
 
   const yes_count = u?.yes_count ?? 0;
   const no_count = u?.no_count ?? 0;
