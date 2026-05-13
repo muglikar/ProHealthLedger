@@ -18,7 +18,7 @@ function RazorpayButton({ buttonId }) {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/payment-button.js";
     script.dataset.payment_button_id = buttonId;
-    script.async = true;
+    // Removing async as it might cause the script to execute outside the parent context
     
     form.appendChild(script);
     container.appendChild(form);
@@ -118,47 +118,38 @@ export default function SupportSection() {
   const selectedTier = SUPPORT_TIERS.find(t => t.id === selectedTierId) || SUPPORT_TIERS[0];
 
   return (
-    <section className="support-card" id="support">
+    <section className="support-card compact" id="support">
       <div className="support-card-content">
         <div className="support-card-header">
-          <div className="support-card-icon">
-            <img 
-              src="/icons/support.png" 
-              alt="Support Icon" 
-              width="64" 
-              height="64"
-            />
-          </div>
-          <span className="hero-badge" style={{ marginBottom: '0.75rem' }}>Support the Developer</span>
-          <h3>Support ProHealthLedger.org</h3>
+          <span className="hero-badge-mini">Professional Support</span>
+          <h3>Support PHL Maintenance</h3>
         </div>
         
-        <p className="support-card-text">
-          If you value this SaaS utility and technical accountability tool, support the maintenance and ongoing development of this open-source ledger provided by an independent developer.
+        <p className="support-card-text-sm">
+          Sustain the ongoing development of this open-source ledger.
         </p>
 
-        <div className="support-metrics-compact">
+        <div className="support-metrics-compact-mini">
           <div className="support-metric-mini">
-            <img src="/icons/maintenance.png" alt="" width="24" height="24" />
+            <img src="/icons/maintenance.png" alt="" width="16" height="16" />
             <span>Maintenance</span>
           </div>
           <div className="support-metric-mini">
-            <img src="/icons/software-development.png" alt="" width="24" height="24" />
-            <span>Ongoing Development</span>
+            <img src="/icons/software-development.png" alt="" width="16" height="16" />
+            <span>Development</span>
           </div>
         </div>
         
-        <div className="support-carousel-container">
+        <div className="support-carousel-container-compact">
           <div className="support-carousel">
             {SUPPORT_TIERS.map((tier) => (
               <button
                 key={tier.id}
-                className={`support-carousel-tile ${selectedTierId === tier.id ? 'is-active' : ''}`}
+                className={`support-carousel-tile-mini ${selectedTierId === tier.id ? 'is-active' : ''}`}
                 onClick={() => setSelectedTierId(tier.id)}
               >
-                <span className="tier-tile-icon">{tier.icon}</span>
-                <span className="tier-tile-name">{tier.name}</span>
-                <span className="tier-tile-amount">₹{tier.amount}</span>
+                <span className="tier-tile-name-mini">{tier.name}</span>
+                <span className="tier-tile-amount-mini">₹{tier.amount}</span>
               </button>
             ))}
           </div>
@@ -166,20 +157,19 @@ export default function SupportSection() {
           <div className="carousel-fade-edge-right" />
         </div>
 
-        <div className="support-selected-display">
-          <div className="selected-tier-header">
-            <h4>{selectedTier.name} — ₹{selectedTier.amount}</h4>
-            <p className="selected-tier-desc">{selectedTier.description}</p>
+        <div className="support-selected-display-compact">
+          <div className="selected-tier-header-sm">
+            <p className="selected-tier-desc-sm">{selectedTier.description}</p>
           </div>
 
-          <div className="selected-tier-payment">
+          <div className="selected-tier-payment-sm">
             {selectedTier.razorpayId ? (
-              <div className="razorpay-embed-wrapper">
+              <div className="razorpay-embed-wrapper-sm">
                 <RazorpayButton buttonId={selectedTier.razorpayId} />
               </div>
             ) : (
-              <p className="payment-placeholder-text">
-                Professional payment gateway pending for this tier.
+              <p className="payment-placeholder-text-sm">
+                Gateway pending for this tier.
               </p>
             )}
           </div>

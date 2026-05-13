@@ -1176,9 +1176,119 @@ a:hover {
   justify-content: center;
 }
 
-.support-card-content {
-  padding: 2.5rem;
+.support-card.compact {
+  max-width: 600px;
+  margin: 1.5rem auto;
+}
+
+.support-card.compact .support-card-content {
+  padding: 1.5rem;
+}
+
+.hero-badge-mini {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--bg-warm);
+  color: var(--accent);
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.support-card-header h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.support-card-text-sm {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.support-metrics-compact-mini {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.4rem;
+  background: var(--bg-warm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.support-carousel-container-compact {
+  position: relative;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.support-carousel-tile-mini {
+  flex: 0 0 auto;
+  width: 110px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.5rem;
   text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.support-carousel-tile-mini.is-active {
+  border-color: var(--accent);
+  background: var(--bg-warm);
+  box-shadow: 0 0 0 1px var(--accent-light);
+}
+
+.tier-tile-name-mini {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.tier-tile-amount-mini {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.support-selected-display-compact {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.selected-tier-desc-sm {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.selected-tier-payment-sm {
+  min-height: 40px;
+}
+
+.razorpay-embed-wrapper-sm {
+  transform: scale(0.9);
+}
+
+.payment-placeholder-text-sm {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 .selected-tier-header h4 {
