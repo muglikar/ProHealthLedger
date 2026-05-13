@@ -115,7 +115,7 @@ export default function RootLayout({ children }) {
               </div>
               <p className="copyright">
                 © {new Date().getFullYear()} Professional Health Ledger —
-                IT & Software Services: Maintenance & Support — Professional Sponsorship Tiers for Maintenance, Fully Transparent.
+                IT & Software Services: Maintenance & Sponsorship — Professional Sponsorship Tiers, Fully Transparent.
               </p>
               <p className="footer-attribution">
                 Icons by Flaticon —{" "}
