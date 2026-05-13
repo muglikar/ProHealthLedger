@@ -251,10 +251,16 @@
         "vote": "yes",
         "issue": 43,
         "date": "2026-05-11"
+      },
+      {
+        "profile_slug": "amitchavan90",
+        "vote": "no",
+        "issue": 45,
+        "date": "2026-05-13"
       }
     ],
     "yes_count": 16,
-    "no_count": 12
+    "no_count": 13
   },
   {
     "user_id": "linkedin:IXYyBWOZrk",
