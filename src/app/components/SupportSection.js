@@ -126,62 +126,85 @@ export default function SupportSection() {
   const tileCount = SPONSOR_TIERS.length;
   const angleStep = 360 / tileCount;
   
-  const radius = Math.round(90 / Math.tan(Math.PI / tileCount)) + 100;
+  // Even smaller radius for closer tiles
+  const radius = Math.round(70 / Math.tan(Math.PI / tileCount)) + 70;
 
-  // Sync drag rotation with selected index when not dragging
   useEffect(() => {
     if (!isDragging) {
       setDragRotation(-selectedIndex * angleStep);
     }
   }, [selectedIndex, isDragging, angleStep]);
 
-  const handleMouseDown = (e) => {
+  // Non-passive wheel listener to prevent browser fwd/back
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onWheel = (e) => {
+      // Prevent browser horizontal navigation (back/forward)
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        e.preventDefault();
+      }
+      
+      const delta = e.deltaX || e.deltaY;
+      const sensitivity = 0.5;
+      setDragRotation(prev => prev - (delta * sensitivity));
+      
+      // Debounced snap could go here, but for now we just let it rotate
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  const handleDragStart = (x) => {
     setIsDragging(true);
-    dragStartX.current = e.clientX;
+    dragStartX.current = x;
     startRotation.current = dragRotation;
   };
 
-  const handleMouseMove = (e) => {
+  const handleDragMove = (x) => {
     if (!isDragging) return;
-    const deltaX = e.clientX - dragStartX.current;
-    const deltaRotation = (deltaX / 600) * 360;
-    setDragRotation(startRotation.current + deltaRotation);
+    const deltaX = x - dragStartX.current;
+    const sensitivity = 0.6;
+    setDragRotation(startRotation.current + (deltaX * sensitivity));
   };
 
-  const handleMouseUp = () => {
+  const handleDragEnd = () => {
     if (!isDragging) return;
     setIsDragging(false);
     
-    // Snap to nearest
-    const finalAngle = dragRotation;
-    const nearestIdx = Math.round(-finalAngle / angleStep);
+    // Snap to nearest tier
+    const nearestIdx = Math.round(-dragRotation / angleStep);
     const safeIdx = ((nearestIdx % tileCount) + tileCount) % tileCount;
     setSelectedTierId(SPONSOR_TIERS[safeIdx].id);
   };
 
-  const handleWheel = (e) => {
-    // Simulate scroll
-    const delta = e.deltaX || e.deltaY;
-    const deltaRotation = (delta / 800) * 360;
-    setDragRotation(prev => {
-      const next = prev - deltaRotation;
-      // Also update selection if it's a significant move
-      return next;
-    });
-  };
-
-  // Global listeners for drag to work outside container
-  useEffect(() => {
+  // Mouse Handlers
+  const onMouseDown = (e) => handleDragStart(e.clientX);
+  
+  // Touch Handlers
+  const onTouchStart = (e) => handleDragStart(e.touches[0].clientX);
+  const onTouchMove = (e) => {
     if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-    } else {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      // Prevent vertical scroll while dragging carousel
+      if (e.cancelable) e.preventDefault();
+      handleDragMove(e.touches[0].clientX);
+    }
+  };
+  const onTouchEnd = () => handleDragEnd();
+
+  useEffect(() => {
+    const onMouseMove = (e) => handleDragMove(e.clientX);
+    const onMouseUp = () => handleDragEnd();
+
+    if (isDragging) {
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
     }
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
     };
   }, [isDragging]);
 
@@ -219,9 +242,12 @@ export default function SupportSection() {
         </div>
         
         <div 
+          ref={containerRef}
           className="support-carousel-container"
-          onMouseDown={handleMouseDown}
-          onWheel={handleWheel}
+          onMouseDown={onMouseDown}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
         >
           <div 
             className="support-carousel-3d-ring"
