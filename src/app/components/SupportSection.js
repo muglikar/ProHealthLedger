@@ -159,16 +159,14 @@ export default function SupportSection() {
     if (!el) return;
 
     const onWheel = (e) => {
-      // Prevent browser horizontal navigation (back/forward)
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-        e.preventDefault();
+      // Aggressively prevent browser horizontal navigation
+      if (Math.abs(e.deltaX) > 0) {
+        if (e.cancelable) e.preventDefault();
       }
       
       const delta = e.deltaX || e.deltaY;
-      const sensitivity = 0.5;
+      const sensitivity = 0.4;
       setDragRotation(prev => prev - (delta * sensitivity));
-      
-      // Debounced snap could go here, but for now we just let it rotate
     };
 
     el.addEventListener("wheel", onWheel, { passive: false });
@@ -266,6 +264,8 @@ export default function SupportSection() {
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
+          onDragStart={(e) => e.preventDefault()} // Prevent browser ghost dragging
+          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
         >
           <div 
             className="support-carousel-3d-ring"
@@ -277,14 +277,10 @@ export default function SupportSection() {
             {SPONSOR_TIERS.map((tier, idx) => {
               const rotation = idx * angleStep;
               
-              // Dynamic opacity based on how "front-facing" the tile is
-              // angleStep * (idx - nearestIdx) should be around 0 for the front tile
-              // We can calculate current absolute rotation of the tile relative to the viewer (0 deg)
               const currentTileRotation = (rotation + dragRotation) % 360;
               const normalizedRotation = ((currentTileRotation + 180) % 360) - 180;
               const absRotation = Math.abs(normalizedRotation);
               
-              // Opacity: 1 at 0deg, 0.1 at 180deg
               const opacity = Math.max(0.1, 1 - (absRotation / 180) * 1.2);
               const isSelected = selectedTierId === tier.id;
 
@@ -295,7 +291,8 @@ export default function SupportSection() {
                   style={{
                     transform: `rotateY(${rotation}deg) translateZ(${radius}px)`,
                     opacity: opacity,
-                    zIndex: Math.round(100 - absRotation)
+                    zIndex: Math.round(100 - absRotation),
+                    pointerEvents: isDragging ? 'none' : 'auto' // Avoid accidental clicks while dragging
                   }}
                   onClick={(e) => {
                     if (!isDragging) setSelectedTierId(tier.id);
