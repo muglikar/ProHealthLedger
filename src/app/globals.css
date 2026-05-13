@@ -1178,85 +1178,75 @@ a:hover {
   gap: 8px;
   padding: 1.25rem 0.5rem;
   
-  /* Premium Thick White Glass */
-  background: rgba(255, 255, 255, 0.55);
+  /* 3D Glass Block Effect */
+  background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   
-  /* Thick "Edge" Effect */
-  border: 2.5px solid rgba(255, 255, 255, 0.9);
-  border-top: 2.5px solid rgba(255, 255, 255, 1);
+  /* Thick Glass Edges */
+  border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 28px;
   
+  /* Layered shadows to create "thickness" */
   box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.08),
-    inset 0 0 12px rgba(255, 255, 255, 0.5);
+    0 10px 30px rgba(0, 0, 0, 0.05),
+    /* Edge thickness highlights */
+    inset -4px -4px 10px rgba(255, 255, 255, 0.5),
+    inset 4px 4px 10px rgba(0, 0, 0, 0.02),
+    /* Main surface edge */
+    inset 0 0 0 2px rgba(255, 255, 255, 0.9);
     
   cursor: grab;
   backface-visibility: visible;
   transition: opacity 0.5s ease, border-color 0.3s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
+  transform-style: preserve-3d;
+}
+
+/* Simulate side thickness with a pseudo-element */
+.support-3d-tile::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4), transparent);
+  transform: translateZ(-6px);
+  box-shadow: 4px 4px 12px rgba(0,0,0,0.1);
+  z-index: -1;
 }
 
 .support-3d-tile:hover {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.6);
   border-color: rgba(255, 255, 255, 1);
 }
 
 .support-3d-tile.is-active {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.75);
   border-color: var(--accent);
-  box-shadow: 0 0 25px rgba(255, 126, 95, 0.2), 0 10px 40px rgba(0, 0, 0, 0.1);
-}
-
-.support-3d-tile .tier-tile-icon {
-  font-size: 2.2rem;
-  margin-bottom: 2px;
-}
-
-.support-3d-tile .tier-tile-name {
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #2d3748; /* Dark text for white glass */
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  text-align: center;
-  width: 100%;
-  padding: 0 4px;
-  line-height: 1.2;
-}
-
-.support-3d-tile .tier-tile-amount {
-  font-size: 1.3rem;
-  font-weight: 900;
-  color: var(--accent);
-  margin-top: 2px;
+  box-shadow: 0 0 25px rgba(255, 126, 95, 0.2), 0 15px 45px rgba(0, 0, 0, 0.1);
 }
 
 .carousel-hint {
-  text-align: center;
-  font-size: 0.75rem;
-  color: #a0aec0;
-  margin-top: 0.5rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { opacity: 0.4; }
-  50% { opacity: 0.8; }
-  100% { opacity: 0.4; }
+  display: none; /* Removed as requested */
 }
 
 .support-metrics-compact {
   display: flex;
   gap: 15px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   justify-content: center;
-  flex-wrap: wrap; /* Fix mobile overflow */
+  flex-wrap: wrap;
   padding: 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .support-carousel-container {
+    height: 240px;
+    perspective: 1000px; /* Stronger perspective for mobile to show more sides */
+  }
 }
 
 .support-selected-display {
