@@ -8,28 +8,24 @@ function RazorpayButton({ buttonId }) {
   useEffect(() => {
     if (!buttonId) return;
     
-    // Clear previous content
     const container = containerRef.current;
-    if (container) {
-      container.innerHTML = "";
-    }
+    if (!container) return;
 
+    // Clear previous content
+    container.innerHTML = "";
+
+    // Create the script
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/payment-button.js";
     script.dataset.payment_button_id = buttonId;
     script.async = true;
 
-    // Use a unique ID for the form to avoid conflicts
-    const form = document.createElement("form");
-    form.id = `rzp-form-${buttonId}`;
-    form.appendChild(script);
-    
-    if (container) {
-      container.appendChild(form);
-    }
+    // Razorpay payment button script replaces the script tag itself with the button
+    container.appendChild(script);
 
     return () => {
-      if (container) container.innerHTML = "";
+      // No-op cleanup to avoid flickering if needed, 
+      // but usually innerHTML="" is fine if we are remounting.
     };
   }, [buttonId]);
 
@@ -38,7 +34,7 @@ function RazorpayButton({ buttonId }) {
       key={buttonId} 
       ref={containerRef} 
       className="razorpay-button-container" 
-      style={{ minHeight: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+      style={{ minHeight: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
     />
   );
 }
@@ -50,7 +46,7 @@ const SUPPORT_TIERS = [
     amount: "99", 
     description: "Covers server infrastructure hosting for 1 month.",
     icon: "🌟",
-    razorpayId: "pl_Sok3VlpzXQxTPS" // Provided by user
+    razorpayId: "pl_Sok3VlpzXQxTPS"
   },
   { 
     id: "evangelist",
@@ -58,7 +54,7 @@ const SUPPORT_TIERS = [
     amount: "299", 
     description: "Sustains high-availability cloud hosting for 3 months.",
     icon: "📣",
-    razorpayId: null // User said 2 tiers exist, but only provided 1 ID. 
+    razorpayId: null 
   },
   { 
     id: "advocate",
@@ -120,8 +116,6 @@ const SUPPORT_TIERS = [
 
 export default function SupportSection() {
   const [selectedTierId, setSelectedTierId] = useState(SUPPORT_TIERS[0].id);
-  const [showQR, setShowQR] = useState(false);
-
   const selectedTier = SUPPORT_TIERS.find(t => t.id === selectedTierId) || SUPPORT_TIERS[0];
 
   return (
@@ -132,8 +126,8 @@ export default function SupportSection() {
             <img 
               src="/icons/support.png" 
               alt="Support Icon" 
-              width="80" 
-              height="80"
+              width="64" 
+              height="64"
             />
           </div>
           <span className="hero-badge" style={{ marginBottom: '0.75rem' }}>Support the Developer</span>
@@ -143,6 +137,17 @@ export default function SupportSection() {
         <p className="support-card-text">
           If you value this SaaS utility and technical accountability tool, support the maintenance and ongoing development of this open-source ledger provided by an independent developer.
         </p>
+
+        <div className="support-metrics-compact">
+          <div className="support-metric-mini">
+            <img src="/icons/maintenance.png" alt="" width="24" height="24" />
+            <span>Maintenance</span>
+          </div>
+          <div className="support-metric-mini">
+            <img src="/icons/software-development.png" alt="" width="24" height="24" />
+            <span>Ongoing Development</span>
+          </div>
+        </div>
         
         <div className="support-carousel-container">
           <div className="support-carousel">
@@ -180,59 +185,6 @@ export default function SupportSection() {
             )}
           </div>
         </div>
-
-        <div className="support-metrics">
-          <div className="support-metric">
-            <div className="support-metric-icon">
-              <img 
-                src="/icons/maintenance.png" 
-                alt="Maintenance Icon" 
-                width="48" 
-                height="48"
-              />
-            </div>
-            <span className="support-metric-label">Maintenance</span>
-          </div>
-          <div className="support-metric">
-            <div className="support-metric-icon">
-              <img 
-                src="/icons/software-development.png" 
-                alt="Development Icon" 
-                width="48" 
-                height="48"
-              />
-            </div>
-            <span className="support-metric-label">Ongoing Development</span>
-          </div>
-        </div>
-
-        <div className="support-card-footer">
-          <div className="support-actions">
-            <button 
-              className="btn btn-primary btn-upi" 
-              onClick={() => setShowQR(!showQR)}
-            >
-              <span className="btn-icon">💝</span>
-              {showQR ? "Hide Details" : "Support via UPI / QR"}
-            </button>
-          </div>
-        </div>
-
-        {showQR && (
-          <div className="support-qr-container">
-            <div className="support-qr-image-wrapper">
-              <img 
-                src="/support_qr.png" 
-                alt="UPI QR Code" 
-                className="support-qr-image"
-              />
-            </div>
-            <div className="support-qr-info">
-              <p><strong>Scan with any UPI App</strong></p>
-              <p className="text-sm">GPay, PhonePe, Paytm, or any banking app</p>
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );
