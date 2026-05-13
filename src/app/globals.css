@@ -1229,6 +1229,33 @@ a:hover {
   box-shadow: 0 0 25px rgba(255, 126, 95, 0.2), 0 15px 45px rgba(0, 0, 0, 0.1);
 }
 
+.support-3d-tile .tier-tile-icon {
+  font-size: 2.2rem;
+  margin-bottom: 2px;
+  transform: translateZ(10px); /* Float the icon */
+}
+
+.support-3d-tile .tier-tile-name {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #2d3748;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+  width: 100%;
+  padding: 0 8px;
+  line-height: 1.2;
+  transform: translateZ(10px); /* Float the text */
+}
+
+.support-3d-tile .tier-tile-amount {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--accent);
+  margin-top: 2px;
+  transform: translateZ(15px); /* Extra pop for amount */
+}
+
 .carousel-hint {
   display: none; /* Removed as requested */
 }
