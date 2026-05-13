@@ -115,15 +115,77 @@ const SPONSOR_TIERS = [
 
 export default function SupportSection() {
   const [selectedTierId, setSelectedTierId] = useState(SPONSOR_TIERS[0].id);
-  const selectedIndex = SPONSOR_TIERS.findIndex(t => t.id === selectedTierId);
-  const selectedTier = SPONSOR_TIERS[selectedIndex] || SPONSOR_TIERS[0];
+  const [dragRotation, setDragRotation] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   
+  const containerRef = useRef(null);
+  const dragStartX = useRef(0);
+  const startRotation = useRef(0);
+
+  const selectedIndex = SPONSOR_TIERS.findIndex(t => t.id === selectedTierId);
   const tileCount = SPONSOR_TIERS.length;
   const angleStep = 360 / tileCount;
   
-  // Calculate radius based on tile count to keep spacing consistent
-  // radius = (width / 2) / tan(PI / count)
-  const radius = Math.round(80 / Math.tan(Math.PI / tileCount)) + 120;
+  const radius = Math.round(90 / Math.tan(Math.PI / tileCount)) + 140;
+
+  // Sync drag rotation with selected index when not dragging
+  useEffect(() => {
+    if (!isDragging) {
+      setDragRotation(-selectedIndex * angleStep);
+    }
+  }, [selectedIndex, isDragging, angleStep]);
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    dragStartX.current = e.clientX;
+    startRotation.current = dragRotation;
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    const deltaX = e.clientX - dragStartX.current;
+    const deltaRotation = (deltaX / 600) * 360;
+    setDragRotation(startRotation.current + deltaRotation);
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    // Snap to nearest
+    const finalAngle = dragRotation;
+    const nearestIdx = Math.round(-finalAngle / angleStep);
+    const safeIdx = ((nearestIdx % tileCount) + tileCount) % tileCount;
+    setSelectedTierId(SPONSOR_TIERS[safeIdx].id);
+  };
+
+  const handleWheel = (e) => {
+    // Simulate scroll
+    const delta = e.deltaX || e.deltaY;
+    const deltaRotation = (delta / 800) * 360;
+    setDragRotation(prev => {
+      const next = prev - deltaRotation;
+      // Also update selection if it's a significant move
+      return next;
+    });
+  };
+
+  // Global listeners for drag to work outside container
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    } else {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging]);
+
+  const selectedTier = SPONSOR_TIERS[selectedIndex] || SPONSOR_TIERS[0];
 
   return (
     <section className="support-card" id="sponsor">
@@ -156,11 +218,16 @@ export default function SupportSection() {
           </div>
         </div>
         
-        <div className="support-carousel-container">
+        <div 
+          className="support-carousel-container"
+          onMouseDown={handleMouseDown}
+          onWheel={handleWheel}
+        >
           <div 
             className="support-carousel-3d-ring"
             style={{ 
-              transform: `rotateY(${-selectedIndex * angleStep}deg)` 
+              transform: `rotateY(${dragRotation}deg)`,
+              transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)'
             }}
           >
             {SPONSOR_TIERS.map((tier, idx) => {
@@ -172,7 +239,9 @@ export default function SupportSection() {
                   style={{
                     transform: `rotateY(${rotation}deg) translateZ(${radius}px)`
                   }}
-                  onClick={() => setSelectedTierId(tier.id)}
+                  onClick={(e) => {
+                    if (!isDragging) setSelectedTierId(tier.id);
+                  }}
                 >
                   <span className="tier-tile-icon">{tier.icon}</span>
                   <span className="tier-tile-name">{tier.name}</span>
