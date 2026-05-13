@@ -1141,48 +1141,48 @@ a:hover {
 
 .support-carousel-container {
   position: relative;
-  height: 400px;
+  height: 320px;
   width: 100%;
-  margin: 1rem 0 3rem;
+  margin: 1rem 0 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   perspective: 2000px;
-  overflow: visible;
+  overflow: hidden; /* Prevent tiles from spilling out */
 }
 
 .support-carousel-3d-ring {
   position: relative;
-  width: 160px;
-  height: 220px;
+  width: 150px;
+  height: 150px;
   transform-style: preserve-3d;
-  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .support-3d-tile {
   position: absolute;
   top: 0;
   left: 0;
-  width: 160px;
-  height: 220px;
+  width: 150px;
+  height: 150px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 1.5rem 1rem;
+  gap: 8px;
+  padding: 1rem;
   
-  /* Glassmorphism - More opaque */
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 24px;
+  /* Glassmorphism */
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
   
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   cursor: grab;
-  backface-visibility: hidden;
-  transition: opacity 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  backface-visibility: visible; /* User requested a little visibility */
+  transition: opacity 0.4s ease, border-color 0.3s ease, transform 0.4s ease;
   user-select: none;
 }
 

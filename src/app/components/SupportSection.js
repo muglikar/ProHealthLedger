@@ -126,7 +126,7 @@ export default function SupportSection() {
   const tileCount = SPONSOR_TIERS.length;
   const angleStep = 360 / tileCount;
   
-  const radius = Math.round(90 / Math.tan(Math.PI / tileCount)) + 140;
+  const radius = Math.round(90 / Math.tan(Math.PI / tileCount)) + 100;
 
   // Sync drag rotation with selected index when not dragging
   useEffect(() => {
@@ -232,12 +232,26 @@ export default function SupportSection() {
           >
             {SPONSOR_TIERS.map((tier, idx) => {
               const rotation = idx * angleStep;
+              
+              // Dynamic opacity based on how "front-facing" the tile is
+              // angleStep * (idx - nearestIdx) should be around 0 for the front tile
+              // We can calculate current absolute rotation of the tile relative to the viewer (0 deg)
+              const currentTileRotation = (rotation + dragRotation) % 360;
+              const normalizedRotation = ((currentTileRotation + 180) % 360) - 180;
+              const absRotation = Math.abs(normalizedRotation);
+              
+              // Opacity: 1 at 0deg, 0.1 at 180deg
+              const opacity = Math.max(0.1, 1 - (absRotation / 180) * 1.2);
+              const isSelected = selectedTierId === tier.id;
+
               return (
                 <button
                   key={tier.id}
-                  className={`support-3d-tile ${selectedTierId === tier.id ? 'is-active' : ''}`}
+                  className={`support-3d-tile ${isSelected ? 'is-active' : ''}`}
                   style={{
-                    transform: `rotateY(${rotation}deg) translateZ(${radius}px)`
+                    transform: `rotateY(${rotation}deg) translateZ(${radius}px)`,
+                    opacity: opacity,
+                    zIndex: Math.round(100 - absRotation)
                   }}
                   onClick={(e) => {
                     if (!isDragging) setSelectedTierId(tier.id);
