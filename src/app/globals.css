@@ -1060,32 +1060,62 @@ a:hover {
   font-style: italic;
 }
 
+.support-card {
+  max-width: 800px;
+  margin: 3rem auto;
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.support-card-content {
+  padding: 3rem;
+  text-align: center;
+}
+
+.support-card-header {
+  margin-bottom: 2rem;
+}
+
+.support-card-icon {
+  margin-bottom: 1.5rem;
+}
+
+.support-card-header h3 {
+  font-size: 2rem;
+  color: var(--text);
+  margin-top: 1rem;
+}
+
 .support-card-text {
-  font-size: var(--fs-base);
+  font-size: 1.1rem;
   color: var(--text-secondary);
   line-height: 1.6;
   max-width: 600px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 2.5rem;
 }
 
 .support-metrics-compact {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  margin: 1rem 0 2rem;
-  padding: 0.75rem;
+  gap: 2rem;
+  margin: 1rem auto 2.5rem;
+  padding: 1rem 1.5rem;
   background: var(--bg-warm);
   border-radius: var(--radius);
   border: 1px solid var(--border);
+  max-width: fit-content;
 }
 
 .support-metric-mini {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  gap: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent);
 }
 
 .support-carousel-container {
@@ -1111,15 +1141,13 @@ a:hover {
 
 .support-carousel-tile {
   flex: 0 0 auto;
-  width: 160px;
+  width: 140px;
   background: white;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.25rem 1rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
@@ -1176,119 +1204,20 @@ a:hover {
   justify-content: center;
 }
 
-.support-card.compact {
-  max-width: 600px;
-  margin: 1.5rem auto;
-}
-
-.support-card.compact .support-card-content {
-  padding: 1.5rem;
-}
-
-.hero-badge-mini {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  background: var(--bg-warm);
-  color: var(--accent);
-  border-radius: 20px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
-}
-
-.support-card-header h3 {
-  font-size: 1.25rem;
-  margin-bottom: 0.25rem;
-}
-
-.support-card-text-sm {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-bottom: 1rem;
-}
-
-.support-metrics-compact-mini {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  padding: 0.4rem;
-  background: var(--bg-warm);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-}
-
-.support-carousel-container-compact {
-  position: relative;
-  margin-bottom: 1rem;
-  width: 100%;
-}
-
-.support-carousel-tile-mini {
-  flex: 0 0 auto;
-  width: 110px;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 0.75rem 0.5rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.support-carousel-tile-mini.is-active {
-  border-color: var(--accent);
-  background: var(--bg-warm);
-  box-shadow: 0 0 0 1px var(--accent-light);
-}
-
-.tier-tile-name-mini {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-}
-
-.tier-tile-amount-mini {
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: var(--accent);
-}
-
-.support-selected-display-compact {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1rem;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.selected-tier-desc-sm {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-bottom: 0.75rem;
-  line-height: 1.4;
-}
-
-.selected-tier-payment-sm {
-  min-height: 40px;
-}
-
-.razorpay-embed-wrapper-sm {
-  transform: scale(0.9);
-}
-
+/* Cleanup Compact Styles */
+.support-card.compact,
+.hero-badge-mini,
+.support-card-text-sm,
+.support-metrics-compact-mini,
+.support-carousel-container-compact,
+.support-carousel-tile-mini,
+.support-selected-display-compact,
+.selected-tier-header-sm,
+.selected-tier-desc-sm,
+.selected-tier-payment-sm,
+.razorpay-embed-wrapper-sm,
 .payment-placeholder-text-sm {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  font-style: italic;
+  display: none !important;
 }
 
 .selected-tier-header h4 {

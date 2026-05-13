@@ -12,7 +12,6 @@ export default function SubmitPage() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [vote, setVote] = useState("");
   const [reason, setReason] = useState("");
-  const [voucheeName, setVoucheeName] = useState("");
   const [submitterLinkedinUrl, setSubmitterLinkedinUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
@@ -31,7 +30,7 @@ export default function SubmitPage() {
     setResult(null);
 
     try {
-      const payload = { linkedinUrl, vote, reason, voucheeName };
+      const payload = { linkedinUrl, vote, reason };
       if (!session?.linkedinProfileUrl) {
         payload.submitterLinkedinUrl = submitterLinkedinUrl;
       }
@@ -56,7 +55,6 @@ export default function SubmitPage() {
       setLinkedinUrl("");
       setVote("");
       setReason("");
-      setVoucheeName("");
       setSubmitterLinkedinUrl("");
     } catch {
       setError("Something went wrong. Please try again.");
@@ -271,20 +269,6 @@ export default function SubmitPage() {
             </span>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="voucheeName">Professional&apos;s Full Name (optional but recommended)</label>
-            <input
-              id="voucheeName"
-              type="text"
-              className="form-input"
-              placeholder="e.g. Jane Doe"
-              value={voucheeName}
-              onChange={(e) => setVoucheeName(e.target.value)}
-            />
-            <span className="form-hint">
-              Helps others find this profile via search.
-            </span>
-          </div>
 
           <div className="form-group">
             <label data-tour="step-vote">

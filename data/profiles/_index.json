@@ -9,6 +9,7 @@
     "submissions": [
       {
         "user": "muglikar",
+        "display_name": "Anand Muglikar",
         "vote": "yes",
         "issue": 3,
         "date": "2026-03-14"
@@ -26,6 +27,7 @@
     "submissions": [
       {
         "user": "muglikar",
+        "display_name": "Anand Muglikar",
         "vote": "no",
         "issue": 4,
         "date": "2026-03-14"
@@ -42,7 +44,8 @@
     },
     "submissions": [
       {
-        "user": "github:muglikar",
+        "user": "muglikar",
+        "display_name": "Anand Muglikar",
         "display_name": "Anand Muglikar",
         "vote": "yes",
         "issue": 5,
@@ -68,7 +71,8 @@
     },
     "submissions": [
       {
-        "user": "github:muglikar",
+        "user": "muglikar",
+        "display_name": "Anand Muglikar",
         "display_name": "Anand Muglikar",
         "vote": "no",
         "issue": 6,
@@ -86,7 +90,8 @@
     },
     "submissions": [
       {
-        "user": "github:muglikar",
+        "user": "muglikar",
+        "display_name": "Anand Muglikar",
         "display_name": "Anand Muglikar",
         "vote": "yes",
         "issue": 7,
@@ -104,7 +109,8 @@
     },
     "submissions": [
       {
-        "user": "github:muglikar",
+        "user": "muglikar",
+        "display_name": "Anand Muglikar",
         "display_name": "Anand Muglikar",
         "vote": "yes",
         "issue": 8,
@@ -129,8 +135,9 @@
         "submitter_linkedin_url": "https://www.linkedin.com/in/muglikar"
       },
       {
-        "user": "github:muglikar",
-        "display_name": "muglikar",
+        "user": "muglikar",
+        "display_name": "Anand Muglikar",
+        "display_name": "Anand Muglikar",
         "vote": "yes",
         "issue": 9,
         "date": "2026-03-26"
@@ -162,8 +169,9 @@
         "submitter_linkedin_url": "https://www.linkedin.com/in/muglikar"
       },
       {
-        "user": "github:muglikar",
-        "display_name": "muglikar",
+        "user": "muglikar",
+        "display_name": "Anand Muglikar",
+        "display_name": "Anand Muglikar",
         "vote": "yes",
         "issue": 10,
         "date": "2026-03-26"
@@ -187,8 +195,9 @@
         "submitter_linkedin_url": "https://www.linkedin.com/in/muglikar"
       },
       {
-        "user": "github:muglikar",
-        "display_name": "muglikar",
+        "user": "muglikar",
+        "display_name": "Anand Muglikar",
+        "display_name": "Anand Muglikar",
         "vote": "yes",
         "issue": 11,
         "date": "2026-03-26"
@@ -212,8 +221,9 @@
         "submitter_linkedin_url": "https://www.linkedin.com/in/muglikar"
       },
       {
-        "user": "github:muglikar",
-        "display_name": "muglikar",
+        "user": "muglikar",
+        "display_name": "Anand Muglikar",
+        "display_name": "Anand Muglikar",
         "vote": "yes",
         "issue": 12,
         "date": "2026-03-26"
@@ -238,8 +248,9 @@
         "submitter_linkedin_url": "https://www.linkedin.com/in/muglikar"
       },
       {
-        "user": "github:muglikar",
-        "display_name": "muglikar",
+        "user": "muglikar",
+        "display_name": "Anand Muglikar",
+        "display_name": "Anand Muglikar",
         "vote": "yes",
         "issue": 13,
         "date": "2026-03-26"
