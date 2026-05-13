@@ -1,6 +1,8 @@
 [
   {
-    "github_username": "muglikar",
+    "user_id": "muglikar",
+    "display_name": "Anand Muglikar",
+    "linkedin_url": "https://www.linkedin.com/in/muglikar",
     "contributions": [
       {
         "profile_slug": "piyush-bhujbal",
@@ -13,16 +15,7 @@
         "vote": "no",
         "issue": 4,
         "date": "2026-03-14"
-      }
-    ],
-    "yes_count": 1,
-    "no_count": 1
-  },
-  {
-    "user_id": "muglikar",
-    "display_name": "Anand Muglikar",
-    "linkedin_url": "https://www.linkedin.com/in/muglikar",
-    "contributions": [
+      },
       {
         "profile_slug": "omvarshney",
         "vote": "yes",
@@ -76,44 +69,6 @@
         "vote": "yes",
         "issue": 13,
         "date": "2026-03-26"
-      }
-    ],
-    "yes_count": 8,
-    "no_count": 1
-  },
-  {
-    "user_id": "linkedin:CAOSO1oig0",
-    "display_name": "Anand Muglikar",
-    "contributions": [
-      {
-        "profile_slug": "er-apoorv-gupta",
-        "vote": "yes",
-        "issue": 9,
-        "date": "2026-03-26"
-      },
-      {
-        "profile_slug": "mohitsadayet",
-        "vote": "yes",
-        "issue": 10,
-        "date": "2026-03-26"
-      },
-      {
-        "profile_slug": "savadikar-chinmay",
-        "vote": "yes",
-        "issue": 11,
-        "date": "2026-03-26"
-      },
-      {
-        "profile_slug": "rohit-kadam-9781964b",
-        "vote": "yes",
-        "issue": 12,
-        "date": "2026-03-26"
-      },
-      {
-        "profile_slug": "jeewanjyotiagarwal",
-        "vote": "yes",
-        "issue": 13,
-        "date": "2026-03-26"
       },
       {
         "profile_slug": "abhijit-kumar-iitb",
@@ -135,6 +90,12 @@
       },
       {
         "profile_slug": "anuptapadia",
+        "vote": "no",
+        "issue": 17,
+        "date": "2026-03-26"
+      },
+      {
+        "profile_slug": "shreekantp",
         "vote": "no",
         "issue": 17,
         "date": "2026-03-26"
@@ -260,8 +221,8 @@
         "date": "2026-05-13"
       }
     ],
-    "yes_count": 16,
-    "no_count": 13
+    "yes_count": 20,
+    "no_count": 15
   },
   {
     "user_id": "linkedin:IXYyBWOZrk",
@@ -319,7 +280,7 @@
         "profile_slug": "er-apoorv-gupta",
         "vote": "yes",
         "issue": 36,
-        "date": "2026-04-20"
+        "date": "2024-04-20"
       }
     ],
     "yes_count": 1,
@@ -333,13 +294,13 @@
         "profile_slug": "muglikar",
         "vote": "yes",
         "issue": 39,
-        "date": "2026-04-23"
+        "date": "2024-04-23"
       },
       {
         "profile_slug": "omvarshney",
         "vote": "yes",
         "issue": 40,
-        "date": "2026-04-23"
+        "date": "2024-04-23"
       }
     ],
     "yes_count": 2,
@@ -353,7 +314,7 @@
         "profile_slug": "muglikar",
         "vote": "yes",
         "issue": 44,
-        "date": "2026-05-12"
+        "date": "2024-05-12"
       }
     ],
     "yes_count": 1,
