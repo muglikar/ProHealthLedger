@@ -1068,67 +1068,138 @@ a:hover {
   margin: 0 auto 2rem;
 }
 
-.support-tiers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2.5rem;
+.support-carousel-container {
+  position: relative;
+  margin-bottom: 2rem;
+  width: 100%;
 }
 
-.support-tier-card {
+.support-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 10px 4px 20px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  scroll-behavior: smooth;
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.support-carousel::-webkit-scrollbar {
+  display: none; /* Safari/Chrome */
+}
+
+.support-carousel-tile {
+  flex: 0 0 auto;
+  width: 160px;
   background: white;
   border: 1px solid var(--border);
-  padding: 1.5rem;
   border-radius: var(--radius);
+  padding: 1.25rem 1rem;
   text-align: center;
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 6px;
+  box-shadow: var(--shadow-sm);
 }
 
-.support-tier-card:hover {
+.support-carousel-tile:hover {
   transform: translateY(-4px);
+  border-color: var(--accent-light);
+  box-shadow: var(--shadow-md);
+}
+
+.support-carousel-tile.is-active {
   border-color: var(--accent);
-  box-shadow: var(--shadow-lg);
+  background: var(--bg-warm);
+  box-shadow: 0 0 0 2px var(--accent-light), var(--shadow-lg);
+  transform: scale(1.05);
 }
 
-.support-tier-icon {
-  font-size: 2rem;
-  margin-bottom: 0.75rem;
+.tier-tile-icon {
+  font-size: 1.75rem;
 }
 
-.support-tier-name {
-  font-size: 0.85rem;
+.tier-tile-name {
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
-.support-tier-amount {
-  font-size: 1.75rem;
+.tier-tile-amount {
+  font-size: 1.15rem;
   font-weight: 800;
   color: var(--accent);
+}
+
+.support-selected-display {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.selected-tier-header h4 {
+  font-size: 1.5rem;
+  color: var(--text);
   margin-bottom: 0.75rem;
 }
 
-.support-tier-desc {
-  font-size: 0.82rem;
+.selected-tier-desc {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.5;
+}
+
+.selected-tier-payment {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+}
+
+.razorpay-embed-wrapper {
+  transform: scale(1.1);
+  transition: transform 0.2s;
+}
+
+.razorpay-embed-wrapper:hover {
+  transform: scale(1.15);
+}
+
+.payment-placeholder-text {
+  font-size: 0.85rem;
   color: var(--text-muted);
-  line-height: 1.4;
+  font-style: italic;
+  padding: 1rem;
+  background: var(--bg-warm);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border);
 }
 
-@media (max-width: 640px) {
-  .support-tiers-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .support-tiers-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 768px) {
+  .support-carousel-tile {
+    width: 140px;
+    padding: 1rem;
   }
 }
 

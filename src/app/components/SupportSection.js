@@ -1,72 +1,114 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+
+function RazorpayButton({ buttonId }) {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (!buttonId) return;
+    
+    // Clear previous button
+    if (containerRef.current) {
+      containerRef.current.innerHTML = "";
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/payment-button.js";
+    script.dataset.payment_button_id = buttonId;
+    script.async = true;
+
+    const form = document.createElement("form");
+    form.appendChild(script);
+    
+    if (containerRef.current) {
+      containerRef.current.appendChild(form);
+    }
+  }, [buttonId]);
+
+  return <div ref={containerRef} className="razorpay-button-container" />;
+}
 
 const SUPPORT_TIERS = [
   { 
+    id: "supporter",
     name: "Supporter", 
-    amount: "₹99", 
+    amount: "99", 
     description: "Covers server infrastructure hosting for 1 month.",
-    icon: "🌟"
+    icon: "🌟",
+    razorpayId: "pl_Sok3VlpzXQxTPS" // Provided by user
   },
   { 
+    id: "evangelist",
     name: "Evangelist", 
-    amount: "₹299", 
+    amount: "299", 
     description: "Sustains high-availability cloud hosting for 3 months.",
-    icon: "📣"
+    icon: "📣",
+    razorpayId: null // User said 2 tiers exist, but only provided 1 ID. 
   },
   { 
+    id: "advocate",
     name: "Advocate", 
-    amount: "₹599", 
+    amount: "599", 
     description: "Supports technical maintenance and database scaling for 6 months.",
     icon: "🛡️"
   },
   { 
+    id: "patron",
     name: "Patron", 
-    amount: "₹1,199", 
+    amount: "1,199", 
     description: "Funds backend security optimizations and maintenance for 6 months.",
     icon: "🚀"
   },
   { 
+    id: "shot",
     name: "Shot in the arm", 
-    amount: "₹1,199", 
+    amount: "1,199", 
     description: "Funds the development of a specific new feature or API update.",
     icon: "💉"
   },
   { 
+    id: "steward",
     name: "Steward", 
-    amount: "₹2,499", 
+    amount: "2,499", 
     description: "Funds comprehensive system integrity monitoring for 1 year.",
     icon: "🤝"
   },
   { 
+    id: "founding",
     name: "Founding Member", 
-    amount: "₹4,999", 
+    amount: "4,999", 
     description: "Ensures long-term sustainability and baseline technical support.",
     icon: "💎"
   },
   { 
+    id: "guardian",
     name: "Infrastructure Guardian", 
-    amount: "₹9,999", 
+    amount: "9,999", 
     description: "Funds deeper security audits and performance tuning for the ledger.",
     icon: "🏰"
   },
   { 
+    id: "partner",
     name: "Architecture Partner", 
-    amount: "₹24,999", 
+    amount: "24,999", 
     description: "Supports R&D for advanced trust algorithms and cross-platform syncing.",
     icon: "🏗️"
   },
   { 
+    id: "anchor",
     name: "Ecosystem Anchor", 
-    amount: "₹49,999", 
+    amount: "49,999", 
     description: "Provides foundational support for enterprise-grade scalability.",
     icon: "⚓"
   }
 ];
 
 export default function SupportSection() {
+  const [selectedTierId, setSelectedTierId] = useState(SUPPORT_TIERS[0].id);
   const [showQR, setShowQR] = useState(false);
+
+  const selectedTier = SUPPORT_TIERS.find(t => t.id === selectedTierId) || SUPPORT_TIERS[0];
 
   return (
     <section className="support-card" id="support">
@@ -88,15 +130,41 @@ export default function SupportSection() {
           If you value this SaaS utility and technical accountability tool, support the maintenance and ongoing development of this open-source ledger provided by an independent developer.
         </p>
         
-        <div className="support-tiers-grid">
-          {SUPPORT_TIERS.map((tier) => (
-            <div key={tier.name} className="support-tier-card">
-              <div className="support-tier-icon">{tier.icon}</div>
-              <div className="support-tier-name">{tier.name}</div>
-              <div className="support-tier-amount">{tier.amount}</div>
-              <div className="support-tier-desc">{tier.description}</div>
-            </div>
-          ))}
+        <div className="support-carousel-container">
+          <div className="support-carousel">
+            {SUPPORT_TIERS.map((tier) => (
+              <button
+                key={tier.id}
+                className={`support-carousel-tile ${selectedTierId === tier.id ? 'is-active' : ''}`}
+                onClick={() => setSelectedTierId(tier.id)}
+              >
+                <span className="tier-tile-icon">{tier.icon}</span>
+                <span className="tier-tile-name">{tier.name}</span>
+                <span className="tier-tile-amount">₹{tier.amount}</span>
+              </button>
+            ))}
+          </div>
+          <div className="carousel-fade-edge-left" />
+          <div className="carousel-fade-edge-right" />
+        </div>
+
+        <div className="support-selected-display">
+          <div className="selected-tier-header">
+            <h4>{selectedTier.name} — ₹{selectedTier.amount}</h4>
+            <p className="selected-tier-desc">{selectedTier.description}</p>
+          </div>
+
+          <div className="selected-tier-payment">
+            {selectedTier.razorpayId ? (
+              <div className="razorpay-embed-wrapper">
+                <RazorpayButton buttonId={selectedTier.razorpayId} />
+              </div>
+            ) : (
+              <p className="payment-placeholder-text">
+                Professional payment gateway pending for this tier.
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="support-metrics">
