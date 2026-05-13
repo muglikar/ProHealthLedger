@@ -1141,17 +1141,18 @@ a:hover {
 
 .support-carousel-tile {
   flex: 0 0 auto;
-  width: 140px;
+  width: 130px;
   background: white;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.25rem 1rem;
-  text-align: center;
+  border-radius: var(--radius-md);
+  padding: 12px 8px;
+  display: flex;
   cursor: pointer;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 12px;
   box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
 }
 
 .support-carousel-tile:hover {
@@ -1172,7 +1173,7 @@ a:hover {
 }
 
 .tier-tile-name {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -1181,7 +1182,6 @@ a:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
-  margin-bottom: 6px;
 }
 
 .tier-tile-amount {
