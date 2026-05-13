@@ -1068,6 +1068,26 @@ a:hover {
   margin: 0 auto 2rem;
 }
 
+.support-metrics-compact {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 1rem 0 2rem;
+  padding: 0.75rem;
+  background: var(--bg-warm);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.support-metric-mini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
 .support-carousel-container {
   position: relative;
   margin-bottom: 2rem;
@@ -1154,6 +1174,11 @@ a:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.support-card-content {
+  padding: 2.5rem;
+  text-align: center;
 }
 
 .selected-tier-header h4 {
