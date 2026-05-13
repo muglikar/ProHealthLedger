@@ -342,9 +342,10 @@ export default function TransparencyPage() {
       submission.display_name ||
       (userId.startsWith("github:") ? userId.slice(7) : userId);
     
-    // Priority: 1. Direct field in submission, 2. Our built map, 3. GitHub fallback
+    // Priority: 1. Direct field in submission, 2. Admin override, 3. Our built map, 4. GitHub fallback
     const linkedinUrl =
       (typeof submission.submitter_linkedin_url === "string" && submission.submitter_linkedin_url) ||
+      (userId.replace("github:", "") === "muglikar" ? "https://www.linkedin.com/in/muglikar" : null) ||
       userProfileMap[userId];
 
     if (linkedinUrl) {
@@ -503,15 +504,14 @@ export default function TransparencyPage() {
                       <td className="audit-col-share">
                         {(() => {
                           const isSignedIn = !!session;
-                          // Standardize user ID for comparison
-                          const rowUser = (v.user || "").replace("github:", "");
-                          const currentId = (currentUserId || "").replace("github:", "");
+                          const currentId = (session?.userId || "").replace("github:", "").replace("linkedin:", "");
+                          const isAdmin = currentId === "muglikar";
+                          
+                          // Standardize row user
+                          const rowUser = (v.user || "").replace("github:", "").replace("linkedin:", "");
                           
                           const isMySubmission = currentId && currentId === rowUser;
                           const isAboutMe = Boolean(myLinkedSlug && myLinkedSlug === v.profile_slug);
-                          
-                          // Admin specific overrides
-                          const isAdmin = currentId === "muglikar";
                           const isAboutAdmin = v.profile_slug === "muglikar";
                           
                           const canShare = isSignedIn && v.vote === "yes" && (isMySubmission || isAboutMe || (isAdmin && isAboutAdmin));
