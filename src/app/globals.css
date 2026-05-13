@@ -1173,26 +1173,20 @@ a:hover {
   gap: 10px;
   padding: 1.25rem 0.75rem;
   
-  /* Premium Glassmorphism */
-  background: linear-gradient(
-    135deg, 
-    rgba(255, 255, 255, 0.15) 0%, 
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-top: 1px solid rgba(255, 255, 255, 0.5);
-  border-left: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 24px;
+  /* Solid Glassmorphism - No more see-through mess */
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 1);
+  border-left: 1px solid rgba(255, 255, 255, 1);
+  border-radius: 28px;
   
   box-shadow: 
-    0 8px 32px 0 rgba(31, 38, 135, 0.07),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    0 10px 30px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
     
   cursor: grab;
-  backface-visibility: visible;
-  transition: opacity 0.3s ease, border-color 0.3s ease, transform 0.4s ease;
+  backface-visibility: hidden; /* Prevent flipped text from backend */
+  transition: opacity 0.4s ease, border-color 0.3s ease, transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   user-select: none;
 }
 
