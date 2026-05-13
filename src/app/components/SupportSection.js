@@ -115,7 +115,15 @@ const SPONSOR_TIERS = [
 
 export default function SupportSection() {
   const [selectedTierId, setSelectedTierId] = useState(SPONSOR_TIERS[0].id);
-  const selectedTier = SPONSOR_TIERS.find(t => t.id === selectedTierId) || SPONSOR_TIERS[0];
+  const selectedIndex = SPONSOR_TIERS.findIndex(t => t.id === selectedTierId);
+  const selectedTier = SPONSOR_TIERS[selectedIndex] || SPONSOR_TIERS[0];
+  
+  const tileCount = SPONSOR_TIERS.length;
+  const angleStep = 360 / tileCount;
+  
+  // Calculate radius based on tile count to keep spacing consistent
+  // radius = (width / 2) / tan(PI / count)
+  const radius = Math.round(80 / Math.tan(Math.PI / tileCount)) + 120;
 
   return (
     <section className="support-card" id="sponsor">
@@ -149,21 +157,30 @@ export default function SupportSection() {
         </div>
         
         <div className="support-carousel-container">
-          <div className="support-carousel">
-            {SPONSOR_TIERS.map((tier) => (
-              <button
-                key={tier.id}
-                className={`support-carousel-tile ${selectedTierId === tier.id ? 'is-active' : ''}`}
-                onClick={() => setSelectedTierId(tier.id)}
-              >
-                <span className="tier-tile-icon">{tier.icon}</span>
-                <span className="tier-tile-name">{tier.name}</span>
-                <span className="tier-tile-amount">₹{tier.amount}</span>
-              </button>
-            ))}
+          <div 
+            className="support-carousel-3d-ring"
+            style={{ 
+              transform: `rotateY(${-selectedIndex * angleStep}deg)` 
+            }}
+          >
+            {SPONSOR_TIERS.map((tier, idx) => {
+              const rotation = idx * angleStep;
+              return (
+                <button
+                  key={tier.id}
+                  className={`support-3d-tile ${selectedTierId === tier.id ? 'is-active' : ''}`}
+                  style={{
+                    transform: `rotateY(${rotation}deg) translateZ(${radius}px)`
+                  }}
+                  onClick={() => setSelectedTierId(tier.id)}
+                >
+                  <span className="tier-tile-icon">{tier.icon}</span>
+                  <span className="tier-tile-name">{tier.name}</span>
+                  <span className="tier-tile-amount">₹{tier.amount}</span>
+                </button>
+              );
+            })}
           </div>
-          <div className="carousel-fade-edge-left" />
-          <div className="carousel-fade-edge-right" />
         </div>
 
         <div className="support-selected-display">

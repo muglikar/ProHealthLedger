@@ -1139,54 +1139,81 @@ a:hover {
   display: none; /* Safari/Chrome */
 }
 
-.support-carousel-tile {
-  flex: 0 0 auto;
-  width: 130px;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 12px 8px;
+.support-carousel-container {
+  position: relative;
+  height: 400px;
+  width: 100%;
+  margin: 1rem 0 3rem;
   display: flex;
-  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  perspective: 2000px;
+  overflow: visible;
+}
+
+.support-carousel-3d-ring {
+  position: relative;
+  width: 160px;
+  height: 220px;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.support-3d-tile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 160px;
+  height: 220px;
+  display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 12px;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  padding: 1.5rem 1rem;
+  
+  /* Glassmorphism */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px) saturate(160%);
+  -webkit-backdrop-filter: blur(15px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  backface-visibility: visible;
+  transition: all 0.4s ease;
+  user-select: none;
 }
 
-.support-carousel-tile:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent-light);
-  box-shadow: var(--shadow-md);
+.support-3d-tile:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
-.support-carousel-tile.is-active {
+.support-3d-tile.is-active {
+  background: rgba(255, 255, 255, 0.25);
   border-color: var(--accent);
-  background: var(--bg-warm);
-  box-shadow: 0 0 0 2px var(--accent-light), var(--shadow-lg);
-  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 126, 95, 0.3), 0 8px 32px 0 rgba(0, 0, 0, 0.15);
 }
 
-.tier-tile-icon {
-  font-size: 1.75rem;
+.support-3d-tile .tier-tile-icon {
+  font-size: 2.8rem;
+  margin-bottom: 5px;
 }
 
-.tier-tile-name {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-}
-
-.tier-tile-amount {
-  font-size: 1.15rem;
+.support-3d-tile .tier-tile-name {
+  font-size: 0.85rem;
   font-weight: 800;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.support-3d-tile .tier-tile-amount {
+  font-size: 1.6rem;
+  font-weight: 900;
   color: var(--accent);
 }
 
