@@ -1178,19 +1178,19 @@ a:hover {
   gap: 8px;
   padding: 1.25rem 0.5rem; /* Reduced horizontal padding */
   
-  /* Dark Tinted Glassmorphism */
-  background: rgba(15, 15, 15, 0.82);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  /* Dark Suave Glassmorphism - Translucent */
+  background: rgba(10, 10, 10, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 28px;
   
   box-shadow: 
-    0 15px 35px rgba(0, 0, 0, 0.2);
+    0 15px 35px rgba(0, 0, 0, 0.15);
     
   cursor: grab;
-  backface-visibility: hidden;
+  backface-visibility: visible; /* Back to visible to see the "backside" */
   transition: opacity 0.5s ease, border-color 0.3s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
