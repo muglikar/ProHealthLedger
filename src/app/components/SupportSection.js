@@ -129,11 +129,38 @@ export default function SupportSection() {
   // Even smaller radius for closer tiles
   const radius = Math.round(70 / Math.tan(Math.PI / tileCount)) + 70;
 
+  // Shortest path rotation logic
+  const rotateToId = (id) => {
+    const targetIdx = SPONSOR_TIERS.findIndex(t => t.id === id);
+    const currentRotation = dragRotation;
+    
+    // Calculate how many full turns we've done
+    const currentTurn = Math.round(currentRotation / 360);
+    
+    // Possible target rotations: current turn, turn before, turn after
+    const targets = [
+      (currentTurn - 1) * 360 - (targetIdx * angleStep),
+      currentTurn * 360 - (targetIdx * angleStep),
+      (currentTurn + 1) * 360 - (targetIdx * angleStep)
+    ];
+    
+    // Find the one closest to current rotation
+    const bestTarget = targets.reduce((prev, curr) => 
+      Math.abs(curr - currentRotation) < Math.abs(prev - currentRotation) ? curr : prev
+    );
+    
+    setDragRotation(bestTarget);
+    setSelectedTierId(id);
+  };
+
+  // Only sync once on mount or when external change happens
+  const lastSyncId = useRef(selectedTierId);
   useEffect(() => {
-    if (!isDragging) {
-      setDragRotation(-selectedIndex * angleStep);
+    if (!isDragging && selectedTierId !== lastSyncId.current) {
+      rotateToId(selectedTierId);
+      lastSyncId.current = selectedTierId;
     }
-  }, [selectedIndex, isDragging, angleStep]);
+  }, [selectedTierId, isDragging]);
 
   // Non-passive wheel listener to prevent browser fwd/back
   useEffect(() => {
@@ -177,7 +204,7 @@ export default function SupportSection() {
     // Snap to nearest tier
     const nearestIdx = Math.round(-dragRotation / angleStep);
     const safeIdx = ((nearestIdx % tileCount) + tileCount) % tileCount;
-    setSelectedTierId(SPONSOR_TIERS[safeIdx].id);
+    rotateToId(SPONSOR_TIERS[safeIdx].id);
   };
 
   // Mouse Handlers
@@ -280,7 +307,7 @@ export default function SupportSection() {
                     zIndex: Math.round(100 - absRotation)
                   }}
                   onClick={(e) => {
-                    if (!isDragging) setSelectedTierId(tier.id);
+                    if (!isDragging) rotateToId(tier.id);
                   }}
                 >
                   <span className="tier-tile-icon">{tier.icon}</span>
