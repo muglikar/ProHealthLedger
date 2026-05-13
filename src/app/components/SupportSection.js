@@ -272,13 +272,12 @@ export default function SupportSection() {
           >
             {SPONSOR_TIERS.map((tier, idx) => {
               const rotation = idx * angleStep;
-              
-              const currentTileRotation = (rotation + dragRotation) % 360;
-              const normalizedRotation = ((currentTileRotation + 180) % 360) - 180;
+              const totalRotation = (rotation + dragRotation) % 360;
+              const normalizedRotation = ((totalRotation + 540) % 360) - 180;
               const absRotation = Math.abs(normalizedRotation);
               
-              // Subtle opacity for back tiles: 1 at 0deg, 0.05 at 180deg
-              const opacity = Math.max(0.05, 1 - (absRotation / 180) * 1.5);
+              // Opacity: 1 at center (0deg), fades to 0.1 at 180deg
+              const opacity = Math.max(0.1, 1 - (absRotation / 140));
               const isSelected = selectedTierId === tier.id;
 
               return (
@@ -288,10 +287,14 @@ export default function SupportSection() {
                   style={{
                     transform: `rotateY(${rotation}deg) translateZ(${radius}px)`,
                     opacity: opacity,
-                    zIndex: Math.round(100 - absRotation)
+                    zIndex: Math.round(100 - absRotation),
+                    pointerEvents: isDragging ? 'none' : 'auto'
                   }}
                   onClick={(e) => {
-                    if (!isDragging) setSelectedTierId(tier.id);
+                    if (!isDragging) {
+                      setSelectedTierId(tier.id);
+                      snapToSelectedIndex(idx);
+                    }
                   }}
                 >
                   <span className="tier-tile-icon">{tier.icon}</span>
@@ -303,22 +306,36 @@ export default function SupportSection() {
           </div>
         </div>
 
-        <div className="support-selected-display">
-          <div className="selected-tier-header">
+        <div className="support-tier-details">
+          <div className="tier-info-card">
             <h4>{selectedTier.name} — ₹{selectedTier.amount}</h4>
-            <p className="selected-tier-desc">{selectedTier.description}</p>
-          </div>
-
-          <div className="selected-tier-payment">
-            {selectedTier.razorpayId ? (
-              <div className="razorpay-embed-wrapper">
-                <RazorpayButton buttonId={selectedTier.razorpayId} />
-              </div>
-            ) : (
-              <p className="payment-placeholder-text">
-                Professional gateway pending for this tier.
+            <p>{selectedTier.description}</p>
+            
+            <div className="payment-action-area">
+              {selectedTier.razorpayId ? (
+                <div className="payment-button-wrapper">
+                  <RazorpayButton buttonId={selectedTier.razorpayId} />
+                </div>
+              ) : (
+                <div className="manual-payment-notice">
+                  <p className="notice-text">
+                    This tier is currently being processed by Razorpay. 
+                    <br />
+                    <strong>Tip:</strong> Standard UPI/QR is the most seamless way to contribute.
+                  </p>
+                  <button 
+                    className="action-button secondary"
+                    onClick={() => window.open('https://razorpay.me/@prohealthledger', '_blank')}
+                  >
+                    Pay via UPI / QR
+                  </button>
+                </div>
+              )}
+              <p className="payment-security-tip">
+                <img src="/icons/security.png" alt="" width="16" height="16" />
+                Legally compliant & Tax-deductible contributions via Razorpay.
               </p>
-            )}
+            </div>
           </div>
         </div>
       </div>
