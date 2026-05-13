@@ -42,7 +42,7 @@ const SPONSOR_TIERS = [
   { 
     id: "supporter",
     name: "Supporter", 
-    amount: "99", 
+    amount: "101", 
     description: "Covers server infrastructure hosting for 1 month.",
     icon: "🌟",
     razorpayId: "pl_Sok3VlpzXQxTPS"
@@ -50,7 +50,7 @@ const SPONSOR_TIERS = [
   { 
     id: "evangelist",
     name: "Evangelist", 
-    amount: "299", 
+    amount: "301", 
     description: "Sustains high-availability cloud hosting for 3 months.",
     icon: "📣",
     razorpayId: null 
@@ -58,57 +58,57 @@ const SPONSOR_TIERS = [
   { 
     id: "advocate",
     name: "Advocate", 
-    amount: "599", 
+    amount: "601", 
     description: "Supports technical maintenance and database scaling for 6 months.",
     icon: "🛡️"
   },
   { 
     id: "patron",
     name: "Patron", 
-    amount: "1,199", 
+    amount: "1,201", 
     description: "Funds backend security optimizations and maintenance for 6 months.",
     icon: "🚀"
   },
   { 
     id: "shot",
     name: "Shot in the arm", 
-    amount: "1,199", 
+    amount: "1,201", 
     description: "Funds the development of a specific new feature or API update.",
     icon: "💉"
   },
   { 
     id: "steward",
     name: "Steward", 
-    amount: "2,499", 
+    amount: "2,501", 
     description: "Funds comprehensive system integrity monitoring for 1 year.",
     icon: "🤝"
   },
   { 
     id: "founding",
     name: "Founding Member", 
-    amount: "4,999", 
+    amount: "5,001", 
     description: "Ensures long-term sustainability and baseline technical support.",
     icon: "💎"
   },
   { 
     id: "guardian",
     name: "Infrastructure Guardian", 
-    amount: "9,999", 
+    amount: "10,001", 
     description: "Funds deeper security audits and performance tuning for the ledger.",
     icon: "🏰"
   },
   { 
     id: "partner",
     name: "Architecture Partner", 
-    amount: "24,999", 
+    amount: "25,001", 
     description: "Supports R&D for advanced trust algorithms and cross-platform syncing.",
     icon: "🏗️"
   },
   { 
     id: "anchor",
     name: "Ecosystem Anchor", 
-    amount: "49,999", 
-    description: "Provides foundational support for enterprise-grade scalability.",
+    amount: "50,001", 
+    description: "Supports the entire infrastructure and core architectural evolution.",
     icon: "⚓"
   }
 ];
@@ -165,7 +165,7 @@ export default function SupportSection() {
       }
       
       const delta = e.deltaX || e.deltaY;
-      const sensitivity = 0.4;
+      const sensitivity = 0.8; // Increased
       setDragRotation(prev => prev - (delta * sensitivity));
     };
 
@@ -182,7 +182,7 @@ export default function SupportSection() {
   const handleDragMove = (x) => {
     if (!isDragging) return;
     const deltaX = x - dragStartX.current;
-    const sensitivity = 0.6;
+    const sensitivity = 0.8; // Increased
     setDragRotation(startRotation.current + (deltaX * sensitivity));
   };
 
@@ -196,33 +196,26 @@ export default function SupportSection() {
     setSelectedTierId(SPONSOR_TIERS[safeIdx].id);
   };
 
-  // Mouse Handlers
-  const onMouseDown = (e) => handleDragStart(e.clientX);
+  // Pointer Handlers for better cross-platform support
+  const onPointerDown = (e) => {
+    // Only drag on primary button
+    if (e.button !== 0) return;
+    handleDragStart(e.clientX);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
   
-  // Touch Handlers
-  const onTouchStart = (e) => handleDragStart(e.touches[0].clientX);
-  const onTouchMove = (e) => {
+  const onPointerMove = (e) => {
     if (isDragging) {
-      // Prevent vertical scroll while dragging carousel
-      if (e.cancelable) e.preventDefault();
-      handleDragMove(e.touches[0].clientX);
+      handleDragMove(e.clientX);
     }
   };
-  const onTouchEnd = () => handleDragEnd();
 
-  useEffect(() => {
-    const onMouseMove = (e) => handleDragMove(e.clientX);
-    const onMouseUp = () => handleDragEnd();
-
+  const onPointerUp = (e) => {
     if (isDragging) {
-      window.addEventListener("mousemove", onMouseMove);
-      window.addEventListener("mouseup", onMouseUp);
+      handleDragEnd();
+      e.currentTarget.releasePointerCapture(e.pointerId);
     }
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-    };
-  }, [isDragging]);
+  };
 
   const selectedTier = SPONSOR_TIERS[selectedIndex] || SPONSOR_TIERS[0];
 
@@ -260,12 +253,12 @@ export default function SupportSection() {
         <div 
           ref={containerRef}
           className="support-carousel-container"
-          onMouseDown={onMouseDown}
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
-          onDragStart={(e) => e.preventDefault()} // Prevent browser ghost dragging
-          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          onDragStart={(e) => e.preventDefault()}
+          style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'none' }}
         >
           <div 
             className="support-carousel-3d-ring"
@@ -291,8 +284,7 @@ export default function SupportSection() {
                   style={{
                     transform: `rotateY(${rotation}deg) translateZ(${radius}px)`,
                     opacity: opacity,
-                    zIndex: Math.round(100 - absRotation),
-                    pointerEvents: isDragging ? 'none' : 'auto' // Avoid accidental clicks while dragging
+                    zIndex: Math.round(100 - absRotation)
                   }}
                   onClick={(e) => {
                     if (!isDragging) setSelectedTierId(tier.id);
