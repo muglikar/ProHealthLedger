@@ -1140,16 +1140,21 @@ a:hover {
 }
 
 .support-carousel-container {
-  position: relative;
-  height: 340px;
   width: 100%;
-  margin: 1rem 0 2rem;
+  height: 280px;
+  perspective: 1500px; /* Increased for depth */
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 2000px;
-  overflow: visible; /* Back to visible for better feel */
-  touch-action: pan-y; /* Prevent vertical scroll when interacting */
+  position: relative;
+  overflow: hidden;
+  margin: 1rem 0;
+  cursor: grab;
+  touch-action: none;
+  
+  /* Background orbs to make translucency visible */
+  background: radial-gradient(circle at 20% 50%, rgba(255, 126, 95, 0.05) 0%, transparent 50%),
+              radial-gradient(circle at 80% 50%, rgba(254, 180, 123, 0.05) 0%, transparent 50%);
 }
 
 .support-carousel-3d-ring {
@@ -1157,7 +1162,7 @@ a:hover {
   width: 140px;
   height: 180px;
   transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
 }
 
 .support-3d-tile {
@@ -1173,19 +1178,22 @@ a:hover {
   gap: 8px;
   padding: 1.25rem 0.75rem;
   
-  /* Suave Translucency */
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  /* Suave Glassmorphism */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.6);
+  border-left: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 28px;
   
   box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.05);
+    0 10px 30px rgba(0, 0, 0, 0.03),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
     
   cursor: grab;
-  backface-visibility: hidden; /* HIDDEN to avoid overlapping text mess */
-  transition: opacity 0.4s ease, border-color 0.3s ease, transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  backface-visibility: hidden;
+  transition: opacity 0.5s ease, border-color 0.3s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
 
@@ -1194,14 +1202,14 @@ a:hover {
 }
 
 .support-3d-tile:hover {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
 .support-3d-tile.is-active {
-  background: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.3);
   border-color: var(--accent);
-  box-shadow: 0 0 20px rgba(255, 126, 95, 0.15), 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 25px rgba(255, 126, 95, 0.2), 0 8px 32px 0 rgba(0, 0, 0, 0.05);
 }
 
 .support-3d-tile .tier-tile-icon {

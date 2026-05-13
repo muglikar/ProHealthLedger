@@ -153,24 +153,27 @@ export default function SupportSection() {
     }
   }, [selectedIndex, isDragging, angleStep, dragRotation]);
 
-  // Non-passive wheel listener to prevent browser fwd/back
+  // Robust wheel listener for Mac Trackpad
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    const onWheel = (e) => {
-      // Prevent browser horizontal navigation
-      if (Math.abs(e.deltaX) > 0) {
+    const handleWheel = (e) => {
+      // If there's any horizontal movement, assume trackpad swipe
+      const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+      
+      if (isHorizontal || e.shiftKey) {
         if (e.cancelable) e.preventDefault();
       }
-      
-      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      const sensitivity = 0.6;
+
+      // Prioritize deltaX on Mac, fallback to deltaY
+      const delta = e.deltaX || e.deltaY;
+      const sensitivity = 0.5;
       setDragRotation(prev => prev - (delta * sensitivity));
     };
 
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
   }, []);
 
   const handleDragStart = (x) => {
