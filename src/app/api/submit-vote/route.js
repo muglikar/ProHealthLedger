@@ -38,7 +38,7 @@ export async function POST(req) {
   }
 
   const body = await req.json();
-  const { linkedinUrl, vote, reason, submitterLinkedinUrl } = body;
+  const { linkedinUrl, vote, reason, submitterLinkedinUrl, voucheeName } = body;
   const userId = session.userId;
   const displayName = session.displayName || userId;
 
@@ -246,6 +246,7 @@ export async function POST(req) {
   const today = new Date().toISOString().split("T")[0];
 
   const titleName =
+    voucheeName ||
     formatProfessionalDisplayName(slug, profileForTitle?.public_name) ||
     slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
@@ -330,10 +331,13 @@ export async function POST(req) {
     profile = {
       linkedin_url: linkedinUrlCanonical,
       slug,
+      public_name: voucheeName || null,
       votes: { yes: 0, no: 0 },
       submissions: [],
     };
     profiles.push(profile);
+  } else if (!profile.public_name && voucheeName) {
+    profile.public_name = voucheeName;
   }
   profile.votes[vote]++;
   profile.submissions.push(submission);
