@@ -154,6 +154,12 @@ export default function RootLayout({ children }) {
             `,
           }}
         />
+        {/* Razorpay Payment Button Script */}
+        <script
+          id="razorpay-button-loader"
+          src="https://checkout.razorpay.com/v1/payment-button.js"
+          async
+        />
       </body>
     </html>
   );

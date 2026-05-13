@@ -11,21 +11,20 @@ function RazorpayButton({ buttonId }) {
     const container = containerRef.current;
     if (!container) return;
 
-    // Clear previous content
+    // Clear and re-inject exactly as Razorpay expects
     container.innerHTML = "";
-
-    // Create the script
+    
+    const form = document.createElement("form");
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/payment-button.js";
     script.dataset.payment_button_id = buttonId;
     script.async = true;
-
-    // Razorpay payment button script replaces the script tag itself with the button
-    container.appendChild(script);
+    
+    form.appendChild(script);
+    container.appendChild(form);
 
     return () => {
-      // No-op cleanup to avoid flickering if needed, 
-      // but usually innerHTML="" is fine if we are remounting.
+      if (container) container.innerHTML = "";
     };
   }, [buttonId]);
 
