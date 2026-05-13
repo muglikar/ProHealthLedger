@@ -159,13 +159,13 @@ export default function SupportSection() {
     if (!el) return;
 
     const onWheel = (e) => {
-      // Aggressively prevent browser horizontal navigation
+      // Prevent browser horizontal navigation
       if (Math.abs(e.deltaX) > 0) {
         if (e.cancelable) e.preventDefault();
       }
       
-      const delta = e.deltaX || e.deltaY;
-      const sensitivity = 0.8; // Increased
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      const sensitivity = 0.6;
       setDragRotation(prev => prev - (delta * sensitivity));
     };
 
@@ -274,7 +274,8 @@ export default function SupportSection() {
               const normalizedRotation = ((currentTileRotation + 180) % 360) - 180;
               const absRotation = Math.abs(normalizedRotation);
               
-              const opacity = Math.max(0.1, 1 - (absRotation / 180) * 1.2);
+              // More generous opacity: 1 at 0deg, 0.4 at 180deg
+              const opacity = Math.max(0.2, 1 - (absRotation / 180) * 0.7);
               const isSelected = selectedTierId === tier.id;
 
               return (
