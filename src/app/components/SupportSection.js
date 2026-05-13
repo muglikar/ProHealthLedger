@@ -8,9 +8,10 @@ function RazorpayButton({ buttonId }) {
   useEffect(() => {
     if (!buttonId) return;
     
-    // Clear previous button
-    if (containerRef.current) {
-      containerRef.current.innerHTML = "";
+    // Clear previous content
+    const container = containerRef.current;
+    if (container) {
+      container.innerHTML = "";
     }
 
     const script = document.createElement("script");
@@ -18,15 +19,28 @@ function RazorpayButton({ buttonId }) {
     script.dataset.payment_button_id = buttonId;
     script.async = true;
 
+    // Use a unique ID for the form to avoid conflicts
     const form = document.createElement("form");
+    form.id = `rzp-form-${buttonId}`;
     form.appendChild(script);
     
-    if (containerRef.current) {
-      containerRef.current.appendChild(form);
+    if (container) {
+      container.appendChild(form);
     }
+
+    return () => {
+      if (container) container.innerHTML = "";
+    };
   }, [buttonId]);
 
-  return <div ref={containerRef} className="razorpay-button-container" />;
+  return (
+    <div 
+      key={buttonId} 
+      ref={containerRef} 
+      className="razorpay-button-container" 
+      style={{ minHeight: '60px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+    />
+  );
 }
 
 const SUPPORT_TIERS = [
