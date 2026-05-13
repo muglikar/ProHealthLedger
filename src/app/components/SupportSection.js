@@ -274,8 +274,8 @@ export default function SupportSection() {
               const normalizedRotation = ((currentTileRotation + 180) % 360) - 180;
               const absRotation = Math.abs(normalizedRotation);
               
-              // More generous opacity: 1 at 0deg, 0.4 at 180deg
-              const opacity = Math.max(0.2, 1 - (absRotation / 180) * 0.7);
+              // Subtle opacity for back tiles: 1 at 0deg, 0.05 at 180deg
+              const opacity = Math.max(0.05, 1 - (absRotation / 180) * 1.5);
               const isSelected = selectedTierId === tier.id;
 
               return (
