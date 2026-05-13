@@ -126,25 +126,22 @@ export default function SupportSection() {
   const tileCount = SPONSOR_TIERS.length;
   const angleStep = 360 / tileCount;
   
-  // Even smaller radius for closer tiles
-  const radius = Math.round(70 / Math.tan(Math.PI / tileCount)) + 70;
+  // Larger radius for "sitting inside"
+  const radius = Math.round(100 / Math.tan(Math.PI / tileCount)) + 120;
 
   // Shortest path rotation logic
   const rotateToId = (id) => {
     const targetIdx = SPONSOR_TIERS.findIndex(t => t.id === id);
     const currentRotation = dragRotation;
     
-    // Calculate how many full turns we've done
+    // For inside view, we want to rotate the ring so the target is at 0 degrees
     const currentTurn = Math.round(currentRotation / 360);
-    
-    // Possible target rotations: current turn, turn before, turn after
     const targets = [
       (currentTurn - 1) * 360 - (targetIdx * angleStep),
       currentTurn * 360 - (targetIdx * angleStep),
       (currentTurn + 1) * 360 - (targetIdx * angleStep)
     ];
     
-    // Find the one closest to current rotation
     const bestTarget = targets.reduce((prev, curr) => 
       Math.abs(curr - currentRotation) < Math.abs(prev - currentRotation) ? curr : prev
     );
@@ -152,6 +149,12 @@ export default function SupportSection() {
     setDragRotation(bestTarget);
     setSelectedTierId(id);
   };
+
+  // ... (rest of the logic remains same)
+
+  // In the render:
+  // Ring transform: translateZ(radius) rotateY(dragRotation)
+  // Tile transform: rotateY(rotation + 180) translateZ(radius)
 
   // Only sync once on mount or when external change happens
   const lastSyncId = useRef(selectedTierId);
@@ -279,22 +282,21 @@ export default function SupportSection() {
           <div 
             className="support-carousel-3d-ring"
             style={{ 
-              transform: `rotateY(${dragRotation}deg)`,
+              transform: `translateZ(${radius}px) rotateY(${dragRotation}deg)`,
               transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)'
             }}
           >
             {SPONSOR_TIERS.map((tier, idx) => {
               const rotation = idx * angleStep;
               
-              // Dynamic opacity based on how "front-facing" the tile is
-              // angleStep * (idx - nearestIdx) should be around 0 for the front tile
-              // We can calculate current absolute rotation of the tile relative to the viewer (0 deg)
+              // Calculate current absolute rotation relative to viewer
               const currentTileRotation = (rotation + dragRotation) % 360;
               const normalizedRotation = ((currentTileRotation + 180) % 360) - 180;
               const absRotation = Math.abs(normalizedRotation);
               
-              // Opacity: 1 at 0deg, 0.1 at 180deg
-              const opacity = Math.max(0.1, 1 - (absRotation / 180) * 1.2);
+              // When inside, front tiles are at normalizedRotation 0
+              // But they are facing 180deg towards us
+              const opacity = Math.max(0.05, 1 - (absRotation / 180) * 1.5);
               const isSelected = selectedTierId === tier.id;
 
               return (
@@ -302,7 +304,7 @@ export default function SupportSection() {
                   key={tier.id}
                   className={`support-3d-tile ${isSelected ? 'is-active' : ''}`}
                   style={{
-                    transform: `rotateY(${rotation}deg) translateZ(${radius}px)`,
+                    transform: `rotateY(${rotation + 180}deg) translateZ(${radius}px)`,
                     opacity: opacity,
                     zIndex: Math.round(100 - absRotation)
                   }}

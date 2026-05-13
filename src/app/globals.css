@@ -1141,15 +1141,15 @@ a:hover {
 
 .support-carousel-container {
   position: relative;
-  height: 340px;
+  height: 380px;
   width: 100%;
   margin: 1rem 0 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 2000px;
-  overflow: visible; /* Back to visible for better feel */
-  touch-action: pan-y; /* Prevent vertical scroll when interacting */
+  perspective: 1000px; /* Stronger perspective for inside feel */
+  overflow: visible;
+  touch-action: pan-y;
 }
 
 .support-carousel-3d-ring {
