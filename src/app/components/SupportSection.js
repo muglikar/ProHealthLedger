@@ -159,17 +159,17 @@ export default function SupportSection() {
     if (!el) return;
 
     const handleWheel = (e) => {
-      // If there's any horizontal movement, assume trackpad swipe
-      const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+      // If there's any movement, try to capture it
+      const hasMovement = Math.abs(e.deltaX) > 0.5 || Math.abs(e.deltaY) > 0.5;
       
-      if (isHorizontal || e.shiftKey) {
+      if (hasMovement) {
         if (e.cancelable) e.preventDefault();
+        
+        // Prioritize deltaX on Mac, fallback to deltaY
+        const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        const sensitivity = 0.7; // Bumped
+        setDragRotation(prev => prev - (delta * sensitivity));
       }
-
-      // Prioritize deltaX on Mac, fallback to deltaY
-      const delta = e.deltaX || e.deltaY;
-      const sensitivity = 0.5;
-      setDragRotation(prev => prev - (delta * sensitivity));
     };
 
     el.addEventListener("wheel", handleWheel, { passive: false });
@@ -319,21 +319,13 @@ export default function SupportSection() {
               ) : (
                 <div className="manual-payment-notice">
                   <p className="notice-text">
-                    This tier is currently being processed by Razorpay. 
-                    <br />
-                    <strong>Tip:</strong> Standard UPI/QR is the most seamless way to contribute.
+                    This tier is being integrated. Please select another tier.
                   </p>
-                  <button 
-                    className="action-button secondary"
-                    onClick={() => window.open('https://razorpay.me/@prohealthledger', '_blank')}
-                  >
-                    Pay via UPI / QR
-                  </button>
                 </div>
               )}
               <p className="payment-security-tip">
                 <img src="/icons/security.png" alt="" width="16" height="16" />
-                Legally compliant & Tax-deductible contributions via Razorpay.
+                Secure & Legally Compliant Payment via Razorpay
               </p>
             </div>
           </div>
