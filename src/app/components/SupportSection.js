@@ -43,7 +43,7 @@ const SPONSOR_TIERS = [
     id: "supporter",
     name: "Supporter", 
     amount: "101", 
-    description: "Covers server infrastructure hosting for 1 month.",
+    description: "Sustains baseline server infrastructure for 1 month.",
     icon: "🌟",
     razorpayId: "pl_Sok3VlpzXQxTPS"
   },
@@ -73,7 +73,7 @@ const SPONSOR_TIERS = [
     id: "shot",
     name: "Shot in the arm", 
     amount: "1,201", 
-    description: "Funds the development of a specific new feature or API update.",
+    description: "Sustains development for specific API maintenance tasks.",
     icon: "💉"
   },
   { 
@@ -94,22 +94,30 @@ const SPONSOR_TIERS = [
     id: "guardian",
     name: "Infrastructure Guardian", 
     amount: "10,001", 
-    description: "Funds deeper security audits and performance tuning for the ledger.",
+    description: "Funds security audits and performance tuning for the ledger.",
     icon: "🏰"
   },
   { 
     id: "partner",
     name: "Architecture Partner", 
     amount: "25,001", 
-    description: "Supports R&D for advanced trust algorithms and cross-platform syncing.",
+    description: "Sustains maintenance for trust algorithms and cross-platform syncing.",
     icon: "🏗️"
   },
   { 
     id: "anchor",
     name: "Ecosystem Anchor", 
     amount: "50,001", 
-    description: "Supports the entire infrastructure and core architectural evolution.",
+    description: "Sustains core infrastructure and architectural evolution.",
     icon: "⚓"
+  },
+  {
+    id: "institutional",
+    name: "Institutional Partner",
+    amount: "Contact",
+    description: "For enterprise or research institutional infrastructure support.",
+    icon: "🏛️",
+    razorpayId: "institutional"
   }
 ];
 
@@ -308,26 +316,56 @@ export default function SupportSection() {
 
         <div className="support-tier-details">
           <div className="tier-info-card">
-            <h4>{selectedTier.name} — ₹{selectedTier.amount}</h4>
-            <p>{selectedTier.description}</p>
+            <div className="tier-info-header">
+              <h3>{selectedTier.name} — {selectedTier.amount === "Contact" ? "Institutional Partner" : `₹${selectedTier.amount}`}</h3>
+              <p>{selectedTier.description}</p>
+            </div>
             
             <div className="payment-action-area">
-              {selectedTier.razorpayId ? (
+              {selectedTier.razorpayId === "institutional" ? (
+                <div className="institutional-partner-cta">
+                  <p>Institutional sponsorships require manual onboarding and custom agreements.</p>
+                  <a href="/contact" className="partner-contact-btn">Contact for Institutional Partnership</a>
+                </div>
+              ) : selectedTier.razorpayId ? (
                 <div className="payment-button-wrapper">
                   <RazorpayButton buttonId={selectedTier.razorpayId} />
                 </div>
               ) : (
                 <div className="manual-payment-notice">
                   <p className="notice-text">
-                    This tier is being integrated. Please select another tier.
+                    This tier is currently being integrated into our automated workflow.
                   </p>
                 </div>
               )}
-              <p className="payment-security-tip">
-                <img src="/icons/security.png" alt="" width="16" height="16" />
-                Secure & Legally Compliant Payment via Razorpay
-              </p>
+              <div className="payment-security-footer">
+                <p>Secure & Legally Compliant Sponsorship via Razorpay</p>
+              </div>
             </div>
+          </div>
+        </div>
+
+        <div className="vision-impact-section">
+          <h2>Vision & Impact</h2>
+          <div className="vision-grid">
+            <div className="vision-card">
+              <div className="vision-card-icon">🏗️</div>
+              <h4>Infrastructure Sustainability</h4>
+              <p>Your support covers the direct costs of high-availability cloud infrastructure and database scaling needed for a global ledger.</p>
+            </div>
+            <div className="vision-card">
+              <div className="vision-card-icon">🛡️</div>
+              <h4>Security Guardianship</h4>
+              <p>Funding enables regular third-party security audits and penetration testing to ensure contributor anonymity and data integrity.</p>
+            </div>
+            <div className="vision-card">
+              <div className="vision-card-icon">🚀</div>
+              <h4>Ecosystem Evolution</h4>
+              <p>We are building an open trust protocol. Sponsorship allows for deep R&D into decentralized verification and cross-platform trust syncing.</p>
+            </div>
+          </div>
+          <div className="transparency-callout">
+            <p><strong>Transparency:</strong> ProHealthLedger is an open-source technical utility. 100% of sponsorship funds are directed toward technical maintenance and ecosystem development.</p>
           </div>
         </div>
       </div>

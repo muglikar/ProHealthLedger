@@ -1291,6 +1291,123 @@ a:hover {
   justify-content: center;
 }
 
+/* Institutional Partner CTA */
+.institutional-partner-cta {
+  background: rgba(255, 126, 95, 0.05);
+  border: 1px dashed var(--accent);
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin: 1rem 0;
+}
+
+.institutional-partner-cta p {
+  font-size: 0.9rem;
+  color: #4a5568;
+  margin-bottom: 1rem;
+}
+
+.partner-contact-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.partner-contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 126, 95, 0.3);
+}
+
+/* Vision & Impact Section */
+.vision-impact-section {
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.vision-impact-section h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 2.5rem;
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.vision-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.vision-card {
+  padding: 2rem;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.vision-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+  border-color: var(--accent);
+}
+
+.vision-card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.vision-card h4 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  color: #1a202c;
+}
+
+.vision-card p {
+  font-size: 0.95rem;
+  color: #718096;
+  line-height: 1.6;
+}
+
+.transparency-callout {
+  background: #f8fafc;
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  display: inline-block;
+  max-width: 800px;
+}
+
+.transparency-callout p {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.payment-security-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.payment-security-footer p {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 /* Cleanup Compact Styles */
 .support-card.compact,
 .hero-badge-mini,

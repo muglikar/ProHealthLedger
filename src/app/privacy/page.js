@@ -135,6 +135,24 @@ export default function PrivacyPolicyPage() {
             trackers, fingerprinting, or any other form of background data
             collection.
           </p>
+
+          <h3>2.4 Information collected for Sponsorships</h3>
+          <p>
+            If you choose to support the platform via a Professional Sponsorship
+            Tier, our payment processor (Razorpay) collects:
+          </p>
+          <ul>
+            <li><strong>Full Name</strong> — for transaction records and acknowledgement.</li>
+            <li><strong>Email Address</strong> — for sending payment receipts.</li>
+            <li><strong>Phone Number</strong> — required by the payment gateway for UPI/SMS notifications.</li>
+            <li><strong>Organization (optional)</strong> — if you are sponsoring on behalf of a firm.</li>
+            <li><strong>Payment Metadata</strong> — amount, currency, and payment method (e.g., UPI, Card).</li>
+          </ul>
+          <p>
+            We do <strong>not</strong> see or store your full credit card
+            numbers or UPI PINs. All sensitive financial data is handled
+            securely by Razorpay.
+          </p>
         </section>
 
         {/* ── 3. How We Use Your Data ── */}
@@ -738,6 +756,19 @@ export default function PrivacyPolicyPage() {
                     rel="noopener noreferrer"
                   >
                     Vercel Privacy Policy
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>Razorpay</td>
+                <td>Payment processing for sponsorships</td>
+                <td>
+                  <a
+                    href="https://razorpay.com/privacy/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Razorpay Privacy Policy
                   </a>
                 </td>
               </tr>
