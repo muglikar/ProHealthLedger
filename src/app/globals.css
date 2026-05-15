@@ -5475,3 +5475,23 @@ button.audit-comment-link:focus-visible {
   }
 }
 
+/* Sponsor Pre-Checkout Form Styles */
+.sponsor-checkout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+.form-group-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .form-group-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
