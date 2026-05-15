@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import ContactForm from "./ContactForm";
 
 // RazorpayButton component removed to allow native sequential pre-rendering
 
@@ -116,6 +117,7 @@ export default function SupportSection() {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPreCheckoutModal, setShowPreCheckoutModal] = useState(false);
+  const [showInstitutionalModal, setShowInstitutionalModal] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -189,7 +191,28 @@ export default function SupportSection() {
         description: `Sponsorship: ${selectedTier.name}`,
         image: "https://prohealthledger.org/favicon.ico", // Or appropriate logo URL
         order_id: order.id,
-        handler: function (response) {
+        handler: async function (response) {
+          // Call internal API to save sponsor data
+          try {
+            await fetch('/api/razorpay/save-sponsor', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                tier: selectedTier.id,
+                name: formData.name,
+                email: formData.email,
+                mobile: formData.mobile,
+                org: formData.organization || "Individual",
+                country: formData.country,
+                amount: testAmount,
+                currency: 'INR',
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id
+              })
+            });
+          } catch (e) {
+            console.error("Failed to save sponsor data locally:", e);
+          }
           setShowThankYou(true);
         },
         prefill: {
@@ -426,7 +449,13 @@ export default function SupportSection() {
               {selectedTier.razorpayId === "institutional" ? (
                 <div className="institutional-partner-cta">
                   <p>Institutional sponsorships require manual onboarding and custom agreements.</p>
-                  <a href="/contact" className="partner-contact-btn">Contact for Institutional Partnership</a>
+                  <button 
+                    onClick={() => setShowInstitutionalModal(true)} 
+                    className="partner-contact-btn"
+                    style={{ border: 'none', cursor: 'pointer', width: '100%' }}
+                  >
+                    Contact for Institutional Partnership
+                  </button>
                 </div>
               ) : selectedTier.razorpayId ? (
                 <div className="payment-button-wrapper" style={{ minHeight: "80px", display: "flex", justifyContent: "center", alignItems: "center" }}>
@@ -517,6 +546,26 @@ export default function SupportSection() {
               >
                 {isProcessing ? "Connecting to Secure Gateway..." : "Proceed to Payment"}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showInstitutionalModal && (
+        <div className="pre-checkout-modal-overlay" onClick={() => setShowInstitutionalModal(false)}>
+          <div className="pre-checkout-modal" onClick={e => e.stopPropagation()}>
+            <div className="pre-checkout-header">
+              <button className="pre-checkout-close" onClick={() => setShowInstitutionalModal(false)}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+              <h3>Institutional Partnership</h3>
+              <p>Please provide your details and we'll contact you shortly.</p>
+            </div>
+            <div className="pre-checkout-body">
+              <ContactForm isPopup={true} onSuccess={() => {}} />
             </div>
           </div>
         </div>
