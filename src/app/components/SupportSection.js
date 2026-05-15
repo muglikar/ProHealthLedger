@@ -104,12 +104,14 @@ export default function SupportSection() {
     setIsProcessing(true);
 
     try {
-      // 1. Create order on backend
+      // 1. Create order on backend (Amount hardcoded to INR 1 for testing)
+      const testAmount = '1'; // INR 1 for testing
+
       const res = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: selectedTier.amount.replace(/,/g, ''),
+          amount: testAmount,
           currency: 'INR',
           tier: selectedTier.id,
           description: selectedTier.name
