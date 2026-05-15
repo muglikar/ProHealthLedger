@@ -5693,6 +5693,31 @@ button.audit-comment-link:focus-visible {
   line-height: 1.7;
 }
 
+.thank-you-modal {
+  position: relative;
+}
+
+.thank-you-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.thank-you-btn-secondary {
+  background: transparent !important;
+  color: #b45309 !important;
+  border: 2px solid #b45309 !important;
+  box-shadow: none !important;
+}
+
+.thank-you-btn-secondary:hover:not(:disabled) {
+  background: rgba(180, 83, 9, 0.06) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(180, 83, 9, 0.12) !important;
+}
+
 @keyframes slideUp {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }

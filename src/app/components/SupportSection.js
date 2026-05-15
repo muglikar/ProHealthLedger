@@ -523,8 +523,14 @@ export default function SupportSection() {
       )}
 
       {showThankYou && (
-        <div className="pre-checkout-modal-overlay" onClick={() => {}}>
+        <div className="pre-checkout-modal-overlay" onClick={() => setShowThankYou(false)}>
           <div className="thank-you-modal" onClick={e => e.stopPropagation()}>
+            <button className="pre-checkout-close" onClick={() => setShowThankYou(false)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(0,0,0,0.06)' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
             <div className="thank-you-icon">
               <img src="/icons/gratitude.png" alt="Gratitude" width="80" height="80" />
             </div>
@@ -532,13 +538,20 @@ export default function SupportSection() {
             <p className="thank-you-message">
               Thank you so much for sponsoring us!<br/>This means a lot to us. :)
             </p>
-            <button 
-              className="pre-checkout-submit" 
-              onClick={() => { setShowThankYou(false); window.location.href = '/profiles'; }}
-              style={{ maxWidth: '280px', margin: '0 auto' }}
-            >
-              Continue to Profiles
-            </button>
+            <div className="thank-you-actions">
+              <button 
+                className="pre-checkout-submit" 
+                onClick={() => { setShowThankYou(false); window.location.href = '/profiles'; }}
+              >
+                Look up someone
+              </button>
+              <button 
+                className="pre-checkout-submit thank-you-btn-secondary" 
+                onClick={() => { setShowThankYou(false); window.location.href = '/submit'; }}
+              >
+                Vouch for or flag someone
+              </button>
+            </div>
           </div>
         </div>
       )}
