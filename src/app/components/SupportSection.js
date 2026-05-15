@@ -329,14 +329,24 @@ export default function SupportSection() {
                   <a href="/contact" className="partner-contact-btn">Contact for Institutional Partnership</a>
                 </div>
               ) : selectedTier.razorpayId ? (
-                <div className="payment-button-wrapper">
-                  {/* Pre-rendered buttons, shown/hidden via CSS */}
+                <div className="payment-button-wrapper" style={{ position: "relative", minHeight: "80px" }}>
+                  {/* Pre-rendered buttons, hidden securely without destroying iframe layout */}
                   {SPONSOR_TIERS.map((tier) => {
                     if (!tier.razorpayId || tier.razorpayId === "institutional") return null;
+                    const isActive = selectedTier.id === tier.id;
                     return (
                       <div 
                         key={tier.id} 
-                        style={{ display: selectedTier.id === tier.id ? "block" : "none" }}
+                        style={{
+                          position: isActive ? "relative" : "absolute",
+                          visibility: isActive ? "visible" : "hidden",
+                          pointerEvents: isActive ? "auto" : "none",
+                          opacity: isActive ? 1 : 0,
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          zIndex: isActive ? 1 : -1
+                        }}
                       >
                         <form id={`rzp_form_${tier.razorpayId}`} className="razorpay-button-form" style={{ minHeight: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}></form>
                       </div>
