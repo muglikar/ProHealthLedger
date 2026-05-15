@@ -5593,6 +5593,17 @@ button.audit-comment-link:focus-visible {
   box-shadow: 0 0 0 4px rgba(180, 83, 9, 0.1);
 }
 
+/* Override browser autofill styling */
+.pre-checkout-input:-webkit-autofill,
+.pre-checkout-input:-webkit-autofill:hover,
+.pre-checkout-input:-webkit-autofill:focus,
+.pre-checkout-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
+  -webkit-text-fill-color: #0f172a !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #0f172a;
+}
+
 .pre-checkout-row {
   display: flex;
   gap: 16px;
