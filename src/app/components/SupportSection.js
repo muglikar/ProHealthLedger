@@ -116,6 +116,7 @@ export default function SupportSection() {
   const startRotation = useRef(0);
 
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showPreCheckoutModal, setShowPreCheckoutModal] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -407,28 +408,14 @@ export default function SupportSection() {
                   <a href="/contact" className="partner-contact-btn">Contact for Institutional Partnership</a>
                 </div>
               ) : selectedTier.razorpayId ? (
-                <div className="sponsor-checkout-form">
-                  <div className="form-group-row">
-                    <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="Full Name *" required className="search-input" style={{flex: 1, marginBottom: '12px'}} />
-                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="Email Address *" required className="search-input" style={{flex: 1, marginBottom: '12px'}} />
-                  </div>
-                  <div className="form-group-row">
-                    <input type="tel" name="mobile" value={formData.mobile} onChange={handleInputChange} placeholder="Mobile Number *" required className="search-input" style={{flex: 1, marginBottom: '12px'}} />
-                    <input type="text" name="country" value={formData.country} onChange={handleInputChange} placeholder="Country *" required className="search-input" style={{flex: 1, marginBottom: '12px'}} />
-                  </div>
-                  <input type="text" name="organization" value={formData.organization} onChange={handleInputChange} placeholder="Organization (Optional)" className="search-input" style={{width: '100%', marginBottom: '20px'}} />
-                  
-                  <div className="payment-button-wrapper" style={{ minHeight: "80px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-                    <button 
-                      onClick={handlePayment} 
-                      disabled={isProcessing || !isFormValid}
-                      className="nav-auth-btn"
-                      style={{ padding: "12px 24px", fontSize: "1.1rem", cursor: (isProcessing || !isFormValid) ? "not-allowed" : "pointer", opacity: (!isFormValid && !isProcessing) ? 0.6 : 1 }}
-                    >
-                      {isProcessing ? "Processing..." : selectedTier.actionText}
-                    </button>
-                    {!isFormValid && <span style={{fontSize: "0.8rem", color: "var(--nav-fg-subtle)", marginTop: "8px"}}>Please fill all required (*) fields to continue</span>}
-                  </div>
+                <div className="payment-button-wrapper" style={{ minHeight: "80px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                  <button 
+                    onClick={() => setShowPreCheckoutModal(true)} 
+                    className="nav-auth-btn"
+                    style={{ padding: "14px 32px", fontSize: "1.2rem", fontWeight: "700" }}
+                  >
+                    {selectedTier.actionText}
+                  </button>
                 </div>
               ) : null}
               <div className="payment-security-footer" style={{marginTop: "20px"}}>
@@ -462,6 +449,58 @@ export default function SupportSection() {
           </div>
         </div>
       </div>
+
+      {showPreCheckoutModal && (
+        <div className="pre-checkout-modal-overlay" onClick={() => !isProcessing && setShowPreCheckoutModal(false)}>
+          <div className="pre-checkout-modal" onClick={e => e.stopPropagation()}>
+            <div className="pre-checkout-header">
+              <button className="pre-checkout-close" onClick={() => !isProcessing && setShowPreCheckoutModal(false)} disabled={isProcessing}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+              <h3>Sponsor Details</h3>
+              <p>{selectedTier.name} — {selectedTier.amount === "Contact" ? "Institutional" : `₹${selectedTier.amount}`}</p>
+            </div>
+            <div className="pre-checkout-body">
+              <div className="pre-checkout-row">
+                <div className="pre-checkout-input-group">
+                  <label>Full Name *</label>
+                  <input type="text" name="name" value={formData.name} onChange={handleInputChange} className="pre-checkout-input" placeholder="Satoshi Nakamoto" disabled={isProcessing} />
+                </div>
+                <div className="pre-checkout-input-group">
+                  <label>Email Address *</label>
+                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="pre-checkout-input" placeholder="satoshi@example.com" disabled={isProcessing} />
+                </div>
+              </div>
+              <div className="pre-checkout-row">
+                <div className="pre-checkout-input-group">
+                  <label>Mobile Number *</label>
+                  <input type="tel" name="mobile" value={formData.mobile} onChange={handleInputChange} className="pre-checkout-input" placeholder="+91 98765 43210" disabled={isProcessing} />
+                </div>
+                <div className="pre-checkout-input-group">
+                  <label>Country *</label>
+                  <input type="text" name="country" value={formData.country} onChange={handleInputChange} className="pre-checkout-input" placeholder="India" disabled={isProcessing} />
+                </div>
+              </div>
+              <div className="pre-checkout-input-group">
+                <label>Organization (Optional)</label>
+                <input type="text" name="organization" value={formData.organization} onChange={handleInputChange} className="pre-checkout-input" placeholder="ProHealthLedger Foundation" disabled={isProcessing} />
+              </div>
+
+              <button 
+                className="pre-checkout-submit" 
+                onClick={handlePayment} 
+                disabled={isProcessing || !isFormValid}
+              >
+                {isProcessing ? "Connecting to Secure Gateway..." : "Proceed to Payment"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Load Razorpay Checkout Script Globally */}
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="beforeInteractive" />
     </section>
