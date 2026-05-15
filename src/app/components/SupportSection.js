@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Script from "next/script";
 
 // RazorpayButton component removed to allow native sequential pre-rendering
 
@@ -11,7 +12,7 @@ const SPONSOR_TIERS = [
     amount: "101", 
     description: "Sustains baseline server infrastructure for 1 month.",
     icon: "🌟",
-    razorpayId: "pl_SpXARLspaT6MIJ"
+    razorpayId: "active" // Changed to generic flag, amount is handled by backend
   },
   { 
     id: "evangelist",
@@ -96,40 +97,67 @@ export default function SupportSection() {
   const dragStartX = useRef(0);
   const startRotation = useRef(0);
 
-  // --- NEW: Inject Razorpay scripts sequentially ONCE on mount ---
-  // This prevents multiple script executions that cause 429 Too Many Requests
-  useEffect(() => {
-    let isMounted = true;
-    
-    const loadButtonsSequentially = async () => {
-      for (const tier of SPONSOR_TIERS) {
-        if (!isMounted) break;
-        if (tier.razorpayId && tier.razorpayId !== "institutional") {
-          await new Promise((resolve) => {
-            const form = document.getElementById(`rzp_form_${tier.razorpayId}`);
-            if (form && form.children.length === 0) {
-              const script = document.createElement("script");
-              script.src = "https://checkout.razorpay.com/v1/payment-button.js";
-              script.setAttribute("data-payment_button_id", tier.razorpayId);
-              script.async = true;
-              script.onload = resolve;
-              script.onerror = resolve;
-              form.appendChild(script);
-            } else {
-              resolve();
-            }
-          });
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handlePayment = async () => {
+    if (!selectedTier || selectedTier.razorpayId === "institutional") return;
+    setIsProcessing(true);
+
+    try {
+      // 1. Create order on backend
+      const res = await fetch('/api/razorpay/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: selectedTier.amount.replace(/,/g, ''),
+          currency: 'INR',
+          tier: selectedTier.id,
+          description: selectedTier.name
+        })
+      });
+      
+      const order = await res.json();
+      if (order.error) throw new Error(order.error);
+
+      // 2. Initialize Razorpay Checkout
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '', // Safe to expose public key
+        amount: order.amount,
+        currency: order.currency,
+        name: "ProHealthLedger",
+        description: `Sponsorship: ${selectedTier.name}`,
+        image: "https://prohealthledger.org/favicon.ico", // Or appropriate logo URL
+        order_id: order.id,
+        handler: function (response) {
+          // Success! Webhook will handle data persistence
+          alert(`Thank you for your ${selectedTier.name} sponsorship! Payment ID: ${response.razorpay_payment_id}`);
+        },
+        prefill: {
+          name: "",
+          email: "",
+          contact: ""
+        },
+        notes: {
+          tier: selectedTier.id
+        },
+        theme: {
+          color: "#1e3a5f" // Matches the dark blue nav bar
         }
-      }
-    };
+      };
 
-    loadButtonsSequentially();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-  // ------------------------------------------------
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response){
+        console.error(response.error);
+        alert("Payment failed or was cancelled.");
+      });
+      rzp.open();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to initialize payment. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const selectedIndex = SPONSOR_TIERS.findIndex(t => t.id === selectedTierId);
   const tileCount = SPONSOR_TIERS.length;
@@ -329,29 +357,15 @@ export default function SupportSection() {
                   <a href="/contact" className="partner-contact-btn">Contact for Institutional Partnership</a>
                 </div>
               ) : selectedTier.razorpayId ? (
-                <div className="payment-button-wrapper" style={{ position: "relative", minHeight: "80px" }}>
-                  {/* Pre-rendered buttons, hidden securely without destroying iframe layout */}
-                  {SPONSOR_TIERS.map((tier) => {
-                    if (!tier.razorpayId || tier.razorpayId === "institutional") return null;
-                    const isActive = selectedTier.id === tier.id;
-                    return (
-                      <div 
-                        key={tier.id} 
-                        style={{
-                          position: isActive ? "relative" : "absolute",
-                          visibility: isActive ? "visible" : "hidden",
-                          pointerEvents: isActive ? "auto" : "none",
-                          opacity: isActive ? 1 : 0,
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          zIndex: isActive ? 1 : -1
-                        }}
-                      >
-                        <form id={`rzp_form_${tier.razorpayId}`} className="razorpay-button-form" style={{ minHeight: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}></form>
-                      </div>
-                    );
-                  })}
+                <div className="payment-button-wrapper" style={{ minHeight: "80px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                  <button 
+                    onClick={handlePayment} 
+                    disabled={isProcessing}
+                    className="nav-auth-btn"
+                    style={{ padding: "12px 24px", fontSize: "1.1rem", cursor: isProcessing ? "not-allowed" : "pointer" }}
+                  >
+                    {isProcessing ? "Processing..." : `Sponsor ₹${selectedTier.amount} Now`}
+                  </button>
                 </div>
               ) : (
                 <div className="manual-payment-notice">
