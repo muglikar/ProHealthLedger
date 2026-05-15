@@ -5476,6 +5476,15 @@ button.audit-comment-link:focus-visible {
   }
 }
 
+/* Lobster Two Italic font for gratitude */
+@font-face {
+  font-family: 'Lobster Two';
+  src: url('/fonts/LobsterTwo-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 /* Pre-Checkout Modal Styles */
 .pre-checkout-modal-overlay {
   position: fixed;
@@ -5494,7 +5503,7 @@ button.audit-comment-link:focus-visible {
   background: #ffffff;
   border-radius: 20px;
   width: 100%;
-  max-width: 480px;
+  max-width: 560px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   animation: slideUp 0.3s ease;
@@ -5503,7 +5512,7 @@ button.audit-comment-link:focus-visible {
 
 .pre-checkout-header {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  padding: 24px;
+  padding: 28px 32px;
   color: #ffffff;
   text-align: center;
   position: relative;
@@ -5511,13 +5520,13 @@ button.audit-comment-link:focus-visible {
 
 .pre-checkout-header h3 {
   margin: 0 0 8px 0;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
 }
 
 .pre-checkout-header p {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: #cbd5e1;
 }
 
@@ -5544,21 +5553,21 @@ button.audit-comment-link:focus-visible {
 }
 
 .pre-checkout-body {
-  padding: 32px 24px;
+  padding: 32px 32px 28px;
 }
 
 .pre-checkout-input-group {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .pre-checkout-input-group label {
   display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
   margin-bottom: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .pre-checkout-input {
@@ -5566,10 +5575,15 @@ button.audit-comment-link:focus-visible {
   padding: 14px 16px;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
-  font-size: 1rem;
-  color: #1e293b;
-  background: #f8fafc;
+  font-size: 1.05rem;
+  color: #0f172a;
+  background: #ffffff;
   transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.pre-checkout-input::placeholder {
+  color: #94a3b8;
 }
 
 .pre-checkout-input:focus {
@@ -5616,13 +5630,64 @@ button.audit-comment-link:focus-visible {
 }
 
 @media (max-width: 600px) {
+  .pre-checkout-modal {
+    max-width: 100%;
+  }
   .pre-checkout-row {
     flex-direction: column;
     gap: 0;
   }
+  .pre-checkout-body {
+    padding: 24px 20px 20px;
+  }
+}
+
+/* Thank You Modal */
+.thank-you-modal {
+  background: #ffffff;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 440px;
+  padding: 48px 40px 40px;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #1a1a1a;
+}
+
+.thank-you-icon {
+  margin-bottom: 16px;
+}
+
+.thank-you-icon img {
+  width: 80px;
+  height: 80px;
+  animation: gentlePulse 2s ease-in-out infinite;
+}
+
+.thank-you-title {
+  font-family: 'Lobster Two', cursive;
+  font-style: italic;
+  font-size: 2.6rem;
+  font-weight: 400;
+  color: #b45309;
+  margin: 0 0 12px 0;
+  line-height: 1.2;
+}
+
+.thank-you-message {
+  font-size: 1.15rem;
+  color: #475569;
+  margin: 0 0 32px 0;
+  line-height: 1.7;
 }
 
 @keyframes slideUp {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes gentlePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
