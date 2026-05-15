@@ -153,7 +153,7 @@ export default function SupportSection() {
       rzp.open();
     } catch (err) {
       console.error(err);
-      alert("Failed to initialize payment. Please try again.");
+      alert(`Payment Initialization Failed: ${err.message || "Unknown error"}. Please ensure API keys are configured and redeployed.`);
     } finally {
       setIsProcessing(false);
     }
@@ -405,6 +405,8 @@ export default function SupportSection() {
           </div>
         </div>
       </div>
+      {/* Load Razorpay Checkout Script Globally */}
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="beforeInteractive" />
     </section>
   );
 }
