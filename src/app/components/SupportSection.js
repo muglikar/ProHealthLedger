@@ -117,6 +117,7 @@ export default function SupportSection() {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPreCheckoutModal, setShowPreCheckoutModal] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -175,8 +176,7 @@ export default function SupportSection() {
         image: "https://prohealthledger.org/favicon.ico", // Or appropriate logo URL
         order_id: order.id,
         handler: function (response) {
-          alert("Thank you so much for sponsoring us! This means a lot to us. :)");
-          window.location.href = '/profiles';
+          setShowThankYou(true);
         },
         prefill: {
           name: formData.name,
@@ -192,20 +192,27 @@ export default function SupportSection() {
           country: formData.country
         },
         theme: {
-          color: "#1e3a5f" // Matches the dark blue nav bar
+          color: "#1e3a5f"
+        },
+        modal: {
+          ondismiss: function() {
+            setIsProcessing(false);
+          }
         }
       };
+
+      // Hide the pre-checkout form before opening Razorpay
+      setShowPreCheckoutModal(false);
 
       const rzp = new window.Razorpay(options);
       rzp.on('payment.failed', function (response){
         console.error(response.error);
-        alert("Payment failed or was cancelled.");
+        setIsProcessing(false);
       });
       rzp.open();
     } catch (err) {
       console.error(err);
       alert(`Payment Initialization Failed: ${err.message || "Unknown error"}. Please ensure API keys are configured and redeployed.`);
-    } finally {
       setIsProcessing(false);
     }
   };
@@ -497,6 +504,27 @@ export default function SupportSection() {
                 {isProcessing ? "Connecting to Secure Gateway..." : "Proceed to Payment"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showThankYou && (
+        <div className="pre-checkout-modal-overlay" onClick={() => {}}>
+          <div className="thank-you-modal" onClick={e => e.stopPropagation()}>
+            <div className="thank-you-icon">
+              <img src="/icons/gratitude.png" alt="Gratitude" width="80" height="80" />
+            </div>
+            <h2 className="thank-you-title">Thank You!</h2>
+            <p className="thank-you-message">
+              Thank you so much for sponsoring us!<br/>This means a lot to us. :)
+            </p>
+            <button 
+              className="pre-checkout-submit" 
+              onClick={() => { setShowThankYou(false); window.location.href = '/profiles'; }}
+              style={{ maxWidth: '280px', margin: '0 auto' }}
+            >
+              Continue to Profiles
+            </button>
           </div>
         </div>
       )}
