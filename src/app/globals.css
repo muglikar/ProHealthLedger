@@ -1320,6 +1320,7 @@ a:hover {
 .partner-contact-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(255, 126, 95, 0.3);
+  color: white;
 }
 
 /* Vision & Impact Section */

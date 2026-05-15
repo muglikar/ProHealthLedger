@@ -387,7 +387,7 @@ export default function SupportSection() {
                 >
                   <span className="tier-tile-icon">{tier.icon}</span>
                   <span className="tier-tile-name">{tier.name}</span>
-                  <span className="tier-tile-amount">₹{tier.amount}</span>
+                  <span className="tier-tile-amount">{tier.amount === "Contact" ? "Contact" : `₹${tier.amount}`}</span>
                 </button>
               );
             })}
@@ -397,7 +397,7 @@ export default function SupportSection() {
         <div className="support-tier-details">
           <div className="tier-info-card">
             <div className="tier-info-header">
-              <h3>{selectedTier.name} — {selectedTier.amount === "Contact" ? "Institutional Partner" : `₹${selectedTier.amount}`}</h3>
+              <h3>{selectedTier.name}{selectedTier.amount !== "Contact" ? ` — ₹${selectedTier.amount}` : ``}</h3>
               <p>{selectedTier.description}</p>
             </div>
             
