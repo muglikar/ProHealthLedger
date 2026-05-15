@@ -7,6 +7,7 @@ export default function ContactForm({ isPopup = false, onSuccess }) {
     name: "",
     email: "",
     mobile: "",
+    organization: "",
     country: "",
     message: ""
   });
@@ -124,6 +125,18 @@ export default function ContactForm({ isPopup = false, onSuccess }) {
             disabled={isSubmitting} 
           />
         </div>
+      </div>
+      <div className="pre-checkout-input-group">
+        <label>Organization (Optional)</label>
+        <input 
+          type="text" 
+          name="organization" 
+          value={formData.organization} 
+          onChange={handleInputChange} 
+          className="pre-checkout-input" 
+          placeholder="Company or Institution" 
+          disabled={isSubmitting} 
+        />
       </div>
       <div className="pre-checkout-input-group">
         <label>Message *</label>
