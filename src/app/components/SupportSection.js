@@ -2,7 +2,36 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
-// RazorpayButton component removed to allow sequential pre-rendering of scripts
+function RazorpayButton({ buttonId }) {
+  // We use a same-origin iframe to perfectly isolate Razorpay's DOM manipulation from React.
+  // This completely stops the infinite loading loops and "Too Many Requests" errors.
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body { margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; background: transparent; }
+        form { margin: 0; }
+      </style>
+    </head>
+    <body>
+      <form>
+        <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="${buttonId}" async></script>
+      </form>
+    </body>
+    </html>
+  `;
+
+  return (
+    <iframe
+      srcDoc={html}
+      style={{ border: "none", width: "100%", height: "80px", overflow: "hidden", background: "transparent" }}
+      scrolling="no"
+    />
+  );
+}
 
 const SPONSOR_TIERS = [
   { 
@@ -97,38 +126,7 @@ export default function SupportSection() {
   const startRotation = useRef(0);
 
   // --- NEW: Inject Razorpay scripts sequentially ONCE on mount ---
-  // This prevents multiple script executions that cause 429 Too Many Requests
-  useEffect(() => {
-    let isMounted = true;
-    
-    const loadButtonsSequentially = async () => {
-      for (const tier of SPONSOR_TIERS) {
-        if (!isMounted) break;
-        if (tier.razorpayId && tier.razorpayId !== "institutional") {
-          await new Promise((resolve) => {
-            const form = document.getElementById(`rzp_form_${tier.razorpayId}`);
-            if (form && form.children.length === 0) {
-              const script = document.createElement("script");
-              script.src = "https://checkout.razorpay.com/v1/payment-button.js";
-              script.setAttribute("data-payment_button_id", tier.razorpayId);
-              script.async = true;
-              script.onload = resolve;
-              script.onerror = resolve;
-              form.appendChild(script);
-            } else {
-              resolve();
-            }
-          });
-        }
-      }
-    };
-
-    loadButtonsSequentially();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // Removed because we are now using the bulletproof iframe method
   // ------------------------------------------------
 
   const selectedIndex = SPONSOR_TIERS.findIndex(t => t.id === selectedTierId);
@@ -329,16 +327,8 @@ export default function SupportSection() {
                   <a href="/contact" className="partner-contact-btn">Contact for Institutional Partnership</a>
                 </div>
               ) : selectedTier.razorpayId ? (
-                <div className="payment-button-wrapper">
-                  {/* Pre-rendered buttons, shown/hidden via CSS */}
-                  {SPONSOR_TIERS.filter(t => t.razorpayId && t.razorpayId !== "institutional").map((tier) => (
-                    <div 
-                      key={tier.id} 
-                      style={{ display: selectedTier.id === tier.id ? "block" : "none" }}
-                    >
-                      <form id={`rzp_form_${tier.razorpayId}`} className="razorpay-button-form" style={{ minHeight: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}></form>
-                    </div>
-                  ))}
+                <div className="payment-button-wrapper" key={selectedTier.razorpayId}>
+                  <RazorpayButton buttonId={selectedTier.razorpayId} />
                 </div>
               ) : (
                 <div className="manual-payment-notice">
