@@ -130,6 +130,9 @@ export default function NavAuth() {
               <Link href="/admin/feedback" className="nav-dropdown-item">
                 User Feedback
               </Link>
+              <Link href="/admin/sponsors" className="nav-dropdown-item">
+                Sponsorships
+              </Link>
               <div className="nav-dropdown-divider" />
               <Link href="/transparency" className="nav-dropdown-item">
                 Audit Trail {activityCount > 0 && `(${activityCount} new)`}

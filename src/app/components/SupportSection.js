@@ -12,7 +12,8 @@ const SPONSOR_TIERS = [
     amount: "101", 
     description: "Sustains baseline server infrastructure for 1 month.",
     icon: "🌟",
-    razorpayId: "active" // Changed to generic flag, amount is handled by backend
+    razorpayId: "active",
+    actionText: "Support Now"
   },
   { 
     id: "evangelist",
@@ -20,63 +21,80 @@ const SPONSOR_TIERS = [
     amount: "301", 
     description: "Sustains high-availability cloud hosting for 3 months.",
     icon: "📣",
-    razorpayId: null 
+    razorpayId: "active",
+    actionText: "Evangelize Now"
   },
   { 
     id: "advocate",
     name: "Advocate", 
     amount: "601", 
     description: "Supports technical maintenance and database scaling for 6 months.",
-    icon: "🛡️"
+    icon: "🛡️",
+    razorpayId: "active",
+    actionText: "Advocate Now"
   },
   { 
     id: "patron",
     name: "Patron", 
     amount: "1,201", 
     description: "Funds backend security optimizations and maintenance for 6 months.",
-    icon: "🚀"
+    icon: "🚀",
+    razorpayId: "active",
+    actionText: "Become a Patron Now"
   },
   { 
     id: "shot",
     name: "Shot in the arm", 
     amount: "1,201", 
     description: "Sustains development for specific API maintenance tasks.",
-    icon: "💉"
+    icon: "💉",
+    razorpayId: "active",
+    actionText: "Give a Shot Now"
   },
   { 
     id: "steward",
     name: "Steward", 
     amount: "2,501", 
     description: "Funds comprehensive system integrity monitoring for 1 year.",
-    icon: "🤝"
+    icon: "🤝",
+    razorpayId: "active",
+    actionText: "Become a Steward Now"
   },
   { 
     id: "founding",
     name: "Founding Member", 
     amount: "5,001", 
     description: "Ensures long-term sustainability and baseline technical support.",
-    icon: "💎"
+    icon: "💎",
+    razorpayId: "active",
+    actionText: "Become a Founder Now"
   },
   { 
     id: "guardian",
     name: "Infrastructure Guardian", 
     amount: "10,001", 
     description: "Funds security audits and performance tuning for the ledger.",
-    icon: "🏰"
+    icon: "🏰",
+    razorpayId: "active",
+    actionText: "Guard the Ledger Now"
   },
   { 
     id: "partner",
     name: "Architecture Partner", 
     amount: "25,001", 
     description: "Sustains maintenance for trust algorithms and cross-platform syncing.",
-    icon: "🏗️"
+    icon: "🏗️",
+    razorpayId: "active",
+    actionText: "Partner With Us Now"
   },
   { 
     id: "anchor",
     name: "Ecosystem Anchor", 
     amount: "50,001", 
     description: "Sustains core infrastructure and architectural evolution.",
-    icon: "⚓"
+    icon: "⚓",
+    razorpayId: "active",
+    actionText: "Anchor the Ecosystem Now"
   },
   {
     id: "institutional",
@@ -98,6 +116,24 @@ export default function SupportSection() {
   const startRotation = useRef(0);
 
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    mobile: "",
+    organization: "",
+    country: ""
+  });
+
+  const isFormValid = formData.name.trim() !== "" && 
+                      formData.email.trim() !== "" && 
+                      formData.mobile.trim() !== "" && 
+                      formData.country.trim() !== "";
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handlePayment = async () => {
     if (!selectedTier || selectedTier.razorpayId === "institutional") return;
@@ -114,7 +150,14 @@ export default function SupportSection() {
           amount: testAmount,
           currency: 'INR',
           tier: selectedTier.id,
-          description: selectedTier.name
+          description: selectedTier.name,
+          notes: {
+            name: formData.name,
+            email: formData.email,
+            mobile: formData.mobile,
+            org: formData.organization || "Individual",
+            country: formData.country
+          }
         })
       });
       
@@ -131,16 +174,21 @@ export default function SupportSection() {
         image: "https://prohealthledger.org/favicon.ico", // Or appropriate logo URL
         order_id: order.id,
         handler: function (response) {
-          // Success! Webhook will handle data persistence
-          alert(`Thank you for your ${selectedTier.name} sponsorship! Payment ID: ${response.razorpay_payment_id}`);
+          alert("Thank you so much for sponsoring us! This means a lot to us. :)");
+          window.location.href = '/profiles';
         },
         prefill: {
-          name: "",
-          email: "",
-          contact: ""
+          name: formData.name,
+          email: formData.email,
+          contact: formData.mobile
         },
         notes: {
-          tier: selectedTier.id
+          tier: selectedTier.id,
+          name: formData.name,
+          email: formData.email,
+          mobile: formData.mobile,
+          org: formData.organization || "Individual",
+          country: formData.country
         },
         theme: {
           color: "#1e3a5f" // Matches the dark blue nav bar
@@ -359,24 +407,31 @@ export default function SupportSection() {
                   <a href="/contact" className="partner-contact-btn">Contact for Institutional Partnership</a>
                 </div>
               ) : selectedTier.razorpayId ? (
-                <div className="payment-button-wrapper" style={{ minHeight: "80px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                  <button 
-                    onClick={handlePayment} 
-                    disabled={isProcessing}
-                    className="nav-auth-btn"
-                    style={{ padding: "12px 24px", fontSize: "1.1rem", cursor: isProcessing ? "not-allowed" : "pointer" }}
-                  >
-                    {isProcessing ? "Processing..." : `Sponsor ₹${selectedTier.amount} Now`}
-                  </button>
+                <div className="sponsor-checkout-form">
+                  <div className="form-group-row">
+                    <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="Full Name *" required className="search-input" style={{flex: 1, marginBottom: '12px'}} />
+                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="Email Address *" required className="search-input" style={{flex: 1, marginBottom: '12px'}} />
+                  </div>
+                  <div className="form-group-row">
+                    <input type="tel" name="mobile" value={formData.mobile} onChange={handleInputChange} placeholder="Mobile Number *" required className="search-input" style={{flex: 1, marginBottom: '12px'}} />
+                    <input type="text" name="country" value={formData.country} onChange={handleInputChange} placeholder="Country *" required className="search-input" style={{flex: 1, marginBottom: '12px'}} />
+                  </div>
+                  <input type="text" name="organization" value={formData.organization} onChange={handleInputChange} placeholder="Organization (Optional)" className="search-input" style={{width: '100%', marginBottom: '20px'}} />
+                  
+                  <div className="payment-button-wrapper" style={{ minHeight: "80px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+                    <button 
+                      onClick={handlePayment} 
+                      disabled={isProcessing || !isFormValid}
+                      className="nav-auth-btn"
+                      style={{ padding: "12px 24px", fontSize: "1.1rem", cursor: (isProcessing || !isFormValid) ? "not-allowed" : "pointer", opacity: (!isFormValid && !isProcessing) ? 0.6 : 1 }}
+                    >
+                      {isProcessing ? "Processing..." : selectedTier.actionText}
+                    </button>
+                    {!isFormValid && <span style={{fontSize: "0.8rem", color: "var(--nav-fg-subtle)", marginTop: "8px"}}>Please fill all required (*) fields to continue</span>}
+                  </div>
                 </div>
-              ) : (
-                <div className="manual-payment-notice">
-                  <p className="notice-text">
-                    This tier is currently being integrated into our automated workflow.
-                  </p>
-                </div>
-              )}
-              <div className="payment-security-footer">
+              ) : null}
+              <div className="payment-security-footer" style={{marginTop: "20px"}}>
                 <p>Secure & Legally Compliant Sponsorship via Razorpay</p>
               </div>
             </div>
