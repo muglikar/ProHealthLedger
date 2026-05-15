@@ -8,7 +8,8 @@ const csp = [
   "font-src 'self' data: https:",
   "style-src 'self' 'unsafe-inline' https:",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
-  "connect-src 'self' https://api.github.com https://api.linkedin.com https://www.linkedin.com",
+  "connect-src 'self' https://api.github.com https://api.linkedin.com https://www.linkedin.com https://*.razorpay.com https://razorpay.com",
+  "frame-src 'self' https://*.razorpay.com https://razorpay.com",
   "form-action 'self'",
   "upgrade-insecure-requests",
 ].join("; ");
