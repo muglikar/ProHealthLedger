@@ -1,4 +1,5 @@
 import ObfuscatedEmail from "@/app/components/ObfuscatedEmail";
+import ContactForm from "@/app/components/ContactForm";
 
 export const metadata = {
   title: "Contact Us — ProHealthLedger",
@@ -17,19 +18,31 @@ export default function ContactPage() {
         <section className="legal-section">
           <h2>1. General Inquiries & Support</h2>
           <p>
-            For technical support, feedback on the SaaS utility, or questions about the technical accountability tool, please reach out via email:
+            For technical support, feedback on the SaaS utility, or questions about the technical accountability tool, please reach out via email or use the form below:
           </p>
-          <p>
-            <strong>Email:</strong>{" "}
-            <ObfuscatedEmail
-              userChars={[
-                97, 110, 97, 110, 100, 109, 117, 103, 108, 105, 107, 97, 114,
-                43, 112, 104, 108,
-              ]}
-              domainChars={[103, 109, 97, 105, 108]}
-              tldChars={[99, 111, 109]}
-            />
-          </p>
+          <div style={{ marginBottom: '30px' }}>
+            <p>
+              <strong>Email:</strong>{" "}
+              <ObfuscatedEmail
+                userChars={[
+                  97, 110, 97, 110, 100, 109, 117, 103, 108, 105, 107, 97, 114,
+                  43, 112, 104, 108,
+                ]}
+                domainChars={[103, 109, 97, 105, 108]}
+                tldChars={[99, 111, 109]}
+              />
+            </p>
+          </div>
+          
+          <div className="contact-form-container" style={{ 
+            background: '#ffffff', 
+            padding: '30px', 
+            borderRadius: '20px', 
+            boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+            marginTop: '20px'
+          }}>
+            <ContactForm />
+          </div>
         </section>
 
         <section className="legal-section">
