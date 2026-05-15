@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Script from "next/script";
 
 // RazorpayButton component removed to allow native sequential pre-rendering
 
@@ -137,11 +136,26 @@ export default function SupportSection() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Dynamically load Razorpay checkout script
+  const loadRazorpayScript = () => {
+    return new Promise((resolve, reject) => {
+      if (window.Razorpay) { resolve(); return; }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('Failed to load Razorpay SDK'));
+      document.body.appendChild(script);
+    });
+  };
+
   const handlePayment = async () => {
     if (!selectedTier || selectedTier.razorpayId === "institutional") return;
     setIsProcessing(true);
 
     try {
+      // 0. Ensure Razorpay SDK is loaded
+      await loadRazorpayScript();
+
       // 1. Create order on backend (Amount hardcoded to INR 1 for testing)
       const testAmount = '1'; // INR 1 for testing
 
@@ -529,8 +543,6 @@ export default function SupportSection() {
         </div>
       )}
 
-      {/* Load Razorpay Checkout Script Globally */}
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="beforeInteractive" />
     </section>
   );
 }
