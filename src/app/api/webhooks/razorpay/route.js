@@ -22,19 +22,12 @@ export async function POST(req) {
   const payload = JSON.parse(body);
   const event = payload.event;
 
-  // Mapping button IDs to Tiers for reliability
-  const TIER_MAP = {
-    "pl_SpXARLspaT6MIJ": "Supporter",
-    // Add other IDs here as they become available
-  };
-
   if (event === "payment.captured") {
     const payment = payload.payload.payment.entity;
-    const buttonId = payment.payment_button_id;
     
-    // Extract metadata from notes or entity
+    // Extract metadata from notes (passed via Standard Checkout) or entity
     const sponsorData = {
-      tier: TIER_MAP[buttonId] || payment.notes?.tier || payment.description || "Unknown",
+      tier: payment.notes?.tier || payment.description || "Unknown",
       name: payment.notes?.name || payment.notes?.full_name || payment.customer_details?.name || "Anonymous",
       email: payment.email || payment.notes?.email || "N/A",
       org: payment.notes?.org || payment.notes?.organization || "Individual",
