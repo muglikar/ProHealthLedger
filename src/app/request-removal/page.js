@@ -48,10 +48,7 @@ export default function RequestRemovalPage() {
     <>
       <div className="page-header">
         <h1>Request Profile Removal</h1>
-        <p>
-          Submit your request privately. Do not open a public GitHub issue for
-          this anymore.
-        </p>
+        <p>Submit your request privately using the form below.</p>
       </div>
       <form className="vote-form" onSubmit={onSubmit}>
         {error ? <div className="form-error">{error}</div> : null}
