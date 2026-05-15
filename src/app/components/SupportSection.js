@@ -3,36 +3,33 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
 function RazorpayButton({ buttonId }) {
-  const containerRef = useRef(null);
+  const formRef = useRef(null);
 
   useEffect(() => {
     if (!buttonId) return;
     
-    const container = containerRef.current;
-    if (!container) return;
+    const form = formRef.current;
+    if (!form) return;
 
-    container.innerHTML = "";
+    // Clear previous script/button if re-rendering
+    form.innerHTML = "";
     
-    // Exact form/script structure from the user
-    const form = document.createElement("form");
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/payment-button.js";
-    script.dataset.payment_button_id = buttonId;
+    script.setAttribute("data-payment_button_id", buttonId);
     script.async = true;
     
     form.appendChild(script);
-    container.appendChild(form);
 
     return () => {
-      // No cleanup to avoid script removal issues
+      if (form) form.innerHTML = "";
     };
   }, [buttonId]);
 
   return (
-    <div 
-      key={buttonId} 
-      ref={containerRef} 
-      className="razorpay-button-container" 
+    <form 
+      ref={formRef} 
+      className="razorpay-button-form" 
       style={{ minHeight: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
     />
   );
