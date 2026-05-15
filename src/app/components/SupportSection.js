@@ -45,7 +45,7 @@ const SPONSOR_TIERS = [
     amount: "101", 
     description: "Sustains baseline server infrastructure for 1 month.",
     icon: "🌟",
-    razorpayId: "pl_Sok3VlpzXQxTPS"
+    razorpayId: "pl_SpXARLspaT6MIJ"
   },
   { 
     id: "evangelist",

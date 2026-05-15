@@ -659,8 +659,7 @@ export default function PrivacyPolicyPage() {
             </li>
           </ul>
           <p>
-            To exercise these rights, open a GitHub Issue or contact us at the
-            address below.
+            To exercise these rights, please contact us at the address below.
           </p>
 
           <h3>8.4 Under the Information Technology Act, 2000 (India)</h3>
@@ -905,17 +904,6 @@ export default function PrivacyPolicyPage() {
             request deletion of your GitHub or LinkedIn data, please:
           </p>
           <ul>
-            <li>
-              Open a{" "}
-              <a
-                href="https://github.com/muglikar/ProHealthLedger/issues"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                GitHub Issue
-              </a>{" "}
-              on the repository, or
-            </li>
             <li>
               Email:{" "}
               <ObfuscatedEmail
