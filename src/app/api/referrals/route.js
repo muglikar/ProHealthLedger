@@ -5,7 +5,7 @@ import {
   getReferralsByUser,
   getAllReferrals,
 } from "@/lib/referrals";
-import { formatProfessionalDisplayName } from "@/lib/profiles";
+import { formatProfessionalDisplayName, cleanLinkedInNameDecorators } from "@/lib/profiles";
 import {
   envLimit,
   getClientIp,
@@ -98,7 +98,8 @@ export async function GET(req) {
     // Identity tracking: Map signup IDs to names
     const { data: users } = await readDataFile("data/users/_index.json").catch(() => ({ data: [] }));
     const userMap = (Array.isArray(users) ? users : []).reduce((acc, u) => {
-      acc[u.user_id] = u.display_name || u.github_username || u.user_id;
+      const rawName = u.display_name || u.github_username || u.user_id;
+      acc[u.user_id] = cleanLinkedInNameDecorators(rawName);
       return acc;
     }, {});
 
@@ -125,7 +126,11 @@ export async function GET(req) {
     const enrich = (list) => list.map(r => ({
       ...r,
       profile_linkedin_url: slugToUrlMap[r.profile_slug] || null,
-      signup_names: (r.signups || []).map(id => userMap[id] || id),
+      signup_names: (r.signups || []).map((id, idx) => {
+        const storedName = r.signup_names?.[idx];
+        const rawName = (storedName && storedName !== id) ? storedName : (userMap[id] || id);
+        return cleanLinkedInNameDecorators(rawName);
+      }),
       signup_profiles: (r.signups || []).map(id => {
         if (userProfileMap[id]) return userProfileMap[id];
         if (id.startsWith("github:")) return `https://github.com/${id.split(":")[1]}`;

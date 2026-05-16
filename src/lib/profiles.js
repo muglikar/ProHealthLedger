@@ -6,6 +6,34 @@ function normalizeDisplayWhitespace(s) {
 }
 
 /**
+ * Clean common LinkedIn professional decorators (prefixes like Er, Dr and suffixes like IITB, MBA).
+ */
+export function cleanLinkedInNameDecorators(name) {
+  if (!name || typeof name !== "string") return "";
+  
+  let cleaned = name.trim();
+  
+  // 1. Remove common professional prefixes (case-insensitive, followed by space or dot)
+  // Er: Engineer, Ar: Architect, Adv: Advocate, Prof: Professor, etc.
+  const prefixRegex = /^\s*(?:Er|Ar|Dr|Adv|Prof|Vaidya|Engr|Capt|Major|Col|Gen|Ms|Mr|Mrs)\.?\s+/i;
+  cleaned = cleaned.replace(prefixRegex, "");
+  
+  // 2. Remove common institutional/degree suffixes (case-insensitive, at the end)
+  // IITB, IIM, BITS, NIT, MBA, PhD, CA, CS, etc.
+  // We look for these either in brackets or as standalone tokens at the end.
+  const suffixRegex = /\s*[\(\[]?(?:IIT[A-Z]?|IIM[A-Z]?|BITS|NIT[A-Z]?|IIIT[A-Z]?|VIT|SRM|MBA|PHD|CA|CS|CFA|FRM|BE|BTECH|MTECH|MBBS|MD|MS)[\)\]]?\s*$/i;
+  
+  // Loop a couple of times to catch multiple suffixes (e.g. "Name IITB MBA")
+  let prev;
+  do {
+    prev = cleaned;
+    cleaned = cleaned.replace(suffixRegex, "");
+  } while (cleaned !== prev);
+
+  return cleaned.trim();
+}
+
+/**
  * Standalone token that looks like a LinkedIn-style opaque id (e.g. A150839a), not a normal name word.
  */
 function isOpaqueAffixToken(t) {
@@ -43,6 +71,7 @@ function stripOpaqueSuffixFromHyphenated(s) {
 function sanitizeProfessionalDisplayString(raw) {
   let s = normalizeDisplayWhitespace(String(raw || ""));
   if (!s) return "";
+  s = cleanLinkedInNameDecorators(s);
   s = stripOpaqueSuffixFromHyphenated(s);
   let parts = s.split(" ").filter(Boolean);
   parts = stripOpaqueAffixTokensFromParts(parts);

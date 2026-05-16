@@ -44,7 +44,11 @@ export async function POST(req) {
   }
 
   try {
-    const referral = await recordSignup(refCode, session.userId);
+    const referral = await recordSignup(
+      refCode, 
+      session.userId, 
+      session.user?.name || session.displayName || session.userId
+    );
     if (!referral) {
       return Response.json(
         { error: "Unknown referral code." },
