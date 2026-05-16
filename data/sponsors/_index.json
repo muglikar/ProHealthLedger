@@ -11,5 +11,18 @@
     "timestamp": "2026-05-15T12:02:55.007Z",
     "razorpay_payment_id": "pay_SpdIScdoYqXIuM",
     "razorpay_order_id": "order_SpdI3XtgHACbeM"
+  },
+  {
+    "tier": "anchor",
+    "name": "Anand Muglikar",
+    "email": "muglikar@gmail.com",
+    "mobile": "+919766658628",
+    "org": "StomatoBot",
+    "country": "India",
+    "amount": "1",
+    "currency": "INR",
+    "timestamp": "2026-05-16T17:35:39.757Z",
+    "razorpay_payment_id": "pay_Sq7V3yw5CCDoLi",
+    "razorpay_order_id": "order_Sq7URRtAjfyY0J"
   }
 ]
