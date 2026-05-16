@@ -158,14 +158,14 @@ export default function SupportSection() {
       // 0. Ensure Razorpay SDK is loaded
       await loadRazorpayScript();
 
-      // 1. Create order on backend (Amount hardcoded to INR 1 for testing)
-      const testAmount = '1'; // INR 1 for testing
+      // 1. Create order on backend using actual tier amount
+      const actualAmount = selectedTier.amount.replace(/,/g, '');
 
       const res = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: testAmount,
+          amount: actualAmount,
           currency: 'INR',
           tier: selectedTier.id,
           description: selectedTier.name,
@@ -204,7 +204,7 @@ export default function SupportSection() {
                 mobile: formData.mobile,
                 org: formData.organization || "Individual",
                 country: formData.country,
-                amount: testAmount,
+                amount: actualAmount,
                 currency: 'INR',
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id
