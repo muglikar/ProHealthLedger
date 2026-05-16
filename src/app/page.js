@@ -100,21 +100,21 @@ export default function Home() {
           <ol className="home-steps-compact" role="list">
             <li>
               <span className="home-step-num">1</span>
-              <strong className="home-step-label">Share</strong>
+              <strong className="home-step-label">📤 Share</strong>
               <span className="home-step-desc">
                 Paste a LinkedIn URL; answer the one question (optional reason).
               </span>
             </li>
             <li>
               <span className="home-step-num">2</span>
-              <strong className="home-step-label">Public record</strong>
+              <strong className="home-step-label">📜 Public record</strong>
               <span className="home-step-desc">
                 Stored in the open audit trail. No edits after submit.
               </span>
             </li>
             <li>
               <span className="home-step-num">3</span>
-              <strong className="home-step-label">Look up</strong>
+              <strong className="home-step-label">🔍 Look up</strong>
               <span className="home-step-desc">
                 Check vouches and flags before you hire, partner, or join.
               </span>
