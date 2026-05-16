@@ -76,23 +76,25 @@ export async function recordClick(refCode) {
 /**
  * Record that a new user signed up via a referral code.
  */
-export async function recordSignup(refCode, newUserId) {
+export async function recordSignup(refCode, newUserId, newDisplayName) {
   const { data: referrals, sha } = await readDataFile(DATA_PATH);
   const referral = referrals.find((r) => r.ref_code === refCode);
   if (!referral) return null;
 
   if (!Array.isArray(referral.signups)) referral.signups = [];
+  if (!Array.isArray(referral.signup_names)) referral.signup_names = [];
 
   // Avoid duplicates
   if (referral.signups.includes(newUserId)) return referral;
 
   referral.signups.push(newUserId);
+  referral.signup_names.push(newDisplayName || newUserId);
 
   await writeDataFile(
     DATA_PATH,
     referrals,
     sha,
-    `Signup via referral ${refCode}: ${newUserId}`
+    `Signup via referral ${refCode}: ${newUserId} (${newDisplayName || 'No Name'})`
   );
 
   return referral;
