@@ -67,7 +67,7 @@ const SPONSOR_TIERS = [
     description: "Ensures long-term sustainability and baseline technical support.",
     icon: "💎",
     razorpayId: "active",
-    actionText: "Become a Founder Now"
+    actionText: "Become a Founding Member"
   },
   { 
     id: "guardian",
