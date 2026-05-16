@@ -160,6 +160,7 @@ export default function Home() {
         <h2 className="section-title">Why does this exist?</h2>
         <div className="why-grid">
           <div className="why-card">
+            <div className="why-card-icon" style={{ fontSize: "2rem", marginBottom: "12px" }}>🔗</div>
             <h3>References are broken</h3>
             <p>
               Traditional references are curated — people only list contacts
@@ -168,6 +169,7 @@ export default function Home() {
             </p>
           </div>
           <div className="why-card">
+            <div className="why-card-icon" style={{ fontSize: "2rem", marginBottom: "12px" }}>🎒</div>
             <h3>Reputation should be portable</h3>
             <p>
               Your professional track record shouldn&apos;t vanish when you
@@ -176,6 +178,7 @@ export default function Home() {
             </p>
           </div>
           <div className="why-card">
+            <div className="why-card-icon" style={{ fontSize: "2rem", marginBottom: "12px" }}>👁️</div>
             <h3>Transparency protects everyone</h3>
             <p>
               When professional conduct is publicly visible, it creates
