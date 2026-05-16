@@ -107,36 +107,54 @@ export async function GET(req) {
     const { data: allProfilesRaw } = await readDataFile("data/profiles/_index.json").catch(() => ({ data: [] }));
     const userProfileMap = {};
     const slugToUrlMap = {};
+    const slugToNameMap = {};
 
     if (Array.isArray(allProfilesRaw)) {
       allProfilesRaw.forEach(p => {
-        if (p.slug && p.linkedin_url) {
-          slugToUrlMap[p.slug] = p.linkedin_url;
+        if (p.slug) {
+          if (p.linkedin_url) slugToUrlMap[p.slug] = p.linkedin_url;
+          if (p.public_name) slugToNameMap[p.slug] = cleanLinkedInNameDecorators(p.public_name);
         }
         if (p.submissions) {
           p.submissions.forEach(s => {
-            if (s.user && s.submitter_linkedin_url) {
-              userProfileMap[s.user] = s.submitter_linkedin_url;
+            if (s.user) {
+              if (s.display_name && !userMap[s.user]) {
+                userMap[s.user] = cleanLinkedInNameDecorators(s.display_name);
+              }
+              if (s.submitter_linkedin_url) {
+                userProfileMap[s.user] = s.submitter_linkedin_url;
+              }
             }
           });
         }
       });
     }
 
-    const enrich = (list) => list.map(r => ({
-      ...r,
-      profile_linkedin_url: slugToUrlMap[r.profile_slug] || null,
-      signup_names: (r.signups || []).map((id, idx) => {
-        const storedName = r.signup_names?.[idx];
-        const rawName = (storedName && storedName !== id) ? storedName : (userMap[id] || id);
-        return cleanLinkedInNameDecorators(rawName);
-      }),
-      signup_profiles: (r.signups || []).map(id => {
-        if (userProfileMap[id]) return userProfileMap[id];
-        if (id.startsWith("github:")) return `https://github.com/${id.split(":")[1]}`;
-        return null;
-      })
-    }));
+    const enrich = (list) => list.map(r => {
+      let displayName = slugToNameMap[r.profile_slug] || r.profile_name || "";
+      if (!displayName || displayName === r.profile_slug) {
+        // Format slug nicely if name is missing
+        displayName = r.profile_slug === "__home__" 
+          ? "General Platform Link" 
+          : r.profile_slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      }
+      
+      return {
+        ...r,
+        profile_name: cleanLinkedInNameDecorators(displayName),
+        profile_linkedin_url: slugToUrlMap[r.profile_slug] || null,
+        signup_names: (r.signups || []).map((id, idx) => {
+          const storedName = r.signup_names?.[idx];
+          const rawName = (storedName && storedName !== id) ? storedName : (userMap[id] || id);
+          return cleanLinkedInNameDecorators(rawName);
+        }),
+        signup_profiles: (r.signups || []).map(id => {
+          if (userProfileMap[id]) return userProfileMap[id];
+          if (id.startsWith("github:")) return `https://github.com/${id.split(":")[1]}`;
+          return null;
+        })
+      };
+    });
 
     if (allMode) {
       if (!session.siteAdmin) {

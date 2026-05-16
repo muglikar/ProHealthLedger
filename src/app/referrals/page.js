@@ -253,10 +253,10 @@ export default function ReferralsPage() {
                       ) : (
                         r.profile_linkedin_url ? (
                           <a href={r.profile_linkedin_url} target="_blank" rel="noopener noreferrer" className="target-link">
-                            {r.profile_name || r.profile_slug}
+                            {r.profile_name}
                           </a>
                         ) : (
-                          r.profile_name || r.profile_slug
+                          r.profile_name
                         )
                       )}
                     </td>

@@ -200,6 +200,36 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers,
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (!user?.id || !user?.name) return true;
+      try {
+        const filePath = "data/users/_index.json";
+        const { data: users, sha } = await readRepoJson(filePath);
+        const userList = Array.isArray(users) ? users : [];
+        
+        const existingIdx = userList.findIndex(u => u.user_id === user.id);
+        const userData = {
+          user_id: user.id,
+          display_name: user.name,
+          email: user.email || null,
+          image: user.image || null,
+          last_login: new Date().toISOString()
+        };
+
+        if (existingIdx >= 0) {
+          // Update existing
+          userList[existingIdx] = { ...userList[existingIdx], ...userData };
+        } else {
+          // Add new
+          userList.push(userData);
+        }
+
+        await writeRepoJson(filePath, userList, sha, `auth: record user ${user.id}`);
+      } catch (e) {
+        console.error("Failed to persist user to index:", e);
+      }
+      return true;
+    },
     async jwt({ token, account, profile }) {
       if (account && profile) {
         if (account.provider === "github") {
