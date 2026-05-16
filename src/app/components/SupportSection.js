@@ -517,32 +517,33 @@ export default function SupportSection() {
               <div className="pre-checkout-row">
                 <div className="pre-checkout-input-group">
                   <label>Full Name *</label>
-                  <input type="text" name="name" value={formData.name} onChange={handleInputChange} className="pre-checkout-input" placeholder="Satoshi Nakamoto" disabled={isProcessing} />
+                  <input type="text" name="name" value={formData.name} onChange={handleInputChange} className="pre-checkout-input" placeholder="e.g. Anand Muglikar" required disabled={isProcessing} />
                 </div>
                 <div className="pre-checkout-input-group">
                   <label>Email Address *</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="pre-checkout-input" placeholder="satoshi@example.com" disabled={isProcessing} />
+                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="pre-checkout-input" placeholder="email@example.com" required disabled={isProcessing} />
                 </div>
               </div>
               <div className="pre-checkout-row">
                 <div className="pre-checkout-input-group">
                   <label>Mobile Number *</label>
-                  <input type="tel" name="mobile" value={formData.mobile} onChange={handleInputChange} className="pre-checkout-input" placeholder="+91 98765 43210" disabled={isProcessing} />
+                  <input type="tel" name="mobile" value={formData.mobile} onChange={handleInputChange} className="pre-checkout-input" placeholder="+91 98765 43210" required disabled={isProcessing} />
                 </div>
                 <div className="pre-checkout-input-group">
                   <label>Country *</label>
-                  <input type="text" name="country" value={formData.country} onChange={handleInputChange} className="pre-checkout-input" placeholder="India" disabled={isProcessing} />
+                  <input type="text" name="country" value={formData.country} onChange={handleInputChange} className="pre-checkout-input" placeholder="e.g. India" required disabled={isProcessing} />
                 </div>
               </div>
               <div className="pre-checkout-input-group">
                 <label>Organization (Optional)</label>
-                <input type="text" name="organization" value={formData.organization} onChange={handleInputChange} className="pre-checkout-input" placeholder="ProHealthLedger Foundation" disabled={isProcessing} />
+                <input type="text" name="organization" value={formData.organization} onChange={handleInputChange} className="pre-checkout-input" placeholder="Company or Institution Name" disabled={isProcessing} />
               </div>
 
               <button 
                 className="pre-checkout-submit" 
                 onClick={handlePayment} 
                 disabled={isProcessing || !isFormValid}
+                title={!isFormValid ? "Please fill in all required fields marked with *" : ""}
               >
                 {isProcessing ? "Connecting to Secure Gateway..." : "Proceed to Payment"}
               </button>
