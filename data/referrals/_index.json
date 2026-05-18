@@ -176,5 +176,15 @@
     "created_at": "2026-05-18",
     "clicks": 1,
     "signups": []
+  },
+  {
+    "ref_code": "e03246f4",
+    "sharer_id": "linkedin:CAOSO1oig0",
+    "sharer_name": "Anand Muglikar",
+    "profile_slug": "tirthankarsen243",
+    "profile_name": "Tirthankar Sen",
+    "created_at": "2026-05-18",
+    "clicks": 0,
+    "signups": []
   }
 ]
