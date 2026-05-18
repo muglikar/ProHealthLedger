@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import ContactForm from "./ContactForm";
+import { COUNTRIES } from "../../lib/countries";
 
 // RazorpayButton component removed to allow native sequential pre-rendering
 
@@ -517,26 +518,39 @@ export default function SupportSection() {
               <div className="pre-checkout-row">
                 <div className="pre-checkout-input-group">
                   <label>Full Name *</label>
-                  <input type="text" name="name" value={formData.name} onChange={handleInputChange} className="pre-checkout-input" placeholder="e.g. Anand Muglikar" required disabled={isProcessing} />
+                  <input type="text" name="name" value={formData.name} onChange={handleInputChange} className="pre-checkout-input" placeholder="Harold Finch" required disabled={isProcessing} />
                 </div>
                 <div className="pre-checkout-input-group">
                   <label>Email Address *</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="pre-checkout-input" placeholder="email@example.com" required disabled={isProcessing} />
+                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="pre-checkout-input" placeholder="harold@example.com" required disabled={isProcessing} />
                 </div>
               </div>
               <div className="pre-checkout-row">
                 <div className="pre-checkout-input-group">
                   <label>Mobile Number *</label>
-                  <input type="tel" name="mobile" value={formData.mobile} onChange={handleInputChange} className="pre-checkout-input" placeholder="+91 98765 43210" required disabled={isProcessing} />
+                  <input type="tel" name="mobile" value={formData.mobile} onChange={handleInputChange} className="pre-checkout-input" placeholder="+31-41592 65359" required disabled={isProcessing} />
                 </div>
                 <div className="pre-checkout-input-group">
                   <label>Country *</label>
-                  <input type="text" name="country" value={formData.country} onChange={handleInputChange} className="pre-checkout-input" placeholder="e.g. India" required disabled={isProcessing} />
+                  <select 
+                    name="country" 
+                    value={formData.country} 
+                    onChange={handleInputChange} 
+                    className="pre-checkout-input" 
+                    required 
+                    disabled={isProcessing}
+                    style={{ WebkitAppearance: 'none', appearance: 'none', background: '#f8fafc url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 12px center' }}
+                  >
+                    <option value="" disabled>Select your country</option>
+                    {COUNTRIES.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div className="pre-checkout-input-group">
                 <label>Organization (Optional)</label>
-                <input type="text" name="organization" value={formData.organization} onChange={handleInputChange} className="pre-checkout-input" placeholder="Company or Institution Name" disabled={isProcessing} />
+                <input type="text" name="organization" value={formData.organization} onChange={handleInputChange} className="pre-checkout-input" placeholder="Thornhill Corporation" disabled={isProcessing} />
               </div>
 
               <button 
