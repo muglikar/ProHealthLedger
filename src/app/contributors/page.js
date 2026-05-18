@@ -105,11 +105,10 @@ export default function ContributorsPage() {
                   </div>
                 </div>
                 <span
-                  className={`karma-status ${
-                    user.yes_count >= 1 && flagLeft > 0
+                  className={`karma-status ${user.yes_count >= 1 && flagLeft > 0
                       ? "karma-good"
                       : "karma-pending"
-                  }`}
+                    }`}
                 >
                   {user.yes_count < 1
                     ? "Vouch first"
