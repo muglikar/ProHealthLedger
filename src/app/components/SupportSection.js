@@ -7,91 +7,91 @@ import { COUNTRIES } from "../../lib/countries";
 // RazorpayButton component removed to allow native sequential pre-rendering
 
 const SPONSOR_TIERS = [
-  { 
+  {
     id: "supporter",
-    name: "Supporter", 
-    amount: "101", 
+    name: "Supporter",
+    amount: "101",
     description: "Sustains baseline server infrastructure for 1 month.",
     icon: "🌟",
     razorpayId: "active",
     actionText: "Support Now"
   },
-  { 
+  {
     id: "evangelist",
-    name: "Evangelist", 
-    amount: "301", 
+    name: "Evangelist",
+    amount: "301",
     description: "Sustains high-availability cloud hosting for 3 months.",
     icon: "📣",
     razorpayId: "active",
     actionText: "Evangelize Now"
   },
-  { 
+  {
     id: "advocate",
-    name: "Advocate", 
-    amount: "601", 
+    name: "Advocate",
+    amount: "601",
     description: "Supports technical maintenance and database scaling for 6 months.",
     icon: "🛡️",
     razorpayId: "active",
     actionText: "Advocate Now"
   },
-  { 
+  {
     id: "patron",
-    name: "Patron", 
-    amount: "1,201", 
+    name: "Patron",
+    amount: "1,201",
     description: "Funds backend security optimizations and maintenance for 6 months.",
     icon: "🚀",
     razorpayId: "active",
     actionText: "Become a Patron Now"
   },
-  { 
+  {
     id: "shot",
-    name: "Shot in the arm", 
-    amount: "1,201", 
+    name: "Shot in the arm",
+    amount: "1,201",
     description: "Sustains development for specific API maintenance tasks.",
     icon: "💉",
     razorpayId: "active",
     actionText: "Give a Shot Now"
   },
-  { 
+  {
     id: "steward",
-    name: "Steward", 
-    amount: "2,501", 
+    name: "Steward",
+    amount: "2,501",
     description: "Funds comprehensive system integrity monitoring for 1 year.",
     icon: "🤝",
     razorpayId: "active",
     actionText: "Become a Steward Now"
   },
-  { 
+  {
     id: "founding",
-    name: "Founding Member", 
-    amount: "5,001", 
+    name: "Founding Member",
+    amount: "5,001",
     description: "Ensures long-term sustainability and baseline technical support.",
     icon: "💎",
     razorpayId: "active",
     actionText: "Become a Founding Member"
   },
-  { 
+  {
     id: "guardian",
-    name: "Infrastructure Guardian", 
-    amount: "10,001", 
+    name: "Infrastructure Guardian",
+    amount: "10,001",
     description: "Funds security audits and performance tuning for the ledger.",
     icon: "🏰",
     razorpayId: "active",
     actionText: "Guard the Ledger Now"
   },
-  { 
+  {
     id: "partner",
-    name: "Architecture Partner", 
-    amount: "25,001", 
+    name: "Architecture Partner",
+    amount: "25,001",
     description: "Sustains maintenance for trust algorithms and cross-platform syncing.",
     icon: "🏗️",
     razorpayId: "active",
     actionText: "Partner With Us Now"
   },
-  { 
+  {
     id: "anchor",
-    name: "Ecosystem Anchor", 
-    amount: "50,001", 
+    name: "Ecosystem Anchor",
+    amount: "50,001",
     description: "Sustains core infrastructure and architectural evolution.",
     icon: "⚓",
     razorpayId: "active",
@@ -111,7 +111,7 @@ export default function SupportSection() {
   const [selectedTierId, setSelectedTierId] = useState(SPONSOR_TIERS[0].id);
   const [dragRotation, setDragRotation] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  
+
   const containerRef = useRef(null);
   const dragStartX = useRef(0);
   const startRotation = useRef(0);
@@ -120,7 +120,7 @@ export default function SupportSection() {
   const [showPreCheckoutModal, setShowPreCheckoutModal] = useState(false);
   const [showInstitutionalModal, setShowInstitutionalModal] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -129,10 +129,10 @@ export default function SupportSection() {
     country: ""
   });
 
-  const isFormValid = formData.name.trim() !== "" && 
-                      formData.email.trim() !== "" && 
-                      formData.mobile.trim() !== "" && 
-                      formData.country.trim() !== "";
+  const isFormValid = formData.name.trim() !== "" &&
+    formData.email.trim() !== "" &&
+    formData.mobile.trim() !== "" &&
+    formData.country.trim() !== "";
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -179,7 +179,7 @@ export default function SupportSection() {
           }
         })
       });
-      
+
       const order = await res.json();
       if (order.error) throw new Error(order.error);
 
@@ -233,7 +233,7 @@ export default function SupportSection() {
           color: "#1e3a5f"
         },
         modal: {
-          ondismiss: function() {
+          ondismiss: function () {
             setIsProcessing(false);
           }
         }
@@ -243,7 +243,7 @@ export default function SupportSection() {
       setShowPreCheckoutModal(false);
 
       const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', function (response){
+      rzp.on('payment.failed', function (response) {
         console.error(response.error);
         setIsProcessing(false);
       });
@@ -258,7 +258,7 @@ export default function SupportSection() {
   const selectedIndex = SPONSOR_TIERS.findIndex(t => t.id === selectedTierId);
   const tileCount = SPONSOR_TIERS.length;
   const angleStep = 360 / tileCount;
-  
+
   // Even smaller radius for closer tiles
   const radius = Math.round(70 / Math.tan(Math.PI / tileCount)) + 70;
 
@@ -272,13 +272,51 @@ export default function SupportSection() {
     setDragRotation(current + diff);
   }, [dragRotation, angleStep]);
 
+  const mobileStripRef = useRef(null);
+
+  // Center the "Supporter" tile on mount in the mobile horizontal strip
+  useEffect(() => {
+    const strip = mobileStripRef.current;
+    if (!strip) return;
+
+    const centerIndex = SPONSOR_TIERS.length * 2;
+
+    const timer = setTimeout(() => {
+      const cardElement = strip.children[centerIndex];
+      if (cardElement) {
+        const stripWidth = strip.clientWidth;
+        const cardWidth = cardElement.clientWidth;
+        const cardOffsetLeft = cardElement.offsetLeft;
+        strip.scrollLeft = cardOffsetLeft - (stripWidth / 2) + (cardWidth / 2);
+      }
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleMobileScroll = (e) => {
+    const strip = e.currentTarget;
+    if (!strip) return;
+
+    const singleSetWidth = strip.scrollWidth / 5;
+
+    // Wrap left to middle if scrolling near the start
+    if (strip.scrollLeft < singleSetWidth) {
+      strip.scrollLeft += singleSetWidth * 2;
+    }
+    // Wrap right to middle if scrolling near the end
+    else if (strip.scrollLeft > singleSetWidth * 3.5) {
+      strip.scrollLeft -= singleSetWidth * 2;
+    }
+  };
+
   // Sync drag rotation with selected index when not dragging
   useEffect(() => {
     if (!isDragging) {
       const targetBaseRotation = -selectedIndex * angleStep;
       const current = dragRotation;
       const diff = ((((targetBaseRotation - current) % 360) + 540) % 360) - 180;
-      
+
       // Only update if the difference is significant to avoid jitter
       if (Math.abs(diff) > 0.1) {
         setDragRotation(current + diff);
@@ -294,10 +332,10 @@ export default function SupportSection() {
     const handleWheel = (e) => {
       // If there's any movement, try to capture it
       const hasMovement = Math.abs(e.deltaX) > 0.5 || Math.abs(e.deltaY) > 0.5;
-      
+
       if (hasMovement) {
         if (e.cancelable) e.preventDefault();
-        
+
         // Prioritize deltaX on Mac, fallback to deltaY
         const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
         const sensitivity = 0.7; // Bumped
@@ -325,7 +363,7 @@ export default function SupportSection() {
   const handleDragEnd = () => {
     if (!isDragging) return;
     setIsDragging(false);
-    
+
     // Snap to nearest tier
     const nearestIdx = Math.round(-dragRotation / angleStep);
     const safeIdx = ((nearestIdx % tileCount) + tileCount) % tileCount;
@@ -339,7 +377,7 @@ export default function SupportSection() {
     handleDragStart(e.clientX);
     e.currentTarget.setPointerCapture(e.pointerId);
   };
-  
+
   const onPointerMove = (e) => {
     if (isDragging) {
       handleDragMove(e.clientX);
@@ -360,17 +398,17 @@ export default function SupportSection() {
       <div className="support-card-content">
         <div className="support-card-header">
           <div className="support-card-icon">
-            <img 
-              src="/icons/support.png" 
-              alt="Sponsor Icon" 
-              width="64" 
+            <img
+              src="/icons/support.png"
+              alt="Sponsor Icon"
+              width="64"
               height="64"
             />
           </div>
           <span className="hero-badge">Professional Sponsorship</span>
           <h3>Sponsor PHL Maintenance</h3>
         </div>
-        
+
         <p className="support-card-text">
           Sustain the ongoing development and server infrastructure of this open-source ledger.
         </p>
@@ -385,8 +423,8 @@ export default function SupportSection() {
             <span>Development</span>
           </div>
         </div>
-        
-        <div 
+
+        <div
           ref={containerRef}
           className="support-carousel-container"
           onPointerDown={onPointerDown}
@@ -396,9 +434,9 @@ export default function SupportSection() {
           onDragStart={(e) => e.preventDefault()}
           style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'none' }}
         >
-          <div 
+          <div
             className="support-carousel-3d-ring"
-            style={{ 
+            style={{
               transform: `rotateY(${dragRotation}deg)`,
               transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)'
             }}
@@ -408,7 +446,7 @@ export default function SupportSection() {
               const totalRotation = (rotation + dragRotation) % 360;
               const normalizedRotation = ((totalRotation + 540) % 360) - 180;
               const absRotation = Math.abs(normalizedRotation);
-              
+
               // Opacity: 1 at center (0deg), fades to 0.2 at 180deg (more visible back tiles)
               const opacity = Math.max(0.2, 1 - (absRotation / 160));
               const isSelected = selectedTierId === tier.id;
@@ -440,16 +478,30 @@ export default function SupportSection() {
         </div>
 
         {/* Mobile flat horizontal scroll strip */}
-        <div className="mobile-tier-strip">
-          {SPONSOR_TIERS.map((tier, idx) => {
+        <div className="mobile-tier-strip" ref={mobileStripRef} onScroll={handleMobileScroll}>
+          {[...SPONSOR_TIERS, ...SPONSOR_TIERS, ...SPONSOR_TIERS, ...SPONSOR_TIERS, ...SPONSOR_TIERS].map((tier, idx) => {
             const isSelected = selectedTierId === tier.id;
             return (
               <div
-                key={tier.id}
+                key={`${tier.id}-${idx}`}
                 className={`mobile-tier-card ${isSelected ? 'is-active' : ''}`}
-                onClick={() => {
+                onClick={(e) => {
                   setSelectedTierId(tier.id);
-                  snapToSelectedIndex(idx);
+
+                  // Center the clicked card in the viewport smoothly
+                  const strip = mobileStripRef.current;
+                  if (strip) {
+                    const card = e.currentTarget;
+                    const stripWidth = strip.clientWidth;
+                    strip.scrollTo({
+                      left: card.offsetLeft - (stripWidth / 2) + (card.clientWidth / 2),
+                      behavior: 'smooth'
+                    });
+                  }
+
+                  // Keep 3D desktop carousel in sync
+                  const realIdx = idx % SPONSOR_TIERS.length;
+                  snapToSelectedIndex(realIdx);
                 }}
               >
                 <span className="tier-tile-icon">{tier.icon}</span>
@@ -462,11 +514,11 @@ export default function SupportSection() {
 
         <div className="carousel-swipe-hint">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6"/>
+            <path d="M15 18l-6-6 6-6" />
           </svg>
           Swipe to explore
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 18l6-6-6-6"/>
+            <path d="M9 18l6-6-6-6" />
           </svg>
         </div>
 
@@ -476,13 +528,13 @@ export default function SupportSection() {
               <h3>{selectedTier.name}{selectedTier.amount !== "Contact" ? ` — ₹${selectedTier.amount}` : ``}</h3>
               <p>{selectedTier.description}</p>
             </div>
-            
+
             <div className="payment-action-area">
               {selectedTier.razorpayId === "institutional" ? (
                 <div className="institutional-partner-cta">
                   <p>Institutional sponsorships require manual onboarding and custom agreements.</p>
-                  <button 
-                    onClick={() => setShowInstitutionalModal(true)} 
+                  <button
+                    onClick={() => setShowInstitutionalModal(true)}
                     className="partner-contact-btn"
                     style={{ border: 'none', cursor: 'pointer', width: '100%' }}
                   >
@@ -491,8 +543,8 @@ export default function SupportSection() {
                 </div>
               ) : selectedTier.razorpayId ? (
                 <div className="payment-button-wrapper" style={{ minHeight: "80px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                  <button 
-                    onClick={() => setShowPreCheckoutModal(true)} 
+                  <button
+                    onClick={() => setShowPreCheckoutModal(true)}
                     className="nav-auth-btn"
                     style={{ padding: "14px 32px", fontSize: "1.2rem", fontWeight: "700" }}
                   >
@@ -500,7 +552,7 @@ export default function SupportSection() {
                   </button>
                 </div>
               ) : null}
-              <div className="payment-security-footer" style={{marginTop: "20px"}}>
+              <div className="payment-security-footer" style={{ marginTop: "20px" }}>
                 <p>Secure & Legally Compliant Sponsorship via Razorpay</p>
               </div>
             </div>
@@ -563,12 +615,12 @@ export default function SupportSection() {
                 </div>
                 <div className="pre-checkout-input-group">
                   <label>Country *</label>
-                  <select 
-                    name="country" 
-                    value={formData.country} 
-                    onChange={handleInputChange} 
-                    className="pre-checkout-input" 
-                    required 
+                  <select
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    className="pre-checkout-input"
+                    required
                     disabled={isProcessing}
                     style={{ WebkitAppearance: 'none', appearance: 'none', background: '#f8fafc url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 12px center' }}
                   >
@@ -584,9 +636,9 @@ export default function SupportSection() {
                 <input type="text" name="organization" value={formData.organization} onChange={handleInputChange} className="pre-checkout-input" placeholder="Thornhill Corporation" disabled={isProcessing} />
               </div>
 
-              <button 
-                className="pre-checkout-submit" 
-                onClick={handlePayment} 
+              <button
+                className="pre-checkout-submit"
+                onClick={handlePayment}
                 disabled={isProcessing || !isFormValid}
                 title={!isFormValid ? "Please fill in all required fields marked with *" : ""}
               >
@@ -611,7 +663,7 @@ export default function SupportSection() {
               <p>Please provide your details and we'll contact you shortly.</p>
             </div>
             <div className="pre-checkout-body">
-              <ContactForm isPopup={true} onSuccess={() => {}} />
+              <ContactForm isPopup={true} onSuccess={() => { }} />
             </div>
           </div>
         </div>
@@ -631,17 +683,17 @@ export default function SupportSection() {
             </div>
             <h2 className="thank-you-title">Thank You!</h2>
             <p className="thank-you-message">
-              Thank you so much for sponsoring us!<br/>This means a lot to us. :)
+              Thank you so much for sponsoring us!<br />This means a lot to us. :)
             </p>
             <div className="thank-you-actions">
-              <button 
-                className="pre-checkout-submit" 
+              <button
+                className="pre-checkout-submit"
                 onClick={() => { setShowThankYou(false); window.location.href = '/profiles'; }}
               >
                 Look up someone
               </button>
-              <button 
-                className="pre-checkout-submit thank-you-btn-secondary" 
+              <button
+                className="pre-checkout-submit thank-you-btn-secondary"
                 onClick={() => { setShowThankYou(false); window.location.href = '/submit'; }}
               >
                 Vouch for or flag someone
