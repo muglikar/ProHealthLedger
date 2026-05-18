@@ -93,7 +93,7 @@ export default function ContactForm({ isPopup = false, onSuccess }) {
             value={formData.email} 
             onChange={handleInputChange} 
             className="pre-checkout-input" 
-            placeholder="harold@example.com" 
+            placeholder="finch@ift.com" 
             required
             disabled={isSubmitting} 
           />

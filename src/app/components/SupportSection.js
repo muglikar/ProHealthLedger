@@ -522,7 +522,7 @@ export default function SupportSection() {
                 </div>
                 <div className="pre-checkout-input-group">
                   <label>Email Address *</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="pre-checkout-input" placeholder="harold@example.com" required disabled={isProcessing} />
+                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="pre-checkout-input" placeholder="finch@ift.com" required disabled={isProcessing} />
                 </div>
               </div>
               <div className="pre-checkout-row">
