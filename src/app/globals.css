@@ -6039,8 +6039,7 @@ button.audit-comment-link:focus-visible {
 
   .compliance-marquee-wrapper {
     width: 100%;
-    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    /* No linear-gradient masks - completely unfaded compliance ticker at edges */
   }
 
   .compliance-marquee-track {
@@ -6059,5 +6058,80 @@ button.audit-comment-link:focus-visible {
 
   100% {
     transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* Pronounced default and active colors for Yes/No submit page buttons */
+.vote-option-yes {
+  background: rgba(34, 197, 94, 0.08) !important;
+  border: 2.5px solid #22c55e !important;
+  color: #15803d !important;
+  font-weight: 700 !important;
+}
+
+.vote-option-yes:hover {
+  background: rgba(34, 197, 94, 0.16) !important;
+  border-color: #16a34a !important;
+  color: #166534 !important;
+}
+
+.vote-option-no {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border: 2.5px solid #ef4444 !important;
+  color: #b91c1c !important;
+  font-weight: 700 !important;
+}
+
+.vote-option-no:hover {
+  background: rgba(239, 68, 68, 0.16) !important;
+  border-color: #dc2626 !important;
+  color: #991b1b !important;
+}
+
+.vote-option-yes.selected {
+  border-color: #15803d !important;
+  background: #22c55e !important;
+  color: white !important;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4) !important;
+}
+
+.vote-option-no.selected {
+  border-color: #b91c1c !important;
+  background: #ef4444 !important;
+  color: white !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Force correct mobile alignment and un-squeeze the Support Card, Vision-Impact Section, and grids */
+@media (max-width: 768px) {
+  .support-card {
+    padding: 1.25rem 0.5rem !important;
+    margin: 1rem auto !important;
+  }
+  
+  .support-card-content {
+    padding: 0.25rem 0.25rem !important;
+  }
+  
+  .vision-impact-section {
+    padding: 1.5rem 0.5rem !important;
+    margin-left: -0.25rem !important;
+    margin-right: -0.25rem !important;
+    border-radius: 16px !important;
+  }
+  
+  .vision-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    padding: 0 0.25rem !important;
+  }
+
+  .vision-card {
+    padding: 1.25rem !important;
+  }
+
+  /* Make sure mobile horizontal scroll strip snaps beautifully */
+  .mobile-tier-strip {
+    scroll-padding: 0 16px !important;
   }
 }
