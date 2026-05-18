@@ -274,25 +274,39 @@ export default function SupportSection() {
 
   const mobileStripRef = useRef(null);
 
-  // Center the "Supporter" tile on mount in the mobile horizontal strip
-  useEffect(() => {
+  // Helper to center a card by index in the mobile strip
+  const centerMobileCard = useCallback((index) => {
     const strip = mobileStripRef.current;
     if (!strip) return;
-
-    const centerIndex = SPONSOR_TIERS.length * 2;
-
-    const timer = setTimeout(() => {
-      const cardElement = strip.children[centerIndex];
-      if (cardElement) {
-        const stripWidth = strip.clientWidth;
-        const cardWidth = cardElement.clientWidth;
-        const cardOffsetLeft = cardElement.offsetLeft;
+    const cardElement = strip.children[index];
+    if (cardElement) {
+      const stripWidth = strip.clientWidth;
+      const cardWidth = cardElement.clientWidth;
+      const cardOffsetLeft = cardElement.offsetLeft;
+      if (stripWidth > 0 && cardWidth > 0) {
         strip.scrollLeft = cardOffsetLeft - (stripWidth / 2) + (cardWidth / 2);
       }
-    }, 150);
-
-    return () => clearTimeout(timer);
+    }
   }, []);
+
+  // Center the "Supporter" tile on mount in the mobile horizontal strip (self-correcting sequence)
+  useEffect(() => {
+    const middleSupporterIndex = SPONSOR_TIERS.length * 2;
+    
+    // Attempt centering immediately and at multiple intervals to guarantee alignment after DOM load & CSS parsing
+    centerMobileCard(middleSupporterIndex);
+    const t1 = setTimeout(() => centerMobileCard(middleSupporterIndex), 100);
+    const t2 = setTimeout(() => centerMobileCard(middleSupporterIndex), 350);
+    const t3 = setTimeout(() => centerMobileCard(middleSupporterIndex), 750);
+    const t4 = setTimeout(() => centerMobileCard(middleSupporterIndex), 1200);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+    };
+  }, [centerMobileCard]);
 
   const handleMobileScroll = (e) => {
     const strip = e.currentTarget;

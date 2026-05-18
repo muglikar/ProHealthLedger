@@ -27,13 +27,13 @@ export default function ContributorsPage() {
       ((a.yes_count ?? 0) + (a.no_count ?? 0))
   );
 
-  function profileUrl(userId) {
+  function profileUrl(userId, name) {
     if (!userId) return null;
     if (userId.startsWith("github:")) {
       return `https://github.com/${userId.slice(7)}`;
     }
     if (userId.startsWith("linkedin:")) {
-      return null;
+      return `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(name || "Professional")}`;
     }
     return `https://github.com/${userId}`;
   }
@@ -71,8 +71,8 @@ export default function ContributorsPage() {
             const rawId =
               user.user_id ||
               (user.github_username ? `github:${user.github_username}` : "");
-            const url = profileUrl(rawId);
             const name = contributorLabel(user);
+            const url = profileUrl(rawId, name);
             const flagLeft = flagsAvailable(user);
             return (
               <div
