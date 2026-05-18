@@ -439,6 +439,16 @@ export default function SupportSection() {
           </div>
         </div>
 
+        <div className="carousel-swipe-hint">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+          Swipe to explore
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </div>
+
         <div className="support-tier-details">
           <div className="tier-info-card">
             <div className="tier-info-header">

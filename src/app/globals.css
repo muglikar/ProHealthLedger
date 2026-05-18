@@ -1157,6 +1157,35 @@ a:hover {
               radial-gradient(circle at 80% 50%, rgba(254, 180, 123, 0.05) 0%, transparent 50%);
 }
 
+.carousel-swipe-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-top: -20px;
+  margin-bottom: 20px;
+  animation: pulse-swipe-hint 2.5s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.carousel-swipe-hint svg {
+  color: var(--accent-light);
+}
+
+@keyframes pulse-swipe-hint {
+  0%, 100% { opacity: 0.4; transform: translateX(0); }
+  50% { opacity: 1; transform: translateX(0); }
+}
+
+@media (min-width: 768px) {
+  .carousel-swipe-hint {
+    display: none; /* Hide on larger screens where it's more obvious or drag is less expected */
+  }
+}
+
 .support-carousel-3d-ring {
   position: relative;
   width: 140px;
