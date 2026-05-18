@@ -517,7 +517,7 @@ export default function TransparencyPage() {
                             (currentName && rowName && currentName === rowName)
                           );
                           const isAboutMe = Boolean(myLinkedSlug && myLinkedSlug === v.profile_slug);
-                          const isAboutAdmin = v.profile_slug === "muglikar" || currentName === "anand muglikar";
+                          const isAboutAdmin = v.profile_slug === "muglikar" && (currentId === "muglikar" || currentName === "anand muglikar");
                           
                           const canShare = isSignedIn && v.vote === "yes" && (isMySubmission || isAboutMe || (isAdmin && isAboutAdmin));
 
