@@ -6061,51 +6061,51 @@ button.audit-comment-link:focus-visible {
   }
 }
 
-/* Pronounced default and active colors for Yes/No submit page buttons - fully solid borderless backgrounds */
+/* Colorblind-accessible pronounced default and active states for Yes/No buttons */
+/* Yes (Vouch) uses Teal (blue-green spectrum) and a Solid border */
 .vote-option-yes {
-  background: #4ade80 !important;
-  border: none !important;
-  color: #064e3b !important;
+  background: #0d9488 !important;
+  border: 3px solid #0f766e !important;
+  color: white !important;
   font-weight: 700 !important;
   font-size: 1.05rem !important;
-  box-shadow: 0 4px 6px rgba(34, 197, 94, 0.15) !important;
+  box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2) !important;
 }
 
 .vote-option-yes:hover {
-  background: #22c55e !important;
-  color: white !important;
-  border: none !important;
+  background: #0f766e !important;
+  border-color: #115e59 !important;
 }
 
+/* No (Flag) uses Orange-Red (warm distinct spectrum) and a Dashed border */
 .vote-option-no {
-  background: #f87171 !important;
-  border: none !important;
-  color: #7f1d1d !important;
+  background: #ea580c !important;
+  border: 3px dashed #9a3412 !important;
+  color: white !important;
   font-weight: 700 !important;
   font-size: 1.05rem !important;
-  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.15) !important;
+  box-shadow: 0 4px 10px rgba(234, 88, 12, 0.2) !important;
 }
 
 .vote-option-no:hover {
-  background: #ef4444 !important;
-  color: white !important;
-  border: none !important;
+  background: #d97706 !important;
+  border-color: #b45309 !important;
 }
 
 .vote-option-yes.selected {
-  border: 3px solid #064e3b !important;
-  background: #15803d !important;
+  border: 4px solid #134e4a !important;
+  background: #115e59 !important;
   color: white !important;
   transform: scale(1.06) !important;
-  box-shadow: 0 8px 24px rgba(21, 128, 61, 0.45) !important;
+  box-shadow: 0 8px 24px rgba(17, 94, 89, 0.45) !important;
 }
 
 .vote-option-no.selected {
-  border: 3px solid #7f1d1d !important;
-  background: #b91c1c !important;
+  border: 4px dashed #7c2d12 !important;
+  background: #9a3412 !important;
   color: white !important;
   transform: scale(1.06) !important;
-  box-shadow: 0 8px 24px rgba(185, 28, 28, 0.45) !important;
+  box-shadow: 0 8px 24px rgba(154, 52, 18, 0.45) !important;
 }
 
 /* Force correct mobile alignment and un-squeeze the Support Card, Vision-Impact Section, and grids */
