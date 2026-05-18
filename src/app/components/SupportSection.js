@@ -439,6 +439,27 @@ export default function SupportSection() {
           </div>
         </div>
 
+        {/* Mobile flat horizontal scroll strip */}
+        <div className="mobile-tier-strip">
+          {SPONSOR_TIERS.map((tier, idx) => {
+            const isSelected = selectedTierId === tier.id;
+            return (
+              <div
+                key={tier.id}
+                className={`mobile-tier-card ${isSelected ? 'is-active' : ''}`}
+                onClick={() => {
+                  setSelectedTierId(tier.id);
+                  snapToSelectedIndex(idx);
+                }}
+              >
+                <span className="tier-tile-icon">{tier.icon}</span>
+                <span className="tier-tile-name">{tier.name}</span>
+                <span className="tier-tile-amount">{tier.amount === "Contact" ? "Contact" : `₹${tier.amount}`}</span>
+              </div>
+            );
+          })}
+        </div>
+
         <div className="carousel-swipe-hint">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 18l-6-6 6-6"/>

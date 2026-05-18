@@ -1142,7 +1142,7 @@ a:hover {
 .support-carousel-container {
   width: 100%;
   height: 280px;
-  perspective: 1500px; /* Increased for depth */
+  perspective: 1500px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1152,37 +1152,98 @@ a:hover {
   cursor: grab;
   touch-action: none;
   
-  /* Background orbs to make translucency visible */
   background: radial-gradient(circle at 20% 50%, rgba(255, 126, 95, 0.05) 0%, transparent 50%),
               radial-gradient(circle at 80% 50%, rgba(254, 180, 123, 0.05) 0%, transparent 50%);
 }
 
+/* Hide the old swipe hint — replaced by mobile flat strip */
 .carousel-swipe-hint {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  margin-top: -20px;
-  margin-bottom: 20px;
-  animation: pulse-swipe-hint 2.5s infinite ease-in-out;
-  pointer-events: none;
+  display: none;
 }
 
-.carousel-swipe-hint svg {
-  color: var(--accent-light);
+/* ── Mobile flat horizontal scroll strip ── */
+.mobile-tier-strip {
+  display: none; /* hidden on desktop */
 }
 
-@keyframes pulse-swipe-hint {
-  0%, 100% { opacity: 0.4; transform: translateX(0); }
-  50% { opacity: 1; transform: translateX(0); }
-}
+@media (max-width: 767px) {
+  /* Hide 3D carousel on mobile */
+  .support-carousel-container {
+    display: none !important;
+  }
 
-@media (min-width: 768px) {
-  .carousel-swipe-hint {
-    display: none; /* Hide on larger screens where it's more obvious or drag is less expected */
+  .mobile-tier-strip {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 16px 18px;
+    margin: 0.5rem -0.5rem 1rem;
+    
+    /* Sleek visible scrollbar for obvious scroll affordance */
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-light) #f1f5f9;
+  }
+
+  .mobile-tier-strip::-webkit-scrollbar {
+    height: 5px;
+    display: block;
+  }
+
+  .mobile-tier-strip::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+  }
+
+  .mobile-tier-strip::-webkit-scrollbar-thumb {
+    background: var(--accent-light);
+    border-radius: 10px;
+  }
+
+  .mobile-tier-card {
+    flex: 0 0 130px;
+    scroll-snap-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px 10px;
+    background: rgba(255,255,255,0.85);
+    border: 2px solid var(--border);
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .mobile-tier-card.is-active {
+    border-color: var(--accent);
+    background: #fff;
+    box-shadow: 0 4px 18px rgba(180, 83, 9, 0.15);
+    transform: scale(1.04);
+  }
+
+  .mobile-tier-card .tier-tile-icon {
+    font-size: 1.8rem;
+  }
+
+  .mobile-tier-card .tier-tile-name {
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #2d3748;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .mobile-tier-card .tier-tile-amount {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: var(--accent);
   }
 }
 
@@ -1298,12 +1359,7 @@ a:hover {
   padding: 0 1rem;
 }
 
-@media (max-width: 768px) {
-  .support-carousel-container {
-    height: 240px;
-    perspective: 1000px; /* Stronger perspective for mobile to show more sides */
-  }
-}
+/* Desktop 3D carousel responsive tweak — mobile now uses flat strip */
 
 .support-selected-display {
   background: white;
@@ -1378,6 +1434,27 @@ a:hover {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2.5rem;
+}
+
+@media (max-width: 767px) {
+  .vision-impact-section {
+    padding: 2rem 1rem;
+    margin-top: 2rem;
+  }
+
+  .vision-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .vision-impact-section h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .transparency-callout {
+    padding: 1rem 1.25rem;
+  }
 }
 
 .vision-card {
@@ -3321,16 +3398,41 @@ button.audit-comment-link:focus-visible {
   font-size: 1.2rem;
 }
 
+/* Subtle default tints so Yes/No feel distinct even before selection */
+.vote-option-yes {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.vote-option-yes:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+.vote-option-no {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.vote-option-no:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
 .vote-option-yes.selected {
   border-color: var(--green);
   background: var(--green-bg);
   color: var(--green);
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12);
 }
 
 .vote-option-no.selected {
   border-color: var(--red);
   background: var(--red-bg);
   color: var(--red);
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.12);
 }
 
 .form-notice {
@@ -5771,4 +5873,92 @@ button.audit-comment-link:focus-visible {
 @keyframes gentlePulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.08); }
+}
+
+/* Compliance Banner CSS Marquee Ticker on Mobile */
+.compliance-banner {
+  background: #fff7ed;
+  border-bottom: 1px solid #fdba74;
+  color: #7c2d12;
+  font-size: 0.85rem;
+}
+
+.compliance-banner-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.compliance-marquee-wrapper {
+  overflow: hidden;
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.compliance-marquee-track {
+  display: flex;
+  gap: 50px;
+  white-space: nowrap;
+}
+
+.compliance-marquee-track span {
+  font-size: 0.8rem;
+}
+
+.marquee-separator {
+  color: #fdba74;
+  font-weight: bold;
+}
+
+.compliance-links {
+  display: flex;
+  gap: 8px;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.compliance-links a {
+  color: #7c2d12;
+  text-decoration: underline;
+}
+
+.compliance-links a:hover {
+  color: #b45309;
+}
+
+@media (max-width: 767px) {
+  .compliance-banner-content {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  
+  .compliance-marquee-wrapper {
+    width: 100%;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+  
+  .compliance-marquee-track {
+    animation: compliance-marquee-slide 30s linear infinite;
+  }
+  
+  .compliance-marquee-track:hover {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes compliance-marquee-slide {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
 }

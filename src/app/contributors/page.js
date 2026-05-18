@@ -101,7 +101,7 @@ export default function ContributorsPage() {
                   <div className="leaderboard-stats">
                     <span>✓ {user.yes_count} positive</span>
                     <span>✗ {user.no_count} negative</span>
-                    <span>{user.contributions.length} total</span>
+                    <span>{user.contributions?.length || 0} total</span>
                   </div>
                 </div>
                 <span
