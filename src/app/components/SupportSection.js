@@ -317,10 +317,41 @@ export default function SupportSection() {
     // Wrap left to middle if scrolling near the start
     if (strip.scrollLeft < singleSetWidth) {
       strip.scrollLeft += singleSetWidth * 2;
+      return;
     }
     // Wrap right to middle if scrolling near the end
     else if (strip.scrollLeft > singleSetWidth * 3.5) {
       strip.scrollLeft -= singleSetWidth * 2;
+      return;
+    }
+
+    // Scroll Spying: Detect which card is closest to the horizontal center of the viewport
+    const stripWidth = strip.clientWidth;
+    const centerPoint = strip.scrollLeft + (stripWidth / 2);
+
+    let closestDistance = Infinity;
+    let closestIdx = -1;
+
+    const children = Array.from(strip.children);
+    children.forEach((child, idx) => {
+      const childCenter = child.offsetLeft + (child.clientWidth / 2);
+      const distance = Math.abs(centerPoint - childCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIdx = idx;
+      }
+    });
+
+    if (closestIdx !== -1) {
+      const realIdx = closestIdx % SPONSOR_TIERS.length;
+      const tier = SPONSOR_TIERS[realIdx];
+      if (tier && tier.id !== selectedTierId) {
+        setSelectedTierId(tier.id);
+        
+        // Keep 3D carousel in sync instantly without transition jitter
+        const targetBaseRotation = -realIdx * angleStep;
+        setDragRotation(targetBaseRotation);
+      }
     }
   };
 
