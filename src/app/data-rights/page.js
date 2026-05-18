@@ -78,7 +78,7 @@ export default function DataRightsPage() {
             className="form-input"
             type="email"
             required
-            placeholder="harold@example.com"
+            placeholder="finch@ift.com"
             value={form.email}
             onChange={(e) => setForm((s) => ({ ...s, email: e.target.value }))}
           />

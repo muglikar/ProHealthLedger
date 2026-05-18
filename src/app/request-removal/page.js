@@ -80,7 +80,7 @@ export default function RequestRemovalPage() {
             className="form-input"
             type="email"
             required
-            placeholder="harold@example.com"
+            placeholder="finch@ift.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
