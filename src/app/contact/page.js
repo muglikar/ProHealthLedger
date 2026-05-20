@@ -68,10 +68,10 @@ export default function ContactPage() {
           </p>
           <div className="compliance-block">
             <p>
-              <strong>Grievance Officer:</strong> Rajashri Muglikar
+              <strong>Grievance Officer:</strong> Anand Muglikar
             </p>
             <p>
-              <strong>Nodal Contact Person:</strong> Rajashri Muglikar
+              <strong>Nodal Contact Person:</strong> Anand Muglikar
             </p>
             <p>
               <strong>Contact Email:</strong>{" "}
@@ -87,7 +87,7 @@ export default function ContactPage() {
         <section className="legal-section">
           <h2>4. Independent Developer Information</h2>
           <p>
-            ProHealthLedger is developed and maintained by Rajashri Muglikar, an independent software developer committed to technical transparency and professional accountability.
+            ProHealthLedger is developed and maintained by Anand Muglikar, an independent software developer committed to technical transparency and professional accountability.
           </p>
         </section>
       </article>

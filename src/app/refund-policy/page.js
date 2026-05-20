@@ -49,7 +49,7 @@ export default function RefundPolicyPage() {
           <p>
             For any queries regarding support contributions or technical issues, please reach out to:
             <br />
-            <strong>Developer:</strong> Rajashri Muglikar
+            <strong>Developer:</strong> Anand Muglikar
             <br />
             <strong>Email:</strong>{" "}
             <ObfuscatedEmail

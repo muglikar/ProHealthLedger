@@ -79,7 +79,7 @@ export default function TermsPage() {
           <p>
             Grievance Officer and Nodal Contact Person:
             <br />
-            <strong>Rajashri Muglikar</strong> —{" "}
+            <strong>Anand Muglikar</strong> —{" "}
             <ObfuscatedEmail
               userChars={[115, 117, 112, 112, 111, 114, 116]}
               domainChars={[83, 116, 111, 109, 97, 116, 111, 66, 111, 116]}
