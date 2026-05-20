@@ -222,7 +222,7 @@ export default function OwnerActivityStrip() {
             gap: '12px'
           }}
         >
-          <p className="owner-activity-strip-msg" style={{ margin: 0, color: '#78350f' }}>
+          <p className="owner-activity-strip-msg" style={{ margin: 0, color: 'inherit' }}>
             <strong>{isCampaignPreview ? "📢 LinkedIn Campaign (Preview):" : `📢 LinkedIn Campaign (Day ${activeDay} of 45):`}</strong>{" "}
             {isCampaignPreview 
               ? "The 45-day LinkedIn story publishing campaign starts automatically on June 1st, 2026." 
