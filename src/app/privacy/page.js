@@ -921,22 +921,16 @@ export default function PrivacyPolicyPage() {
             <br />
             <strong>Grievance Officer:</strong> Anand Muglikar (
             <ObfuscatedEmail
-              userChars={[
-                97, 110, 97, 110, 100, 109, 117, 103, 108, 105, 107, 97, 114,
-                43, 112, 104, 108,
-              ]}
-              domainChars={[103, 109, 97, 105, 108]}
+              userChars={[115, 117, 112, 112, 111, 114, 116]}
+              domainChars={[83, 116, 111, 109, 97, 116, 111, 66, 111, 116]}
               tldChars={[99, 111, 109]}
             />
             )
             <br />
             <strong>Nodal Contact Person:</strong> Anand Muglikar (
             <ObfuscatedEmail
-              userChars={[
-                97, 110, 97, 110, 100, 109, 117, 103, 108, 105, 107, 97, 114,
-                43, 112, 104, 108,
-              ]}
-              domainChars={[103, 109, 97, 105, 108]}
+              userChars={[115, 117, 112, 112, 111, 114, 116]}
+              domainChars={[83, 116, 111, 109, 97, 116, 111, 66, 111, 116]}
               tldChars={[99, 111, 109]}
             />
             )
