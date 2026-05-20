@@ -506,7 +506,7 @@ export default function TransparencyPage() {
                           const isSignedIn = !!session;
                           const currentId = (session?.userId || "").replace("github:", "").replace("linkedin:", "");
                           const currentName = (session?.user?.name || "").trim().toLowerCase();
-                          const isAdmin = currentId === "muglikar" || currentName === "anand muglikar";
+                          const isAdmin = currentId === "muglikar" || currentName === "rajashri muglikar";
                           
                           // Standardize row user
                           const rowUser = (v.user || "").replace("github:", "").replace("linkedin:", "");
@@ -517,7 +517,7 @@ export default function TransparencyPage() {
                             (currentName && rowName && currentName === rowName)
                           );
                           const isAboutMe = Boolean(myLinkedSlug && myLinkedSlug === v.profile_slug);
-                          const isAboutAdmin = v.profile_slug === "muglikar" && (currentId === "muglikar" || currentName === "anand muglikar");
+                          const isAboutAdmin = v.profile_slug === "muglikar" && (currentId === "muglikar" || currentName === "rajashri muglikar");
                           
                           const canShare = isSignedIn && v.vote === "yes" && (isMySubmission || isAboutMe || (isAdmin && isAboutAdmin));
 
