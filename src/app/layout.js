@@ -93,6 +93,10 @@ export default function RootLayout({ children }) {
               <div className="footer-links">
                 <Link href="/transparency">Full Audit Trail</Link>
                 <span className="footer-sep">·</span>
+                <Link href="/directory">Professional Directory</Link>
+                <span className="footer-sep">·</span>
+                <Link href="/reports">Reports</Link>
+                <span className="footer-sep">·</span>
                 <a
                   href="https://github.com/muglikar/ProHealthLedger"
                   target="_blank"
