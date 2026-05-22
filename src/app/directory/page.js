@@ -69,7 +69,7 @@ export default async function DirectoryPage() {
                   <span className="vote-badge vote-yes" style={{ margin: 0 }}>✓ {yes} would work with again</span>
                 )}
                 {no > 0 && (
-                  <span className="vote-badge vote-no" style={{ margin: 0 }}>✕ {no} would not</span>
+                  <span className="vote-badge vote-no" style={{ margin: 0 }}>✕ {no} would not work with them again</span>
                 )}
               </div>
             </article>

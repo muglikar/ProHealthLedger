@@ -248,7 +248,7 @@ function ProfilesContent() {
                   </div>
                   <div className="vote-counts">
                     <span className="vote-badge vote-yes">✓ {yes} would work with again</span>
-                    <span className="vote-badge vote-no">✗ {no} would not</span>
+                    <span className="vote-badge vote-no">✗ {no} would not work with them again</span>
                   </div>
                   <section className="submission-count">
                     {total} vote{total !== 1 ? "s" : ""} from the community
