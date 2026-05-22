@@ -498,7 +498,7 @@ export default function TransparencyPage() {
                         <span
                           className={`vote-pill ${v.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
                         >
-                          {v.vote === "yes" ? "Yes" : "No"}
+                          {v.vote === "yes" ? "✓ Yes" : "✗ No"}
                         </span>
                       </td>
                       <td className="audit-col-share">

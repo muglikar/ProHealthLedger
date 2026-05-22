@@ -2840,13 +2840,13 @@ button.audit-comment-link:focus-visible {
 }
 
 .vote-pill-yes {
-  background: var(--green-bg);
-  color: var(--green);
+  background: #009E73;
+  color: #ffffff;
 }
 
 .vote-pill-no {
-  background: var(--red-bg);
-  color: var(--red);
+  background: #D55E00;
+  color: #ffffff;
 }
 
 .issue-link {
