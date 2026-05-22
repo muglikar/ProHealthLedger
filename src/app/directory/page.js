@@ -34,7 +34,7 @@ export default async function DirectoryPage() {
           return (
             <article key={p.slug} className="directory-item" style={{ padding: "15px", border: "1px solid #e2e8f0", borderRadius: "8px", backgroundColor: "#fff" }}>
               <h2 style={{ fontSize: "1.2rem", margin: "0 0 10px 0" }}>
-                <Link href={`/p/directory/${encodeURIComponent(urlSlug)}/vouch`} style={{ color: "#2563eb", textDecoration: "none", fontWeight: "bold" }}>
+                <Link href={`/p/directory/directory/${encodeURIComponent(urlSlug)}`} style={{ color: "#2563eb", textDecoration: "none", fontWeight: "bold" }}>
                   {displayName}
                 </Link>
               </h2>
