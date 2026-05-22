@@ -32,7 +32,8 @@ export default function Home() {
   return (
     <>
       <section className="home-above-fold" aria-labelledby="home-hero-title">
-        <header className="home-hero-block">
+        <div className="home-hero-container">
+          <header className="home-hero-block hero-content">
           <span className="hero-badge">Free · Public · Permanent</span>
           <h1 id="home-hero-title">
             Know who you&apos;re working with{" "}
@@ -88,6 +89,11 @@ export default function Home() {
             </a>
           </div>
         </header>
+
+        <div className="hero-visual">
+          <img src="/hero-illustration.png" alt="Professional stepping out of a toxic workplace into a successful future" className="hero-image" />
+        </div>
+      </div>
 
         <div
           className="home-how-block"
