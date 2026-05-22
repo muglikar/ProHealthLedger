@@ -6,8 +6,8 @@ export default function VerificationBadgeModal({ profileSlug, publicName, onClos
   const [copied, setCopied] = useState(false);
   const profileUrl = `https://prohealthledger.org/p/directory/directory/${encodeURIComponent(profileSlug)}`;
   
-  const embedHtml = `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block; font-family: sans-serif; font-size: 14px; font-weight: bold; color: #fff; background-color: #2563eb; padding: 8px 16px; border-radius: 6px; text-decoration: none;">
-  ✓ Verified Professional on PHL
+  const embedHtml = `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block; font-family: -apple-system, system-ui, sans-serif; font-size: 13px; font-weight: 700; color: #ffffff; background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); padding: 10px 20px; border-radius: 999px; text-decoration: none; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); border: 1px solid rgba(255,255,255,0.2);">
+  <span style="margin-right: 6px; font-size: 15px;">💎</span> Verified Professional on Pro-Health Ledger
 </a>`;
 
   const handleCopy = async () => {
@@ -22,10 +22,14 @@ export default function VerificationBadgeModal({ profileSlug, publicName, onClos
 
   return (
     <div className="share-modal-backdrop" onClick={onClose}>
-      <div className="share-modal" style={{ padding: "20px" }} onClick={(e) => e.stopPropagation()}>
-        <button className="share-modal-close" onClick={onClose}>&times;</button>
-        <h2>Get Your Verification Badge</h2>
-        <p style={{ marginBottom: "15px", color: "#64748b" }}>
+      <div className="share-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="share-modal-header">
+          <h3>Get Your Verification Badge</h3>
+          <button className="share-modal-close" onClick={onClose}>&times;</button>
+        </div>
+        
+        <div className="share-modal-body">
+          <p style={{ marginBottom: "15px", color: "#64748b" }}>
           You have verified community vouches! Add this badge to your personal website or portfolio to build trust and increase your SEO authority.
         </p>
         
@@ -46,6 +50,7 @@ export default function VerificationBadgeModal({ profileSlug, publicName, onClos
         >
           {copied ? "Copied to Clipboard!" : "Copy Embed Code"}
         </button>
+        </div>
       </div>
     </div>
   );

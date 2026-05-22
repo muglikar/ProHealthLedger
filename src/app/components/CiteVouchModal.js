@@ -23,10 +23,13 @@ export default function CiteVouchModal({ vouch, profileSlug, publicName, onClose
 
   return (
     <div className="share-modal-backdrop" onClick={onClose}>
-      <div className="share-modal" style={{ padding: "20px" }} onClick={(e) => e.stopPropagation()}>
-        <button className="share-modal-close" onClick={onClose}>&times;</button>
-        <h2>Cite this Vouch</h2>
-        <p style={{ marginBottom: "15px", color: "#64748b" }}>
+      <div className="share-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="share-modal-header">
+          <h3>Cite this Vouch</h3>
+          <button className="share-modal-close" onClick={onClose}>&times;</button>
+        </div>
+        <div className="share-modal-body">
+          <p style={{ marginBottom: "15px", color: "#64748b" }}>
           Copy this HTML snippet to embed a citation of this vouch directly on your blog, portfolio, or website.
         </p>
         
@@ -43,6 +46,7 @@ export default function CiteVouchModal({ vouch, profileSlug, publicName, onClose
         >
           {copied ? "Copied to Clipboard!" : "Copy HTML Snippet"}
         </button>
+        </div>
       </div>
     </div>
   );
