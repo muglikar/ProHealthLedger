@@ -1128,13 +1128,19 @@ a:hover {
 }
 
 .support-card {
-  max-width: 800px;
+  max-width: 100%;
   margin: 3rem auto;
   background: white;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   overflow: hidden;
+}
+
+@media (min-width: 900px) {
+  .support-card {
+    max-width: 1200px;
+  }
 }
 
 .support-card-content {
