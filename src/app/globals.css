@@ -1093,7 +1093,7 @@ a:hover {
     flex: 1;
     max-width: 100%;
     display: flex;
-    justify-content: flex-end; /* Force image to touch the right edge */
+    justify-content: flex-start; /* Force image to touch the left edge */
     align-items: center;
   }
 }
@@ -1138,8 +1138,17 @@ a:hover {
 }
 
 .support-card-content {
-  padding: 1rem 2rem;
-  text-align: center;
+  padding: 2.5rem 1rem;
+}
+
+@media (min-width: 900px) {
+  .support-card-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+    padding: 3rem 2rem;
+  }
 }
 
 .support-card-header {
@@ -1510,6 +1519,16 @@ a:hover {
   margin-bottom: 2.5rem;
 }
 
+@media (min-width: 900px) {
+  .vision-impact-section {
+    margin-top: 0; /* Reset top margin in 2 column grid layout */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 767px) {
   .vision-impact-section {
     padding: 2rem 1rem;
@@ -1566,18 +1585,18 @@ a:hover {
 }
 
 .transparency-callout {
-  background: #f8fafc;
+  background: #f1f5f9;
   padding: 1.5rem 2rem;
   border-radius: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #cbd5e1;
   display: inline-block;
   max-width: 800px;
 }
 
 .transparency-callout p {
-  font-size: 0.9rem;
-  color: #334155;
-  /* Darker */
+  font-size: 0.95rem;
+  color: #0f172a;
+  font-weight: 500;
   margin: 0;
 }
 
