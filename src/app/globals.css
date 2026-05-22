@@ -1014,7 +1014,7 @@ a:hover {
   text-align: center;
   gap: clamp(0.2rem, 1vh, 0.75rem);
   padding: 0 0 8px;
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto;
   min-width: 0;
   box-sizing: border-box;
