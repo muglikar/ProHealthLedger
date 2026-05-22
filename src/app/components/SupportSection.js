@@ -260,7 +260,7 @@ export default function SupportSection() {
   const angleStep = 360 / tileCount;
 
   // Even smaller radius for closer tiles
-  const radius = Math.round(70 / Math.tan(Math.PI / tileCount)) + 70;
+  const radius = Math.round(100 / Math.tan(Math.PI / tileCount)) + 100;
 
   // Helper to snap to the shortest path
   const snapToSelectedIndex = useCallback((index) => {
@@ -487,11 +487,11 @@ export default function SupportSection() {
 
         <div className="support-metrics-compact">
           <div className="support-metric-mini">
-            <img src="/icons/maintenance.png" alt="" width="20" height="20" />
+            <img src="/icons/maintenance.png" alt="" width="28" height="28" />
             <span>Maintenance</span>
           </div>
           <div className="support-metric-mini">
-            <img src="/icons/software-development.png" alt="" width="20" height="20" />
+            <img src="/icons/software-development.png" alt="" width="28" height="28" />
             <span>Development</span>
           </div>
         </div>

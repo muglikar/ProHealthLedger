@@ -1128,13 +1128,13 @@ a:hover {
 }
 
 .support-card {
-  max-width: 800px;
-  margin: 3rem auto;
-  background: white;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  max-width: 100%;
+  margin: 1rem auto;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  overflow: visible;
 }
 
 .support-card-content {
@@ -1180,7 +1180,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--accent);
 }
@@ -1318,7 +1318,7 @@ a:hover {
 
 .support-carousel-3d-ring {
   position: relative;
-  width: 140px;
+  width: 200px;
   height: 180px;
   transform-style: preserve-3d;
   will-change: transform;
@@ -1328,7 +1328,7 @@ a:hover {
   position: absolute;
   top: 0;
   left: 0;
-  width: 140px;
+  width: 200px;
   height: 180px;
   display: flex;
   flex-direction: column;
@@ -2092,7 +2092,7 @@ a:hover {
 /* --- Why Section --- */
 .why-section {
   padding: 32px 0 24px;
-  border-top: 1px solid var(--border);
+  border-top: none;
 }
 
 .main-content:has(.home-above-fold) .why-section {
@@ -5103,14 +5103,14 @@ button.audit-comment-link:focus-visible {
 }
 
 .support-card {
-  margin: 4rem auto !important;
-  max-width: 800px !important;
-  background: #ffffff !important;
-  border-radius: 2rem !important;
-  padding: 3rem !important;
-  border: 1px solid #e2e8f0 !important;
+  margin: 1rem auto !important;
+  max-width: 100% !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 1rem !important;
+  border: none !important;
   text-align: center !important;
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: none !important;
 }
 
 .support-metrics {
