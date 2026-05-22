@@ -66,7 +66,18 @@ else
   export RCLONE_CONFIG="$RCLONE_CONFIG_DIR/rclone_generated.conf"
 fi
 
-STAMP_DIR="$(TZ="Asia/Kolkata" date +"%Y-%m-%d_%H-%M-%S")"
+HUMAN_SIZE="$(du -sh "$DATA_DIR" | cut -f1)"
+if [[ "$HUMAN_SIZE" == *K ]]; then
+  SIZE_SUFFIX="${HUMAN_SIZE%K}KB"
+elif [[ "$HUMAN_SIZE" == *M ]]; then
+  SIZE_SUFFIX="${HUMAN_SIZE%M}MB"
+elif [[ "$HUMAN_SIZE" == *G ]]; then
+  SIZE_SUFFIX="${HUMAN_SIZE%G}GB"
+else
+  SIZE_SUFFIX="${HUMAN_SIZE}"
+fi
+
+STAMP_DIR="$(TZ="Asia/Kolkata" date +"%Y-%m-%d_%H-%M-%S")_${SIZE_SUFFIX}"
 
 echo "Creating archive: $ARCHIVE"
 tar -C "$ROOT_DIR" -czf "$ARCHIVE" data
