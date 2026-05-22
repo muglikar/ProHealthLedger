@@ -1039,6 +1039,62 @@ a:hover {
   flex-shrink: 0;
 }
 
+.home-hero-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  width: 100%;
+}
+
+.hero-visual {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.hero-image {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease;
+}
+
+.hero-image:hover {
+  transform: translateY(-5px);
+}
+
+@media (min-width: 900px) {
+  .home-hero-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4rem;
+  }
+
+  .home-hero-block.hero-content {
+    align-items: flex-start;
+    text-align: left;
+    flex: 1;
+  }
+
+  .home-hero-block.hero-content h1 {
+    text-align: left;
+  }
+  
+  .home-hero-block.hero-content .hero-trust-line {
+    text-align: left;
+  }
+
+  .hero-visual {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
 .hero-badge {
   display: inline-block;
   background: var(--accent-bg);
