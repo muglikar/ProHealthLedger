@@ -916,7 +916,7 @@ export default function PrivacyPolicyPage() {
           <p>
             India IT Rules compliance contacts:
             <br />
-            <strong>Grievance Officer:</strong> Anand Muglikar (
+            <strong>Grievance Officer:</strong> Rajashri Muglikar (
             <ObfuscatedEmail
               userChars={[115, 117, 112, 112, 111, 114, 116]}
               domainChars={[83, 116, 111, 109, 97, 116, 111, 66, 111, 116]}
@@ -924,7 +924,7 @@ export default function PrivacyPolicyPage() {
             />
             )
             <br />
-            <strong>Nodal Contact Person:</strong> Anand Muglikar (
+            <strong>Nodal Contact Person:</strong> Rajashri Muglikar (
             <ObfuscatedEmail
               userChars={[115, 117, 112, 112, 111, 114, 116]}
               domainChars={[83, 116, 111, 109, 97, 116, 111, 66, 111, 116]}
