@@ -441,7 +441,8 @@ export default function SupportSection() {
   return (
     <section className="support-card" id="sponsor">
       <div className="support-card-content">
-        <div className="support-card-header">
+        <div className="support-interactive-column">
+          <div className="support-card-header">
           <div className="support-card-icon">
             <img
               src="/icons/support.png"
@@ -602,6 +603,7 @@ export default function SupportSection() {
               </div>
             </div>
           </div>
+        </div>
         </div>
 
         <div className="vision-impact-section">

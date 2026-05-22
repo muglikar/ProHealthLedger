@@ -33,67 +33,67 @@ export default function Home() {
     <>
       <section className="home-above-fold" aria-labelledby="home-hero-title">
         <div className="home-hero-container">
+          <div className="hero-visual">
+            <img src="/heroImage.png" alt="Professionals succeeding with ProHealthLedger" className="hero-image" />
+          </div>
+
           <header className="home-hero-block hero-content">
-          <span className="hero-badge">Free · Public · Permanent</span>
-          <h1 id="home-hero-title">
-            Know who you&apos;re working with{" "}
-            <span className="hero-highlight hero-highlight--emphasis">before you commit.</span>
-          </h1>
-          <p className="hero-lede">
-            One question:{" "}
-            <strong className="hero-lede-quote">
-              &ldquo;Would you work with them again?&rdquo;
-            </strong>
-            <span className="hero-lede-rest">
-              Public ledger — no star ratings, no long reviews.
-            </span>
-          </p>
-          <p className="hero-trust-line">
-            GitHub or LinkedIn sign-in · Full transparency page · One voice per
-            person, per professional — no duplicates
-          </p>
-          <div className="hero-actions">
-            <Link href="/submit" className="btn btn-primary">
-              Share Your Experience
-            </Link>
-            <Link href="/profiles" className="btn btn-secondary">
-              Look Up Someone
-            </Link>
-          </div>
+            <span className="hero-badge">Free · Public · Permanent</span>
+            <h1 id="home-hero-title">
+              Know who you&apos;re working with{" "}
+              <span className="hero-highlight hero-highlight--emphasis">before you commit.</span>
+            </h1>
+            <p className="hero-lede">
+              One question:{" "}
+              <strong className="hero-lede-quote">
+                &ldquo;Would you work with them again?&rdquo;
+              </strong>
+              <span className="hero-lede-rest">
+                Public ledger — no star ratings, no long reviews.
+              </span>
+            </p>
+            <p className="hero-trust-line">
+              GitHub or LinkedIn sign-in · Full transparency page · One voice per
+              person, per professional — no duplicates
+            </p>
+            <div className="hero-actions">
+              <Link href="/submit" className="btn btn-primary">
+                Share Your Experience
+              </Link>
+              <Link href="/profiles" className="btn btn-secondary">
+                Look Up Someone
+              </Link>
+            </div>
 
-          <div className="trust-bar">
-            <a
-              href="https://github.com/muglikar/ProHealthLedger"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="trust-link"
-            >
-              <span aria-hidden="true">🔓</span> Open Source
-            </a>
-            <span className="trust-sep">·</span>
-            <Link href="/transparency" className="trust-link">
-              <span aria-hidden="true">🔍</span> Full Audit Trail
-            </Link>
-            <span className="trust-sep">·</span>
-            <Link href="/privacy" className="trust-link">
-              <span aria-hidden="true">🛡️</span> Privacy Policy
-            </Link>
-            <span className="trust-sep">·</span>
-            <a
-              href="https://StomatoBot.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="trust-link"
-            >
-              <span aria-hidden="true">⭐</span> Powered by StomatoBot
-            </a>
-          </div>
-        </header>
-
-        <div className="hero-visual">
-          <img src="/heroImage.png" alt="Professionals succeeding with ProHealthLedger" className="hero-image" />
+            <div className="trust-bar">
+              <a
+                href="https://github.com/muglikar/ProHealthLedger"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="trust-link"
+              >
+                <span aria-hidden="true">🔓</span> Open Source
+              </a>
+              <span className="trust-sep">·</span>
+              <Link href="/transparency" className="trust-link">
+                <span aria-hidden="true">🔍</span> Full Audit Trail
+              </Link>
+              <span className="trust-sep">·</span>
+              <Link href="/privacy" className="trust-link">
+                <span aria-hidden="true">🛡️</span> Privacy Policy
+              </Link>
+              <span className="trust-sep">·</span>
+              <a
+                href="https://StomatoBot.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="trust-link"
+              >
+                <span aria-hidden="true">⭐</span> Powered by StomatoBot
+              </a>
+            </div>
+          </header>
         </div>
-      </div>
 
         <div
           className="home-how-block"
