@@ -2,8 +2,8 @@ name: Weekly Google Drive Backup
 
 on:
   schedule:
-    # Every Monday at 04:00 UTC.
-    - cron: "0 4 * * 1"
+    # Every Sunday at 11:59 PM IST (18:29 UTC).
+    - cron: "29 18 * * 0"
   workflow_dispatch:
 
 permissions:
