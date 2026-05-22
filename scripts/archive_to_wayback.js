@@ -6,23 +6,47 @@ const SITE_URL = 'https://prohealthledger.org';
 const PROFILES_DIR = path.join(process.cwd(), 'data', 'profiles');
 
 async function submitToWayback(url) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const saveUrl = `https://web.archive.org/save/${url}`;
     
-    // We send a simple GET request to the Wayback Machine save endpoint
     https.get(saveUrl, (res) => {
-      // Wayback Machine usually responds with a 200 OK or a 302 Redirect when successful
       if (res.statusCode === 200 || res.statusCode === 302 || res.statusCode === 429) {
-        console.log(`[SUCCESS/RATE-LIMIT] Archived: ${url} (Status: ${res.statusCode})`);
-        resolve(res.statusCode);
+        console.log(`[SUCCESS/RATE-LIMIT] Wayback Machine: ${url} (Status: ${res.statusCode})`);
       } else {
-        console.error(`[ERROR] Failed to archive: ${url} (Status: ${res.statusCode})`);
-        resolve(res.statusCode);
+        console.error(`[ERROR] Wayback Machine failed for: ${url} (Status: ${res.statusCode})`);
       }
+      resolve(res.statusCode);
     }).on('error', (err) => {
-      console.error(`[REQUEST ERROR] Failed to hit archive for: ${url}`, err.message);
+      console.error(`[REQUEST ERROR] Wayback Machine: ${url}`, err.message);
       resolve(null);
     });
+  });
+}
+
+async function submitToArchiveIs(targetUrl) {
+  return new Promise((resolve) => {
+    // Archive.is uses a GET request to trigger a save, but strictly blocks bots.
+    // We send it with a standard browser User-Agent to attempt a bypass.
+    const options = {
+      hostname: 'archive.is',
+      path: `/submit/?url=${encodeURIComponent(targetUrl)}`,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      console.log(`[ATTEMPT] Archive.is: ${targetUrl} (Status: ${res.statusCode})`);
+      resolve(res.statusCode);
+    });
+
+    req.on('error', (err) => {
+      console.error(`[REQUEST ERROR] Archive.is: ${targetUrl}`, err.message);
+      resolve(null);
+    });
+
+    req.end();
   });
 }
 
@@ -67,6 +91,7 @@ async function runArchival() {
     console.log(`Archiving (${i + 1}/${urlsToArchive.length}): ${url}`);
     
     await submitToWayback(url);
+    await submitToArchiveIs(url);
     
     // Wait 5 seconds between requests to respect Wayback Machine's rate limits
     await new Promise(r => setTimeout(r, 5000));
