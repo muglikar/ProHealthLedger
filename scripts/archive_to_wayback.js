@@ -68,7 +68,7 @@ async function runArchival() {
   // Add the core platform pages to the archive list
   const urlsToArchive = [
     `${SITE_URL}/`,
-    `${SITE_URL}/directory`,
+    `${SITE_URL}/pro-directory`,
     `${SITE_URL}/reports/tech-leadership-conduct-2026`,
     `${SITE_URL}/transparency`
   ];
