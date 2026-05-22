@@ -2095,6 +2095,11 @@ a:hover {
   border-top: none;
 }
 
+.why-section .section-title,
+.why-section .section-subtitle {
+  text-align: center;
+}
+
 .main-content:has(.home-above-fold) .why-section {
   padding-top: clamp(24px, 4vh, 40px);
   scroll-margin-top: var(--nav-height, 60px);

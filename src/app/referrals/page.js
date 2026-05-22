@@ -116,9 +116,14 @@ export default function ReferralsPage() {
       <section className="submit-hero">
         <h1>Your Referral Stats</h1>
         <p>Sign in to view your referral link stats and impact.</p>
-        <button className="btn btn-primary" onClick={() => signIn("github")}>
-          Sign in with GitHub
-        </button>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "20px" }}>
+          <button className="btn btn-primary" onClick={() => signIn("github")}>
+            Sign in with GitHub
+          </button>
+          <button className="btn btn-primary" style={{ background: "#0a66c2", borderColor: "#0a66c2" }} onClick={() => signIn("linkedin")}>
+            Sign in with LinkedIn
+          </button>
+        </div>
       </section>
     );
   }
