@@ -8,6 +8,40 @@ A transparent, GitHub-native professional verification system. Community members
 2. **Automated Processing** — A GitHub Action parses the issue, enforces the Karma Rule, and updates the public ledger.
 3. **Public Ledger** — Browse verified profiles and see aggregate community sentiment on the Next.js frontend.
 
+## Architecture
+
+```mermaid
+graph TD
+    %% User Inputs
+    A((Community Member)) -->|Submits Template via GitHub Issues| B[GitHub Actions Runner]
+    
+    %% Processing Pipeline
+    B -->|process-vote.js| C{Enforce Karma Rule}
+    C -->|No Prior 'Yes'| D[Reject: Auto-Close Issue]
+    C -->|Valid / Has Karma| E[Accept: Parse JSON Data]
+    
+    %% Database Layer
+    E -->|Update DB| F[(/data/profiles/_index.json)]
+    
+    %% CI/CD & Frontend
+    F -->|Trigger Build| G[Next.js App Router]
+    G -->|Static Site Generation| H[GitHub Pages]
+    
+    %% Public Consumption
+    H -->|Serve Directory| I((Public User))
+    H -->|Serve Profiles & Vouches| I
+    
+    %% Styling
+    classDef default fill:#f9f9f9,stroke:#cbd5e1,stroke-width:2px;
+    classDef highlight fill:#dbeafe,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a;
+    classDef db fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,color:#14532d;
+    classDef action fill:#fff1f2,stroke:#e11d48,stroke-width:2px,color:#881337;
+    
+    class A,I highlight;
+    class F db;
+    class D action;
+```
+
 ## The Karma Rule
 
 Before submitting a "No" vote, you must have at least one "Yes" contribution on record. This ensures the community is rooted in positive engagement and prevents anonymous drive-by negativity.
@@ -52,6 +86,11 @@ Open [http://localhost:3000](http://localhost:3000) to view the site.
 1. Create the repository: `gh repo create muglikar/ProHealthLedger --public --source=. --push`
 2. Enable Actions write permissions: Settings → Actions → General → Workflow permissions → Read and write
 3. Votes are submitted via GitHub Issues and processed automatically
+
+## Future Scope
+
+1. **Profile Image Extraction:** Automatically extracting the image of the professional from LinkedIn or search engines. If automated extraction is restricted, the platform will utilize manual assistance from vouchers/flaggers when they submit votes.
+2. **Deep Professional Research:** Conducting deep background research on a professional using comprehensive search engine aggregation and LLM analysis to ascertain the true professional nature of an individual. This premium deep research report will be available for a fee of **Rs. 501** for Indian users and **$5** for international users.
 
 ## Legal
 
