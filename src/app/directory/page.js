@@ -7,6 +7,30 @@ export const metadata = {
   description: "Browse the complete directory of verified professionals, workplace conduct reviews, and human vouches on ProHealthLedger.",
 };
 
+function dedupeSubmissions(submissions) {
+  if (!Array.isArray(submissions)) return [];
+  const map = new Map();
+  for (const s of submissions) {
+    const key =
+      s.issue != null && s.issue !== ""
+        ? `issue:${s.issue}`
+        : `row:${s.date}:${String(s.user || "")}:${s.vote}`;
+    if (!map.has(key)) map.set(key, s);
+  }
+  return [...map.values()];
+}
+
+function countVotes(submissions) {
+  const deduped = dedupeSubmissions(submissions);
+  let yes = 0;
+  let no = 0;
+  for (const s of deduped) {
+    if (s.vote === "yes") yes++;
+    else if (s.vote === "no") no++;
+  }
+  return { yes, no, total: yes + no };
+}
+
 export default async function DirectoryPage() {
   const { data: profiles } = await readDataFile("data/profiles/_index.json");
   const publicProfiles = Array.isArray(profiles) ? profiles : [];
@@ -30,6 +54,7 @@ export default async function DirectoryPage() {
           const displayName = formatProfessionalDisplayName(p.slug, p.public_name);
           const rawUrl = typeof p.linkedin_url === "string" ? p.linkedin_url : "";
           const urlSlug = rawUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || p.slug;
+          const { yes, no } = countVotes(p.submissions);
           
           return (
             <article key={p.slug} className="directory-item" style={{ padding: "15px", border: "1px solid #e2e8f0", borderRadius: "8px", backgroundColor: "#fff" }}>
@@ -38,8 +63,14 @@ export default async function DirectoryPage() {
                   {displayName}
                 </Link>
               </h2>
-              <div style={{ fontSize: "0.9rem", color: "#64748b" }}>
-                {p.submissions?.length || 0} verified community vote(s)
+              <div style={{ fontSize: "0.9rem", color: "#64748b", display: "flex", gap: "10px", alignItems: "center" }}>
+                <span>{p.submissions?.length || 0} verified community vote(s)</span>
+                {yes > 0 && (
+                  <span className="vote-badge vote-yes" style={{ margin: 0 }}>✓ {yes} would work with again</span>
+                )}
+                {no > 0 && (
+                  <span className="vote-badge vote-no" style={{ margin: 0 }}>✕ {no} would not</span>
+                )}
               </div>
             </article>
           );
