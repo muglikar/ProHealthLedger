@@ -1782,7 +1782,7 @@ a:hover {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 8px;
+  gap: 24px;
   text-align: left;
 }
 
@@ -1790,15 +1790,15 @@ a:hover {
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto auto;
-  column-gap: 10px;
-  row-gap: 3px;
+  column-gap: 16px;
+  row-gap: 8px;
   align-items: start;
-  padding: 8px 10px;
+  padding: 24px;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: var(--fs-base);
-  line-height: 1.36;
+  border-radius: var(--radius);
+  font-size: var(--fs-md);
+  line-height: 1.4;
   color: var(--text-secondary);
   box-shadow: var(--shadow);
   transition: all 0.3s ease;
@@ -1815,13 +1815,13 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--accent-bg);
   color: var(--accent);
   font-weight: 700;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-base);
   flex-shrink: 0;
   margin-top: 1px;
 }
@@ -1829,21 +1829,22 @@ a:hover {
 .home-step-label {
   grid-column: 2;
   grid-row: 1;
-  font-size: var(--fs-base);
+  font-size: var(--fs-md);
   color: var(--text);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .home-step-desc {
   grid-column: 2;
   grid-row: 2;
   display: block;
+  font-size: var(--fs-base);
 }
 
 @media (min-width: 640px) {
   .home-steps-compact {
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: 24px;
     text-align: center;
   }
 
@@ -1851,10 +1852,10 @@ a:hover {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
     justify-items: center;
-    padding: clamp(10px, 1.8vh, 14px) 10px;
+    padding: 24px;
     text-align: center;
-    min-height: clamp(100px, 14vh, 130px);
     align-content: start;
+    gap: 12px;
   }
 
   .home-step-num {
