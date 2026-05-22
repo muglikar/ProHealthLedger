@@ -414,10 +414,12 @@ export default function SupportSection() {
     if (!isDragging) return;
     setIsDragging(false);
 
-    // Snap to nearest tier
-    const nearestIdx = Math.round(-dragRotation / angleStep);
-    const safeIdx = ((nearestIdx % tileCount) + tileCount) % tileCount;
-    setSelectedTierId(SPONSOR_TIERS[safeIdx].id);
+    if (hasDragged.current) {
+      // Snap to nearest tier
+      const nearestIdx = Math.round(-dragRotation / angleStep);
+      const safeIdx = ((nearestIdx % tileCount) + tileCount) % tileCount;
+      setSelectedTierId(SPONSOR_TIERS[safeIdx].id);
+    }
   };
 
   // Pointer Handlers for better cross-platform support
@@ -436,6 +438,17 @@ export default function SupportSection() {
 
   const onPointerUp = (e) => {
     if (isDragging) {
+      if (!hasDragged.current) {
+        const tile = e.target.closest('.support-3d-tile');
+        if (tile) {
+          const tierId = tile.getAttribute('data-tier-id');
+          if (tierId) {
+            setSelectedTierId(tierId);
+            const idx = SPONSOR_TIERS.findIndex(t => t.id === tierId);
+            if (idx !== -1) snapToSelectedIndex(idx);
+          }
+        }
+      }
       handleDragEnd();
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
@@ -531,6 +544,7 @@ export default function SupportSection() {
               return (
                 <button
                   key={tier.id}
+                  data-tier-id={tier.id}
                   className={`support-3d-tile ${isSelected ? 'is-active' : ''}`}
                   style={{
                     transform: `rotateY(${rotation}deg) translateZ(${radius}px)`,
