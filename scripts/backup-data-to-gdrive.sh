@@ -66,13 +66,19 @@ else
   export RCLONE_CONFIG="$RCLONE_CONFIG_DIR/rclone_generated.conf"
 fi
 
+STAMP_DIR="$(TZ="Asia/Kolkata" date +"%Y-%m-%d_%H-%M-%S")"
+
 echo "Creating archive: $ARCHIVE"
 tar -C "$ROOT_DIR" -czf "$ARCHIVE" data
+
+CLEAN_ARCHIVE_NAME="weekly-data-${STAMP_DIR}.tar.gz"
+mv "$ARCHIVE" "$ROOT_DIR/$CLEAN_ARCHIVE_NAME"
+ARCHIVE="$ROOT_DIR/$CLEAN_ARCHIVE_NAME"
 
 echo "Uploading archive to Google Drive archives/ ..."
 rclone copy "$ARCHIVE" "$REMOTE:archives/" --create-empty-src-dirs
 
-echo "Syncing latest mirror to Google Drive latest/ ..."
-rclone sync "$DATA_DIR" "$REMOTE:latest/" --delete-during
+echo "Syncing date-time wise mirror to Google Drive ${STAMP_DIR}/ ..."
+rclone sync "$DATA_DIR" "$REMOTE:${STAMP_DIR}/" --delete-during
 
 echo "Google Drive backup complete."
