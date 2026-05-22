@@ -91,7 +91,7 @@ export default function Home() {
         </header>
 
         <div className="hero-visual">
-          <img src="/hero-illustration.png" alt="Professional stepping out of a toxic workplace into a successful future" className="hero-image" />
+          <img src="/heroImage.png" alt="Professionals succeeding with ProHealthLedger" className="hero-image" />
         </div>
       </div>
 

@@ -1049,7 +1049,6 @@ a:hover {
 
 .hero-visual {
   width: 100%;
-  max-width: 500px;
   margin: 0 auto;
 }
 
@@ -1089,6 +1088,7 @@ a:hover {
 
   .hero-visual {
     flex: 1;
+    max-width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
