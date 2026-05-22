@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function VerificationBadgeModal({ profileSlug, publicName, onClose }) {
   const [copied, setCopied] = useState(false);
-  const profileUrl = `https://prohealthledger.org/p/directory/${encodeURIComponent(profileSlug)}/vouch`;
+  const profileUrl = `https://prohealthledger.org/p/directory/directory/${encodeURIComponent(profileSlug)}`;
   
   const embedHtml = `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block; font-family: sans-serif; font-size: 14px; font-weight: bold; color: #fff; background-color: #2563eb; padding: 8px 16px; border-radius: 6px; text-decoration: none;">
   ✓ Verified Professional on PHL
@@ -21,9 +21,9 @@ export default function VerificationBadgeModal({ profileSlug, publicName, onClos
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>&times;</button>
+    <div className="share-modal-overlay" onClick={onClose}>
+      <div className="share-modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="share-modal-close" onClick={onClose}>&times;</button>
         <h2>Get Your Verification Badge</h2>
         <p style={{ marginBottom: "15px", color: "#64748b" }}>
           You have verified community vouches! Add this badge to your personal website or portfolio to build trust and increase your SEO authority.
@@ -36,7 +36,7 @@ export default function VerificationBadgeModal({ profileSlug, publicName, onClos
         <textarea 
           readOnly 
           value={embedHtml} 
-          style={{ width: "100%", height: "100px", padding: "10px", fontFamily: "monospace", fontSize: "14px", backgroundColor: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: "4px", marginBottom: "15px" }}
+          style={{ width: "100%", height: "100px", padding: "10px", fontFamily: "monospace", fontSize: "14px", backgroundColor: "#f8fafc", color: "#0f172a", border: "1px solid #cbd5e1", borderRadius: "4px", marginBottom: "15px" }}
         />
         
         <button 

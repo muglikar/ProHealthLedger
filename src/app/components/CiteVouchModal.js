@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function CiteVouchModal({ vouch, profileSlug, publicName, onClose }) {
   const [copied, setCopied] = useState(false);
-  const profileUrl = `https://prohealthledger.org/p/directory/${encodeURIComponent(profileSlug)}/vouch`;
+  const profileUrl = `https://prohealthledger.org/p/directory/directory/${encodeURIComponent(profileSlug)}`;
   
   const citationHtml = `<blockquote cite="${profileUrl}">
   <p>"${vouch.reason || vouch.comment || 'Verified professional vouch for conduct and behavior.'}"</p>
@@ -22,9 +22,9 @@ export default function CiteVouchModal({ vouch, profileSlug, publicName, onClose
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>&times;</button>
+    <div className="share-modal-overlay" onClick={onClose}>
+      <div className="share-modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="share-modal-close" onClick={onClose}>&times;</button>
         <h2>Cite this Vouch</h2>
         <p style={{ marginBottom: "15px", color: "#64748b" }}>
           Copy this HTML snippet to embed a citation of this vouch directly on your blog, portfolio, or website.
@@ -33,7 +33,7 @@ export default function CiteVouchModal({ vouch, profileSlug, publicName, onClose
         <textarea 
           readOnly 
           value={citationHtml} 
-          style={{ width: "100%", height: "120px", padding: "10px", fontFamily: "monospace", fontSize: "14px", backgroundColor: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: "4px", marginBottom: "15px" }}
+          style={{ width: "100%", height: "120px", padding: "10px", fontFamily: "monospace", fontSize: "14px", backgroundColor: "#f8fafc", color: "#0f172a", border: "1px solid #cbd5e1", borderRadius: "4px", marginBottom: "15px" }}
         />
         
         <button 
