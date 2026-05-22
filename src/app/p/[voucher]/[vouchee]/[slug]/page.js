@@ -65,7 +65,7 @@ export default async function VouchPage({ params }) {
   
   const schemaMarkup = {
     "@context": "https://schema.org",
-    "@type": "Person",
+    "@type": "Organization",
     "name": cleanVouchee,
     "description": `Professional profile and verified human conduct reviews for ${cleanVouchee}`,
     "review": {
