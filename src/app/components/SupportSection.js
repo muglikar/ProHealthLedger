@@ -469,7 +469,7 @@ export default function SupportSection() {
           <div className="why-card">
             <div className="why-card-icon" style={{ fontSize: "2rem", marginBottom: "12px" }}>🛡️</div>
             <h3>Security Guardianship</h3>
-            <p>Funding enables regular third-party security audits and penetration testing to ensure contributor anonymity and data integrity.</p>
+            <p>Funding enables regular third-party security audits and penetration testing to ensure platform security and data integrity.</p>
           </div>
           <div className="why-card">
             <div className="why-card-icon" style={{ fontSize: "2rem", marginBottom: "12px" }}>🚀</div>
