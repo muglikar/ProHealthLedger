@@ -23,14 +23,15 @@ export async function generateMetadata({ params }) {
     )}/${encodeURIComponent(resolvedParams?.vouchee || "")}/${encodeURIComponent(
       resolvedParams?.slug || ""
     )}`;
-    const title = `${cleanVoucher} vouched for ${cleanVouchee} on Professional Health Ledger`;
+    const title = `${cleanVoucher} vouched for ${cleanVouchee} - Professional Conduct, Behavior & Human Reviews | ProHealthLedger`;
+    const description = `View the verified professional conduct review and human vouch for ${cleanVouchee} by ${cleanVoucher} on ProHealthLedger.`;
 
     return {
       title,
-      description: `View the verified professional vouch on ProHealthLedger.`,
+      description,
       openGraph: {
         title,
-        description: `View the verified professional vouch on ProHealthLedger.`,
+        description,
         type: "article",
         url: pageUrl,
         siteName: "Professional Health Ledger",
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }) {
       twitter: {
         card: "summary_large_image",
         title,
-        description: `View the verified professional vouch on ProHealthLedger.`,
+        description,
         images: [ogUrl],
       },
     };
@@ -59,18 +60,47 @@ export async function generateMetadata({ params }) {
 
 export default async function VouchPage({ params }) {
   const resolvedParams = await params;
+  const cleanVouchee = segmentToDisplayName(resolvedParams?.vouchee);
+  const cleanVoucher = segmentToDisplayName(resolvedParams?.voucher);
+  
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": cleanVouchee,
+    "description": `Professional profile and verified human conduct reviews for ${cleanVouchee}`,
+    "review": {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": cleanVoucher
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5"
+      },
+      "reviewBody": "Verified professional vouch for conduct and behavior."
+    }
+  };
+
   return (
-    <Suspense
-      fallback={
-        <div
-          className="loading-container"
-          style={{ padding: "40px", textAlign: "center", color: "#64748b" }}
-        >
-          Opening Professional Ledger...
-        </div>
-      }
-    >
-      <ProfilesClient initialSearch={resolvedParams?.slug} />
-    </Suspense>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
+      />
+      <Suspense
+        fallback={
+          <div
+            className="loading-container"
+            style={{ padding: "40px", textAlign: "center", color: "#64748b" }}
+          >
+            Opening Professional Ledger...
+          </div>
+        }
+      >
+        <ProfilesClient initialSearch={resolvedParams?.slug} />
+      </Suspense>
+    </>
   );
 }

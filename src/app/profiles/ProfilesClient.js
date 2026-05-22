@@ -7,6 +7,8 @@ import Link from "next/link";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 import CommentReadModal from "@/app/components/CommentReadModal";
 import ShareVouchModal from "@/app/components/ShareVouchModal";
+import CiteVouchModal from "@/app/components/CiteVouchModal";
+import VerificationBadgeModal from "@/app/components/VerificationBadgeModal";
 import { trackEvent } from "@/lib/telemetry";
 
 const REPO_BASE = "https://github.com/muglikar/ProHealthLedger";
@@ -81,6 +83,8 @@ function ProfilesContent() {
   const [loading, setLoading] = useState(true);
   const [shareModalData, setShareModalData] = useState(null);
   const [commentPopup, setCommentPopup] = useState(null);
+  const [citeModalData, setCiteModalData] = useState(null);
+  const [badgeModalData, setBadgeModalData] = useState(null);
 
   useEffect(() => {
     fetch("/api/profiles")
@@ -233,10 +237,10 @@ function ProfilesContent() {
                     String(b.date || "").localeCompare(String(a.date || ""))
                 )[0];
               return (
-                <div key={profile.slug || profile.linkedin_url} className="profile-card">
-                  <div className="profile-slug">
+                <article key={profile.slug || profile.linkedin_url} className="profile-card">
+                  <header className="profile-slug">
                     {formatProfessionalDisplayName(profile.slug, profile.public_name) || "Profile"}
-                  </div>
+                  </header>
                   <div className="profile-url">
                     <a href={profile.linkedin_url || "#"} target="_blank" rel="noopener noreferrer">
                       View LinkedIn Profile →
@@ -246,9 +250,9 @@ function ProfilesContent() {
                     <span className="vote-badge vote-yes">✓ {yes} would work with again</span>
                     <span className="vote-badge vote-no">✗ {no} would not</span>
                   </div>
-                  <div className="submission-count">
+                  <section className="submission-count">
                     {total} vote{total !== 1 ? "s" : ""} from the community
-                  </div>
+                  </section>
                   {deduped.length > 0 && (
                     <div className="profile-vouch-details">
                       <table className="profile-vouch-table">
@@ -259,6 +263,7 @@ function ProfilesContent() {
                             <th>Submitted By</th>
                             <th>Record</th>
                             <th>Date</th>
+                            <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -286,6 +291,18 @@ function ProfilesContent() {
                                 ) : "—"}
                               </td>
                               <td>{s.date || "—"}</td>
+                              <td>
+                                {s.vote === "yes" && (
+                                  <button
+                                    type="button"
+                                    className="btn btn-outline"
+                                    style={{ padding: "4px 8px", fontSize: "0.8rem", height: "auto" }}
+                                    onClick={() => setCiteModalData({ vouch: s, profile })}
+                                  >
+                                    Cite this Vouch
+                                  </button>
+                                )}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
@@ -333,9 +350,20 @@ function ProfilesContent() {
                           Copy and post to LinkedIn
                         </button>
                       ) : null}
+                      {deduped.length > 0 && (
+                        <button
+                          type="button"
+                          className="btn profile-experience-linkedin-btn"
+                          style={{ backgroundColor: "#0f172a" }}
+                          title="Get your Verification Badge"
+                          onClick={() => setBadgeModalData(profile)}
+                        >
+                          Get Verification Badge
+                        </button>
+                      )}
                     </div>
                   </div>
-                </div>
+                </article>
               );
             })}
         </div>
@@ -360,6 +388,23 @@ function ProfilesContent() {
           linkedinUrl={commentPopup.linkedinUrl}
           text={commentPopup.text}
           onClose={() => setCommentPopup(null)}
+        />
+      )}
+
+      {citeModalData && (
+        <CiteVouchModal
+          vouch={citeModalData.vouch}
+          profileSlug={citeModalData.profile.slug}
+          publicName={citeModalData.profile.public_name}
+          onClose={() => setCiteModalData(null)}
+        />
+      )}
+
+      {badgeModalData && (
+        <VerificationBadgeModal
+          profileSlug={badgeModalData.slug}
+          publicName={badgeModalData.public_name}
+          onClose={() => setBadgeModalData(null)}
         />
       )}
     </>
