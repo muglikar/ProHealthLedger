@@ -91,6 +91,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the site.
 
 1. **Profile Image Extraction:** Automatically extracting the image of the professional from LinkedIn or search engines. If automated extraction is restricted, the platform will utilize manual assistance from vouchers/flaggers when they submit votes.
 2. **Deep Professional Research:** Conducting deep background research on a professional using comprehensive search engine aggregation and LLM analysis to ascertain the true professional nature of an individual. This premium deep research report will be available for a fee of **Rs. 501** for Indian users and **$5** for international users.
+3. **Professional Knowledge Graph:** Constructing an interactive knowledge graph that maps the complex network of relationships between individuals, vouchers, flaggers, and the companies they work for or report to.
 
 ## Legal
 
