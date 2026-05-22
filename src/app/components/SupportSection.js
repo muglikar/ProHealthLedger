@@ -115,6 +115,7 @@ export default function SupportSection() {
   const containerRef = useRef(null);
   const dragStartX = useRef(0);
   const startRotation = useRef(0);
+  const hasDragged = useRef(false);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPreCheckoutModal, setShowPreCheckoutModal] = useState(false);
@@ -393,6 +394,7 @@ export default function SupportSection() {
   }, []);
 
   const handleDragStart = (x) => {
+    hasDragged.current = false;
     setIsDragging(true);
     dragStartX.current = x;
     startRotation.current = dragRotation;
@@ -401,6 +403,9 @@ export default function SupportSection() {
   const handleDragMove = (x) => {
     if (!isDragging) return;
     const deltaX = x - dragStartX.current;
+    if (Math.abs(deltaX) > 5) {
+      hasDragged.current = true;
+    }
     const sensitivity = 0.8; // Increased
     setDragRotation(startRotation.current + (deltaX * sensitivity));
   };
@@ -530,11 +535,10 @@ export default function SupportSection() {
                   style={{
                     transform: `rotateY(${rotation}deg) translateZ(${radius}px)`,
                     opacity: opacity,
-                    zIndex: Math.round(100 - absRotation),
-                    pointerEvents: isDragging ? 'none' : 'auto'
+                    zIndex: Math.round(100 - absRotation)
                   }}
                   onClick={(e) => {
-                    if (!isDragging) {
+                    if (!hasDragged.current) {
                       setSelectedTierId(tier.id);
                       snapToSelectedIndex(idx);
                     }
