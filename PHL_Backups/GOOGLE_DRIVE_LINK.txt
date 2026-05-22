@@ -1,9 +1,9 @@
-Google Drive backup folder link (for: support@StomatoBot.com):
+Google Drive backup folder link (for: support@StomatoBot.com, muglikar@gmail.com, anandmuglikar@gmail.com):
 
 /content/drive/MyDrive/PHL_Backups
 https://drive.google.com/drive/folders/1zNREnJyfzrD_6a8xxiUVBAu_SUF4SQaR?usp=drive_link
 
 Suggested target:
 - Create a Drive folder named: PHL_Backups
-- Share access only with: support@StomatoBot.com (Owner)
+- Share access only with: support@StomatoBot.com (Owner), muglikar@gmail.com, anandmuglikar@gmail.com
 - Keep link sharing OFF (Restricted)
