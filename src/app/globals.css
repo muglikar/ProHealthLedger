@@ -1801,6 +1801,13 @@ a:hover {
   line-height: 1.36;
   color: var(--text-secondary);
   box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.home-steps-compact li:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent);
 }
 
 .home-step-num {
