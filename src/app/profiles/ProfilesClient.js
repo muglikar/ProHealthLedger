@@ -350,7 +350,7 @@ function ProfilesContent() {
                           Copy and post to LinkedIn
                         </button>
                       ) : null}
-                      {deduped.length > 0 && (
+                      {yes > no && (
                         <button
                           type="button"
                           className="btn profile-experience-linkedin-btn"

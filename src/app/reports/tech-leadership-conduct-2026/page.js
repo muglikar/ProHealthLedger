@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "The 2026 State of Tech Leadership Conduct | ProHealthLedger Reports",
+  title: "The Q2 2026 State of Tech Leadership Conduct | ProHealthLedger Reports",
   description: "Statistical analysis of software engineering manager behavior, workplace toxicity, and professional conduct reviews based on public ledger data.",
 };
 
@@ -7,8 +7,8 @@ export default function TechLeadershipReport() {
   return (
     <div className="container" style={{ padding: "40px 20px", maxWidth: "800px", margin: "0 auto", lineHeight: "1.6" }}>
       <header className="page-header" style={{ marginBottom: "40px" }}>
-        <h1 style={{ fontSize: "2rem", marginBottom: "10px" }}>The 2026 State of Tech Leadership Conduct</h1>
-        <p style={{ color: "#64748b", fontStyle: "italic" }}>A statistical analysis of manager behavior, professional reputation, and workplace toxicity based on early ledger data.</p>
+        <h1 style={{ fontSize: "2rem", marginBottom: "10px" }}>The Q2 2026 State of Tech Leadership Conduct</h1>
+        <p style={{ color: "#64748b", fontStyle: "italic" }}>A statistical analysis of manager behavior, professional reputation, and workplace toxicity based on Q2 2026 ledger data.</p>
       </header>
 
       <article style={{ color: "#334155" }}>

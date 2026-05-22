@@ -22,8 +22,8 @@ export default function CiteVouchModal({ vouch, profileSlug, publicName, onClose
   };
 
   return (
-    <div className="share-modal-overlay" onClick={onClose}>
-      <div className="share-modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className="share-modal-backdrop" onClick={onClose}>
+      <div className="share-modal" style={{ padding: "20px" }} onClick={(e) => e.stopPropagation()}>
         <button className="share-modal-close" onClick={onClose}>&times;</button>
         <h2>Cite this Vouch</h2>
         <p style={{ marginBottom: "15px", color: "#64748b" }}>
