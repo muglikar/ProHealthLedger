@@ -391,22 +391,32 @@ function ProfilesContent() {
         />
       )}
 
-      {citeModalData && (
-        <CiteVouchModal
-          vouch={citeModalData.vouch}
-          profileSlug={citeModalData.profile.slug}
-          publicName={citeModalData.profile.public_name}
-          onClose={() => setCiteModalData(null)}
-        />
-      )}
+      {citeModalData && (() => {
+        const p = citeModalData.profile;
+        const rawUrl = typeof p.linkedin_url === "string" ? p.linkedin_url : "";
+        const urlSlug = rawUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || p.slug || p.public_name || "profile";
+        return (
+          <CiteVouchModal
+            vouch={citeModalData.vouch}
+            profileSlug={urlSlug}
+            publicName={p.public_name}
+            onClose={() => setCiteModalData(null)}
+          />
+        );
+      })()}
 
-      {badgeModalData && (
-        <VerificationBadgeModal
-          profileSlug={badgeModalData.slug}
-          publicName={badgeModalData.public_name}
-          onClose={() => setBadgeModalData(null)}
-        />
-      )}
+      {badgeModalData && (() => {
+        const p = badgeModalData;
+        const rawUrl = typeof p.linkedin_url === "string" ? p.linkedin_url : "";
+        const urlSlug = rawUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || p.slug || p.public_name || "profile";
+        return (
+          <VerificationBadgeModal
+            profileSlug={urlSlug}
+            publicName={p.public_name}
+            onClose={() => setBadgeModalData(null)}
+          />
+        );
+      })()}
     </>
   );
 }
