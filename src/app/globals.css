@@ -1000,6 +1000,7 @@ a:hover {
 .main-content:has(.home-above-fold) {
   padding-top: max(4px, 0.5vw);
   min-height: 0;
+  max-width: 1200px; /* Expand hero width to perfectly match the 1200px compliance notice */
 }
 
 .main-content:has(.submit-hero) {
