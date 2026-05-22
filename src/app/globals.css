@@ -999,6 +999,8 @@ a:hover {
 /* ── Home: single column, first fold through karma (desktop fills viewport) ── */
 .main-content:has(.home-above-fold) {
   padding-top: max(4px, 0.5vw);
+  padding-left: 16px;
+  padding-right: 16px;
   min-height: 0;
   max-width: 1200px; /* Expand hero width to perfectly match the 1200px compliance notice */
 }
@@ -1091,7 +1093,7 @@ a:hover {
     flex: 1;
     max-width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end; /* Force image to touch the right edge */
     align-items: center;
   }
 }
