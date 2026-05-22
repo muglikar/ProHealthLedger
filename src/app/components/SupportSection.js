@@ -439,9 +439,35 @@ export default function SupportSection() {
   const selectedTier = SPONSOR_TIERS[selectedIndex] || SPONSOR_TIERS[0];
 
   return (
-    <section className="support-card" id="sponsor">
-      <div className="support-card-content">
-        <div className="support-interactive-column">
+    <>
+      <section className="why-section" style={{ marginTop: '2rem' }}>
+        <h2 className="section-title">Vision & Impact</h2>
+        <div className="why-grid">
+          <div className="why-card">
+            <div className="why-card-icon" style={{ fontSize: "2rem", marginBottom: "12px" }}>🏗️</div>
+            <h3>Infrastructure Sustainability</h3>
+            <p>Your support covers the direct costs of high-availability cloud infrastructure and database scaling needed for a global ledger.</p>
+          </div>
+          <div className="why-card">
+            <div className="why-card-icon" style={{ fontSize: "2rem", marginBottom: "12px" }}>🛡️</div>
+            <h3>Security Guardianship</h3>
+            <p>Funding enables regular third-party security audits and penetration testing to ensure contributor anonymity and data integrity.</p>
+          </div>
+          <div className="why-card">
+            <div className="why-card-icon" style={{ fontSize: "2rem", marginBottom: "12px" }}>🚀</div>
+            <h3>Ecosystem Evolution</h3>
+            <p>We are building an open trust protocol. Sponsorship allows for deep R&D into decentralized verification and cross-platform trust syncing.</p>
+          </div>
+        </div>
+        <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
+          <div className="transparency-callout" style={{ width: '100%', maxWidth: '1000px', display: 'block', margin: '0 auto' }}>
+            <p><strong>Transparency:</strong> ProHealthLedger is an open-source technical utility. 100% of sponsorship funds are directed toward technical maintenance and ecosystem development.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="support-card" id="sponsor">
+        <div className="support-card-content">
           <div className="support-card-header">
           <div className="support-card-icon">
             <img
@@ -603,33 +629,9 @@ export default function SupportSection() {
               </div>
             </div>
           </div>
-        </div>
+          </div>
         </div>
 
-        <div className="vision-impact-section">
-          <h2>Vision & Impact</h2>
-          <div className="vision-grid">
-            <div className="vision-card">
-              <div className="vision-card-icon">🏗️</div>
-              <h4>Infrastructure Sustainability</h4>
-              <p>Your support covers the direct costs of high-availability cloud infrastructure and database scaling needed for a global ledger.</p>
-            </div>
-            <div className="vision-card">
-              <div className="vision-card-icon">🛡️</div>
-              <h4>Security Guardianship</h4>
-              <p>Funding enables regular third-party security audits and penetration testing to ensure contributor anonymity and data integrity.</p>
-            </div>
-            <div className="vision-card">
-              <div className="vision-card-icon">🚀</div>
-              <h4>Ecosystem Evolution</h4>
-              <p>We are building an open trust protocol. Sponsorship allows for deep R&D into decentralized verification and cross-platform trust syncing.</p>
-            </div>
-          </div>
-          <div className="transparency-callout">
-            <p><strong>Transparency:</strong> ProHealthLedger is an open-source technical utility. 100% of sponsorship funds are directed toward technical maintenance and ecosystem development.</p>
-          </div>
-        </div>
-      </div>
 
       {showPreCheckoutModal && (
         <div className="pre-checkout-modal-overlay" onClick={() => !isProcessing && setShowPreCheckoutModal(false)}>
@@ -750,6 +752,7 @@ export default function SupportSection() {
         </div>
       )}
 
-    </section>
+      </section>
+    </>
   );
 }
