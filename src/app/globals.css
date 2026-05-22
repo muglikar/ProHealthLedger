@@ -2178,15 +2178,15 @@ a:hover {
 }
 
 .vote-yes {
-  background: var(--green-bg);
-  color: var(--green);
-  border: 1px solid var(--green-border);
+  background: #16a34a;
+  color: #ffffff;
+  border: 1px solid #15803d;
 }
 
 .vote-no {
-  background: var(--red-bg);
-  color: var(--red);
-  border: 1px solid var(--red-border);
+  background: #dc2626;
+  color: #ffffff;
+  border: 1px solid #b91c1c;
 }
 
 .submission-count {
