@@ -22,6 +22,7 @@ jobs:
       - name: Run weekly data backup to Google Drive
         env:
           BACKUP_PREFIX: weekly
+          RCLONE_CONFIG_DATA: ${{ secrets.RCLONE_CONFIG_DATA }}
           GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
         run: bash ./scripts/backup-data-to-gdrive.sh
