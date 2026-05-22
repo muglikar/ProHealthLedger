@@ -12,6 +12,7 @@ export default async function SponsorsAdminPage() {
   }
 
   const { data: sponsors } = await readDataFile("data/sponsors/_index.json");
+  const { data: profiles } = await readDataFile("data/profiles/_index.json");
 
   // Sort sponsors by newest first
   const sortedSponsors = [...(sponsors || [])].sort((a, b) => {
@@ -59,7 +60,33 @@ export default async function SponsorsAdminPage() {
                     <div style={{ fontSize: "0.75rem", color: "#94a3b8" }}>{new Date(sponsor.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                   </td>
                   <td style={{ padding: "16px", borderTop: "1px solid #f1f5f9", borderBottom: "1px solid #f1f5f9" }}>
-                    <div style={{ fontWeight: "700", color: "#1e293b", fontSize: "1rem" }}>{sponsor.name}</div>
+                    {(() => {
+                      const profileMatch = (profiles || []).find(p => 
+                        p.public_name && sponsor.name && p.public_name.toLowerCase() === sponsor.name.toLowerCase()
+                      );
+                      const linkedinUrl = profileMatch?.linkedin_url || (sponsor.name === "Anand Muglikar" ? "https://www.linkedin.com/in/muglikar" : null);
+                      
+                      return (
+                        <div style={{ fontWeight: "700", fontSize: "1rem" }}>
+                          {linkedinUrl ? (
+                            <a 
+                              href={linkedinUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              style={{ 
+                                color: "#2563eb", 
+                                textDecoration: "none",
+                                borderBottom: "1px dashed #2563eb"
+                              }}
+                            >
+                              {sponsor.name}
+                            </a>
+                          ) : (
+                            <span style={{ color: "#1e293b" }}>{sponsor.name}</span>
+                          )}
+                        </div>
+                      );
+                    })()}
                     <div style={{ fontSize: "0.85rem", color: "#64748b" }}>{sponsor.email}</div>
                     <div style={{ fontSize: "0.85rem", color: "#64748b" }}>{sponsor.mobile}</div>
                   </td>
