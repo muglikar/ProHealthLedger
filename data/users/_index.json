@@ -231,10 +231,16 @@
         "vote": "no",
         "issue": 47,
         "date": "2026-05-24"
+      },
+      {
+        "profile_slug": "vedang-deshpande-832939140",
+        "vote": "no",
+        "issue": 48,
+        "date": "2026-05-24"
       }
     ],
     "yes_count": 20,
-    "no_count": 17
+    "no_count": 18
   },
   {
     "user_id": "linkedin:IXYyBWOZrk",
