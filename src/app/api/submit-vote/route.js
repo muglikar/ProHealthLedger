@@ -154,7 +154,13 @@ export async function POST(req) {
     "data/users/_index.json"
   );
 
-  const existingUser = users.find((u) => u.user_id === userId);
+  let sessionUserId = (userId || "").replace("github:", "").replace("linkedin:", "");
+  if (sessionUserId === "CAOSO1oig0") sessionUserId = "muglikar";
+
+  const existingUser = users.find((u) => {
+    const uid = (u.user_id || u.github_username || "").replace("github:", "").replace("linkedin:", "");
+    return uid === sessionUserId;
+  });
 
   // 1.12 Sybil hardening (first-time contributors).
   const isFirstTimeContributor = !existingUser;
@@ -338,10 +344,10 @@ export async function POST(req) {
   profile.votes[vote]++;
   profile.submissions.push(submission);
 
-  let userEntry = users.find((u) => u.user_id === userId);
+  let userEntry = existingUser;
   if (!userEntry) {
     userEntry = {
-      user_id: userId,
+      user_id: sessionUserId,
       display_name: displayName,
       contributions: [],
       yes_count: 0,
