@@ -8,9 +8,13 @@
  *
  * We extract the first segment before " - " or " | " and strip LinkedIn noise.
  *
- * This is best-effort and non-blocking: if it fails (rate-limit, timeout, bot
- * detection, etc.) we gracefully return null and let the caller fall back to
- * slug-based display names.
+ * This is best-effort and non-blocking. It uses a multi-pronged approach:
+ * 1. Direct fetch of the LinkedIn public profile.
+ * 2. Fallback to searching Google (site:linkedin.com/in/<slug>) to extract
+ *    the name from search results, bypassing LinkedIn's authwall.
+ *
+ * If all strategies fail (e.g., due to rate-limiting or captchas on Vercel IPs),
+ * we gracefully return null and let the caller fall back to slug-based display names.
  */
 
 const FETCH_TIMEOUT_MS = 5000;
@@ -58,9 +62,59 @@ export async function resolveLinkedinName(slug) {
     }
     reader.cancel().catch(() => {});
 
-    return extractNameFromHtml(html);
+    const nameFromDirect = extractNameFromHtml(html);
+    if (nameFromDirect) return nameFromDirect;
+    
+    // If direct extraction failed, try the SERP fallback.
+    return fallbackToGoogleSerp(slug);
   } catch {
-    // Timeout, network error, abort — all non-fatal.
+    // If direct fetch threw an error, attempt the SERP fallback.
+    return fallbackToGoogleSerp(slug);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Fallback Strategy: Scrape Google search results.
+ * We query: site:linkedin.com/in/<slug>
+ * And extract the title of the first search result.
+ */
+async function fallbackToGoogleSerp(slug) {
+  const query = `site:linkedin.com/in/${encodeURIComponent(slug)}`;
+  const url = `https://www.google.com/search?q=${query}&hl=en`;
+  
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      signal: ctrl.signal,
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+        Accept: "text/html",
+      },
+    });
+
+    if (!res.ok) return null;
+
+    const html = await res.text();
+    
+    // Google results typically contain <h3 class="...">Title - Company | LinkedIn</h3>
+    // We look for h3 tags containing "LinkedIn"
+    const h3Regex = /<h3[^>]*>([^<]+LinkedIn[^<]*)<\/h3>/gi;
+    let match;
+    
+    while ((match = h3Regex.exec(html)) !== null) {
+      const name = extractNameFromTitle(match[1]);
+      if (name) return name;
+    }
+    
+    return null;
+  } catch {
     return null;
   } finally {
     clearTimeout(timer);
