@@ -7,6 +7,7 @@ import { isFlagBlockedForLinkedinUrl } from "@/lib/protected-profiles";
 import { verifyLinkedinSlug } from "@/lib/linkedin-slug-verify";
 import { analyzeReasonSafety } from "@/lib/content-safety";
 import { createProfileLinkChangeRequest } from "@/lib/profile-link-change-requests";
+import { resolveLinkedinName } from "@/lib/linkedin-name-resolve";
 import {
   envLimit,
   getClientIp,
@@ -341,6 +342,19 @@ export async function POST(req) {
     };
     profiles.push(profile);
   }
+
+  // Auto-resolve the real name from LinkedIn if not already set.
+  if (!profile.public_name) {
+    try {
+      const resolvedName = await resolveLinkedinName(slug);
+      if (resolvedName) {
+        profile.public_name = resolvedName;
+      }
+    } catch {
+      // Non-fatal — slug-derived name is the fallback.
+    }
+  }
+
   profile.votes[vote]++;
   profile.submissions.push(submission);
 
