@@ -219,10 +219,16 @@
         "vote": "no",
         "issue": 45,
         "date": "2026-05-13"
+      },
+      {
+        "profile_slug": "deepakdhole",
+        "vote": "no",
+        "issue": 46,
+        "date": "2026-05-24"
       }
     ],
     "yes_count": 20,
-    "no_count": 15
+    "no_count": 16
   },
   {
     "user_id": "linkedin:IXYyBWOZrk",
