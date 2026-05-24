@@ -243,9 +243,15 @@
         "vote": "no",
         "issue": 49,
         "date": "2026-05-24"
+      },
+      {
+        "profile_slug": "shubhamdhatrak",
+        "vote": "yes",
+        "issue": 50,
+        "date": "2026-05-24"
       }
     ],
-    "yes_count": 20,
+    "yes_count": 21,
     "no_count": 19
   },
   {
