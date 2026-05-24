@@ -225,10 +225,16 @@
         "vote": "no",
         "issue": 46,
         "date": "2026-05-24"
+      },
+      {
+        "profile_slug": "vaibhav-bhat-293b7110b",
+        "vote": "no",
+        "issue": 47,
+        "date": "2026-05-24"
       }
     ],
     "yes_count": 20,
-    "no_count": 16
+    "no_count": 17
   },
   {
     "user_id": "linkedin:IXYyBWOZrk",
