@@ -249,10 +249,16 @@
         "vote": "yes",
         "issue": 50,
         "date": "2026-05-24"
+      },
+      {
+        "profile_slug": "aditya-kumar-5a9837143",
+        "vote": "no",
+        "issue": 51,
+        "date": "2026-05-24"
       }
     ],
     "yes_count": 21,
-    "no_count": 19
+    "no_count": 20
   },
   {
     "user_id": "linkedin:IXYyBWOZrk",
