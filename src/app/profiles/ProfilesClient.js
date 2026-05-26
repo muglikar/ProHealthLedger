@@ -171,6 +171,8 @@ function ProfilesContent() {
                 ? `${REPO_BASE}/issues/${submission.issue}`
                 : null,
             linkedinUrl: profile.linkedin_url || null,
+            submitterCapacity: submission.submitter_capacity || null,
+            votedCapacity: submission.voted_capacity || null,
           })
         }
       >
@@ -387,6 +389,8 @@ function ProfilesContent() {
           recordHref={commentPopup.recordHref}
           linkedinUrl={commentPopup.linkedinUrl}
           text={commentPopup.text}
+          submitterCapacity={commentPopup.submitterCapacity}
+          votedCapacity={commentPopup.votedCapacity}
           onClose={() => setCommentPopup(null)}
         />
       )}

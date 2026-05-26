@@ -39,7 +39,7 @@ export async function POST(req) {
   }
 
   const body = await req.json();
-  const { linkedinUrl, vote, reason, submitterLinkedinUrl } = body;
+  const { linkedinUrl, vote, reason, submitterLinkedinUrl, submitterCapacity, votedCapacity } = body;
   const userId = session.userId;
   const displayName = session.displayName || userId;
 
@@ -265,6 +265,22 @@ export async function POST(req) {
     ``,
     vote === "yes" ? "Yes" : "No",
     ``,
+    ...(submitterCapacity?.trim()
+      ? [
+          `### Voter's Role / Company`,
+          ``,
+          submitterCapacity.trim(),
+          ``,
+        ]
+      : []),
+    ...(votedCapacity?.trim()
+      ? [
+          `### Their Role / Company`,
+          ``,
+          votedCapacity.trim(),
+          ``,
+        ]
+      : []),
     `### Brief Reason (optional)`,
     ``,
     reason || "_No response_",
@@ -315,6 +331,8 @@ export async function POST(req) {
     vote,
     issue: issueNumber,
     date: today,
+    ...(submitterCapacity?.trim() ? { submitter_capacity: submitterCapacity.trim() } : {}),
+    ...(votedCapacity?.trim() ? { voted_capacity: votedCapacity.trim() } : {}),
     ...(reasonTrimmed
       ? {
         reason: reasonTrimmed,
