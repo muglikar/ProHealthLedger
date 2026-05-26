@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession, signIn } from "next-auth/react";
 import Link from "next/link";
+import ProfilePhoto from "@/app/components/ProfilePhoto";
 
 export default function ReferralsPage() {
   const { data: session, status } = useSession();
@@ -253,17 +254,28 @@ export default function ReferralsPage() {
                 {referrals.map((r) => (
                   <tr key={r.ref_code} style={r.profile_slug === "__home__" ? { background: "rgba(0, 119, 181, 0.05)" } : {}}>
                     <td className="referral-profile-name">
-                      {r.profile_slug === "__home__" ? (
-                        <strong>✨ General Platform Link</strong>
-                      ) : (
-                        r.profile_linkedin_url ? (
-                          <a href={r.profile_linkedin_url} target="_blank" rel="noopener noreferrer" className="target-link">
-                            {r.profile_name}
-                          </a>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        {r.profile_slug !== "__home__" && (
+                          <ProfilePhoto
+                            photoUrl={r.profile_photo_url || null}
+                            name={r.profile_name || r.profile_slug}
+                            slug={r.profile_slug}
+                            size={32}
+                            showFlag={false}
+                          />
+                        )}
+                        {r.profile_slug === "__home__" ? (
+                          <strong>✨ General Platform Link</strong>
                         ) : (
-                          r.profile_name
-                        )
-                      )}
+                          r.profile_linkedin_url ? (
+                            <a href={r.profile_linkedin_url} target="_blank" rel="noopener noreferrer" className="target-link">
+                              {r.profile_name}
+                            </a>
+                          ) : (
+                            r.profile_name
+                          )
+                        )}
+                      </div>
                     </td>
                     <td>
                       <code className="ref-code">{r.ref_code}</code>
@@ -310,9 +322,13 @@ export default function ReferralsPage() {
             <div className="recruit-grid">
               {recruitsList.map((recruit) => (
                 <div key={recruit.id} className="recruit-card">
-                  <div className="recruit-avatar">
-                    {recruit.name.charAt(0).toUpperCase()}
-                  </div>
+                  <ProfilePhoto
+                    photoUrl={recruit.image || null}
+                    name={recruit.name}
+                    slug={null}
+                    size={40}
+                    showFlag={false}
+                  />
                   <div className="recruit-info">
                     <div className="recruit-name">
                       {recruit.profileUrl || getProfileLink(recruit.id) ? (

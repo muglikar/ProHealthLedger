@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { isSessionSiteAdmin } from "@/lib/site-admins";
 import { readDataFile } from "@/lib/github";
 import { redirect } from "next/navigation";
+import SponsorRow from "./SponsorRow";
 
 export default async function SponsorsAdminPage() {
   const session = await getServerSession(authOptions);
@@ -17,6 +18,25 @@ export default async function SponsorsAdminPage() {
   // Sort sponsors by newest first
   const sortedSponsors = [...(sponsors || [])].sort((a, b) => {
     return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+  });
+
+  // Pre-compute profile matches for each sponsor (server-side)
+  const sponsorData = sortedSponsors.map((sponsor) => {
+    const profileMatch = (profiles || []).find(
+      (p) =>
+        p.public_name &&
+        sponsor.name &&
+        p.public_name.toLowerCase() === sponsor.name.toLowerCase()
+    );
+    return {
+      sponsor: JSON.parse(JSON.stringify(sponsor)),
+      profileMatch: profileMatch
+        ? {
+            linkedin_url: profileMatch.linkedin_url || null,
+            profile_photo_url: profileMatch.profile_photo_url || null,
+          }
+        : null,
+    };
   });
 
   return (
@@ -46,76 +66,20 @@ export default async function SponsorsAdminPage() {
             </tr>
           </thead>
           <tbody>
-            {sortedSponsors.length === 0 ? (
+            {sponsorData.length === 0 ? (
               <tr>
                 <td colSpan="6" style={{ padding: "40px", textAlign: "center", color: "#64748b", background: "#f8fafc", borderRadius: "12px" }}>
                   No sponsorships recorded yet.
                 </td>
               </tr>
             ) : (
-              sortedSponsors.map((sponsor, index) => (
-                <tr key={index} style={{ background: index % 2 === 0 ? "#ffffff" : "#f8fafc" }}>
-                  <td style={{ padding: "16px", borderTopLeftRadius: "12px", borderBottomLeftRadius: "12px", borderTop: "1px solid #f1f5f9", borderBottom: "1px solid #f1f5f9", whiteSpace: "nowrap" }}>
-                    <div style={{ fontWeight: "600" }}>{new Date(sponsor.timestamp).toLocaleDateString()}</div>
-                    <div style={{ fontSize: "0.75rem", color: "#94a3b8" }}>{new Date(sponsor.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                  </td>
-                  <td style={{ padding: "16px", borderTop: "1px solid #f1f5f9", borderBottom: "1px solid #f1f5f9" }}>
-                    {(() => {
-                      const profileMatch = (profiles || []).find(p => 
-                        p.public_name && sponsor.name && p.public_name.toLowerCase() === sponsor.name.toLowerCase()
-                      );
-                      const linkedinUrl = profileMatch?.linkedin_url || (sponsor.name === "Anand Muglikar" ? "https://www.linkedin.com/in/muglikar" : null);
-                      
-                      return (
-                        <div style={{ fontWeight: "700", fontSize: "1rem" }}>
-                          {linkedinUrl ? (
-                            <a 
-                              href={linkedinUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              style={{ 
-                                color: "#2563eb", 
-                                textDecoration: "none",
-                                borderBottom: "1px dashed #2563eb"
-                              }}
-                            >
-                              {sponsor.name}
-                            </a>
-                          ) : (
-                            <span style={{ color: "#1e293b" }}>{sponsor.name}</span>
-                          )}
-                        </div>
-                      );
-                    })()}
-                    <div style={{ fontSize: "0.85rem", color: "#64748b" }}>{sponsor.email}</div>
-                    <div style={{ fontSize: "0.85rem", color: "#64748b" }}>{sponsor.mobile}</div>
-                  </td>
-                  <td style={{ padding: "16px", borderTop: "1px solid #f1f5f9", borderBottom: "1px solid #f1f5f9" }}>
-                    <div style={{ fontWeight: "600" }}>{sponsor.org || sponsor.organization || "Individual"}</div>
-                    <div style={{ fontSize: "0.8rem", color: "#94a3b8" }}>{sponsor.country}</div>
-                  </td>
-                  <td style={{ padding: "16px", borderTop: "1px solid #f1f5f9", borderBottom: "1px solid #f1f5f9" }}>
-                    <span style={{ 
-                      display: "inline-block",
-                      padding: "4px 12px",
-                      borderRadius: "20px",
-                      background: "#fff7ed",
-                      color: "#9a3412",
-                      fontSize: "0.75rem",
-                      fontWeight: "700",
-                      textTransform: "uppercase"
-                    }}>
-                      {sponsor.tier}
-                    </span>
-                  </td>
-                  <td style={{ padding: "16px", borderTop: "1px solid #f1f5f9", borderBottom: "1px solid #f1f5f9" }}>
-                    <div style={{ fontWeight: "800", color: "#059669", fontSize: "1rem" }}>{sponsor.currency} {sponsor.amount}</div>
-                  </td>
-                  <td style={{ padding: "16px", borderTopRightRadius: "12px", borderBottomRightRadius: "12px", borderTop: "1px solid #f1f5f9", borderBottom: "1px solid #f1f5f9" }}>
-                    <div style={{ fontSize: "0.75rem", color: "#94a3b8" }}>ID: <span style={{ fontFamily: "monospace" }}>{sponsor.razorpay_payment_id}</span></div>
-                    {sponsor.razorpay_order_id && <div style={{ fontSize: "0.75rem", color: "#94a3b8" }}>Order: <span style={{ fontFamily: "monospace" }}>{sponsor.razorpay_order_id}</span></div>}
-                  </td>
-                </tr>
+              sponsorData.map((item, index) => (
+                <SponsorRow
+                  key={index}
+                  sponsor={item.sponsor}
+                  profileMatch={item.profileMatch}
+                  index={index}
+                />
               ))
             )}
           </tbody>
