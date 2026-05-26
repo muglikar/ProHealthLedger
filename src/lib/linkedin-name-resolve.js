@@ -73,11 +73,13 @@ export async function resolveLinkedinProfile(slug) {
       };
     }
 
-    // If direct extraction failed entirely, try the SERP fallback for the name.
-    return { name: await fallbackNameFromGoogleSerp(slug), photo: null };
+    // If direct extraction failed entirely, try the SERP fallback.
+    const serp = await fallbackFromGoogleSerp(slug);
+    return { name: name || serp.name, photo: photo || serp.photo };
   } catch {
-    // If direct fetch threw an error, attempt the SERP fallback for the name.
-    return { name: await fallbackNameFromGoogleSerp(slug), photo: null };
+    // If direct fetch threw an error, attempt the SERP fallback.
+    const serp = await fallbackFromGoogleSerp(slug);
+    return { name: serp.name, photo: serp.photo };
   } finally {
     clearTimeout(timer);
   }
@@ -94,9 +96,13 @@ export async function resolveLinkedinName(slug) {
 }
 
 /**
- * Fallback Strategy: Scrape Google search results for the name.
+ * Fallback Strategy: Scrape Google search results for name AND photo.
+ * Google search results for LinkedIn profiles sometimes contain:
+ * - The person's name in the <h3> title
+ * - A thumbnail image (from LinkedIn's og:image) in the result snippet
+ * @returns {Promise<{name: string|null, photo: string|null}>}
  */
-async function fallbackNameFromGoogleSerp(slug) {
+async function fallbackFromGoogleSerp(slug) {
   const query = `site:linkedin.com/in/${encodeURIComponent(slug)}`;
   const url = `https://www.google.com/search?q=${query}&hl=en`;
 
@@ -115,21 +121,31 @@ async function fallbackNameFromGoogleSerp(slug) {
       },
     });
 
-    if (!res.ok) return null;
+    if (!res.ok) return { name: null, photo: null };
 
     const html = await res.text();
 
+    // Extract name from h3 titles
+    let name = null;
     const h3Regex = /<h3[^>]*>([^<]+LinkedIn[^<]*)<\/h3>/gi;
     let match;
-
     while ((match = h3Regex.exec(html)) !== null) {
-      const name = extractNameFromTitle(match[1]);
-      if (name) return name;
+      name = extractNameFromTitle(match[1]);
+      if (name) break;
     }
 
-    return null;
+    // Extract photo: Google often includes LinkedIn profile thumbnails
+    // as img tags with src containing media.licdn.com
+    let photo = null;
+    const imgRegex = /(?:src|data-src)="(https?:\/\/[^"]*media\.licdn\.com\/dms\/image[^"]*profile-displayphoto[^"]*)"/gi;
+    const imgMatch = imgRegex.exec(html);
+    if (imgMatch) {
+      photo = imgMatch[1].replace(/&amp;/g, "&");
+    }
+
+    return { name, photo };
   } catch {
-    return null;
+    return { name: null, photo: null };
   } finally {
     clearTimeout(timer);
   }
