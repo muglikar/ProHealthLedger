@@ -68,6 +68,12 @@ export default function CommentReadModal({
               {professionalCell}
             </span>
           </div>
+          {votedCapacity && (
+            <div className="comment-read-modal-row">
+              <span className="comment-read-modal-k">Their Role &amp; Org</span>
+              <span className="comment-read-modal-v">{votedCapacity}</span>
+            </div>
+          )}
           <div className="comment-read-modal-row">
             <span className="comment-read-modal-k">Would work with again?</span>
             <span className="comment-read-modal-v">
@@ -86,14 +92,8 @@ export default function CommentReadModal({
           </div>
           {submitterCapacity && (
             <div className="comment-read-modal-row">
-              <span className="comment-read-modal-k">Voter&apos;s Capacity</span>
+              <span className="comment-read-modal-k">Voter&apos;s Role &amp; Org</span>
               <span className="comment-read-modal-v">{submitterCapacity}</span>
-            </div>
-          )}
-          {votedCapacity && (
-            <div className="comment-read-modal-row">
-              <span className="comment-read-modal-k">Their Capacity</span>
-              <span className="comment-read-modal-v">{votedCapacity}</span>
             </div>
           )}
           <div className="comment-read-modal-row">
