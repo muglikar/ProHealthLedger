@@ -216,5 +216,15 @@
     "created_at": "2026-05-24",
     "clicks": 1,
     "signups": []
+  },
+  {
+    "ref_code": "b52fef79",
+    "sharer_id": "linkedin:CAOSO1oig0",
+    "sharer_name": "Anand Muglikar",
+    "profile_slug": "werner-seiz-436014b",
+    "profile_name": "Werner Seiz",
+    "created_at": "2026-05-26",
+    "clicks": 0,
+    "signups": []
   }
 ]
