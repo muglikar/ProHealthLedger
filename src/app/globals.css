@@ -6404,3 +6404,62 @@ button.audit-comment-link:focus-visible {
     scroll-padding: 0 16px !important;
   }
 }
+
+/* ── Votes Profile Context Panel ── */
+
+.votes-profile-panel {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.votes-profile-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.votes-profile-panel-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.votes-profile-panel-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.votes-profile-panel-link {
+  font-size: 0.85rem;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.votes-profile-panel-link:hover {
+  text-decoration: underline;
+}
+
+.votes-profile-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .votes-profile-panel {
+    padding: 16px;
+  }
+  .votes-profile-panel-actions {
+    flex-direction: column;
+  }
+  .votes-profile-panel-actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+}

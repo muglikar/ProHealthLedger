@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef, Suspense } from "react";
 import { useSearchParams, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -9,89 +9,221 @@ import CommentReadModal from "@/app/components/CommentReadModal";
 import ShareVouchModal from "@/app/components/ShareVouchModal";
 import CiteVouchModal from "@/app/components/CiteVouchModal";
 import VerificationBadgeModal from "@/app/components/VerificationBadgeModal";
+import SupportSection from "@/app/components/SupportSection";
 import ProfilePhoto from "@/app/components/ProfilePhoto";
 import { trackEvent } from "@/lib/telemetry";
 
 const REPO_BASE = "https://github.com/muglikar/ProHealthLedger";
 
-function dedupeSubmissions(submissions) {
-  if (!Array.isArray(submissions)) return [];
+/* ── Dedup helpers ── */
+
+function parseVoteDate(d) {
+  if (!d || typeof d !== "string") return 0;
+  const t = Date.parse(d);
+  return Number.isFinite(t) ? t : 0;
+}
+
+function preferSubmissionRow(a, b) {
+  const ra = a?.reason && String(a.reason).trim();
+  const rb = b?.reason && String(b.reason).trim();
+  if (rb && !ra) return b;
+  if (ra && !rb) return a;
+  if (b.display_name && !a.display_name) return b;
+  if (a.display_name && !b.display_name) return a;
+  const len = (s) => (s?.display_name || "").length;
+  if (len(b) > len(a)) return b;
+  return a;
+}
+
+function dedupeVotesByAuditRecord(votes) {
   const map = new Map();
-  for (const s of submissions) {
+  for (const v of votes) {
     const key =
-      s.issue != null && s.issue !== ""
-        ? `issue:${s.issue}`
-        : `row:${s.date}:${String(s.user || "")}:${s.vote}`;
-    if (!map.has(key)) map.set(key, s);
+      v.issue != null && v.issue !== ""
+        ? `issue:${v.issue}`
+        : `row:${v.profile_slug}:${v.date}:${String(v.user || "")}:${v.vote}`;
+    if (!map.has(key)) {
+      map.set(key, v);
+    } else {
+      map.set(key, preferSubmissionRow(map.get(key), v));
+    }
   }
   return [...map.values()];
 }
 
-function countVotes(submissions) {
-  const deduped = dedupeSubmissions(submissions);
-  let yes = 0;
-  let no = 0;
-  for (const s of deduped) {
-    if (s.vote === "yes") yes++;
-    else if (s.vote === "no") no++;
-  }
-  return { yes, no, total: yes + no };
+function compareByDateThenIssue(a, b) {
+  const d = parseVoteDate(b.date) - parseVoteDate(a.date);
+  if (d !== 0) return d;
+  return (Number(b.issue) || 0) - (Number(a.issue) || 0);
 }
 
-function submitterPlain(submission) {
-  const userId = submission.user || submission.github_username || "";
-  if (!userId) return "—";
-  return (
-    submission.display_name ||
-    (userId.startsWith("github:") ? userId.slice(7) : userId)
-  );
-}
+/* ── Main component ── */
 
-function voterDisplay(submission) {
-  const userId = submission.user || submission.github_username || "";
-  if (!userId) return <span>—</span>;
-  const label = submitterPlain(submission);
-  const submitterLinkedinUrl =
-    typeof submission.submitter_linkedin_url === "string"
-      ? submission.submitter_linkedin_url
-      : "";
-  if (submitterLinkedinUrl) {
-    return (
-      <a href={submitterLinkedinUrl} target="_blank" rel="noopener noreferrer" className="issue-link">
-        {label}
-      </a>
-    );
-  }
-  if (userId.startsWith("github:")) {
-    const gh = userId.slice(7);
-    return (
-      <a href={`https://github.com/${gh}`} target="_blank" rel="noopener noreferrer" className="issue-link">
-        {label}
-      </a>
-    );
-  }
-  return <span>{label}</span>;
-}
-
-function ProfilesContent() {
+function VotesContent() {
   const searchParams = useSearchParams();
   const params = useParams();
   const initialSearch = searchParams.get("search") || params?.slug || "";
   const { data: session } = useSession();
   const currentUserId = session?.userId || "";
+
   const [profiles, setProfiles] = useState([]);
-  const [search, setSearch] = useState(initialSearch);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState(initialSearch);
+  const [sortMode, setSortMode] = useState("flags");
   const [shareModalData, setShareModalData] = useState(null);
   const [commentPopup, setCommentPopup] = useState(null);
   const [citeModalData, setCiteModalData] = useState(null);
   const [badgeModalData, setBadgeModalData] = useState(null);
+  const [scrolledEnd, setScrolledEnd] = useState(false);
+  const [userProfileMap, setUserProfileMap] = useState({});
+
+  const tableWrapRef = useRef(null);
+  const trackRef = useRef(null);
+  const thumbRef = useRef(null);
+
+  /* Profile claim for 1st-person vouch sharing */
+  const [myLinkedSlug, setMyLinkedSlug] = useState("");
+  useEffect(() => {
+    if (session?.linkedinVanity) {
+      setMyLinkedSlug(session.linkedinVanity);
+      try { localStorage.setItem("phl_my_slug", session.linkedinVanity); } catch {}
+    } else {
+      try { setMyLinkedSlug(localStorage.getItem("phl_my_slug") || ""); } catch {}
+    }
+  }, [session?.linkedinVanity]);
+
+  const linkMyProfile = useCallback(() => {
+    const url = window.prompt(
+      "To share vouches received about you, paste your LinkedIn profile URL:\n\nExample: https://www.linkedin.com/in/your-name"
+    );
+    if (!url) return;
+    const match = url.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/);
+    if (match) {
+      const slug = match[1].toLowerCase();
+      localStorage.setItem("phl_my_slug", slug);
+      setMyLinkedSlug(slug);
+    } else {
+      alert("That doesn't look like a valid LinkedIn profile URL.");
+    }
+  }, []);
+
+  /* ── Custom scrollbar ── */
+
+  const updateThumb = useCallback(() => {
+    const el = tableWrapRef.current;
+    const track = trackRef.current;
+    const thumb = thumbRef.current;
+    if (!el || !track || !thumb) return;
+    const { scrollWidth, clientWidth, scrollLeft } = el;
+    if (scrollWidth <= clientWidth) {
+      track.style.display = "none";
+      return;
+    }
+    track.style.display = "";
+    const trackW = track.clientWidth;
+    const ratio = clientWidth / scrollWidth;
+    const thumbW = Math.max(30, Math.round(trackW * ratio));
+    const maxLeft = trackW - thumbW;
+    const thumbLeft = Math.round((scrollLeft / (scrollWidth - clientWidth)) * maxLeft);
+    thumb.style.width = thumbW + "px";
+    thumb.style.left = thumbLeft + "px";
+    setScrolledEnd(scrollLeft + clientWidth >= scrollWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const el = tableWrapRef.current;
+    const track = trackRef.current;
+    const thumb = thumbRef.current;
+    if (!el || !track) return;
+
+    el.addEventListener("scroll", updateThumb, { passive: true });
+    window.addEventListener("resize", updateThumb);
+    const raf = requestAnimationFrame(updateThumb);
+
+    let dragging = false;
+    let startX = 0;
+    let startScrollLeft = 0;
+
+    const onDown = (e) => {
+      e.preventDefault();
+      dragging = true;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      startX = clientX;
+      startScrollLeft = el.scrollLeft;
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+      document.addEventListener("touchmove", onMove, { passive: false });
+      document.addEventListener("touchend", onUp);
+    };
+
+    const onMove = (e) => {
+      if (!dragging) return;
+      e.preventDefault();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const dx = clientX - startX;
+      const { scrollWidth, clientWidth } = el;
+      const trackW = track.clientWidth;
+      const ratio = clientWidth / scrollWidth;
+      const thumbW = Math.max(30, Math.round(trackW * ratio));
+      const maxThumbLeft = trackW - thumbW;
+      const scrollRange = scrollWidth - clientWidth;
+      el.scrollLeft = startScrollLeft + (dx / maxThumbLeft) * scrollRange;
+    };
+
+    const onUp = () => {
+      dragging = false;
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onUp);
+    };
+
+    if (thumb) {
+      thumb.addEventListener("mousedown", onDown);
+      thumb.addEventListener("touchstart", onDown, { passive: false });
+    }
+
+    const onTrackClick = (e) => {
+      if (e.target === thumb) return;
+      const rect = track.getBoundingClientRect();
+      const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      const { scrollWidth, clientWidth } = el;
+      el.scrollLeft = (clickX / rect.width) * (scrollWidth - clientWidth);
+    };
+    track.addEventListener("click", onTrackClick);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("scroll", updateThumb);
+      window.removeEventListener("resize", updateThumb);
+      if (thumb) {
+        thumb.removeEventListener("mousedown", onDown);
+        thumb.removeEventListener("touchstart", onDown);
+      }
+      track.removeEventListener("click", onTrackClick);
+      onUp();
+    };
+  }, [loading, updateThumb]);
+
+  /* ── Fetch ── */
 
   useEffect(() => {
     fetch("/api/profiles")
       .then((res) => res.json())
       .then((data) => {
-        setProfiles(Array.isArray(data) ? data : []);
+        const profilesList = Array.isArray(data) ? data : [];
+        setProfiles(profilesList);
+        const upMap = {};
+        profilesList.forEach((p) => {
+          if (p.submissions) {
+            p.submissions.forEach((s) => {
+              if (s.user && s.submitter_linkedin_url) {
+                upMap[s.user] = s.submitter_linkedin_url;
+              }
+            });
+          }
+        });
+        setUserProfileMap(upMap);
         setLoading(false);
       })
       .catch(() => {
@@ -104,9 +236,11 @@ function ProfilesContent() {
     if (!search) return;
     const timer = setTimeout(() => {
       trackEvent("profile_search", { query: search });
-    }, 1500); // 1.5s debounce to avoid noise while typing
+    }, 1500);
     return () => clearTimeout(timer);
   }, [search]);
+
+  /* ── Search ── */
 
   const normalizeQuery = (q) => {
     const lower = q.toLowerCase().trim();
@@ -116,43 +250,163 @@ function ProfilesContent() {
 
   const query = normalizeQuery(search);
 
-  const filtered = profiles.filter((p) => {
-    if (!p || typeof p !== "object") return false;
-    const slug = typeof p.slug === "string" ? p.slug : "";
-    const rawUrl =
-      typeof p.linkedin_url === "string" ? p.linkedin_url.toLowerCase() : "";
-    const pub =
-      typeof p.public_name === "string" ? p.public_name.toLowerCase() : "";
-    if (!slug && !rawUrl) return false;
-    const urlSlug = rawUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || "";
-    const display = formatProfessionalDisplayName(slug, p.public_name).toLowerCase();
-    return (
-      slug.includes(query) ||
-      urlSlug.includes(query) ||
-      display.includes(query) ||
-      pub.includes(query)
-    );
-  });
+  /* ── Derived data ── */
 
-  function profileCommentCell(profile, submission) {
-    if (submission.reason_pending) {
+  const slugToFlagCount = useMemo(() => {
+    const m = new Map();
+    for (const p of profiles) {
+      if (!p?.slug) continue;
+      m.set(p.slug, p.votes?.no ?? 0);
+    }
+    return m;
+  }, [profiles]);
+
+  const slugToVouchCount = useMemo(() => {
+    const m = new Map();
+    for (const p of profiles) {
+      if (!p?.slug) continue;
+      m.set(p.slug, p.votes?.yes ?? 0);
+    }
+    return m;
+  }, [profiles]);
+
+  const dedupedVotes = useMemo(
+    () =>
+      dedupeVotesByAuditRecord(
+        profiles.flatMap((p) => {
+          if (!p || !Array.isArray(p.submissions)) return [];
+          return p.submissions.map((s) => ({
+            ...s,
+            profile_slug: p.slug,
+            linkedin_url: p.linkedin_url,
+            public_name: p.public_name,
+            profile_photo_url: p.profile_photo_url,
+          }));
+        })
+      ),
+    [profiles]
+  );
+
+  /* Filter by search */
+  const filteredVotes = useMemo(() => {
+    if (!query) return dedupedVotes;
+    return dedupedVotes.filter((v) => {
+      const slug = v.profile_slug || "";
+      const pub = (v.public_name || "").toLowerCase();
+      const display = formatProfessionalDisplayName(slug, v.public_name).toLowerCase();
+      const rawUrl = (v.linkedin_url || "").toLowerCase();
+      const urlSlug = rawUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || "";
+      return (
+        slug.includes(query) ||
+        urlSlug.includes(query) ||
+        display.includes(query) ||
+        pub.includes(query)
+      );
+    });
+  }, [dedupedVotes, query]);
+
+  /* Sort */
+  const sortedVotes = useMemo(() => {
+    const copy = [...filteredVotes];
+    if (sortMode === "date") {
+      copy.sort(compareByDateThenIssue);
+      return copy;
+    }
+    if (sortMode === "vouches") {
+      copy.sort((a, b) => {
+        const va = slugToVouchCount.get(a.profile_slug) ?? 0;
+        const vb = slugToVouchCount.get(b.profile_slug) ?? 0;
+        if (vb !== va) return vb - va;
+        return compareByDateThenIssue(a, b);
+      });
+      return copy;
+    }
+    copy.sort((a, b) => {
+      const fa = slugToFlagCount.get(a.profile_slug) ?? 0;
+      const fb = slugToFlagCount.get(b.profile_slug) ?? 0;
+      if (fb !== fa) return fb - fa;
+      return compareByDateThenIssue(a, b);
+    });
+    return copy;
+  }, [filteredVotes, sortMode, slugToFlagCount, slugToVouchCount]);
+
+  /* ── Profile context panel (when search narrows to one professional) ── */
+
+  const matchedProfile = useMemo(() => {
+    if (!query) return null;
+    const matchedSlugs = new Set(sortedVotes.map((v) => v.profile_slug));
+    if (matchedSlugs.size !== 1) return null;
+    const slug = [...matchedSlugs][0];
+    return profiles.find((p) => p.slug === slug) || null;
+  }, [query, sortedVotes, profiles]);
+
+  /* ── Helpers ── */
+
+  function submitterPlain(submission) {
+    const userId = submission.user || submission.github_username || "";
+    if (!userId) return "—";
+    return (
+      submission.display_name ||
+      (userId.startsWith("github:") ? userId.slice(7) : userId)
+    );
+  }
+
+  function voterDisplay(submission) {
+    const userId = submission.user || submission.github_username || "";
+    if (!userId) return <span>—</span>;
+    const label = submitterPlain(submission);
+
+    const linkedinUrl =
+      (typeof submission.submitter_linkedin_url === "string" && submission.submitter_linkedin_url) ||
+      (userId.replace("github:", "") === "muglikar" ? "https://www.linkedin.com/in/muglikar" : null) ||
+      userProfileMap[userId];
+
+    if (linkedinUrl) {
+      return (
+        <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="user-link">
+          {label}
+        </a>
+      );
+    }
+    if (userId.startsWith("github:")) {
+      const gh = userId.slice(7);
+      return (
+        <a href={`https://github.com/${gh}`} target="_blank" rel="noopener noreferrer" className="user-link">
+          {label}
+        </a>
+      );
+    }
+    if (userId.startsWith("linkedin:")) {
+      const sub = userId.split(":")[1];
+      const searchUrl = `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(sub)}`;
+      return (
+        <a href={searchUrl} target="_blank" rel="noopener noreferrer" className="user-link">
+          {label}
+        </a>
+      );
+    }
+    return <span>{label}</span>;
+  }
+
+  function commentCell(row) {
+    if (row.reason_pending) {
       return <span className="audit-comment-pending">Pending review</span>;
     }
-    if (submission.reason_redacted) {
-      const date = (submission.redacted_at || "").slice(0, 10) || "unknown date";
-      const cat = submission.redaction_category || "miscellaneous";
+    if (row.reason_redacted) {
+      const date = (row.redacted_at || "").slice(0, 10) || "unknown date";
+      const cat = row.redaction_category || "miscellaneous";
       return (
         <span
           className="audit-comment-redacted"
-          title={`Redacted by moderator on ${date} — category: ${cat}. Original kept in private redactions store; public hash ${submission.reason_hash || "n/a"}.`}
+          title={`Redacted by moderator on ${date} — category: ${cat}. Original kept in private redactions store; public hash ${row.reason_hash || "n/a"}.`}
         >
           [redacted by moderator on {date} — {cat}]
         </span>
       );
     }
-    const raw = String(submission.reason || submission.comment || "").trim();
+    const raw = typeof row.reason === "string" ? row.reason.trim() : "";
     if (!raw) return <span className="audit-comment-empty">—</span>;
-    const profName = formatProfessionalDisplayName(profile.slug, profile.public_name);
+    const profName = formatProfessionalDisplayName(row.profile_slug, row.public_name);
     return (
       <button
         type="button"
@@ -163,19 +417,16 @@ function ProfilesContent() {
           setCommentPopup({
             text: raw,
             professional: profName,
-            vote: submission.vote,
-            submittedBy: submitterPlain(submission),
-            date: submission.date || "—",
-            issue: submission.issue,
-            recordHref:
-              submission.issue != null
-                ? `${REPO_BASE}/issues/${submission.issue}`
-                : null,
-            linkedinUrl: profile.linkedin_url || null,
-            profilePhotoUrl: profile.profile_photo_url || null,
-            profileSlug: profile.slug || null,
-            submitterCapacity: submission.submitter_capacity || null,
-            votedCapacity: submission.voted_capacity || null,
+            vote: row.vote,
+            submittedBy: submitterPlain(row),
+            date: row.date || "—",
+            issue: row.issue,
+            recordHref: row.issue != null ? `${REPO_BASE}/issues/${row.issue}` : null,
+            linkedinUrl: row.linkedin_url || null,
+            profilePhotoUrl: row.profile_photo_url || null,
+            profileSlug: row.profile_slug || null,
+            submitterCapacity: row.submitter_capacity || null,
+            votedCapacity: row.voted_capacity || null,
           })
         }
       >
@@ -184,20 +435,33 @@ function ProfilesContent() {
     );
   }
 
+  /* ── Render ── */
+
   return (
     <>
       <div className="page-header">
-        <h1>Look Up a Professional</h1>
+        <h1>Votes</h1>
         <p className="submit-hero-sub">
           <Link href="/">What the heck is this?</Link>
         </p>
-        <p>Search by name or paste a LinkedIn profile link.</p>
+        <p>
+          Every vote ever cast on the ledger. Search by name or LinkedIn URL. Comments
+          redacted by a moderator are marked as such — never silently removed — and
+          recorded in the{" "}
+          <a
+            href="https://github.com/muglikar/ProHealthLedger/blob/main/data/moderation_log.json"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            public moderation log
+          </a>.
+        </p>
       </div>
 
       <input
         type="text"
         className="search-bar"
-        placeholder="Type a name or paste a LinkedIn URL…"
+        placeholder="Type a name or paste a LinkedIn URL to filter…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
@@ -206,181 +470,305 @@ function ProfilesContent() {
         <div className="empty-state">
           <p>Loading…</p>
         </div>
-      ) : filtered.length === 0 ? (
+      ) : sortedVotes.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">🔍</div>
-          <h3>
-            {search ? "No one matches that search" : "No profiles yet"}
-          </h3>
+          <div className="empty-state-icon">{query ? "🔍" : "📜"}</div>
+          <h3>{query ? "No votes match that search" : "No votes recorded yet"}</h3>
           <p>
-            {search
+            {query
               ? "Try a different name or spelling."
-              : "Be the first to share your experience and add someone to the ledger."}
+              : "Once people start voting, every single vote will appear here."}
           </p>
         </div>
       ) : (
-        <div className="profile-grid">
-          {filtered
-            .sort((a, b) => {
-              const va = countVotes(a.submissions);
-              const vb = countVotes(b.submissions);
-              return vb.total - va.total;
-            })
-            .map((profile) => {
-              const { yes, no, total } = countVotes(profile.submissions);
-              const deduped = dedupeSubmissions(profile.submissions);
-              const myYesVouch = deduped
-                .filter(
-                  (s) =>
-                    s.vote === "yes" &&
-                    currentUserId &&
-                    currentUserId === s.user
-                )
-                .sort(
-                  (a, b) =>
-                    (Number(b.issue) || 0) - (Number(a.issue) || 0) ||
-                    String(b.date || "").localeCompare(String(a.date || ""))
-                )[0];
-              return (
-                <article key={profile.slug || profile.linkedin_url} className="profile-card">
-                  <header className="profile-slug">
-                    <ProfilePhoto
-                      photoUrl={profile.profile_photo_url}
-                      name={formatProfessionalDisplayName(profile.slug, profile.public_name)}
-                      slug={profile.slug}
-                      size={48}
-                    />
-                    <span className="profile-slug-name">
-                      {formatProfessionalDisplayName(profile.slug, profile.public_name) || "Profile"}
-                    </span>
-                  </header>
-                  <div className="profile-url">
-                    <a href={profile.linkedin_url || "#"} target="_blank" rel="noopener noreferrer">
+        <>
+          {/* ── Profile context panel ── */}
+          {matchedProfile && (() => {
+            const p = matchedProfile;
+            const yesCount = p.votes?.yes ?? 0;
+            const noCount = p.votes?.no ?? 0;
+            const totalCount = yesCount + noCount;
+            const deduped = dedupeVotesByAuditRecord(
+              (p.submissions || []).map((s) => ({
+                ...s,
+                profile_slug: p.slug,
+              }))
+            );
+            const myYesVouch = deduped
+              .filter(
+                (s) => s.vote === "yes" && currentUserId && currentUserId === s.user
+              )
+              .sort(
+                (a, b) =>
+                  (Number(b.issue) || 0) - (Number(a.issue) || 0) ||
+                  String(b.date || "").localeCompare(String(a.date || ""))
+              )[0];
+
+            return (
+              <div className="votes-profile-panel">
+                <div className="votes-profile-panel-header">
+                  <ProfilePhoto
+                    photoUrl={p.profile_photo_url}
+                    name={formatProfessionalDisplayName(p.slug, p.public_name)}
+                    slug={p.slug}
+                    size={56}
+                  />
+                  <div className="votes-profile-panel-info">
+                    <h2 className="votes-profile-panel-name">
+                      {formatProfessionalDisplayName(p.slug, p.public_name)}
+                    </h2>
+                    <a
+                      href={p.linkedin_url || "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="votes-profile-panel-link"
+                    >
                       View LinkedIn Profile →
                     </a>
                   </div>
-                  <div className="vote-counts">
-                    <span className="vote-badge vote-yes">✓ {yes} would work with again</span>
-                    <span className="vote-badge vote-no">✗ {no} would not work with them again</span>
-                  </div>
-                  <section className="submission-count">
-                    {total} vote{total !== 1 ? "s" : ""} from the community
-                  </section>
-                  {deduped.length > 0 && (
-                    <div className="profile-vouch-details">
-                      <table className="profile-vouch-table">
-                        <thead>
-                          <tr>
-                            <th className="pvt-col-vote">Would work with again?</th>
-                            <th className="pvt-col-comment">Comment</th>
-                            <th>Submitted By</th>
-                            <th>Record</th>
-                            <th>Date</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {deduped.map((s, i) => (
-                            <tr key={s.issue != null ? `i-${s.issue}` : `r-${i}`}>
-                              <td className="pvt-col-vote">
-                                <span className={`vote-pill ${s.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}>
-                                  {s.vote === "yes" ? "Yes" : "No"}
-                                </span>
-                              </td>
-                              <td className="profile-vouch-comment">
-                                {profileCommentCell(profile, s)}
-                              </td>
-                              <td>{voterDisplay(s)}</td>
-                              <td>
-                                {s.issue != null ? (
-                                  <a
-                                    href={`${REPO_BASE}/issues/${s.issue}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="issue-link"
-                                  >
-                                    #{s.issue}
-                                  </a>
-                                ) : "—"}
-                              </td>
-                              <td>{s.date || "—"}</td>
-                              <td>
-                                {s.vote === "yes" && (
-                                  <button
-                                    type="button"
-                                    className="btn btn-outline"
-                                    style={{ padding: "4px 8px", fontSize: "0.8rem", height: "auto" }}
-                                    onClick={() => setCiteModalData({ vouch: s, profile })}
-                                  >
-                                    Cite this Vouch
-                                  </button>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                  <div className="profile-experience-cta">
-                    <p className="profile-experience-cta-text">
-                      Add your own honest vote to the public ledger.
-                    </p>
-                    {myYesVouch ? (
-                      <p className="profile-experience-cta-sub">
-                        You vouched here — share on LinkedIn using this profile&apos;s public ledger link
-                        (not the homepage).
-                      </p>
-                    ) : null}
-                    <div
-                      className={
-                        myYesVouch
-                          ? "profile-experience-cta-actions profile-experience-cta-actions--pair"
-                          : "profile-experience-cta-actions"
+                </div>
+                <div className="vote-counts" style={{ margin: "12px 0" }}>
+                  <span className="vote-badge vote-yes">✓ {yesCount} would work with again</span>
+                  <span className="vote-badge vote-no">✗ {noCount} would not work with them again</span>
+                </div>
+                <section className="submission-count" style={{ marginBottom: "12px" }}>
+                  {totalCount} vote{totalCount !== 1 ? "s" : ""} from the community
+                </section>
+                <div className="votes-profile-panel-actions">
+                  <Link href="/submit" className="btn btn-primary" style={{ fontSize: "0.85rem", padding: "8px 16px" }}>
+                    Share your experience
+                  </Link>
+                  {myYesVouch && (
+                    <button
+                      type="button"
+                      className="btn profile-experience-linkedin-btn"
+                      style={{ fontSize: "0.85rem", padding: "8px 16px" }}
+                      onClick={() =>
+                        setShareModalData({
+                          ...myYesVouch,
+                          profile_slug: p.slug,
+                          public_name: p.public_name,
+                          linkedin_url: p.linkedin_url,
+                          _firstPerson: false,
+                        })
                       }
                     >
-                      <Link href="/submit" className="btn btn-primary profile-experience-cta-btn">
-                        Share your experience
-                      </Link>
-                      {myYesVouch ? (
-                        <button
-                          type="button"
-                          className="btn profile-experience-linkedin-btn"
-                          title="Share this vouch on LinkedIn"
-                          onClick={() =>
-                            setShareModalData({
-                              ...myYesVouch,
-                              profile_slug: profile.slug,
-                              public_name: profile.public_name,
-                              linkedin_url: profile.linkedin_url,
-                              _firstPerson: false,
-                            })
-                          }
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                      </svg>
+                      Copy and post to LinkedIn
+                    </button>
+                  )}
+                  {yesCount > noCount && (
+                    <button
+                      type="button"
+                      className="btn profile-experience-linkedin-btn"
+                      style={{ backgroundColor: "#0f172a", fontSize: "0.85rem", padding: "8px 16px" }}
+                      onClick={() => setBadgeModalData(p)}
+                    >
+                      Get Verification Badge
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* ── Sort bar ── */}
+          <div className="audit-sort-bar" role="group" aria-label="Sort votes">
+            <span className="audit-sort-label">Sort</span>
+            <button
+              type="button"
+              className={`audit-sort-btn${sortMode === "flags" ? " is-active" : ""}`}
+              onClick={() => setSortMode("flags")}
+              aria-pressed={sortMode === "flags"}
+            >
+              <span className="audit-sort-btn-long">Most flags on profile</span>
+              <span className="audit-sort-btn-short">Most flags</span>
+            </button>
+            <button
+              type="button"
+              className={`audit-sort-btn${sortMode === "vouches" ? " is-active" : ""}`}
+              onClick={() => setSortMode("vouches")}
+              aria-pressed={sortMode === "vouches"}
+            >
+              <span className="audit-sort-btn-long">Most vouches on profile</span>
+              <span className="audit-sort-btn-short">Most vouches</span>
+            </button>
+            <button
+              type="button"
+              className={`audit-sort-btn${sortMode === "date" ? " is-active" : ""}`}
+              onClick={() => setSortMode("date")}
+              aria-pressed={sortMode === "date"}
+            >
+              <span className="audit-sort-btn-long">Newest by date</span>
+              <span className="audit-sort-btn-short">By date</span>
+            </button>
+          </div>
+
+          {/* ── Table ── */}
+          <div className="audit-scroll-track" ref={trackRef}>
+            <span className="audit-scroll-track-label">← drag or tap to scroll →</span>
+            <div className="audit-scroll-thumb" ref={thumbRef} />
+          </div>
+          <div className={`audit-table-outer${scrolledEnd ? " scrolled-end" : ""}`}>
+            <div className="audit-table-wrap" ref={tableWrapRef}>
+              <table className="audit-table">
+                <thead>
+                  <tr>
+                    <th className="audit-col-prof">Professional</th>
+                    <th className="audit-col-vote">Would work with again?</th>
+                    <th className="audit-col-share">Share</th>
+                    <th className="audit-table-col-comment">Comment</th>
+                    <th>Submitted By</th>
+                    <th>Record</th>
+                    <th>Date</th>
+                    {matchedProfile && <th>Action</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedVotes.map((v) => (
+                    <tr
+                      key={
+                        v.issue != null
+                          ? `issue-${v.issue}`
+                          : `${v.profile_slug}-${v.date}-${v.user}-${v.vote}`
+                      }
+                    >
+                      <td className="audit-col-prof">
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          <ProfilePhoto
+                            photoUrl={v.profile_photo_url}
+                            name={formatProfessionalDisplayName(v.profile_slug, v.public_name)}
+                            slug={v.profile_slug}
+                            size={36}
+                            showFlag={false}
+                          />
+                          <a
+                            href={v.linkedin_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="target-link"
+                          >
+                            {formatProfessionalDisplayName(v.profile_slug, v.public_name)}
+                          </a>
+                        </div>
+                      </td>
+                      <td className="audit-col-vote">
+                        <span
+                          className={`vote-pill ${v.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
                         >
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                          </svg>
-                          Copy and post to LinkedIn
-                        </button>
-                      ) : null}
-                      {yes > no && (
-                        <button
-                          type="button"
-                          className="btn profile-experience-linkedin-btn"
-                          style={{ backgroundColor: "#0f172a" }}
-                          title="Get your Verification Badge"
-                          onClick={() => setBadgeModalData(profile)}
+                          {v.vote === "yes" ? "✓ Yes" : "✗ No"}
+                        </span>
+                      </td>
+                      <td className="audit-col-share">
+                        {(() => {
+                          const isSignedIn = !!session;
+                          const currentId = (session?.userId || "")
+                            .replace("github:", "")
+                            .replace("linkedin:", "");
+                          const currentName = (session?.user?.name || "").trim().toLowerCase();
+                          const isAdmin =
+                            currentId === "muglikar" ||
+                            currentName === "anand muglikar";
+
+                          const rowUser = (v.user || "")
+                            .replace("github:", "")
+                            .replace("linkedin:", "");
+                          const rowName = (v.display_name || "").trim().toLowerCase();
+
+                          const isMySubmission =
+                            isSignedIn &&
+                            ((currentId && currentId === rowUser) ||
+                              (currentName && rowName && currentName === rowName));
+                          const isAboutMe = Boolean(
+                            myLinkedSlug && myLinkedSlug === v.profile_slug
+                          );
+                          const isAboutAdmin =
+                            v.profile_slug === "muglikar" &&
+                            (currentId === "muglikar" ||
+                              currentName === "anand muglikar");
+
+                          const canShare =
+                            isSignedIn &&
+                            v.vote === "yes" &&
+                            (isMySubmission ||
+                              isAboutMe ||
+                              (isAdmin && isAboutAdmin));
+
+                          if (!canShare) return null;
+
+                          return (
+                            <button
+                              type="button"
+                              className="share-linkedin-btn"
+                              title={
+                                isAboutMe || (isAdmin && isAboutAdmin)
+                                  ? "Share your vouch on LinkedIn"
+                                  : "Share this vouch on LinkedIn"
+                              }
+                              onClick={() =>
+                                setShareModalData({
+                                  ...v,
+                                  _firstPerson:
+                                    isAboutMe || (isAdmin && isAboutAdmin),
+                                })
+                              }
+                            >
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                              >
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                              </svg>
+                            </button>
+                          );
+                        })()}
+                      </td>
+                      <td className="audit-table-col-comment">{commentCell(v)}</td>
+                      <td>{voterDisplay(v)}</td>
+                      <td>
+                        <a
+                          href={`${REPO_BASE}/issues/${v.issue}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="issue-link"
                         >
-                          Get Verification Badge
-                        </button>
+                          #{v.issue}
+                        </a>
+                      </td>
+                      <td>{v.date}</td>
+                      {matchedProfile && (
+                        <td>
+                          {v.vote === "yes" && (
+                            <button
+                              type="button"
+                              className="btn btn-outline"
+                              style={{ padding: "4px 8px", fontSize: "0.8rem", height: "auto" }}
+                              onClick={() =>
+                                setCiteModalData({
+                                  vouch: v,
+                                  profile: matchedProfile,
+                                })
+                              }
+                            >
+                              Cite
+                            </button>
+                          )}
+                        </td>
                       )}
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-        </div>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
+
+      {/* ── Modals ── */}
 
       {shareModalData && (
         <ShareVouchModal
@@ -401,39 +789,51 @@ function ProfilesContent() {
           linkedinUrl={commentPopup.linkedinUrl}
           profilePhotoUrl={commentPopup.profilePhotoUrl}
           profileSlug={commentPopup.profileSlug}
-          text={commentPopup.text}
           submitterCapacity={commentPopup.submitterCapacity}
           votedCapacity={commentPopup.votedCapacity}
+          text={commentPopup.text}
           onClose={() => setCommentPopup(null)}
         />
       )}
 
-      {citeModalData && (() => {
-        const p = citeModalData.profile;
-        const rawUrl = typeof p.linkedin_url === "string" ? p.linkedin_url : "";
-        const urlSlug = rawUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || p.slug || p.public_name || "profile";
-        return (
-          <CiteVouchModal
-            vouch={citeModalData.vouch}
-            profileSlug={urlSlug}
-            publicName={p.public_name}
-            onClose={() => setCiteModalData(null)}
-          />
-        );
-      })()}
+      {citeModalData &&
+        (() => {
+          const p = citeModalData.profile;
+          const rawUrl = typeof p.linkedin_url === "string" ? p.linkedin_url : "";
+          const urlSlug =
+            rawUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] ||
+            p.slug ||
+            p.public_name ||
+            "profile";
+          return (
+            <CiteVouchModal
+              vouch={citeModalData.vouch}
+              profileSlug={urlSlug}
+              publicName={p.public_name}
+              onClose={() => setCiteModalData(null)}
+            />
+          );
+        })()}
 
-      {badgeModalData && (() => {
-        const p = badgeModalData;
-        const rawUrl = typeof p.linkedin_url === "string" ? p.linkedin_url : "";
-        const urlSlug = rawUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || p.slug || p.public_name || "profile";
-        return (
-          <VerificationBadgeModal
-            profileSlug={urlSlug}
-            publicName={p.public_name}
-            onClose={() => setBadgeModalData(null)}
-          />
-        );
-      })()}
+      {badgeModalData &&
+        (() => {
+          const p = badgeModalData;
+          const rawUrl = typeof p.linkedin_url === "string" ? p.linkedin_url : "";
+          const urlSlug =
+            rawUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] ||
+            p.slug ||
+            p.public_name ||
+            "profile";
+          return (
+            <VerificationBadgeModal
+              profileSlug={urlSlug}
+              publicName={p.public_name}
+              onClose={() => setBadgeModalData(null)}
+            />
+          );
+        })()}
+
+      <SupportSection />
     </>
   );
 }
@@ -441,7 +841,7 @@ function ProfilesContent() {
 export default function ProfilesClient() {
   return (
     <Suspense fallback={<div className="empty-state"><p>Loading…</p></div>}>
-      <ProfilesContent />
+      <VotesContent />
     </Suspense>
   );
 }
