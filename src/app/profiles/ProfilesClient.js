@@ -9,6 +9,7 @@ import CommentReadModal from "@/app/components/CommentReadModal";
 import ShareVouchModal from "@/app/components/ShareVouchModal";
 import CiteVouchModal from "@/app/components/CiteVouchModal";
 import VerificationBadgeModal from "@/app/components/VerificationBadgeModal";
+import ProfilePhoto from "@/app/components/ProfilePhoto";
 import { trackEvent } from "@/lib/telemetry";
 
 const REPO_BASE = "https://github.com/muglikar/ProHealthLedger";
@@ -241,29 +242,12 @@ function ProfilesContent() {
               return (
                 <article key={profile.slug || profile.linkedin_url} className="profile-card">
                   <header className="profile-slug">
-                    {profile.profile_photo_url ? (
-                      <img
-                        src={profile.profile_photo_url}
-                        alt=""
-                        className="profile-avatar"
-                        width={48}
-                        height={48}
-                        loading="lazy"
-                        referrerPolicy="no-referrer"
-                        onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
-                      />
-                    ) : null}
-                    <span
-                      className="profile-avatar profile-avatar-initials"
-                      style={profile.profile_photo_url ? { display: 'none' } : {}}
-                      aria-hidden="true"
-                    >
-                      {(formatProfessionalDisplayName(profile.slug, profile.public_name) || "?")
-                        .split(/\s+/)
-                        .slice(0, 2)
-                        .map((w) => w[0]?.toUpperCase() || "")
-                        .join("")}
-                    </span>
+                    <ProfilePhoto
+                      photoUrl={profile.profile_photo_url}
+                      name={formatProfessionalDisplayName(profile.slug, profile.public_name)}
+                      slug={profile.slug}
+                      size={48}
+                    />
                     <span className="profile-slug-name">
                       {formatProfessionalDisplayName(profile.slug, profile.public_name) || "Profile"}
                     </span>

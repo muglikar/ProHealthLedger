@@ -6,6 +6,7 @@ import { formatProfessionalDisplayName } from "@/lib/profiles";
 import CommentReadModal from "@/app/components/CommentReadModal";
 import ShareVouchModal from "@/app/components/ShareVouchModal";
 import SupportSection from "@/app/components/SupportSection";
+import ProfilePhoto from "@/app/components/ProfilePhoto";
 
 function parseVoteDate(d) {
   if (!d || typeof d !== "string") return 0;
@@ -242,6 +243,7 @@ export default function TransparencyPage() {
             profile_slug: p.slug,
             linkedin_url: p.linkedin_url,
             public_name: p.public_name,
+            profile_photo_url: p.profile_photo_url,
           }));
         })
       ),
@@ -482,17 +484,26 @@ export default function TransparencyPage() {
                       }
                     >
                       <td className="audit-col-prof">
-                        <a
-                          href={v.linkedin_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="target-link"
-                        >
-                          {formatProfessionalDisplayName(
-                            v.profile_slug,
-                            v.public_name
-                          )}
-                        </a>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <ProfilePhoto
+                            photoUrl={v.profile_photo_url}
+                            name={formatProfessionalDisplayName(v.profile_slug, v.public_name)}
+                            slug={v.profile_slug}
+                            size={36}
+                            showFlag={false}
+                          />
+                          <a
+                            href={v.linkedin_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="target-link"
+                          >
+                            {formatProfessionalDisplayName(
+                              v.profile_slug,
+                              v.public_name
+                            )}
+                          </a>
+                        </div>
                       </td>
                       <td className="audit-col-vote">
                         <span

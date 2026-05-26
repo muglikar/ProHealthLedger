@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { flagsAvailable } from "@/lib/karma";
+import ProfilePhoto from "@/app/components/ProfilePhoto";
 
 export default function ContributorsPage() {
   const [users, setUsers] = useState([]);
@@ -88,6 +89,13 @@ export default function ContributorsPage() {
                 >
                   {idx + 1}
                 </div>
+                <ProfilePhoto
+                  photoUrl={user.image || null}
+                  name={name}
+                  slug={user.linkedin_url ? (user.linkedin_url.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || null) : null}
+                  size={40}
+                  showFlag={!!user.image}
+                />
                 <div className="leaderboard-info">
                   <div className="leaderboard-username">
                     {url ? (
