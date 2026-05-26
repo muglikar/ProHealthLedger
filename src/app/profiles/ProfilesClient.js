@@ -506,12 +506,13 @@ function VotesContent() {
 
             return (
               <div className="votes-profile-panel">
-                <div className="votes-profile-panel-header">
+                <div className="votes-profile-panel-header" style={{ alignItems: "flex-start" }}>
                   <ProfilePhoto
                     photoUrl={p.profile_photo_url}
                     name={formatProfessionalDisplayName(p.slug, p.public_name)}
                     slug={p.slug}
-                    size={56}
+                    size={84}
+                    showFlag={true}
                   />
                   <div className="votes-profile-panel-info">
                     <h2 className="votes-profile-panel-name">
@@ -525,24 +526,25 @@ function VotesContent() {
                     >
                       View LinkedIn Profile →
                     </a>
+                    <div className="vote-counts" style={{ margin: "8px 0 4px" }}>
+                      <span className="vote-badge vote-yes">✓ {yesCount} would work with again</span>
+                      <span className="vote-badge vote-no">✗ {noCount} would not work with them again</span>
+                    </div>
+                    <div className="submission-count" style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                      {totalCount} vote{totalCount !== 1 ? "s" : ""} from the community
+                    </div>
                   </div>
                 </div>
-                <div className="vote-counts" style={{ margin: "12px 0" }}>
-                  <span className="vote-badge vote-yes">✓ {yesCount} would work with again</span>
-                  <span className="vote-badge vote-no">✗ {noCount} would not work with them again</span>
-                </div>
-                <section className="submission-count" style={{ marginBottom: "12px" }}>
-                  {totalCount} vote{totalCount !== 1 ? "s" : ""} from the community
-                </section>
-                <div className="votes-profile-panel-actions">
-                  <Link href="/submit" className="btn btn-primary" style={{ fontSize: "0.85rem", padding: "8px 16px" }}>
+                
+                <div className="votes-profile-panel-actions" style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "16px" }}>
+                  <Link href="/submit" className="btn btn-primary" style={{ flex: "1 1 200px", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "0.85rem", padding: "10px 16px", height: "42px" }}>
                     Share your experience
                   </Link>
                   {myYesVouch && (
                     <button
                       type="button"
-                      className="btn profile-experience-linkedin-btn"
-                      style={{ fontSize: "0.85rem", padding: "8px 16px" }}
+                      className="btn"
+                      style={{ flex: "1 1 200px", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", fontSize: "0.85rem", padding: "10px 16px", height: "42px", background: "#eff6ff", color: "#0a66c2", border: "1px solid #93c5fd", fontWeight: "700" }}
                       onClick={() =>
                         setShareModalData({
                           ...myYesVouch,
@@ -562,8 +564,8 @@ function VotesContent() {
                   {yesCount > noCount && (
                     <button
                       type="button"
-                      className="btn profile-experience-linkedin-btn"
-                      style={{ backgroundColor: "#0f172a", fontSize: "0.85rem", padding: "8px 16px" }}
+                      className="btn"
+                      style={{ flex: "1 1 200px", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "0.85rem", padding: "10px 16px", height: "42px", backgroundColor: "#0f172a", borderColor: "#0f172a", color: "#fff", fontWeight: "700" }}
                       onClick={() => setBadgeModalData(p)}
                     >
                       Get Verification Badge
@@ -616,7 +618,7 @@ function VotesContent() {
               <table className="audit-table">
                 <thead>
                   <tr>
-                    <th className="audit-col-prof">Professional</th>
+                    {!matchedProfile && <th className="audit-col-prof">Professional</th>}
                     <th className="audit-col-vote">Would work with again?</th>
                     <th className="audit-col-share">Share</th>
                     <th className="audit-table-col-comment">Comment</th>
@@ -635,25 +637,27 @@ function VotesContent() {
                           : `${v.profile_slug}-${v.date}-${v.user}-${v.vote}`
                       }
                     >
-                      <td className="audit-col-prof">
-                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                          <ProfilePhoto
-                            photoUrl={v.profile_photo_url}
-                            name={formatProfessionalDisplayName(v.profile_slug, v.public_name)}
-                            slug={v.profile_slug}
-                            size={36}
-                            showFlag={false}
-                          />
-                          <a
-                            href={v.linkedin_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="target-link"
-                          >
-                            {formatProfessionalDisplayName(v.profile_slug, v.public_name)}
-                          </a>
-                        </div>
-                      </td>
+                      {!matchedProfile && (
+                        <td className="audit-col-prof">
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <ProfilePhoto
+                              photoUrl={v.profile_photo_url}
+                              name={formatProfessionalDisplayName(v.profile_slug, v.public_name)}
+                              slug={v.profile_slug}
+                              size={36}
+                              showFlag={true}
+                            />
+                            <a
+                              href={v.linkedin_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="target-link"
+                            >
+                              {formatProfessionalDisplayName(v.profile_slug, v.public_name)}
+                            </a>
+                          </div>
+                        </td>
+                      )}
                       <td className="audit-col-vote">
                         <span
                           className={`vote-pill ${v.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
