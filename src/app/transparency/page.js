@@ -331,6 +331,8 @@ export default function TransparencyPage() {
             linkedinUrl: row.linkedin_url || null,
             profilePhotoUrl: row.profile_photo_url || null,
             profileSlug: row.profile_slug || null,
+            submitterCapacity: row.submitter_capacity || null,
+            votedCapacity: row.voted_capacity || null,
           })
         }
       >
@@ -591,6 +593,8 @@ export default function TransparencyPage() {
           linkedinUrl={commentPopup.linkedinUrl}
           profilePhotoUrl={commentPopup.profilePhotoUrl}
           profileSlug={commentPopup.profileSlug}
+          submitterCapacity={commentPopup.submitterCapacity}
+          votedCapacity={commentPopup.votedCapacity}
           text={commentPopup.text}
           onClose={() => setCommentPopup(null)}
         />
