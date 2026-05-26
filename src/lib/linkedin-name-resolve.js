@@ -1,12 +1,12 @@
 /**
- * Resolve the real display name for a LinkedIn `/in/<slug>` profile by
- * fetching the public page and extracting the `<title>` tag. LinkedIn public
- * profiles typically render titles like:
+ * Resolve the real display name AND profile photo for a LinkedIn `/in/<slug>`
+ * profile by fetching the public page and extracting the `<title>` and
+ * `og:image` tags. LinkedIn public profiles typically render titles like:
  *
  *   "Deepak Dhole - Senior Engineer - Company X | LinkedIn"
  *   "Jane Doe | LinkedIn"
  *
- * We extract the first segment before " - " or " | " and strip LinkedIn noise.
+ * And include an og:image meta tag pointing to the profile photo.
  *
  * This is best-effort and non-blocking. It uses a multi-pronged approach:
  * 1. Direct fetch of the LinkedIn public profile.
@@ -14,17 +14,17 @@
  *    the name from search results, bypassing LinkedIn's authwall.
  *
  * If all strategies fail (e.g., due to rate-limiting or captchas on Vercel IPs),
- * we gracefully return null and let the caller fall back to slug-based display names.
+ * we gracefully return null values and let the caller fall back to defaults.
  */
 
 const FETCH_TIMEOUT_MS = 5000;
 
 /**
  * @param {string} slug - LinkedIn `/in/<slug>` handle (lowercase).
- * @returns {Promise<string|null>} The resolved real name, or null on failure.
+ * @returns {Promise<{name: string|null, photo: string|null}>}
  */
-export async function resolveLinkedinName(slug) {
-  if (!slug || typeof slug !== "string") return null;
+export async function resolveLinkedinProfile(slug) {
+  if (!slug || typeof slug !== "string") return { name: null, photo: null };
 
   const url = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
   const ctrl = new AbortController();
@@ -43,47 +43,63 @@ export async function resolveLinkedinName(slug) {
       },
     });
 
-    if (!res.ok) return null;
+    if (!res.ok) return { name: await fallbackNameFromGoogleSerp(slug), photo: null };
 
-    // Read only the first ~32KB to avoid downloading full page resources.
+    // Read enough HTML to get meta tags (they're in <head>, so first ~64KB is plenty).
     const reader = res.body?.getReader();
-    if (!reader) return null;
+    if (!reader) return { name: null, photo: null };
 
     let html = "";
     const decoder = new TextDecoder();
-    const MAX_BYTES = 32768;
+    const MAX_BYTES = 65536;
 
     while (html.length < MAX_BYTES) {
       const { done, value } = await reader.read();
       if (done) break;
       html += decoder.decode(value, { stream: true });
-      // Stop early once we've found a closing </title> tag.
-      if (html.includes("</title>")) break;
+      // Stop early once we've found the end of </head> — all meta tags are there.
+      if (html.includes("</head>")) break;
     }
     reader.cancel().catch(() => {});
 
-    const nameFromDirect = extractNameFromHtml(html);
-    if (nameFromDirect) return nameFromDirect;
-    
-    // If direct extraction failed, try the SERP fallback.
-    return fallbackToGoogleSerp(slug);
+    const name = extractNameFromHtml(html);
+    const photo = extractPhotoFromHtml(html);
+
+    // If we got at least a photo, return what we have.
+    if (name || photo) {
+      return {
+        name: name || null,
+        photo: photo || null,
+      };
+    }
+
+    // If direct extraction failed entirely, try the SERP fallback for the name.
+    return { name: await fallbackNameFromGoogleSerp(slug), photo: null };
   } catch {
-    // If direct fetch threw an error, attempt the SERP fallback.
-    return fallbackToGoogleSerp(slug);
+    // If direct fetch threw an error, attempt the SERP fallback for the name.
+    return { name: await fallbackNameFromGoogleSerp(slug), photo: null };
   } finally {
     clearTimeout(timer);
   }
 }
 
 /**
- * Fallback Strategy: Scrape Google search results.
- * We query: site:linkedin.com/in/<slug>
- * And extract the title of the first search result.
+ * Backward-compatible wrapper: resolve only the name.
+ * @param {string} slug
+ * @returns {Promise<string|null>}
  */
-async function fallbackToGoogleSerp(slug) {
+export async function resolveLinkedinName(slug) {
+  const { name } = await resolveLinkedinProfile(slug);
+  return name;
+}
+
+/**
+ * Fallback Strategy: Scrape Google search results for the name.
+ */
+async function fallbackNameFromGoogleSerp(slug) {
   const query = `site:linkedin.com/in/${encodeURIComponent(slug)}`;
   const url = `https://www.google.com/search?q=${query}&hl=en`;
-  
+
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
 
@@ -102,17 +118,15 @@ async function fallbackToGoogleSerp(slug) {
     if (!res.ok) return null;
 
     const html = await res.text();
-    
-    // Google results typically contain <h3 class="...">Title - Company | LinkedIn</h3>
-    // We look for h3 tags containing "LinkedIn"
+
     const h3Regex = /<h3[^>]*>([^<]+LinkedIn[^<]*)<\/h3>/gi;
     let match;
-    
+
     while ((match = h3Regex.exec(html)) !== null) {
       const name = extractNameFromTitle(match[1]);
       if (name) return name;
     }
-    
+
     return null;
   } catch {
     return null;
@@ -122,28 +136,53 @@ async function fallbackToGoogleSerp(slug) {
 }
 
 /**
- * Extract a person's name from LinkedIn page HTML.
+ * Extract og:image (profile photo) from LinkedIn page HTML.
  *
- * Strategies tried in priority order:
- * 1. `<title>…</title>` → "Deepak Dhole - Title - Company | LinkedIn"
- * 2. `og:title` meta tag → "Deepak Dhole - Title - Company"
+ * Filters out LinkedIn's generic placeholder images so we only store
+ * actual profile photos.
+ */
+function extractPhotoFromHtml(html) {
+  if (!html) return null;
+
+  // Try both attribute orders for og:image
+  const ogMatch =
+    html.match(/<meta\s+(?:property|name)="og:image"\s+content="([^"]+)"/i) ||
+    html.match(/<meta\s+content="([^"]+)"\s+(?:property|name)="og:image"/i);
+
+  if (!ogMatch) return null;
+
+  let url = ogMatch[1].trim();
+
+  // Decode HTML entities (LinkedIn encodes & as &amp; in meta tags)
+  url = url
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"');
+
+  // Filter out LinkedIn's generic placeholder/ghost images
+  if (!url.includes("media.licdn.com")) return null;
+  if (url.includes("ghost") || url.includes("default")) return null;
+
+  return url;
+}
+
+/**
+ * Extract a person's name from LinkedIn page HTML.
  */
 function extractNameFromHtml(html) {
   if (!html) return null;
 
-  // Strategy 1: <title> tag
   const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
   if (titleMatch) {
     const name = extractNameFromTitle(titleMatch[1]);
     if (name) return name;
   }
 
-  // Strategy 2: og:title meta
   const ogMatch = html.match(
     /<meta\s+(?:property|name)="og:title"\s+content="([^"]+)"/i
   );
   if (!ogMatch) {
-    // Try reversed attribute order
     const ogMatch2 = html.match(
       /<meta\s+content="([^"]+)"\s+(?:property|name)="og:title"/i
     );
@@ -160,33 +199,22 @@ function extractNameFromHtml(html) {
 }
 
 /**
- * Parse the name from a title string like:
- *   "Deepak Dhole - Senior Engineer - Company X | LinkedIn"
- *   "Jane Doe | LinkedIn"
- *   "(2) Deepak Dhole | LinkedIn"
+ * Parse the name from a title string.
  */
 function extractNameFromTitle(raw) {
   if (!raw || typeof raw !== "string") return null;
 
   let s = raw.trim();
-
-  // Remove notification count prefix: "(3) Name…"
   s = s.replace(/^\(\d+\)\s*/, "");
-
-  // Remove "| LinkedIn" suffix
   s = s.replace(/\s*\|\s*LinkedIn\s*$/i, "");
 
-  // Take the first segment before " - " (rest is job title / company)
   const firstSegment = s.split(/\s+-\s+/)[0].trim();
 
   if (!firstSegment) return null;
-
-  // Sanity: must look like a name (at least 2 chars, not a URL, not "LinkedIn")
   if (firstSegment.length < 2) return null;
   if (/linkedin\.com/i.test(firstSegment)) return null;
   if (/^linkedin$/i.test(firstSegment)) return null;
 
-  // Decode HTML entities
   const decoded = firstSegment
     .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
     .replace(/&amp;/g, "&")

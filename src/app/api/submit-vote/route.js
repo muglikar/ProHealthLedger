@@ -7,7 +7,7 @@ import { isFlagBlockedForLinkedinUrl } from "@/lib/protected-profiles";
 import { verifyLinkedinSlug } from "@/lib/linkedin-slug-verify";
 import { analyzeReasonSafety } from "@/lib/content-safety";
 import { createProfileLinkChangeRequest } from "@/lib/profile-link-change-requests";
-import { resolveLinkedinName } from "@/lib/linkedin-name-resolve";
+import { resolveLinkedinProfile } from "@/lib/linkedin-name-resolve";
 import {
   envLimit,
   getClientIp,
@@ -361,15 +361,18 @@ export async function POST(req) {
     profiles.push(profile);
   }
 
-  // Auto-resolve the real name from LinkedIn if not already set.
-  if (!profile.public_name) {
+  // Auto-resolve the real name and profile photo from LinkedIn if not already set.
+  if (!profile.public_name || !profile.profile_photo_url) {
     try {
-      const resolvedName = await resolveLinkedinName(slug);
-      if (resolvedName) {
-        profile.public_name = resolvedName;
+      const resolved = await resolveLinkedinProfile(slug);
+      if (resolved.name && !profile.public_name) {
+        profile.public_name = resolved.name;
+      }
+      if (resolved.photo && !profile.profile_photo_url) {
+        profile.profile_photo_url = resolved.photo;
       }
     } catch {
-      // Non-fatal — slug-derived name is the fallback.
+      // Non-fatal — slug-derived name and no photo is the fallback.
     }
   }
 

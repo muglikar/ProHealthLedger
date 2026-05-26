@@ -241,7 +241,32 @@ function ProfilesContent() {
               return (
                 <article key={profile.slug || profile.linkedin_url} className="profile-card">
                   <header className="profile-slug">
-                    {formatProfessionalDisplayName(profile.slug, profile.public_name) || "Profile"}
+                    {profile.profile_photo_url ? (
+                      <img
+                        src={profile.profile_photo_url}
+                        alt=""
+                        className="profile-avatar"
+                        width={48}
+                        height={48}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                      />
+                    ) : null}
+                    <span
+                      className="profile-avatar profile-avatar-initials"
+                      style={profile.profile_photo_url ? { display: 'none' } : {}}
+                      aria-hidden="true"
+                    >
+                      {(formatProfessionalDisplayName(profile.slug, profile.public_name) || "?")
+                        .split(/\s+/)
+                        .slice(0, 2)
+                        .map((w) => w[0]?.toUpperCase() || "")
+                        .join("")}
+                    </span>
+                    <span className="profile-slug-name">
+                      {formatProfessionalDisplayName(profile.slug, profile.public_name) || "Profile"}
+                    </span>
                   </header>
                   <div className="profile-url">
                     <a href={profile.linkedin_url || "#"} target="_blank" rel="noopener noreferrer">

@@ -2221,10 +2221,38 @@ a:hover {
 }
 
 .profile-slug {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-size: 1.05rem;
   font-weight: 600;
   margin-bottom: 2px;
   text-transform: capitalize;
+}
+
+.profile-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+}
+
+.profile-avatar-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.profile-slug-name {
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .profile-url {
