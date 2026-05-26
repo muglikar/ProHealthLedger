@@ -9,8 +9,7 @@ import NavAuth from "./NavAuth";
 import SharePHLButton from "./SharePHLButton";
 
 const NAV_LINKS = [
-  { href: "/profiles", label: "Look Up" },
-  { href: "/transparency", label: "All Votes" },
+  { href: "/profiles", label: "Votes" },
   { href: "/contributors", label: "Contributors" },
   { href: "/submit", label: "Submit" },
   { href: "/referrals", label: "Referrals" },

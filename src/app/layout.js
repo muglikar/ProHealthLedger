@@ -91,7 +91,7 @@ export default function RootLayout({ children }) {
                 at your own discretion.
               </p>
               <div className="footer-links">
-                <Link href="/transparency">Full Audit Trail</Link>
+                <Link href="/profiles">Full Audit Trail</Link>
                 <span className="footer-sep">·</span>
                 <Link href="/pro-directory">Professional Directory</Link>
                 <span className="footer-sep">·</span>
