@@ -255,9 +255,15 @@
         "vote": "no",
         "issue": 51,
         "date": "2026-05-24"
+      },
+      {
+        "profile_slug": "werner-seiz-436014b",
+        "vote": "yes",
+        "issue": 52,
+        "date": "2026-05-26"
       }
     ],
-    "yes_count": 21,
+    "yes_count": 22,
     "no_count": 20
   },
   {
