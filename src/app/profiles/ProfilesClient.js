@@ -172,6 +172,8 @@ function ProfilesContent() {
                 ? `${REPO_BASE}/issues/${submission.issue}`
                 : null,
             linkedinUrl: profile.linkedin_url || null,
+            profilePhotoUrl: profile.profile_photo_url || null,
+            profileSlug: profile.slug || null,
             submitterCapacity: submission.submitter_capacity || null,
             votedCapacity: submission.voted_capacity || null,
           })
@@ -397,6 +399,8 @@ function ProfilesContent() {
           issue={commentPopup.issue}
           recordHref={commentPopup.recordHref}
           linkedinUrl={commentPopup.linkedinUrl}
+          profilePhotoUrl={commentPopup.profilePhotoUrl}
+          profileSlug={commentPopup.profileSlug}
           text={commentPopup.text}
           submitterCapacity={commentPopup.submitterCapacity}
           votedCapacity={commentPopup.votedCapacity}

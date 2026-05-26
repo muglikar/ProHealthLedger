@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import ProfilePhoto from "@/app/components/ProfilePhoto";
 
 export default function CommentReadModal({
   professional,
@@ -10,6 +11,8 @@ export default function CommentReadModal({
   issue,
   recordHref,
   linkedinUrl,
+  profilePhotoUrl,
+  profileSlug,
   submitterCapacity,
   votedCapacity,
   text,
@@ -52,9 +55,18 @@ export default function CommentReadModal({
         </div>
 
         <div className="comment-read-modal-details" role="region" aria-label="Vote row details">
-          <div className="comment-read-modal-row">
+          <div className="comment-read-modal-row" style={{ alignItems: 'center' }}>
             <span className="comment-read-modal-k">Professional</span>
-            <span className="comment-read-modal-v">{professionalCell}</span>
+            <span className="comment-read-modal-v" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <ProfilePhoto
+                photoUrl={profilePhotoUrl || null}
+                name={professional || "?"}
+                slug={profileSlug || null}
+                size={44}
+                showFlag={false}
+              />
+              {professionalCell}
+            </span>
           </div>
           <div className="comment-read-modal-row">
             <span className="comment-read-modal-k">Would work with again?</span>

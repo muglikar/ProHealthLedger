@@ -329,6 +329,8 @@ export default function TransparencyPage() {
                 ? `${repoBase}/issues/${row.issue}`
                 : null,
             linkedinUrl: row.linkedin_url || null,
+            profilePhotoUrl: row.profile_photo_url || null,
+            profileSlug: row.profile_slug || null,
           })
         }
       >
@@ -587,6 +589,8 @@ export default function TransparencyPage() {
           issue={commentPopup.issue}
           recordHref={commentPopup.recordHref}
           linkedinUrl={commentPopup.linkedinUrl}
+          profilePhotoUrl={commentPopup.profilePhotoUrl}
+          profileSlug={commentPopup.profileSlug}
           text={commentPopup.text}
           onClose={() => setCommentPopup(null)}
         />
