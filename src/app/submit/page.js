@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSession, signIn, getProviders } from "next-auth/react";
 import Link from "next/link";
 import { trackEvent } from "@/lib/telemetry";
@@ -20,10 +20,61 @@ export default function SubmitPage() {
   const [error, setError] = useState(null);
   const [showTour, setShowTour] = useState(false);
 
+  // Real-time profile preview state
+  const [preview, setPreview] = useState(null); // { name, photo } | null
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [photoFlagged, setPhotoFlagged] = useState(false);
+  const previewAbortRef = useRef(null);
+
   useEffect(() => {
     getProviders().then((p) => setHasLinkedIn(Boolean(p?.linkedin)));
     trackEvent("vouch_page_view");
   }, []);
+
+  // Extract slug from a LinkedIn URL
+  const extractSlug = useCallback((url) => {
+    const m = (url || "").match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/);
+    return m ? m[1].toLowerCase() : null;
+  }, []);
+
+  // Debounced profile preview fetch when LinkedIn URL changes
+  useEffect(() => {
+    const slug = extractSlug(linkedinUrl);
+    if (!slug) {
+      setPreview(null);
+      setPreviewLoading(false);
+      setPhotoFlagged(false);
+      return;
+    }
+
+    setPreviewLoading(true);
+    setPhotoFlagged(false);
+
+    // Cancel any in-flight request
+    if (previewAbortRef.current) previewAbortRef.current.abort();
+
+    const timer = setTimeout(() => {
+      const ctrl = new AbortController();
+      previewAbortRef.current = ctrl;
+
+      fetch(`/api/preview-profile?slug=${encodeURIComponent(slug)}`, {
+        signal: ctrl.signal,
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          setPreview(data);
+          setPreviewLoading(false);
+        })
+        .catch((err) => {
+          if (err.name !== "AbortError") {
+            setPreview(null);
+            setPreviewLoading(false);
+          }
+        });
+    }, 600); // 600ms debounce
+
+    return () => clearTimeout(timer);
+  }, [linkedinUrl, extractSlug]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +83,7 @@ export default function SubmitPage() {
     setResult(null);
 
     try {
-      const payload = { linkedinUrl, vote, reason, submitterCapacity, votedCapacity };
+      const payload = { linkedinUrl, vote, reason, submitterCapacity, votedCapacity, photoFlagged };
       if (!session?.linkedinProfileUrl) {
         payload.submitterLinkedinUrl = submitterLinkedinUrl;
       }
@@ -60,6 +111,8 @@ export default function SubmitPage() {
       setSubmitterCapacity("");
       setVotedCapacity("");
       setSubmitterLinkedinUrl("");
+      setPreview(null);
+      setPhotoFlagged(false);
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -271,6 +324,60 @@ export default function SubmitPage() {
             <span className="form-hint">
               Paste the full LinkedIn profile link of the person.
             </span>
+
+            {/* Real-time profile preview */}
+            {previewLoading && (
+              <div className="profile-preview-card">
+                <div className="profile-preview-loading">
+                  <span className="profile-preview-spinner" />
+                  Looking up profile…
+                </div>
+              </div>
+            )}
+            {!previewLoading && preview && (preview.name || preview.photo) && (
+              <div className="profile-preview-card">
+                <div className="profile-preview-header">
+                  {preview.photo && !photoFlagged ? (
+                    <img
+                      src={preview.photo}
+                      alt=""
+                      className="profile-preview-photo"
+                      width={56}
+                      height={56}
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                  ) : (
+                    <span className="profile-preview-photo profile-preview-initials">
+                      {(preview.name || "?")
+                        .split(/\s+/)
+                        .slice(0, 2)
+                        .map((w) => w[0]?.toUpperCase() || "")
+                        .join("")}
+                    </span>
+                  )}
+                  <div className="profile-preview-info">
+                    <span className="profile-preview-name">
+                      {preview.name || extractSlug(linkedinUrl) || "Profile"}
+                    </span>
+                    <span className="profile-preview-badge">Profile found ✓</span>
+                  </div>
+                </div>
+                {preview.photo && (
+                  <label className="profile-preview-flag">
+                    <input
+                      type="checkbox"
+                      checked={photoFlagged}
+                      onChange={(e) => setPhotoFlagged(e.target.checked)}
+                    />
+                    Not the right photo?
+                  </label>
+                )}
+              </div>
+            )}
           </div>
 
 

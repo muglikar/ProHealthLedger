@@ -39,7 +39,7 @@ export async function POST(req) {
   }
 
   const body = await req.json();
-  const { linkedinUrl, vote, reason, submitterLinkedinUrl, submitterCapacity, votedCapacity } = body;
+  const { linkedinUrl, vote, reason, submitterLinkedinUrl, submitterCapacity, votedCapacity, photoFlagged } = body;
   const userId = session.userId;
   const displayName = session.displayName || userId;
 
@@ -374,6 +374,13 @@ export async function POST(req) {
     } catch {
       // Non-fatal — slug-derived name and no photo is the fallback.
     }
+  }
+
+  // If the voter flagged the photo as wrong, clear it so it can be re-resolved
+  // on the next vote submission, and record the flag on this submission.
+  if (photoFlagged && profile.profile_photo_url) {
+    profile.profile_photo_url = null;
+    submission.photo_flagged = true;
   }
 
   profile.votes[vote]++;

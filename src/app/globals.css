@@ -3484,6 +3484,110 @@ button.audit-comment-link:focus-visible {
   margin-top: 3px;
 }
 
+/* ── Profile Preview Card (real-time) ── */
+.profile-preview-card {
+  margin-top: 12px;
+  padding: 14px 16px;
+  background: var(--bg-warm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  animation: previewSlideIn 0.25s ease-out;
+}
+
+@keyframes previewSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.profile-preview-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.profile-preview-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: previewSpin 0.7s linear infinite;
+}
+
+@keyframes previewSpin {
+  to { transform: rotate(360deg); }
+}
+
+.profile-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.profile-preview-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.profile-preview-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.profile-preview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.profile-preview-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: capitalize;
+  overflow-wrap: break-word;
+}
+
+.profile-preview-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #059669;
+}
+
+.profile-preview-flag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.profile-preview-flag input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
 .form-textarea {
   width: 100%;
   padding: 8px 14px;
