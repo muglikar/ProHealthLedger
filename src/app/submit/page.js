@@ -13,6 +13,8 @@ export default function SubmitPage() {
   const [vote, setVote] = useState("");
   const [reason, setReason] = useState("");
   const [submitterLinkedinUrl, setSubmitterLinkedinUrl] = useState("");
+  const [submitterCapacity, setSubmitterCapacity] = useState("");
+  const [votedCapacity, setVotedCapacity] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -30,7 +32,7 @@ export default function SubmitPage() {
     setResult(null);
 
     try {
-      const payload = { linkedinUrl, vote, reason };
+      const payload = { linkedinUrl, vote, reason, submitterCapacity, votedCapacity };
       if (!session?.linkedinProfileUrl) {
         payload.submitterLinkedinUrl = submitterLinkedinUrl;
       }
@@ -55,6 +57,8 @@ export default function SubmitPage() {
       setLinkedinUrl("");
       setVote("");
       setReason("");
+      setSubmitterCapacity("");
+      setVotedCapacity("");
       setSubmitterLinkedinUrl("");
     } catch {
       setError("Something went wrong. Please try again.");
@@ -298,6 +302,30 @@ export default function SubmitPage() {
                 <span className="vote-option-label label-flag">Flag</span>
               </div>
             </div>
+          </div>
+
+          <div className="form-group" data-tour="step-capacity-submitter">
+            <label htmlFor="submitter-capacity">Your Role & Organization (optional)</label>
+            <input
+              id="submitter-capacity"
+              type="text"
+              className="form-input"
+              placeholder="e.g. Engineering Manager at Acme Corp"
+              value={submitterCapacity}
+              onChange={(e) => setSubmitterCapacity(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group" data-tour="step-capacity-voted">
+            <label htmlFor="voted-capacity">Their Role & Organization (optional)</label>
+            <input
+              id="voted-capacity"
+              type="text"
+              className="form-input"
+              placeholder="e.g. Senior Developer at Acme Corp"
+              value={votedCapacity}
+              onChange={(e) => setVotedCapacity(e.target.value)}
+            />
           </div>
 
           <div className="form-group" data-tour="step-reason">

@@ -10,6 +10,8 @@ export default function CommentReadModal({
   issue,
   recordHref,
   linkedinUrl,
+  submitterCapacity,
+  votedCapacity,
   text,
   onClose,
 }) {
@@ -70,6 +72,18 @@ export default function CommentReadModal({
             <span className="comment-read-modal-k">Submitted by</span>
             <span className="comment-read-modal-v">{submittedBy || "—"}</span>
           </div>
+          {submitterCapacity && (
+            <div className="comment-read-modal-row">
+              <span className="comment-read-modal-k">Voter&apos;s Capacity</span>
+              <span className="comment-read-modal-v">{submitterCapacity}</span>
+            </div>
+          )}
+          {votedCapacity && (
+            <div className="comment-read-modal-row">
+              <span className="comment-read-modal-k">Their Capacity</span>
+              <span className="comment-read-modal-v">{votedCapacity}</span>
+            </div>
+          )}
           <div className="comment-read-modal-row">
             <span className="comment-read-modal-k">Date</span>
             <span className="comment-read-modal-v">{date || "—"}</span>
