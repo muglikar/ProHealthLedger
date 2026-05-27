@@ -63,6 +63,7 @@ export default function DirectoryClient({ profiles }) {
               name={displayName}
               slug={p.slug}
               size={52}
+              showFlag={false}
             />
             <div style={{ flex: 1, minWidth: 0 }}>
               <h2 style={{ fontSize: "1.2rem", margin: "0 0 10px 0" }}>
