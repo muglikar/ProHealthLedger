@@ -19,7 +19,7 @@ import { readDataFile, writeDataFile, readRepoJson, writeRepoJson } from "@/lib/
 
 export const maxDuration = 120; // 2 minute timeout for Vercel
 
-const BATCH_SIZE = 5;
+const BATCH_SIZE = 1;
 const MIN_DELAY_MS = 10_000;
 const MAX_DELAY_MS = 30_000;
 const BACKOFF_DAYS = 2; // skip slugs that failed within this window
