@@ -1,4 +1,4 @@
-import { readDataFile, writeDataFile } from "@/lib/github";
+import { readDataFile, writeDataFile, readRepoJson, writeRepoJson } from "@/lib/github";
 
 /**
  * GET /api/cron/photo-scrape
@@ -154,7 +154,7 @@ export async function GET(req) {
     const { data: users, sha: usersSha } = await readDataFile(
       "data/users/_index.json"
     );
-    const { data: scrapeLog, sha: logSha } = await readDataFile(
+    const { data: scrapeLog, sha: logSha } = await readRepoJson(
       "data/photo_scrape_log.json"
     );
 
@@ -286,7 +286,7 @@ export async function GET(req) {
       );
     }
 
-    await writeDataFile(
+    await writeRepoJson(
       "data/photo_scrape_log.json",
       log,
       logSha,
