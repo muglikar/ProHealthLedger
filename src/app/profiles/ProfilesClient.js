@@ -515,8 +515,22 @@ function VotesContent() {
                     showFlag={true}
                   />
                   <div className="votes-profile-panel-info">
-                    <h2 className="votes-profile-panel-name">
+                    <h2 className="votes-profile-panel-name" style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
                       {formatProfessionalDisplayName(p.slug, p.public_name)}
+                      {yesCount > noCount && (
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          style={{ fontSize: "0.8rem", padding: "6px 12px", display: "inline-flex", alignItems: "center", gap: "6px" }}
+                          title="Is this your profile? Claim it with a verification badge."
+                          onClick={() => setBadgeModalData(p)}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                          </svg>
+                          Get Verification Badge
+                        </button>
+                      )}
                     </h2>
                     <a
                       href={p.linkedin_url || "#"}
@@ -535,27 +549,11 @@ function VotesContent() {
                     </div>
                   </div>
                 </div>
-                
-                {yesCount > noCount && (
-                  <div className="votes-profile-panel-actions" style={{ marginTop: "16px" }}>
-                    <button
-                      type="button"
-                      className="btn"
-                      style={{ background: "transparent", border: "none", color: "var(--text-secondary)", padding: "4px", display: "inline-flex", alignItems: "center", cursor: "pointer" }}
-                      title="Get Verification Badge"
-                      onClick={() => setBadgeModalData(p)}
-                    >
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                      </svg>
-                    </button>
-                  </div>
-                )}
               </div>
             );
           })()}
 
-          {/* ── Sort bar (Hidden if searched) ── */}
+          {/* ── Sort bar ── */}
           {!matchedProfile && (
             <div className="audit-sort-bar" role="group" aria-label="Sort votes">
               <span className="audit-sort-label">Sort</span>
@@ -589,105 +587,227 @@ function VotesContent() {
             </div>
           )}
 
-          {/* ── Vote Cards ── */}
-          <div className="votes-cards-container" style={{ display: "flex", flexDirection: "column", gap: "24px", marginTop: "16px" }}>
-            {sortedVotes.map((v) => {
-              const voteLabel = v.vote === "yes" ? "Yes" : v.vote === "no" ? "No" : v.vote ? String(v.vote) : "—";
-              const professionalName = formatProfessionalDisplayName(v.profile_slug, v.public_name);
-              const professionalCell = v.linkedin_url ? (
-                <a href={v.linkedin_url} target="_blank" rel="noopener noreferrer" className="issue-link">
-                  {professionalName || "—"}
-                </a>
-              ) : (
-                professionalName || "—"
-              );
-
-              return (
-                <div 
-                  key={v.issue != null ? `issue-${v.issue}` : `${v.profile_slug}-${v.date}-${v.user}-${v.vote}`}
-                  className="comment-read-modal-details" 
-                  style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}
-                >
-                  <div className="comment-read-modal-row" style={{ alignItems: "center" }}>
-                    <span className="comment-read-modal-k">Professional</span>
-                    <span className="comment-read-modal-v" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <ProfilePhoto
-                        photoUrl={v.profile_photo_url || null}
-                        name={professionalName || "?"}
-                        slug={v.profile_slug || null}
-                        size={44}
-                        showFlag={false}
-                      />
-                      {professionalCell}
-                    </span>
-                  </div>
-                  {v.voted_capacity && (
-                    <div className="comment-read-modal-row">
-                      <span className="comment-read-modal-k">Their Role &amp; Org</span>
-                      <span className="comment-read-modal-v">{v.voted_capacity}</span>
-                    </div>
-                  )}
-                  <div className="comment-read-modal-row">
-                    <span className="comment-read-modal-k">Would work with again?</span>
-                    <span className="comment-read-modal-v">
-                      {v.vote === "yes" || v.vote === "no" ? (
-                        <span className={`vote-pill ${v.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}>
-                          {voteLabel}
-                        </span>
-                      ) : (
-                        voteLabel
-                      )}
-                    </span>
-                  </div>
-                  <div className="comment-read-modal-row">
-                    <span className="comment-read-modal-k">Submitted by</span>
-                    <span className="comment-read-modal-v">{submitterPlain(v) || "—"}</span>
-                  </div>
-                  {v.submitter_capacity && (
-                    <div className="comment-read-modal-row">
-                      <span className="comment-read-modal-k">Voter&apos;s Role &amp; Org</span>
-                      <span className="comment-read-modal-v">{v.submitter_capacity}</span>
-                    </div>
-                  )}
-                  <div className="comment-read-modal-row">
-                    <span className="comment-read-modal-k">Date</span>
-                    <span className="comment-read-modal-v">{v.date || "—"}</span>
-                  </div>
-                  <div className="comment-read-modal-row">
-                    <span className="comment-read-modal-k">Record</span>
-                    <span className="comment-read-modal-v">
-                      {v.issue != null ? (
-                        <a href={`${REPO_BASE}/issues/${v.issue}`} target="_blank" rel="noopener noreferrer" className="issue-link">
-                          #{v.issue}
-                        </a>
-                      ) : (
-                        "—"
-                      )}
-                    </span>
-                  </div>
-                  <div className="comment-read-modal-comment-section" style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #e2e8f0" }}>
-                    <h4 className="comment-read-modal-comment-heading" style={{ margin: "0 0 8px 0", fontSize: "0.9rem", color: "#64748b" }}>Comment</h4>
-                    <div className="comment-read-modal-body" style={{ background: "#f8fafc", padding: "12px", borderRadius: "8px", fontSize: "0.95rem", lineHeight: "1.5" }}>
-                      {(() => {
-                        if (v.reason_pending) return <span className="audit-comment-pending">Pending review</span>;
-                        if (v.reason_redacted) {
-                          const date = (v.redacted_at || "").slice(0, 10) || "unknown date";
-                          const cat = v.redaction_category || "miscellaneous";
-                          return (
-                            <span className="audit-comment-redacted" title={`Redacted by moderator on ${date} — category: ${cat}. Original kept in private redactions store; public hash ${v.reason_hash || "n/a"}.`}>
-                              [redacted by moderator on {date} — {cat}]
+          {/* ── Table or Cards ── */}
+          {!matchedProfile ? (
+            <>
+              <div className="audit-scroll-track" ref={trackRef}>
+                <span className="audit-scroll-track-label">← drag or tap to scroll →</span>
+                <div className="audit-scroll-thumb" ref={thumbRef} />
+              </div>
+              <div className={`audit-table-outer${scrolledEnd ? " scrolled-end" : ""}`}>
+                <div className="audit-table-wrap" ref={tableWrapRef}>
+                  <table className="audit-table">
+                    <thead>
+                      <tr>
+                        <th className="audit-col-prof">Professional</th>
+                        <th className="audit-col-vote">Would work with again?</th>
+                        <th className="audit-col-share">Share</th>
+                        <th className="audit-table-col-comment">Comment</th>
+                        <th>Submitted By</th>
+                        <th>Record</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sortedVotes.map((v) => (
+                        <tr
+                          key={
+                            v.issue != null
+                              ? `issue-${v.issue}`
+                              : `${v.profile_slug}-${v.date}-${v.user}-${v.vote}`
+                          }
+                        >
+                          <td className="audit-col-prof">
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                              <ProfilePhoto
+                                photoUrl={v.profile_photo_url}
+                                name={formatProfessionalDisplayName(v.profile_slug, v.public_name)}
+                                slug={v.profile_slug}
+                                size={36}
+                                showFlag={true}
+                              />
+                              <a
+                                href={v.linkedin_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="target-link"
+                              >
+                                {formatProfessionalDisplayName(v.profile_slug, v.public_name)}
+                              </a>
+                            </div>
+                          </td>
+                          <td className="audit-col-vote">
+                            <span
+                              className={`vote-pill ${v.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
+                            >
+                              {v.vote === "yes" ? "✓ Yes" : "✗ No"}
                             </span>
-                          );
-                        }
-                        const raw = typeof v.reason === "string" ? v.reason.trim() : "";
-                        return raw || <span className="audit-comment-empty">—</span>;
-                      })()}
+                          </td>
+                          <td className="audit-col-share">
+                            {(() => {
+                              const isSignedIn = !!session;
+                              const currentId = (session?.userId || "")
+                                .replace("github:", "")
+                                .replace("linkedin:", "");
+                              const currentName = (session?.user?.name || "").trim().toLowerCase();
+                              const isAdmin =
+                                currentId === "muglikar" ||
+                                currentName === "anand muglikar";
+    
+                              const rowUser = (v.user || "")
+                                .replace("github:", "")
+                                .replace("linkedin:", "");
+                              const rowName = (v.display_name || "").trim().toLowerCase();
+    
+                              const isMySubmission =
+                                isSignedIn &&
+                                ((currentId && currentId === rowUser) ||
+                                  (currentName && rowName && currentName === rowName));
+                              const isAboutMe = Boolean(
+                                myLinkedSlug && myLinkedSlug === v.profile_slug
+                              );
+                              const isAboutAdmin =
+                                v.profile_slug === "muglikar" &&
+                                (currentId === "muglikar" ||
+                                  currentName === "anand muglikar");
+    
+                              const canShare =
+                                isSignedIn &&
+                                v.vote === "yes" &&
+                                (isMySubmission ||
+                                  isAboutMe ||
+                                  (isAdmin && isAboutAdmin));
+    
+                              if (!canShare) return null;
+    
+                              return (
+                                <button
+                                  type="button"
+                                  className="share-linkedin-btn"
+                                  title={
+                                    isAboutMe || (isAdmin && isAboutAdmin)
+                                      ? "Share your vouch on LinkedIn"
+                                      : "Share this vouch on LinkedIn"
+                                  }
+                                  onClick={() =>
+                                    setShareModalData({
+                                      ...v,
+                                      _firstPerson:
+                                        isAboutMe || (isAdmin && isAboutAdmin),
+                                    })
+                                  }
+                                >
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                  >
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                                  </svg>
+                                </button>
+                              );
+                            })()}
+                          </td>
+                          <td className="audit-table-col-comment">{commentCell(v)}</td>
+                          <td>{voterDisplay(v)}</td>
+                          <td>
+                            <a
+                              href={`${REPO_BASE}/issues/${v.issue}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="issue-link"
+                            >
+                              #{v.issue}
+                            </a>
+                          </td>
+                          <td>{v.date}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="votes-cards-container" style={{ display: "flex", flexDirection: "column", gap: "24px", marginTop: "16px" }}>
+              {sortedVotes.map((v) => {
+                const voteLabel = v.vote === "yes" ? "Yes" : v.vote === "no" ? "No" : v.vote ? String(v.vote) : "—";
+                
+                return (
+                  <div 
+                    key={v.issue != null ? `issue-${v.issue}` : `${v.profile_slug}-${v.date}-${v.user}-${v.vote}`}
+                    className="comment-read-modal-details" 
+                    style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}
+                  >
+                    {v.voted_capacity && (
+                      <div className="comment-read-modal-row">
+                        <span className="comment-read-modal-k">Their Role &amp; Org</span>
+                        <span className="comment-read-modal-v">{v.voted_capacity}</span>
+                      </div>
+                    )}
+                    <div className="comment-read-modal-row">
+                      <span className="comment-read-modal-k">Would work with again?</span>
+                      <span className="comment-read-modal-v">
+                        {v.vote === "yes" || v.vote === "no" ? (
+                          <span className={`vote-pill ${v.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}>
+                            {voteLabel}
+                          </span>
+                        ) : (
+                          voteLabel
+                        )}
+                      </span>
+                    </div>
+                    <div className="comment-read-modal-row">
+                      <span className="comment-read-modal-k">Submitted by</span>
+                      <span className="comment-read-modal-v">{submitterPlain(v) || "—"}</span>
+                    </div>
+                    {v.submitter_capacity && (
+                      <div className="comment-read-modal-row">
+                        <span className="comment-read-modal-k">Voter&apos;s Role &amp; Org</span>
+                        <span className="comment-read-modal-v">{v.submitter_capacity}</span>
+                      </div>
+                    )}
+                    <div className="comment-read-modal-row">
+                      <span className="comment-read-modal-k">Date</span>
+                      <span className="comment-read-modal-v">{v.date || "—"}</span>
+                    </div>
+                    <div className="comment-read-modal-row">
+                      <span className="comment-read-modal-k">Record</span>
+                      <span className="comment-read-modal-v">
+                        {v.issue != null ? (
+                          <a href={`${REPO_BASE}/issues/${v.issue}`} target="_blank" rel="noopener noreferrer" className="issue-link">
+                            #{v.issue}
+                          </a>
+                        ) : (
+                          "—"
+                        )}
+                      </span>
+                    </div>
+                    <div className="comment-read-modal-comment-section" style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #e2e8f0" }}>
+                      <h4 className="comment-read-modal-comment-heading" style={{ margin: "0 0 8px 0", fontSize: "0.9rem", color: "#64748b" }}>Comment</h4>
+                      <div className="comment-read-modal-body" style={{ background: "#f8fafc", padding: "12px", borderRadius: "8px", fontSize: "0.95rem", lineHeight: "1.5" }}>
+                        {(() => {
+                          if (v.reason_pending) return <span className="audit-comment-pending">Pending review</span>;
+                          if (v.reason_redacted) {
+                            const date = (v.redacted_at || "").slice(0, 10) || "unknown date";
+                            const cat = v.redaction_category || "miscellaneous";
+                            return (
+                              <span className="audit-comment-redacted" title={`Redacted by moderator on ${date} — category: ${cat}. Original kept in private redactions store; public hash ${v.reason_hash || "n/a"}.`}>
+                                [redacted by moderator on {date} — {cat}]
+                              </span>
+                            );
+                          }
+                          const raw = typeof v.reason === "string" ? v.reason.trim() : "";
+                          return raw || <span className="audit-comment-empty">—</span>;
+                        })()}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </>
       )}
 

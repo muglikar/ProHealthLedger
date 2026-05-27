@@ -3,14 +3,14 @@
 import { useState, useCallback } from "react";
 
 /**
- * Reusable profile photo component with "Not the right photo?" checkbox.
+ * Reusable profile photo component with "Right photo? [✓] [✗]" buttons.
  *
  * Props:
  *   photoUrl   — LinkedIn photo URL (nullable)
  *   name       — Display name for initials fallback
  *   slug       — Profile slug (for flagging)
  *   size       — Pixel size (default 48)
- *   showFlag   — Whether to show the "Not right photo?" checkbox (default true)
+ *   showFlag   — Whether to show the "Right photo?" buttons (default true)
  *   className  — Extra CSS class on the wrapper
  */
 export default function ProfilePhoto({
@@ -23,6 +23,7 @@ export default function ProfilePhoto({
 }) {
   const [flagged, setFlagged] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [promptDismissed, setPromptDismissed] = useState(false);
 
   const initials = (name || "?")
     .split(/\s+/)
@@ -32,11 +33,15 @@ export default function ProfilePhoto({
 
   const showPhoto = photoUrl && !flagged && !imgError;
 
-  const handleFlag = useCallback(
-    async (e) => {
-      const checked = e.target.checked;
-      setFlagged(checked);
-      if (checked && slug) {
+  const handleYes = useCallback(() => {
+    setPromptDismissed(true);
+  }, []);
+
+  const handleNo = useCallback(
+    async () => {
+      setPromptDismissed(true);
+      setFlagged(true);
+      if (slug) {
         // Fire-and-forget flag to the API
         try {
           await fetch("/api/flag-photo", {
@@ -75,15 +80,16 @@ export default function ProfilePhoto({
           {initials}
         </span>
       )}
-      {showFlag && photoUrl && !imgError && (
-        <label className="pphoto-flag">
-          <input
-            type="checkbox"
-            checked={flagged}
-            onChange={handleFlag}
-          />
-          Not the right photo?
-        </label>
+      {showFlag && photoUrl && !imgError && !promptDismissed && (
+        <div className="pphoto-flag-buttons" style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+          <span>Right photo?</span>
+          <button type="button" onClick={handleYes} className="btn-icon-small" title="Yes, correct photo" style={{ background: "transparent", border: "1px solid #e2e8f0", borderRadius: "4px", padding: "2px 6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#10b981" }}>
+            ✓
+          </button>
+          <button type="button" onClick={handleNo} className="btn-icon-small" title="No, wrong photo" style={{ background: "transparent", border: "1px solid #e2e8f0", borderRadius: "4px", padding: "2px 6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#ef4444" }}>
+            ✗
+          </button>
+        </div>
       )}
     </div>
   );

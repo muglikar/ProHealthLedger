@@ -264,3 +264,87 @@ export function GeneralOgCardJsx({ scale }) {
     </div>
   );
 }
+
+export function VerifiedBadgeOgCardJsx({ voucheeText, scale }) {
+  const px = (n) => `${n * scale}px`;
+
+  return (
+    <div
+      style={{
+        width: px(OG_W),
+        height: px(OG_H),
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#ffffff",
+        backgroundImage: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
+        padding: `${50 * scale}px`,
+        fontFamily: "Monda, sans-serif",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: px(160),
+          height: px(160),
+          borderRadius: "50%",
+          backgroundColor: "#ffffff",
+          marginBottom: px(30),
+          boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+        }}
+      >
+        <img
+          src="https://prohealthledger.org/logo.png"
+          width={px(100)}
+          height={px(100)}
+          style={{ objectFit: "contain" }}
+        />
+      </div>
+      
+      <div
+        style={{
+          display: "flex",
+          fontSize: px(48),
+          fontWeight: 700,
+          color: "#93c5fd",
+          letterSpacing: "0.1em",
+          marginBottom: px(20),
+          textTransform: "uppercase"
+        }}
+      >
+        Pro-Health Ledger
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          fontSize: px(82),
+          fontWeight: 700,
+          color: "#ffffff",
+          textAlign: "center",
+          lineHeight: 1.1,
+          marginBottom: px(20),
+          maxWidth: px(1000),
+          justifyContent: "center"
+        }}
+      >
+        {voucheeText}
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          fontSize: px(56),
+          fontWeight: 400,
+          color: "#bfdbfe",
+          fontStyle: "italic",
+        }}
+      >
+        is a Verified Professional
+      </div>
+    </div>
+  );
+}
