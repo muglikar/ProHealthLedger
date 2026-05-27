@@ -16,7 +16,8 @@
         "date": "2026-03-14"
       }
     ],
-    "public_name": "Piyush Bhujbal"
+    "public_name": "Piyush Bhujbal",
+    "profile_photo_url": "/piyush-bhujbal.jpeg"
   },
   {
     "linkedin_url": "https://www.linkedin.com/in/tgaurav",
@@ -35,7 +36,8 @@
         "issue": 4,
         "date": "2026-03-14"
       }
-    ]
+    ],
+    "profile_photo_url": "/tgaurav.png"
   },
   {
     "linkedin_url": "https://www.linkedin.com/in/omvarshney",
