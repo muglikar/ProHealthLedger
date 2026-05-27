@@ -273,19 +273,25 @@ export async function GET(req) {
         "data/profiles/_index.json",
         profiles,
         profilesSha,
-        { message: `chore(cron): auto-scraped ${results.profiles.length} profile photo(s)` }
+        `chore(cron): auto-scraped ${results.profiles.length} profile photo(s)`
       );
     }
 
     if (usersChanged) {
-      await writeDataFile("data/users/_index.json", users, usersSha, {
-        message: `chore(cron): auto-scraped ${results.users.length} user photo(s)`,
-      });
+      await writeDataFile(
+        "data/users/_index.json",
+        users,
+        usersSha,
+        `chore(cron): auto-scraped ${results.users.length} user photo(s)`
+      );
     }
 
-    await writeDataFile("data/photo_scrape_log.json", log, logSha, {
-      message: `chore(cron): update photo scrape log (${today})`,
-    });
+    await writeDataFile(
+      "data/photo_scrape_log.json",
+      log,
+      logSha,
+      `chore(cron): update photo scrape log (${today})`
+    );
 
     return Response.json({
       ok: true,
