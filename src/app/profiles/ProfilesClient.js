@@ -673,6 +673,7 @@ function VotesContent() {
     
                               const canShare =
                                 isSignedIn &&
+                                v.vote === "yes" &&
                                 (isMySubmission ||
                                   isAboutMe ||
                                   (isAdmin && isAboutAdmin));
