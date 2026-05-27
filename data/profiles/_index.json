@@ -17,7 +17,10 @@
       }
     ],
     "public_name": "Piyush Bhujbal",
-    "profile_photo_url": "/piyush-bhujbal.jpeg"
+    "profile_photo_url": "/piyush-bhujbal.jpeg",
+    "photo_verified": true,
+    "photo_verified_by": "admin-auto",
+    "photo_verified_at": "2026-05-27"
   },
   {
     "linkedin_url": "https://www.linkedin.com/in/tgaurav",
@@ -37,7 +40,10 @@
         "date": "2026-03-14"
       }
     ],
-    "profile_photo_url": "/tgaurav.png"
+    "profile_photo_url": "/tgaurav.png",
+    "photo_verified": true,
+    "photo_verified_by": "admin-auto",
+    "photo_verified_at": "2026-05-27"
   },
   {
     "linkedin_url": "https://www.linkedin.com/in/omvarshney",
@@ -360,7 +366,10 @@
         "date": "2026-03-26"
       }
     ],
-    "profile_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQGf8pN8tNu_Mw/profile-displayphoto-shrink_200_200/B4DZRJRagbGUAg-/0/1736396090087?e=2147483647&v=beta&t=M09xOzFo1kPrgbxiQ477ljRRBr9lblLD-KjwJ7zOxxs"
+    "profile_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQGf8pN8tNu_Mw/profile-displayphoto-shrink_200_200/B4DZRJRagbGUAg-/0/1736396090087?e=2147483647&v=beta&t=M09xOzFo1kPrgbxiQ477ljRRBr9lblLD-KjwJ7zOxxs",
+    "photo_verified": true,
+    "photo_verified_by": "admin-auto",
+    "photo_verified_at": "2026-05-27"
   },
   {
     "linkedin_url": "https://www.linkedin.com/in/dr-mukesh-kumar-1a696120",
@@ -496,7 +505,10 @@
         "date": "2026-03-26"
       }
     ],
-    "profile_photo_url": "https://media.licdn.com/dms/image/v2/D4E03AQF0_rQGdAr9Vw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1728584928055?e=2147483647&v=beta&t=E1_tEVmBExr5wAGVjMXKmQAUeiG-Bwdyx6o4Fq_ZNiY"
+    "profile_photo_url": "https://media.licdn.com/dms/image/v2/D4E03AQF0_rQGdAr9Vw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1728584928055?e=2147483647&v=beta&t=E1_tEVmBExr5wAGVjMXKmQAUeiG-Bwdyx6o4Fq_ZNiY",
+    "photo_verified": true,
+    "photo_verified_by": "admin-auto",
+    "photo_verified_at": "2026-05-27"
   },
   {
     "linkedin_url": "https://www.linkedin.com/in/swapnil-sakharshete-81432715",
@@ -588,7 +600,10 @@
         "reason": "I would be happy to work with Anand Sir again because of his supportive mentorship, clear guidance, and encouraging work environment. His approach to teaching and problem-solving helped me strengthen my technical understanding and confidence. Working under his guidance was a valuable learning experience that contributed positively to my professional growth."
       }
     ],
-    "profile_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
+    "profile_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI",
+    "photo_verified": true,
+    "photo_verified_by": "admin-auto",
+    "photo_verified_at": "2026-05-27"
   },
   {
     "linkedin_url": "https://www.linkedin.com/in/rutooj-deshpande",
@@ -905,7 +920,10 @@
       }
     ],
     "public_name": "Shubham Dhatrak",
-    "profile_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQHG8N2P4J66EQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1671386608140?e=2147483647&v=beta&t=g3oifLnFfEAMnpYDkvgdI2arhS_NW4MIxs02OygWWWA"
+    "profile_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQHG8N2P4J66EQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1671386608140?e=2147483647&v=beta&t=g3oifLnFfEAMnpYDkvgdI2arhS_NW4MIxs02OygWWWA",
+    "photo_verified": true,
+    "photo_verified_by": "admin-auto",
+    "photo_verified_at": "2026-05-27"
   },
   {
     "linkedin_url": "https://www.linkedin.com/in/aditya-kumar-5a9837143",
@@ -947,6 +965,9 @@
       }
     ],
     "public_name": "Werner Seiz",
-    "profile_photo_url": "https://media.licdn.com/dms/image/v2/C4E03AQEBc0HzlKH4Gw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1516348507287?e=2147483647&v=beta&t=lWN_YRSCB6uqB9BD6K8QXyQYPGSiKSF-A1PM1UU0qk4"
+    "profile_photo_url": "https://media.licdn.com/dms/image/v2/C4E03AQEBc0HzlKH4Gw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1516348507287?e=2147483647&v=beta&t=lWN_YRSCB6uqB9BD6K8QXyQYPGSiKSF-A1PM1UU0qk4",
+    "photo_verified": true,
+    "photo_verified_by": "admin-auto",
+    "photo_verified_at": "2026-05-27"
   }
 ]
