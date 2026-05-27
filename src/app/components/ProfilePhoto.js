@@ -63,11 +63,21 @@ export default function ProfilePhoto({
 
   const showPhoto = photoUrl && !flagged && !imgError;
 
-  const handleYes = useCallback(() => {
+  const handleYes = useCallback(async () => {
     setPromptDismissed(true);
     if (slug) {
       localStorage.setItem(`phl_photo_dismissed_${slug}`, "true");
       window.dispatchEvent(new CustomEvent("phl_photo_dismissed", { detail: slug }));
+      
+      try {
+        await fetch("/api/verify-photo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug }),
+        });
+      } catch {
+        // Non-fatal
+      }
     }
   }, [slug]);
 
