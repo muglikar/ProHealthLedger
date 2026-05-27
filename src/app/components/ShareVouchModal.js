@@ -13,7 +13,7 @@ const SITE_URL = "https://prohealthledger.org";
  * Styles 1-3: Third Person (Sharing a vouch you wrote for someone)
  * Styles 4-5: First Person (Sharing your own ledger)
  */
-function buildShareText(displayName, firstPerson = false) {
+function buildShareText(displayName, firstPerson = false, vote = "yes") {
   if (firstPerson) {
     // Styles 4 & 5 (Self-Share)
     const hashtags = "#CareerGrowth #PersonalBranding #Networking #ProfessionalDevelopment #FutureOfWork";
@@ -37,8 +37,29 @@ function buildShareText(displayName, firstPerson = false) {
     return options[Math.floor(Math.random() * options.length)];
   }
 
-  // Styles 1, 2 & 3 (Third Person)
   const hashtags = "#ProfessionalIntegrity #WorkplaceCulture #Accountability #Transparency #LeadershipDevelopment";
+
+  if (vote === "no") {
+    const options = [
+      {
+        text: "Traditional reference checks are broken—nobody lists references who won't say nice things. A professional track record shouldn't vanish when you change companies; it should be portable.\n\n" +
+          `I just logged my official experience working with ${displayName} on Professional Health Ledger to help maintain accountability.\n\n` +
+          "Before you finalize your next hire or partnership, check if they have a public Professional Health Ledger on ProHealthLedger.org. If they aren't there yet, ask them to bring their professional references to the table.\n\n" +
+          `You can see my entry for ${displayName} here: `,
+        tags: hashtags
+      },
+      {
+        text: `In a world of generic LinkedIn endorsements, I wanted to put something more meaningful on the record regarding my experience with ${displayName}.\n\n` +
+          "I just added my official review for them on Professional Health Ledger. Your reputation is your most valuable asset, and it's time we start actively building public, verified track records.\n\n" +
+          "Who is the best—or most challenging—person you've worked with recently? Look them up. If they aren't on the Professional Health Ledger yet, be the first one to start their portable reputation.\n\n" +
+          `Read my review for ${displayName} here: `,
+        tags: hashtags
+      }
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  // Styles 1, 2 & 3 (Third Person, Yes Vote)
   const options = [
     {
       text: "Traditional reference checks are broken—nobody lists references who won't say nice things. A professional track record shouldn't vanish when you change companies; it should be portable.\n\n" +
