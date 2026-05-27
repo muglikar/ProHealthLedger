@@ -256,6 +256,7 @@ export async function POST(req) {
     voucheeSlug = "",
     articleTitle = "",
     articleDescription = "",
+    mode,
   } = body;
 
   const finalCommentary = clampString(commentary, MAX_COMMENTARY);
@@ -301,7 +302,7 @@ export async function POST(req) {
       "Professional"
     );
     try {
-      const ogResponse = createVouchOgImageResponse(ogVoucher, ogVouchee);
+      const ogResponse = createVouchOgImageResponse(ogVoucher, ogVouchee, mode);
       const ab = await ogResponse.arrayBuffer();
       const buf = Buffer.from(ab);
       if (isPngBuffer(buf)) {
