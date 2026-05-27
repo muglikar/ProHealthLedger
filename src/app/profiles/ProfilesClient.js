@@ -281,6 +281,7 @@ function VotesContent() {
             linkedin_url: p.linkedin_url,
             public_name: p.public_name,
             profile_photo_url: p.profile_photo_url,
+            photo_verified: p.photo_verified,
           }));
         })
       ),
@@ -542,7 +543,7 @@ function VotesContent() {
                     name={formatProfessionalDisplayName(p.slug, p.public_name)}
                     slug={p.slug}
                     size={84}
-                    showFlag={true}
+                    showFlag={!!session && !matchedProfile.photo_verified}
                   />
                   <div className="votes-profile-panel-info">
                     <h2 className="votes-profile-panel-name" style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
@@ -654,7 +655,7 @@ function VotesContent() {
                                 name={formatProfessionalDisplayName(v.profile_slug, v.public_name)}
                                 slug={v.profile_slug}
                                 size={36}
-                                showFlag={true}
+                                showFlag={!!session && !v.photo_verified}
                               />
                               <a
                                 href={v.linkedin_url}
