@@ -684,7 +684,8 @@ function VotesContent() {
                                 currentId === "muglikar" ||
                                 currentName === "anand muglikar";
     
-                              const rowUser = (v.user || "")
+                              const rawUser = v.user || v.github_username || "";
+                              const rowUser = rawUser
                                 .replace("github:", "")
                                 .replace("linkedin:", "");
                               const rowName = (v.display_name || "").trim().toLowerCase();
