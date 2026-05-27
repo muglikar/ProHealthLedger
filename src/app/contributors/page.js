@@ -94,7 +94,7 @@ export default function ContributorsPage() {
                   name={name}
                   slug={user.linkedin_url ? (user.linkedin_url.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || null) : null}
                   size={40}
-                  showFlag={!!user.image}
+                  showFlag={false}
                 />
                 <div className="leaderboard-info">
                   <div className="leaderboard-username">
