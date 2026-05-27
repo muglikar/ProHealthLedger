@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 /**
  * Reusable profile photo component with "Right photo? [✓] [✗]" buttons.
@@ -25,6 +25,36 @@ export default function ProfilePhoto({
   const [imgError, setImgError] = useState(false);
   const [promptDismissed, setPromptDismissed] = useState(false);
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !slug) return;
+
+    if (localStorage.getItem(`phl_photo_dismissed_${slug}`)) {
+      setPromptDismissed(true);
+    }
+    if (localStorage.getItem(`phl_photo_flag_${slug}`)) {
+      setFlagged(true);
+      setPromptDismissed(true);
+    }
+
+    const handleDismissEvent = (e) => {
+      if (e.detail === slug) setPromptDismissed(true);
+    };
+    const handleFlagEvent = (e) => {
+      if (e.detail === slug) {
+        setFlagged(true);
+        setPromptDismissed(true);
+      }
+    };
+
+    window.addEventListener("phl_photo_dismissed", handleDismissEvent);
+    window.addEventListener("phl_photo_flagged", handleFlagEvent);
+
+    return () => {
+      window.removeEventListener("phl_photo_dismissed", handleDismissEvent);
+      window.removeEventListener("phl_photo_flagged", handleFlagEvent);
+    };
+  }, [slug]);
+
   const initials = (name || "?")
     .split(/\s+/)
     .slice(0, 2)
@@ -35,13 +65,19 @@ export default function ProfilePhoto({
 
   const handleYes = useCallback(() => {
     setPromptDismissed(true);
-  }, []);
+    if (slug) {
+      localStorage.setItem(`phl_photo_dismissed_${slug}`, "true");
+      window.dispatchEvent(new CustomEvent("phl_photo_dismissed", { detail: slug }));
+    }
+  }, [slug]);
 
   const handleNo = useCallback(
     async () => {
       setPromptDismissed(true);
       setFlagged(true);
       if (slug) {
+        localStorage.setItem(`phl_photo_flag_${slug}`, "true");
+        window.dispatchEvent(new CustomEvent("phl_photo_flagged", { detail: slug }));
         // Fire-and-forget flag to the API
         try {
           await fetch("/api/flag-photo", {
