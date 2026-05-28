@@ -15,10 +15,31 @@
 export function buildUnifiedPhotoMap(profiles, users) {
   const map = {};
 
-  // Index professional profile photos
+  // Index professional profile photos and their submissions' submitter images
   if (Array.isArray(profiles)) {
     for (const p of profiles) {
-      if (!p || !p.profile_photo_url) continue;
+      if (!p) continue;
+
+      // Extract submitter photos from submissions
+      if (Array.isArray(p.submissions)) {
+        for (const s of p.submissions) {
+          if (s && s.display_image) {
+            const url = s.display_image;
+            if (s.user) {
+              map[s.user] = url;
+              const stripped = s.user
+                .replace("github:", "")
+                .replace("linkedin:", "");
+              map[stripped] = url;
+            }
+            if (s.display_name) {
+              map[s.display_name.trim().toLowerCase()] = url;
+            }
+          }
+        }
+      }
+
+      if (!p.profile_photo_url) continue;
       const url = p.profile_photo_url;
 
       if (p.slug) map[p.slug] = url;

@@ -1,14 +1,18 @@
 import { readDataFile } from "@/lib/github";
+import { buildUnifiedPhotoMap, lookupPhoto } from "@/lib/photo-map";
 
 export async function GET() {
-  const { data } = await readDataFile("data/users/_index.json");
-  if (!Array.isArray(data)) {
+  const { data: users } = await readDataFile("data/users/_index.json");
+  const { data: profiles } = await readDataFile("data/profiles/_index.json");
+
+  if (!Array.isArray(users)) {
     return Response.json([]);
   }
 
+  const photoMap = buildUnifiedPhotoMap(profiles || [], users);
   const mergedMap = new Map();
 
-  for (const user of data) {
+  for (const user of users) {
     if (!user) continue;
     const canonicalName = (user.display_name || user.user_id || "").trim().toLowerCase();
     if (!canonicalName) continue;
@@ -70,5 +74,16 @@ export async function GET() {
     }
   }
 
-  return Response.json(Array.from(mergedMap.values()));
+  // Enrich each contributor with their resolved photo from the unified photo map if missing
+  const contributorsList = Array.from(mergedMap.values());
+  for (const c of contributorsList) {
+    const userId = c.user_id || (c.github_username ? `github:${c.github_username}` : null);
+    c.image = c.image || lookupPhoto(photoMap, {
+      userId,
+      displayName: c.display_name,
+      linkedinUrl: c.linkedin_url
+    });
+  }
+
+  return Response.json(contributorsList);
 }
