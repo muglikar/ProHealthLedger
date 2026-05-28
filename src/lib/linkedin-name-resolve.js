@@ -20,11 +20,63 @@
 const FETCH_TIMEOUT_MS = 5000;
 
 /**
+ * Resolve LinkedIn profile using Zyte API (Smart Proxy & Browser Rendering).
+ * Bypasses direct rate-limiting (999 errors) and anti-bot checks.
+ */
+async function resolveViaZyte(slug) {
+  const apiKey = process.env.ZYTE_API_KEY;
+  if (!apiKey) return null;
+
+  const url = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
+  console.log(`[Zyte] Resolving public profile for slug: ${slug} via Zyte API...`);
+
+  try {
+    const res = await fetch("https://api.zyte.com/v1/webpage", {
+      method: "POST",
+      headers: {
+        "Authorization": "Basic " + Buffer.from(apiKey + ":").toString("base64"),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        url: url,
+        browserHtml: true,
+        httpResponseBody: false,
+      }),
+    });
+
+    if (!res.ok) {
+      console.error(`[Zyte] API returned error: ${res.status} - ${await res.text()}`);
+      return null;
+    }
+
+    const data = await res.json();
+    const html = data.browserHtml;
+    if (!html) return null;
+
+    const name = extractNameFromHtml(html);
+    const photo = extractPhotoFromHtml(html);
+
+    return { name, photo };
+  } catch (err) {
+    console.error("[Zyte] Request failed:", err.message);
+    return null;
+  }
+}
+
+/**
  * @param {string} slug - LinkedIn `/in/<slug>` handle (lowercase).
  * @returns {Promise<{name: string|null, photo: string|null}>}
  */
 export async function resolveLinkedinProfile(slug) {
   if (!slug || typeof slug !== "string") return { name: null, photo: null };
+
+  // If Zyte API Key is configured, attempt resolution through Zyte first.
+  if (process.env.ZYTE_API_KEY) {
+    const zyteResult = await resolveViaZyte(slug);
+    if (zyteResult && (zyteResult.name || zyteResult.photo)) {
+      return zyteResult;
+    }
+  }
 
   const url = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
   const ctrl = new AbortController();
