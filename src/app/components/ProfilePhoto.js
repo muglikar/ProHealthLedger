@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 /**
  * Reusable profile photo component with "Right photo? [✓] [✗]" buttons.
@@ -21,6 +22,7 @@ export default function ProfilePhoto({
   showFlag = true,
   className = "",
 }) {
+  const { data: session } = useSession();
   const [flagged, setFlagged] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [promptDismissed, setPromptDismissed] = useState(false);
@@ -126,7 +128,7 @@ export default function ProfilePhoto({
           {initials}
         </span>
       )}
-      {showFlag && photoUrl && !imgError && !promptDismissed && (
+      {showFlag && !!session?.userId && photoUrl && !imgError && !promptDismissed && (
         <div className="pphoto-flag-buttons" style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
           <span>Right photo?</span>
           <button type="button" onClick={handleYes} className="btn-icon-small" title="Yes, correct photo" style={{ background: "transparent", border: "1px solid #e2e8f0", borderRadius: "4px", padding: "2px 6px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#10b981" }}>

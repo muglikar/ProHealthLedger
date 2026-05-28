@@ -1,38 +1,21 @@
 import { readDataFile } from "@/lib/github";
+import { buildUnifiedPhotoMap } from "@/lib/photo-map";
 
 /**
  * GET /api/contributor-photos
  *
- * Returns a map of user_id → image URL for all contributors who have a photo.
- * Also indexes by display_name (lowercased) for fuzzy matching.
- * This lets any page show contributor avatars next to their votes.
+ * Returns a unified map of all available photos across:
+ * - contributors / users
+ * - professionals / profiles
+ *
+ * This lets any page lookup a photo by userId, stripped ID, displayName, or LinkedIn vanity.
  */
 export async function GET() {
-  const { data } = await readDataFile("data/users/_index.json");
-  if (!Array.isArray(data)) {
-    return Response.json({});
-  }
+  const { data: users } = await readDataFile("data/users/_index.json");
+  const { data: profiles } = await readDataFile("data/profiles/_index.json");
 
-  const photoMap = {};
-
-  for (const user of data) {
-    if (!user || !user.image) continue;
-
-    // Index by user_id
-    if (user.user_id) {
-      photoMap[user.user_id] = user.image;
-      // Also strip prefixes for easier matching
-      const stripped = user.user_id
-        .replace("github:", "")
-        .replace("linkedin:", "");
-      photoMap[stripped] = user.image;
-    }
-
-    // Index by display_name (lowercased) for fuzzy matching
-    if (user.display_name) {
-      photoMap[user.display_name.trim().toLowerCase()] = user.image;
-    }
-  }
+  const photoMap = buildUnifiedPhotoMap(profiles || [], users || []);
 
   return Response.json(photoMap);
 }
+
