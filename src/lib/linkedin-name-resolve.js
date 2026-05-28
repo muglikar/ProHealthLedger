@@ -43,7 +43,10 @@ export async function resolveLinkedinProfile(slug) {
       },
     });
 
-    if (!res.ok) return { name: await fallbackNameFromGoogleSerp(slug), photo: null };
+    if (!res.ok) {
+      const serp = await fallbackFromGoogleSerp(slug);
+      return { name: serp.name, photo: serp.photo };
+    }
 
     // Read enough HTML to get meta tags (they're in <head>, so first ~64KB is plenty).
     const reader = res.body?.getReader();
