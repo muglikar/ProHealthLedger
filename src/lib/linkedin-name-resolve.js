@@ -19,13 +19,15 @@
 
 const FETCH_TIMEOUT_MS = 5000;
 
-/**
- * Resolve LinkedIn profile using Zyte API (Smart Proxy & Browser Rendering).
- * Bypasses direct rate-limiting (999 errors) and anti-bot checks.
- */
 async function resolveViaZyte(slug) {
-  const apiKey = process.env.ZYTE_API_KEY;
-  if (!apiKey) return null;
+  const apiKey = (process.env.ZYTE_API_KEY || "").trim();
+  if (!apiKey) {
+    console.log("[Zyte] ZYTE_API_KEY is not defined or is empty in process.env.");
+    return null;
+  }
+
+  const maskedKey = apiKey.slice(0, 4) + "..." + apiKey.slice(-4) + ` (length: ${apiKey.length})`;
+  console.log(`[Zyte] ZYTE_API_KEY present: ${maskedKey}`);
 
   const url = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
   console.log(`[Zyte] Resolving public profile for slug: ${slug} via Zyte API...`);
@@ -44,21 +46,32 @@ async function resolveViaZyte(slug) {
       }),
     });
 
+    console.log(`[Zyte] API Response Status: ${res.status} ${res.statusText}`);
+
     if (!res.ok) {
-      console.error(`[Zyte] API returned error: ${res.status} - ${await res.text()}`);
+      const errorText = await res.text();
+      console.log(`[Zyte] API returned error body: ${errorText}`);
       return null;
     }
 
     const data = await res.json();
     const html = data.browserHtml;
-    if (!html) return null;
+    
+    if (!html) {
+      console.log("[Zyte] Browser HTML was empty in Zyte response.");
+      return null;
+    }
+
+    console.log(`[Zyte] Successfully retrieved HTML. Length: ${html.length}`);
 
     const name = extractNameFromHtml(html);
     const photo = extractPhotoFromHtml(html);
 
+    console.log(`[Zyte] Extracted name: ${name}, photo: ${photo ? "Found" : "Not Found"}`);
+
     return { name, photo };
   } catch (err) {
-    console.error("[Zyte] Request failed:", err.message);
+    console.log("[Zyte] Request failed with exception:", err.message);
     return null;
   }
 }
