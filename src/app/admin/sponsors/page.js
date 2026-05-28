@@ -4,6 +4,7 @@ import { isSessionSiteAdmin } from "@/lib/site-admins";
 import { readDataFile } from "@/lib/github";
 import { redirect } from "next/navigation";
 import SponsorRow from "./SponsorRow";
+import { buildUnifiedPhotoMap, lookupPhoto } from "@/lib/photo-map";
 
 export default async function SponsorsAdminPage() {
   const session = await getServerSession(authOptions);
@@ -14,6 +15,9 @@ export default async function SponsorsAdminPage() {
 
   const { data: sponsors } = await readDataFile("data/sponsors/_index.json");
   const { data: profiles } = await readDataFile("data/profiles/_index.json");
+  const { data: users } = await readDataFile("data/users/_index.json");
+
+  const photoMap = buildUnifiedPhotoMap(profiles || [], users || []);
 
   // Sort sponsors by newest first
   const sortedSponsors = [...(sponsors || [])].sort((a, b) => {
@@ -28,14 +32,15 @@ export default async function SponsorsAdminPage() {
         sponsor.name &&
         p.public_name.toLowerCase() === sponsor.name.toLowerCase()
     );
+
+    const resolvedPhoto = lookupPhoto(photoMap, { displayName: sponsor.name });
+
     return {
       sponsor: JSON.parse(JSON.stringify(sponsor)),
-      profileMatch: profileMatch
-        ? {
-            linkedin_url: profileMatch.linkedin_url || null,
-            profile_photo_url: profileMatch.profile_photo_url || null,
-          }
-        : null,
+      profileMatch: {
+        linkedin_url: profileMatch?.linkedin_url || null,
+        profile_photo_url: resolvedPhoto || profileMatch?.profile_photo_url || null,
+      },
     };
   });
 

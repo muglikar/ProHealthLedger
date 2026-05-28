@@ -4,6 +4,7 @@ import { isSessionSiteAdmin } from "@/lib/site-admins";
 import { redirect } from "next/navigation";
 import fs from "fs/promises";
 import path from "path";
+import { buildUnifiedPhotoMap, lookupPhoto } from "@/lib/photo-map";
 
 export const metadata = {
   title: "Admin Feedback Dashboard | ProHealthLedger",
@@ -19,6 +20,7 @@ export default async function AdminFeedbackPage() {
 
   let feedbacks = [];
   let userProfileMap = {};
+  let photoMap = {};
   try {
     const feedbackPath = path.join(process.cwd(), "data", "feedback.json");
     const feedbackData = await fs.readFile(feedbackPath, "utf8");
@@ -39,6 +41,16 @@ export default async function AdminFeedbackPage() {
         });
       }
     });
+
+    // Load users as well for the photo map
+    let users = [];
+    try {
+      const usersPath = path.join(process.cwd(), "data", "users", "_index.json");
+      const usersData = await fs.readFile(usersPath, "utf8");
+      users = JSON.parse(usersData);
+    } catch { /* ignore */ }
+
+    photoMap = buildUnifiedPhotoMap(profiles, users);
   } catch (err) {
     console.error("Failed to read data:", err);
   }
@@ -82,8 +94,9 @@ export default async function AdminFeedbackPage() {
                 </tr>
               </thead>
               <tbody>
-                {feedbacks.map((f, idx) => {
+                 {feedbacks.map((f, idx) => {
                   const profileUrl = getProfileLink(f.user_id);
+                  const photo = lookupPhoto(photoMap, { userId: f.user_id, displayName: f.display_name });
                   return (
                     <tr key={idx} className={`type-${f.type}`}>
                       <td className="td-date">
@@ -94,15 +107,24 @@ export default async function AdminFeedbackPage() {
                         </span>
                       </td>
                       <td className="td-user">
-                        <div className="user-info">
-                          {profileUrl ? (
-                            <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="user-link">
-                              <span className="user-name">{f.display_name}</span>
-                            </a>
-                          ) : (
-                            <span className="user-name">{f.display_name}</span>
+                        <div className="user-info" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          {photo && (
+                            <img
+                              src={photo}
+                              alt=""
+                              style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+                            />
                           )}
-                          <span className="user-handle">{f.user_id}</span>
+                          <div style={{ display: "flex", flexDirection: "column" }}>
+                            {profileUrl ? (
+                              <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="user-link">
+                                <span className="user-name">{f.display_name}</span>
+                              </a>
+                            ) : (
+                              <span className="user-name">{f.display_name}</span>
+                            )}
+                            <span className="user-handle">{f.user_id}</span>
+                          </div>
                         </div>
                       </td>
                     <td className="td-type">

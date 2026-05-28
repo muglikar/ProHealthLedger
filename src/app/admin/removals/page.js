@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { isRepoMaintainerUserId } from "@/lib/repo-owner-session";
+import { lookupPhoto } from "@/lib/photo-map";
 
 export default function AdminRemovalsPage() {
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState(true);
   const [configured, setConfigured] = useState(false);
   const [requests, setRequests] = useState([]);
+  const [photoMap, setPhotoMap] = useState({});
 
   const isAdmin =
     status === "authenticated" &&
@@ -20,15 +22,20 @@ export default function AdminRemovalsPage() {
       setLoading(false);
       return;
     }
-    fetch("/api/removal-requests")
-      .then((r) => r.json())
-      .then((data) => {
-        setConfigured(Boolean(data?.configured));
-        setRequests(Array.isArray(data?.requests) ? data.requests : []);
-      })
-      .catch(() => {
-        setConfigured(false);
-        setRequests([]);
+
+    // Fetch removal requests and contributor photos concurrently
+    Promise.all([
+      fetch("/api/removal-requests")
+        .then((r) => r.json())
+        .catch(() => ({})),
+      fetch("/api/contributor-photos")
+        .then((r) => r.json())
+        .catch(() => ({})),
+    ])
+      .then(([removalData, photos]) => {
+        setConfigured(Boolean(removalData?.configured));
+        setRequests(Array.isArray(removalData?.requests) ? removalData.requests : []);
+        setPhotoMap(photos || {});
       })
       .finally(() => setLoading(false));
   }, [isAdmin]);
@@ -75,21 +82,32 @@ export default function AdminRemovalsPage() {
             .sort((a, b) =>
               String(b.submitted_at || "").localeCompare(String(a.submitted_at || ""))
             )
-            .map((r, i) => (
-              <div key={r.id || i} className="leaderboard-row">
-                <div className="leaderboard-rank">{i + 1}</div>
-                <div className="leaderboard-info">
-                  <div className="leaderboard-username">
-                    <code>{r.id}</code> · {r.status || "new"}
-                  </div>
-                  <div className="leaderboard-stats">
-                    <span>{r.linkedin_url}</span>
-                    <span>{r.contact_email_masked || "email hidden"}</span>
-                    <span>{r.submitted_at || "—"}</span>
+            .map((r, i) => {
+              const photo = lookupPhoto(photoMap, { linkedinUrl: r.linkedin_url });
+              return (
+                <div key={r.id || i} className="leaderboard-row" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div className="leaderboard-rank">{i + 1}</div>
+                  {photo && (
+                    <img
+                      src={photo}
+                      alt=""
+                      style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+                      onError={(e) => { e.target.style.display = "none"; }}
+                    />
+                  )}
+                  <div className="leaderboard-info">
+                    <div className="leaderboard-username">
+                      <code>{r.id}</code> · {r.status || "new"}
+                    </div>
+                    <div className="leaderboard-stats">
+                      <span>{r.linkedin_url}</span>
+                      <span>{r.contact_email_masked || "email hidden"}</span>
+                      <span>{r.submitted_at || "—"}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
         </div>
       )}
     </>

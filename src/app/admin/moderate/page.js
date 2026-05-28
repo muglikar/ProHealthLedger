@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 import { isRepoMaintainerUserId } from "@/lib/repo-owner-session";
+import { lookupPhoto } from "@/lib/photo-map";
 
 const REDACTION_CATEGORIES = [
   { value: "abuse", label: "Abuse / harassment" },
@@ -21,11 +22,19 @@ export default function ModeratePage() {
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState(null);
   const [categoryByIssue, setCategoryByIssue] = useState({});
+  const [photoMap, setPhotoMap] = useState({});
 
   const isAdmin =
     status === "authenticated" &&
     session?.userId &&
     (Boolean(session.siteAdmin) || isRepoMaintainerUserId(session.userId));
+
+  const fetchPhotoMap = useCallback(async () => {
+    try {
+      const res = await fetch("/api/contributor-photos");
+      if (res.ok) setPhotoMap(await res.json());
+    } catch { /* ignore */ }
+  }, []);
 
   const fetchPending = useCallback(async () => {
     try {
@@ -53,10 +62,10 @@ export default function ModeratePage() {
       setLoading(false);
       return;
     }
-    Promise.all([fetchPending(), fetchRedacted(), fetchLinkChanges()]).finally(() =>
+    Promise.all([fetchPending(), fetchRedacted(), fetchLinkChanges(), fetchPhotoMap()]).finally(() =>
       setLoading(false)
     );
-  }, [isAdmin, fetchPending, fetchRedacted, fetchLinkChanges]);
+  }, [isAdmin, fetchPending, fetchRedacted, fetchLinkChanges, fetchPhotoMap]);
 
   const setCategory = (issue, value) =>
     setCategoryByIssue((prev) => ({ ...prev, [issue]: value }));
@@ -146,22 +155,44 @@ export default function ModeratePage() {
           {pending.map((item) => {
             const category =
               categoryByIssue[item.issue] || "miscellaneous";
+            const profPhoto = lookupPhoto(photoMap, { slug: item.profile_slug, displayName: item.public_name });
+            const voterPhoto = lookupPhoto(photoMap, { userId: item.user, displayName: item.display_name });
+
             return (
               <div key={item.issue} className="mod-card">
-                <div className="mod-card-header">
-                  <strong>
-                    {formatProfessionalDisplayName(
-                      item.profile_slug,
-                      item.public_name
+                <div className="mod-card-header" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                  <strong style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                    {profPhoto && (
+                      <img
+                        src={profPhoto}
+                        alt=""
+                        style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover" }}
+                        onError={(e) => { e.target.style.display = "none"; }}
+                      />
                     )}
+                    <span>
+                      {formatProfessionalDisplayName(
+                        item.profile_slug,
+                        item.public_name
+                      )}
+                    </span>
                   </strong>
                   <span
                     className={`vote-pill ${item.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
                   >
                     {item.vote === "yes" ? "Yes" : "No"}
                   </span>
-                  <span className="mod-card-meta">
-                    by {item.display_name || item.user} · #{item.issue} · {item.date}
+                  <span className="mod-card-meta" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                    by
+                    {voterPhoto && (
+                      <img
+                        src={voterPhoto}
+                        alt=""
+                        style={{ width: 20, height: 20, borderRadius: "50%", objectFit: "cover" }}
+                        onError={(e) => { e.target.style.display = "none"; }}
+                      />
+                    )}
+                    <span>{item.display_name || item.user}</span> · #{item.issue} · {item.date}
                   </span>
                 </div>
                 <blockquote className="mod-card-reason">{item.reason}</blockquote>
@@ -218,15 +249,38 @@ export default function ModeratePage() {
             </p>
           </div>
           <div className="mod-list">
-            {linkChanges.map((req) => (
-              <div key={req.id} className="mod-card">
-                <div className="mod-card-header">
-                  <strong>{req.profile_slug}</strong>
-                  <span className="mod-card-meta">
-                    requested by {req.requested_by_display_name || req.requested_by} ·{" "}
-                    {(req.requested_at || "").slice(0, 10)}
-                  </span>
-                </div>
+            {linkChanges.map((req) => {
+              const profPhoto = lookupPhoto(photoMap, { slug: req.profile_slug });
+              const requesterPhoto = lookupPhoto(photoMap, { userId: req.requested_by, displayName: req.requested_by_display_name });
+
+              return (
+                <div key={req.id} className="mod-card">
+                  <div className="mod-card-header" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                    <strong style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      {profPhoto && (
+                        <img
+                          src={profPhoto}
+                          alt=""
+                          style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover" }}
+                          onError={(e) => { e.target.style.display = "none"; }}
+                        />
+                      )}
+                      <span>{req.profile_slug}</span>
+                    </strong>
+                    <span className="mod-card-meta" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      requested by
+                      {requesterPhoto && (
+                        <img
+                          src={requesterPhoto}
+                          alt=""
+                          style={{ width: 20, height: 20, borderRadius: "50%", objectFit: "cover" }}
+                          onError={(e) => { e.target.style.display = "none"; }}
+                        />
+                      )}
+                      <span>{req.requested_by_display_name || req.requested_by}</span> ·{" "}
+                      {(req.requested_at || "").slice(0, 10)}
+                    </span>
+                  </div>
                 <p className="mod-card-meta">
                   Current: <code>{req.current_linkedin_url}</code>
                 </p>
@@ -254,7 +308,8 @@ export default function ModeratePage() {
                   </button>
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
         </>
       ) : null}
@@ -269,44 +324,68 @@ export default function ModeratePage() {
             </p>
           </div>
           <div className="mod-list">
-            {redacted.map((item) => (
-              <div key={item.issue} className="mod-card">
-                <div className="mod-card-header">
-                  <strong>
-                    {formatProfessionalDisplayName(
-                      item.profile_slug,
-                      item.public_name
-                    )}
-                  </strong>
-                  <span
-                    className={`vote-pill ${item.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
-                  >
-                    {item.vote === "yes" ? "Yes" : "No"}
-                  </span>
-                  <span className="mod-card-meta">
-                    by {item.display_name || item.user} · #{item.issue} · {item.date}
-                    {" · "}
-                    redacted by {item.redacted_by || "—"} on{" "}
-                    {(item.redacted_at || "").slice(0, 10) || "—"}
-                    {" · "}
-                    category: {item.redaction_category || "miscellaneous"}
-                  </span>
+            {redacted.map((item) => {
+              const profPhoto = lookupPhoto(photoMap, { slug: item.profile_slug, displayName: item.public_name });
+              const voterPhoto = lookupPhoto(photoMap, { userId: item.user, displayName: item.display_name });
+
+              return (
+                <div key={item.issue} className="mod-card">
+                  <div className="mod-card-header" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                    <strong style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      {profPhoto && (
+                        <img
+                          src={profPhoto}
+                          alt=""
+                          style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover" }}
+                          onError={(e) => { e.target.style.display = "none"; }}
+                        />
+                      )}
+                      <span>
+                        {formatProfessionalDisplayName(
+                          item.profile_slug,
+                          item.public_name
+                        )}
+                      </span>
+                    </strong>
+                    <span
+                      className={`vote-pill ${item.vote === "yes" ? "vote-pill-yes" : "vote-pill-no"}`}
+                    >
+                      {item.vote === "yes" ? "Yes" : "No"}
+                    </span>
+                    <span className="mod-card-meta" style={{ display: "inline-flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                      by
+                      {voterPhoto && (
+                        <img
+                          src={voterPhoto}
+                          alt=""
+                          style={{ width: 20, height: 20, borderRadius: "50%", objectFit: "cover" }}
+                          onError={(e) => { e.target.style.display = "none"; }}
+                        />
+                      )}
+                      <span>{item.display_name || item.user}</span> · #{item.issue} · {item.date}
+                      {" · "}
+                      redacted by {item.redacted_by || "—"} on{" "}
+                      {(item.redacted_at || "").slice(0, 10) || "—"}
+                      {" · "}
+                      category: {item.redaction_category || "miscellaneous"}
+                    </span>
+                  </div>
+                  <blockquote className="mod-card-reason" style={{ fontStyle: "italic", color: "#475569" }}>
+                    [redacted — hash {item.reason_hash || "n/a"}]
+                  </blockquote>
+                  <div className="mod-card-actions">
+                    <button
+                      className="btn btn-secondary btn-sm"
+                      disabled={acting === item.issue}
+                      onClick={() => handleAction(item.issue, "unredact")}
+                      title="Restore original text on the public ledger"
+                    >
+                      {acting === item.issue ? "…" : "Un-redact"}
+                    </button>
+                  </div>
                 </div>
-                <blockquote className="mod-card-reason" style={{ fontStyle: "italic", color: "#475569" }}>
-                  [redacted — hash {item.reason_hash || "n/a"}]
-                </blockquote>
-                <div className="mod-card-actions">
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    disabled={acting === item.issue}
-                    onClick={() => handleAction(item.issue, "unredact")}
-                    title="Restore original text on the public ledger"
-                  >
-                    {acting === item.issue ? "…" : "Un-redact"}
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       ) : null}
