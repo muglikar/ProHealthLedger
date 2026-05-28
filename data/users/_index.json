@@ -261,9 +261,15 @@
         "vote": "yes",
         "issue": 52,
         "date": "2026-05-26"
+      },
+      {
+        "profile_slug": "pankaj-chaudhari-65561b12",
+        "vote": "yes",
+        "issue": 53,
+        "date": "2026-05-28"
       }
     ],
-    "yes_count": 22,
+    "yes_count": 23,
     "no_count": 20,
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
   },
