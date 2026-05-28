@@ -33,9 +33,16 @@ export default function ProfilePhoto({
     if (localStorage.getItem(`phl_photo_dismissed_${slug}`)) {
       setPromptDismissed(true);
     }
-    if (localStorage.getItem(`phl_photo_flag_${slug}`)) {
-      setFlagged(true);
-      setPromptDismissed(true);
+    const flaggedVal = localStorage.getItem(`phl_photo_flag_${slug}`);
+    if (flaggedVal) {
+      // If the flagged state was for the exact current photo, hide it.
+      // If the photo has been updated since then, clear the local flag so they see the new photo.
+      if (photoUrl && flaggedVal === photoUrl) {
+        setFlagged(true);
+        setPromptDismissed(true);
+      } else {
+        localStorage.removeItem(`phl_photo_flag_${slug}`);
+      }
     }
 
     const handleDismissEvent = (e) => {
@@ -55,7 +62,7 @@ export default function ProfilePhoto({
       window.removeEventListener("phl_photo_dismissed", handleDismissEvent);
       window.removeEventListener("phl_photo_flagged", handleFlagEvent);
     };
-  }, [slug]);
+  }, [slug, photoUrl]);
 
   const initials = (name || "?")
     .split(/\s+/)
@@ -87,8 +94,8 @@ export default function ProfilePhoto({
     async () => {
       setPromptDismissed(true);
       setFlagged(true);
-      if (slug) {
-        localStorage.setItem(`phl_photo_flag_${slug}`, "true");
+      if (slug && photoUrl) {
+        localStorage.setItem(`phl_photo_flag_${slug}`, photoUrl);
         window.dispatchEvent(new CustomEvent("phl_photo_flagged", { detail: slug }));
         // Fire-and-forget flag to the API
         try {
@@ -102,7 +109,7 @@ export default function ProfilePhoto({
         }
       }
     },
-    [slug]
+    [slug, photoUrl]
   );
 
   return (
