@@ -36,7 +36,7 @@ async function resolveViaZyte(slug) {
     const res = await fetch("https://api.zyte.com/v1/webpage", {
       method: "POST",
       headers: {
-        "Authorization": "Basic " + Buffer.from(apiKey + ":").toString("base64"),
+        "Authorization": "Basic " + btoa(apiKey + ":"),
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
