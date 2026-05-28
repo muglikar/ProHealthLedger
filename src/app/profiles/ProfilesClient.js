@@ -76,6 +76,7 @@ function VotesContent() {
   const [badgeModalData, setBadgeModalData] = useState(null);
   const [scrolledEnd, setScrolledEnd] = useState(false);
   const [userProfileMap, setUserProfileMap] = useState({});
+  const [contribPhotoMap, setContribPhotoMap] = useState({});
 
   const tableWrapRef = useRef(null);
   const trackRef = useRef(null);
@@ -208,28 +209,29 @@ function VotesContent() {
   /* ── Fetch ── */
 
   useEffect(() => {
-    fetch("/api/profiles")
-      .then((res) => res.json())
-      .then((data) => {
-        const profilesList = Array.isArray(data) ? data : [];
-        setProfiles(profilesList);
-        const upMap = {};
-        profilesList.forEach((p) => {
-          if (p.submissions) {
-            p.submissions.forEach((s) => {
-              if (s.user && s.submitter_linkedin_url) {
-                upMap[s.user] = s.submitter_linkedin_url;
-              }
-            });
-          }
-        });
-        setUserProfileMap(upMap);
-        setLoading(false);
-      })
-      .catch(() => {
-        setProfiles([]);
-        setLoading(false);
+    Promise.all([
+      fetch("/api/profiles").then((res) => res.json()).catch(() => []),
+      fetch("/api/contributor-photos").then((res) => res.json()).catch(() => ({})),
+    ]).then(([profilesData, cpMap]) => {
+      const profilesList = Array.isArray(profilesData) ? profilesData : [];
+      setProfiles(profilesList);
+      const upMap = {};
+      profilesList.forEach((p) => {
+        if (p.submissions) {
+          p.submissions.forEach((s) => {
+            if (s.user && s.submitter_linkedin_url) {
+              upMap[s.user] = s.submitter_linkedin_url;
+            }
+          });
+        }
       });
+      setUserProfileMap(upMap);
+      setContribPhotoMap(cpMap || {});
+      setLoading(false);
+    }).catch(() => {
+      setProfiles([]);
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -352,18 +354,42 @@ function VotesContent() {
     );
   }
 
+  function getContribPhoto(submission) {
+    const userId = submission.user || submission.github_username || "";
+    const stripped = userId.replace("github:", "").replace("linkedin:", "");
+    const nameLower = (submission.display_name || "").trim().toLowerCase();
+    return contribPhotoMap[userId] || contribPhotoMap[stripped] || contribPhotoMap[nameLower] || null;
+  }
+
   function voterDisplay(submission) {
     const userId = submission.user || submission.github_username || "";
     if (!userId) return <span>—</span>;
     const label = submitterPlain(submission);
+    const photo = getContribPhoto(submission);
 
     const linkedinUrl =
       (typeof submission.submitter_linkedin_url === "string" && submission.submitter_linkedin_url) ||
       (userId.replace("github:", "") === "muglikar" ? "https://www.linkedin.com/in/muglikar" : null) ||
       userProfileMap[userId];
 
+    const avatar = photo ? (
+      <img
+        src={photo}
+        alt={label}
+        style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+        onError={(e) => { e.target.style.display = "none"; }}
+      />
+    ) : null;
+
+    const nameWithAvatar = (linkEl) => (
+      <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+        {avatar}
+        {linkEl}
+      </span>
+    );
+
     if (linkedinUrl) {
-      return (
+      return nameWithAvatar(
         <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="user-link">
           {label}
         </a>
@@ -371,7 +397,7 @@ function VotesContent() {
     }
     if (userId.startsWith("github:")) {
       const gh = userId.slice(7);
-      return (
+      return nameWithAvatar(
         <a href={`https://github.com/${gh}`} target="_blank" rel="noopener noreferrer" className="user-link">
           {label}
         </a>
@@ -380,13 +406,13 @@ function VotesContent() {
     if (userId.startsWith("linkedin:")) {
       const sub = userId.split(":")[1];
       const searchUrl = `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(sub)}`;
-      return (
+      return nameWithAvatar(
         <a href={searchUrl} target="_blank" rel="noopener noreferrer" className="user-link">
           {label}
         </a>
       );
     }
-    return <span>{label}</span>;
+    return nameWithAvatar(<span>{label}</span>);
   }
 
   function commentCell(row) {
