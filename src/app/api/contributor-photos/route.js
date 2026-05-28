@@ -1,6 +1,8 @@
 import { readDataFile } from "@/lib/github";
 import { buildUnifiedPhotoMap } from "@/lib/photo-map";
 
+export const dynamic = "force-dynamic";
+
 /**
  * GET /api/contributor-photos
  *

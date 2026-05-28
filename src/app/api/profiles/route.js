@@ -1,6 +1,9 @@
 import { readDataFile } from "@/lib/github";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const { data } = await readDataFile("data/profiles/_index.json");
   return Response.json(Array.isArray(data) ? data : []);
 }
+
