@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-05-28T03:23:32.602Z",
+  "last_run": "2026-05-29T03:53:53.256Z",
   "attempts": {
     "abhijit-moharir-6291274": {
       "last_attempt": "2026-05-28",
@@ -20,6 +20,22 @@
     "mohitsadayet": {
       "last_attempt": "2026-05-28",
       "failures": 0
+    },
+    "jeewanjyotiagarwal": {
+      "last_attempt": "2026-05-29",
+      "failures": 1
+    },
+    "pankaj-chaudhari-65561b12": {
+      "last_attempt": "2026-05-29",
+      "failures": 1
+    },
+    "user:linkedin:YPuTuKfNvt": {
+      "last_attempt": "2026-05-29",
+      "failures": 1
+    },
+    "user:linkedin:IwyCjgJprL": {
+      "last_attempt": "2026-05-29",
+      "failures": 1
     }
   }
 }
