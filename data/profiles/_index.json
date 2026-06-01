@@ -1134,5 +1134,29 @@
         "reason": "Pankaj sir taught us many things in our first job including technical stuff about large ISPs, MSPs, enterprise networks, customer support, customer handling, customer tickets and griavances , TATs, FTR team process, etc."
       }
     ]
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/anupam-arora-bb9b9315",
+    "slug": "anupam-arora-bb9b9315",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1781740800&v=beta&t=pNRp3BvzBePBGeV0A5tNRgOg8b7ZEDqgUjMXFcl-eoI",
+        "vote": "yes",
+        "issue": 54,
+        "date": "2026-06-01",
+        "submitter_capacity": "VP of AI/ML - Principal Architect",
+        "voted_capacity": "AVP, Head of Data and BI",
+        "reason": "One of the most level headed, cool and non-chalantly calm colleagues I've ever worked with. His cool attitude rubs on you and his astute business diplomacy is something we can learn from.",
+        "reason_pending": true
+      }
+    ],
+    "public_name": "Anupam Arora",
+    "profile_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQEp6OJU1d2Wiw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1712314495556?e=2147483647&v=beta&t=tbrlvJ7SKSygZZbAc0yVDjEFLfSh__Kxz8d0RfjIMHs"
   }
 ]
