@@ -267,9 +267,15 @@
         "vote": "yes",
         "issue": 53,
         "date": "2026-05-28"
+      },
+      {
+        "profile_slug": "anupam-arora-bb9b9315",
+        "vote": "yes",
+        "issue": 54,
+        "date": "2026-06-01"
       }
     ],
-    "yes_count": 23,
+    "yes_count": 24,
     "no_count": 20,
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
   },
