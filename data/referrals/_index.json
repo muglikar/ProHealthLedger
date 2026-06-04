@@ -241,5 +241,15 @@
     "created_at": "2026-06-01",
     "clicks": 8,
     "signups": []
+  },
+  {
+    "ref_code": "77596169",
+    "sharer_id": "linkedin:CAOSO1oig0",
+    "sharer_name": "Anand Muglikar",
+    "profile_slug": "jasmita-mukherjee",
+    "profile_name": "Jasmita Mukherjee",
+    "created_at": "2026-06-04",
+    "clicks": 0,
+    "signups": []
   }
 ]
