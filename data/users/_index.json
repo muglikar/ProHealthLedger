@@ -279,9 +279,15 @@
         "vote": "yes",
         "issue": 55,
         "date": "2026-06-04"
+      },
+      {
+        "profile_slug": "akriti-singh-1115b1178",
+        "vote": "yes",
+        "issue": 56,
+        "date": "2026-06-05"
       }
     ],
-    "yes_count": 25,
+    "yes_count": 26,
     "no_count": 20,
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
   },
