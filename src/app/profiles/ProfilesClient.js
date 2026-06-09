@@ -462,7 +462,7 @@ function VotesContent() {
           whiteSpace: "nowrap"
         }}
       >
-        {raw ? "Edit comment" : "Add comment"}
+        {raw ? "✏️ Edit" : "✏️ Add"}
       </Link>
     );
 
@@ -672,7 +672,7 @@ function VotesContent() {
                               className="btn btn-secondary"
                               style={{ fontSize: "0.8rem", padding: "6px 12px", display: "inline-flex", alignItems: "center" }}
                             >
-                              ✏️ Edit comment (once)
+                              ✏️ Edit (once)
                             </Link>
                           ) : (
                             <Link
@@ -680,7 +680,7 @@ function VotesContent() {
                               className="btn btn-secondary"
                               style={{ fontSize: "0.8rem", padding: "6px 12px", display: "inline-flex", alignItems: "center" }}
                             >
-                              💬 Add comment (once)
+                              ✏️ Add (once)
                             </Link>
                           )}
                         </div>
