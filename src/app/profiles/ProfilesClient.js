@@ -431,34 +431,85 @@ function VotesContent() {
         </span>
       );
     }
+
+    const isSignedIn = !!session;
+    const currentId = (session?.userId || "")
+      .replace("github:", "")
+      .replace("linkedin:", "");
+    const currentName = (session?.user?.name || "").trim().toLowerCase();
+
+    const rawUser = row.user || row.github_username || "";
+    const rowUser = rawUser
+      .replace("github:", "")
+      .replace("linkedin:", "");
+    const rowName = (row.display_name || "").trim().toLowerCase();
+
+    const isMySubmission =
+      isSignedIn &&
+      ((currentId && currentId === rowUser) ||
+        (currentName && rowName && currentName === rowName));
+
     const raw = typeof row.reason === "string" ? row.reason.trim() : "";
-    if (!raw) return <span className="audit-comment-empty">—</span>;
+
+    const editLink = (
+      <Link
+        href={`/submit?linkedin=${encodeURIComponent(row.linkedin_url)}`}
+        style={{
+          marginLeft: "8px",
+          color: "var(--accent)",
+          fontSize: "0.75rem",
+          textDecoration: "underline",
+          whiteSpace: "nowrap"
+        }}
+      >
+        {raw ? "Edit comment" : "Add comment"}
+      </Link>
+    );
+
+    const editedBadge = row.reason_edited ? (
+      <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginLeft: "6px", fontStyle: "italic" }}>(edited)</span>
+    ) : null;
+
+    if (!raw) {
+      return (
+        <span className="audit-comment-empty">
+          —
+          {isMySubmission && !row.reason_edited && editLink}
+          {isMySubmission && row.reason_edited && editedBadge}
+        </span>
+      );
+    }
+
     const profName = formatProfessionalDisplayName(row.profile_slug, row.public_name);
     return (
-      <button
-        type="button"
-        className="audit-comment-link"
-        title={raw}
-        aria-label={`Open full vote row and comment for ${profName}`}
-        onClick={() =>
-          setCommentPopup({
-            text: raw,
-            professional: profName,
-            vote: row.vote,
-            submittedBy: submitterPlain(row),
-            date: row.date || "—",
-            issue: row.issue,
-            recordHref: row.issue != null ? `${REPO_BASE}/issues/${row.issue}` : null,
-            linkedinUrl: row.linkedin_url || null,
-            profilePhotoUrl: row.profile_photo_url || null,
-            profileSlug: row.profile_slug || null,
-            submitterCapacity: row.submitter_capacity || null,
-            votedCapacity: row.voted_capacity || null,
-          })
-        }
-      >
-        {raw}
-      </button>
+      <span style={{ display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: "4px" }}>
+        <button
+          type="button"
+          className="audit-comment-link"
+          title={raw}
+          aria-label={`Open full vote row and comment for ${profName}`}
+          onClick={() =>
+            setCommentPopup({
+              text: raw,
+              professional: profName,
+              vote: row.vote,
+              submittedBy: submitterPlain(row),
+              date: row.date || "—",
+              issue: row.issue,
+              recordHref: row.issue != null ? `${REPO_BASE}/issues/${row.issue}` : null,
+              linkedinUrl: row.linkedin_url || null,
+              profilePhotoUrl: row.profile_photo_url || null,
+              profileSlug: row.profile_slug || null,
+              submitterCapacity: row.submitter_capacity || null,
+              votedCapacity: row.voted_capacity || null,
+            })
+          }
+        >
+          {raw}
+        </button>
+        {isMySubmission && !row.reason_edited && editLink}
+        {isMySubmission && row.reason_edited && editedBadge}
+      </span>
     );
   }
 
@@ -601,9 +652,40 @@ function VotesContent() {
                       <span className="vote-badge vote-yes">✓ {yesCount} would work with again</span>
                       <span className="vote-badge vote-no">✗ {noCount} would not work with them again</span>
                     </div>
-                    <div className="submission-count" style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                    <div className="submission-count" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "8px" }}>
                       {totalCount} vote{totalCount !== 1 ? "s" : ""} from the community
                     </div>
+                    {(() => {
+                      const mySubmission = deduped.find(
+                        (s) => currentUserId && currentUserId === s.user
+                      );
+                      if (!mySubmission) return null;
+                      return (
+                        <div style={{ marginTop: "12px" }}>
+                          {mySubmission.reason_edited ? (
+                            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                              <span>✏️ Comment edited (limit reached)</span>
+                            </span>
+                          ) : mySubmission.reason ? (
+                            <Link
+                              href={`/submit?linkedin=${encodeURIComponent(p.linkedin_url)}`}
+                              className="btn btn-secondary"
+                              style={{ fontSize: "0.8rem", padding: "6px 12px", display: "inline-flex", alignItems: "center" }}
+                            >
+                              ✏️ Edit comment (once)
+                            </Link>
+                          ) : (
+                            <Link
+                              href={`/submit?linkedin=${encodeURIComponent(p.linkedin_url)}`}
+                              className="btn btn-secondary"
+                              style={{ fontSize: "0.8rem", padding: "6px 12px", display: "inline-flex", alignItems: "center" }}
+                            >
+                              💬 Add comment (once)
+                            </Link>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
