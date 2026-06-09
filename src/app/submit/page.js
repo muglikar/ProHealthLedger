@@ -76,6 +76,16 @@ export default function SubmitPage() {
     return () => clearTimeout(timer);
   }, [linkedinUrl, extractSlug]);
 
+  useEffect(() => {
+    if (preview?.userVote?.voted) {
+      setVote(preview.userVote.vote);
+      setReason(preview.userVote.reason || "");
+    } else if (preview) {
+      setVote("");
+      setReason("");
+    }
+  }, [preview]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -205,7 +215,7 @@ export default function SubmitPage() {
             <h3>What happens?</h3>
             <p>
               You answer one question about a professional. Your vote is
-              permanently recorded and cannot be edited or deleted.
+              permanent and public. You can add or edit your comment/reason once after submitting.
             </p>
           </div>
           <div className="submit-step">
@@ -397,7 +407,12 @@ export default function SubmitPage() {
                 <button
                   type="button"
                   className={`vote-option vote-option-yes${vote === "yes" ? " selected" : ""}`}
-                  onClick={() => setVote("yes")}
+                  onClick={() => {
+                    if (!preview?.userVote?.voted) {
+                      setVote("yes");
+                    }
+                  }}
+                  style={preview?.userVote?.voted ? { cursor: "not-allowed", opacity: vote === "yes" ? 1 : 0.4 } : {}}
                 >
                   <span className="vote-option-icon">✓</span>
                   <span>Yes, I would</span>
@@ -408,7 +423,12 @@ export default function SubmitPage() {
                 <button
                   type="button"
                   className={`vote-option vote-option-no${vote === "no" ? " selected" : ""}`}
-                  onClick={() => setVote("no")}
+                  onClick={() => {
+                    if (!preview?.userVote?.voted) {
+                      setVote("no");
+                    }
+                  }}
+                  style={preview?.userVote?.voted ? { cursor: "not-allowed", opacity: vote === "no" ? 1 : 0.4 } : {}}
                 >
                   <span className="vote-option-icon">✗</span>
                   <span>No, I would not</span>
@@ -444,6 +464,23 @@ export default function SubmitPage() {
 
           <div className="form-group" data-tour="step-reason">
             <label htmlFor="reason">Brief reason (optional)</label>
+            {preview?.userVote?.voted && (
+              <div style={{
+                padding: "12px",
+                borderRadius: "var(--radius-sm)",
+                fontSize: "0.85rem",
+                marginBottom: "12px",
+                background: preview.userVote.reason_edited ? "rgba(239, 68, 68, 0.1)" : "rgba(59, 130, 246, 0.1)",
+                border: `1px dashed ${preview.userVote.reason_edited ? "var(--error)" : "var(--accent)"}`,
+                color: preview.userVote.reason_edited ? "var(--error)" : "var(--accent)"
+              }}>
+                {preview.userVote.reason_edited ? (
+                  <strong>⚠️ You have already edited your comment/reason for this profile. You cannot edit it again.</strong>
+                ) : (
+                  <strong>ℹ️ You have already voted on this profile. You can add or edit your comment/reason once.</strong>
+                )}
+              </div>
+            )}
             <textarea
               id="reason"
               className="form-textarea"
@@ -451,12 +488,14 @@ export default function SubmitPage() {
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={2}
+              disabled={preview?.userVote?.reason_edited}
             />
           </div>
 
           <div className="form-notice">
             By submitting, you confirm this is your genuine professional
-            experience. Your vote is permanent, public, and cannot be edited.
+            experience. Your vote is permanent and public. You can add or edit
+            your comment/reason once after submitting.
             {reason.trim() ? (
               <span className="form-notice-mod"> Your comment will be visible after admin review.</span>
             ) : null}
@@ -465,14 +504,22 @@ export default function SubmitPage() {
           <button
             type="submit"
             className="btn btn-primary btn-full"
-            disabled={submitting || !linkedinUrl || !vote || (!session.linkedinProfileUrl && !submitterLinkedinUrl)}
+            disabled={
+              submitting ||
+              !linkedinUrl ||
+              !vote ||
+              (!session.linkedinProfileUrl && !submitterLinkedinUrl) ||
+              preview?.userVote?.reason_edited
+            }
             data-tour="step-submit"
           >
             {submitting
               ? "Submitting…"
-              : reason.trim()
-                ? "Submit vote"
-                : "Submit your vote permanently"}
+              : preview?.userVote?.voted
+                ? "Update your comment permanently"
+                : reason.trim()
+                  ? "Submit vote"
+                  : "Submit your vote permanently"}
           </button>
         </form>
       )}

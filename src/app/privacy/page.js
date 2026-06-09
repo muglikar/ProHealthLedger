@@ -496,8 +496,8 @@ export default function PrivacyPolicyPage() {
           </ul>
           <p>
             <strong>Votes are permanent and cannot be edited or deleted</strong>{" "}
-            once submitted. You are clearly informed of this permanence before
-            submitting.
+            once submitted. Comments/reasons can be added or updated exactly once.
+            You are clearly informed of this permanence before submitting.
           </p>
           <p>
             For transparency, the denylist for negative votes is an explicit

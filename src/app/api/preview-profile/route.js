@@ -1,9 +1,12 @@
 import { resolveLinkedinProfile } from "@/lib/linkedin-name-resolve";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { readDataFile } from "@/lib/github";
 
 /**
  * GET /api/preview-profile?slug=jane-doe
  *
- * Returns { name, photo } for real-time preview as the user pastes a
+ * Returns { name, photo, userVote } for real-time preview as the user pastes a
  * LinkedIn URL in the vote form. Lightweight, best-effort, and cached
  * in-memory for the lifetime of the serverless function instance.
  */
@@ -16,22 +19,42 @@ export async function GET(req) {
   const slug = (searchParams.get("slug") || "").trim().toLowerCase();
 
   if (!slug || slug.length < 2 || slug.length > 100) {
-    return Response.json({ name: null, photo: null });
+    return Response.json({ name: null, photo: null, userVote: { voted: false } });
   }
 
+  const session = await getServerSession(authOptions);
+  const userId = session?.userId || null;
+  const cacheKey = `${userId || "anon"}:${slug}`;
+
   // Check in-memory cache
-  const cached = cache.get(slug);
+  const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {
     return Response.json(cached.data, {
-      headers: { "Cache-Control": "public, max-age=300" },
+      headers: {
+        "Cache-Control": userId ? "private, no-cache" : "public, max-age=300",
+      },
     });
   }
 
   try {
     const result = await resolveLinkedinProfile(slug);
-    const data = { name: result.name || null, photo: result.photo || null };
+    const data = { name: result.name || null, photo: result.photo || null, userVote: { voted: false } };
 
-    cache.set(slug, { data, ts: Date.now() });
+    if (userId) {
+      const { data: profiles } = await readDataFile("data/profiles/_index.json").catch(() => ({ data: [] }));
+      const profile = profiles.find((p) => p.slug === slug);
+      const existingSubmission = profile?.submissions?.find((s) => s.user === userId);
+      if (existingSubmission) {
+        data.userVote = {
+          voted: true,
+          vote: existingSubmission.vote,
+          reason: existingSubmission.reason || "",
+          reason_edited: Boolean(existingSubmission.reason_edited),
+        };
+      }
+    }
+
+    cache.set(cacheKey, { data, ts: Date.now() });
 
     // Prevent unbounded cache growth
     if (cache.size > 500) {
@@ -40,9 +63,11 @@ export async function GET(req) {
     }
 
     return Response.json(data, {
-      headers: { "Cache-Control": "public, max-age=300" },
+      headers: {
+        "Cache-Control": userId ? "private, no-cache" : "public, max-age=300",
+      },
     });
   } catch {
-    return Response.json({ name: null, photo: null });
+    return Response.json({ name: null, photo: null, userVote: { voted: false } });
   }
 }

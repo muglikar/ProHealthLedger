@@ -28,7 +28,7 @@ Tagline: 🎯 **"Know who you're working with before you commit."**
 ### How does it work?
 
 1️⃣ 📤 **Share/Paste:** Paste the professional's LinkedIn profile URL; answer the one question: "Would I work with them again?” with optional reason.
-2️⃣ 📜 **Public record:** Stored in the open audit trail. No edits after submit.
+2️⃣ 📜 **Public record:** Stored in the open audit trail. Edit comment once if needed.
 3️⃣ 🔍 **Look up:** Check vouches and flags before you hire, partner, or join.
 
 ---

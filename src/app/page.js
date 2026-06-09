@@ -115,7 +115,7 @@ export default function Home() {
               <span className="home-step-num">2</span>
               <strong className="home-step-label">📜 Public record</strong>
               <span className="home-step-desc">
-                Stored in the open audit trail. No edits after submit.
+                Stored in the open audit trail. Edit comment once if needed.
               </span>
             </li>
             <li>
