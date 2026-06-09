@@ -482,10 +482,11 @@ function VotesContent() {
 
     const profName = formatProfessionalDisplayName(row.profile_slug, row.public_name);
     return (
-      <span style={{ display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: "4px" }}>
+      <div style={{ display: "flex", alignItems: "center", width: "100%", minWidth: 0, gap: "8px" }}>
         <button
           type="button"
           className="audit-comment-link"
+          style={{ flex: 1, minWidth: 0 }}
           title={raw}
           aria-label={`Open full vote row and comment for ${profName}`}
           onClick={() =>
@@ -507,9 +508,13 @@ function VotesContent() {
         >
           {raw}
         </button>
-        {isMySubmission && !row.reason_edited && editLink}
-        {isMySubmission && row.reason_edited && editedBadge}
-      </span>
+        {isMySubmission && !row.reason_edited && (
+          <span style={{ flexShrink: 0 }}>{editLink}</span>
+        )}
+        {isMySubmission && row.reason_edited && (
+          <span style={{ flexShrink: 0 }}>{editedBadge}</span>
+        )}
+      </div>
     );
   }
 
