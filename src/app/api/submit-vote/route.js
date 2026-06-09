@@ -164,7 +164,7 @@ export async function POST(req) {
   });
 
   // 1.12 Sybil hardening (first-time contributors).
-  const isFirstTimeContributor = !existingUser;
+  const isFirstTimeContributor = !existingUser || !existingUser.contributions || existingUser.contributions.length === 0;
   const skipSybil = session.siteAdmin || !isFirstTimeContributor;
 
   if (isFirstTimeContributor && !session.siteAdmin) {
@@ -215,11 +215,149 @@ export async function POST(req) {
     );
   }
 
-  const alreadyVoted = existingUser?.contributions.some(
+  const today = new Date().toISOString().split("T")[0];
+
+  const titleName =
+    formatProfessionalDisplayName(slug, profileForTitle?.public_name) ||
+    slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+  const alreadyVoted = existingUser?.contributions?.some(
     (c) => c.profile_slug === slug
-  );
+  ) || false;
 
   if (alreadyVoted) {
+    const existingSubmission = profileForTitle?.submissions?.find(
+      (s) => s.user === userId
+    );
+    if (existingSubmission) {
+      if (existingSubmission.vote !== vote) {
+        return Response.json(
+          {
+            error: `You cannot change your vote. Votes are permanent; you can only edit your comment/reason.`,
+          },
+          { status: 409 }
+        );
+      }
+      if (existingSubmission.reason_edited) {
+        return Response.json(
+          {
+            error: `You have already edited your comment/reason for this profile. You can only edit it once.`,
+          },
+          { status: 409 }
+        );
+      }
+      const newReason = (reason || "").trim();
+      const oldReason = (existingSubmission.reason || "").trim();
+      if (newReason === oldReason) {
+        return Response.json(
+          {
+            error: `No changes detected in your comment.`,
+          },
+          { status: 400 }
+        );
+      }
+
+      // Proceed with updating the comment
+      const reasonTrimmed = newReason;
+      const needsModeration = reasonTrimmed.length > 0;
+      const safety = reasonTrimmed
+        ? await analyzeReasonSafety(reasonTrimmed)
+        : { hasRisk: false, blockApprove: false, hits: [], llm: null };
+
+      // Create GitHub Audit issue for the edit
+      const issueBody = [
+        `### LinkedIn Profile URL`,
+        ``,
+        linkedinUrlCanonical,
+        ``,
+        `### Action`,
+        ``,
+        `Comment / reason edited by **${displayName}** (${userId})`,
+        ``,
+        `### New Brief Reason`,
+        ``,
+        reasonTrimmed || "_No response (comment removed)_",
+        ``,
+        `### Submitted via`,
+        ``,
+        `Website form (Edit Comment)`,
+        ``,
+        `---`,
+        `*This comment edit was submitted programmatically and pre-validated.*`,
+      ].join("\n");
+
+      const issueLabels = ["vote", "comment-edit"];
+      if (reasonTrimmed) issueLabels.push("moderation-pending");
+
+      let editIssue;
+      try {
+        editIssue = await createIssue(
+          `[EDIT COMMENT] ${titleName}`,
+          issueBody,
+          issueLabels
+        );
+      } catch {
+        return Response.json(
+          { error: "Failed to create audit record for the comment edit. Please try again." },
+          { status: 500 }
+        );
+      }
+
+      const issueNumber = editIssue.number;
+
+      // Update existingSubmission fields
+      existingSubmission.reason = reasonTrimmed || undefined;
+      if (!reasonTrimmed) {
+        delete existingSubmission.reason;
+      }
+      existingSubmission.reason_edited = true;
+      existingSubmission.issue = issueNumber;
+      if (needsModeration) {
+        existingSubmission.reason_pending = true;
+        if (safety.hasRisk) {
+          existingSubmission.reason_safety_flags = {
+            block_approve: Boolean(safety.blockApprove),
+            hits: safety.hits,
+            llm: safety.llm,
+          };
+        } else {
+          delete existingSubmission.reason_safety_flags;
+        }
+      } else {
+        delete existingSubmission.reason_pending;
+        delete existingSubmission.reason_safety_flags;
+      }
+
+      // Write updated profiles list back to data
+      try {
+        await writeDataFile(
+          "data/profiles/_index.json",
+          profiles,
+          profilesSha,
+          `Edit comment for ${slug} from ${userId} (issue #${issueNumber})`
+        );
+      } catch {
+        return Response.json(
+          {
+            error: "Comment updated locally but data update failed. An admin will resolve this.",
+          },
+          { status: 500 }
+        );
+      }
+
+      return Response.json({
+        success: true,
+        message: needsModeration
+          ? `Your comment for ${titleName} has been updated and is pending admin review.`
+          : `Your comment for ${titleName} has been updated.`,
+        profile: {
+          slug,
+          votes: profileForTitle.votes,
+        },
+        issue: issueNumber,
+      });
+    }
+
     return Response.json(
       {
         error: `You have already voted on ${slug}. Each person can only vote once per profile — votes are permanent.`,
@@ -229,7 +367,7 @@ export async function POST(req) {
   }
 
   if (vote === "no") {
-    if (!existingUser || existingUser.yes_count < 1) {
+    if (!existingUser || !existingUser.yes_count || existingUser.yes_count < 1) {
       return Response.json(
         {
           error:
@@ -249,12 +387,6 @@ export async function POST(req) {
       );
     }
   }
-
-  const today = new Date().toISOString().split("T")[0];
-
-  const titleName =
-    formatProfessionalDisplayName(slug, profileForTitle?.public_name) ||
-    slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const issueBody = [
     `### LinkedIn Profile URL`,
@@ -396,6 +528,10 @@ export async function POST(req) {
       no_count: 0,
     };
     users.push(userEntry);
+  } else {
+    if (!userEntry.contributions) userEntry.contributions = [];
+    if (userEntry.yes_count === undefined) userEntry.yes_count = 0;
+    if (userEntry.no_count === undefined) userEntry.no_count = 0;
   }
   userEntry.display_name = displayName;
   if (submitterLinkedinUrl) {
