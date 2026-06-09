@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useSession, signIn, getProviders } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { trackEvent } from "@/lib/telemetry";
 import OnboardingTour from "../components/OnboardingTour";
 
-export default function SubmitPage() {
+function SubmitPageContent() {
   const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
+  const initialLinkedin = searchParams.get("linkedin") || "";
   const [hasLinkedIn, setHasLinkedIn] = useState(false);
-  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState(initialLinkedin);
   const [vote, setVote] = useState("");
   const [reason, setReason] = useState("");
   const [submitterLinkedinUrl, setSubmitterLinkedinUrl] = useState("");
@@ -524,5 +527,13 @@ export default function SubmitPage() {
         </form>
       )}
     </>
+  );
+}
+
+export default function SubmitPage() {
+  return (
+    <Suspense fallback={<div className="empty-state"><p>Loading…</p></div>}>
+      <SubmitPageContent />
+    </Suspense>
   );
 }
