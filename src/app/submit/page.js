@@ -93,10 +93,17 @@ export default function SubmitPage() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        const text = await res.text().catch(() => "");
+        setError(`Failed to parse response (${res.status} ${res.statusText}): ${text.slice(0, 150)}`);
+        return;
+      }
 
       if (!res.ok) {
-        setError(data.error);
+        setError(data.error || `HTTP error ${res.status}`);
         return;
       }
 
@@ -113,8 +120,8 @@ export default function SubmitPage() {
       setSubmitterLinkedinUrl("");
       setPreview(null);
       setPhotoFlagged(false);
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (err) {
+      setError(err?.message || "Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
