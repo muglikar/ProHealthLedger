@@ -46,15 +46,15 @@ function parseConnections(payload) {
 }
 
 async function fetchJson(url, accessToken, linkedInVersion = "202604") {
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "LinkedIn-Version": linkedInVersion,
-    },
-    signal: AbortSignal.timeout(5000),
-  });
-  if (!res.ok) return null;
   try {
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "LinkedIn-Version": linkedInVersion,
+      },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return null;
     return await res.json();
   } catch {
     return null;

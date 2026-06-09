@@ -198,6 +198,7 @@ if (linkedInClientId && linkedInClientSecret) {
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
+  debug: true,
   providers,
   callbacks: {
     async signIn({ user, account, profile }) {
