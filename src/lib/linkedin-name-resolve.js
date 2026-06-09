@@ -76,6 +76,53 @@ async function resolveViaZyte(slug) {
   }
 }
 
+async function resolveViaScraperApi(slug) {
+  const apiKey = (process.env.SCRAPER_API_KEY || "").trim();
+  if (!apiKey) {
+    console.log("[ScraperAPI] SCRAPER_API_KEY is not defined or is empty in process.env.");
+    return null;
+  }
+
+  const maskedKey = apiKey.slice(0, 4) + "..." + apiKey.slice(-4) + ` (length: ${apiKey.length})`;
+  console.log(`[ScraperAPI] SCRAPER_API_KEY present: ${maskedKey}`);
+
+  const url = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
+  console.log(`[ScraperAPI] Resolving public profile for slug: ${slug} via ScraperAPI...`);
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 10000);
+
+  try {
+    const scraperUrl = `http://api.scraperapi.com?api_key=${apiKey}&url=${encodeURIComponent(url)}&render=false`;
+    const res = await fetch(scraperUrl, { signal: ctrl.signal });
+    clearTimeout(timer);
+
+    console.log(`[ScraperAPI] Response Status: ${res.status}`);
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.log(`[ScraperAPI] API returned error: ${res.status} - ${errorText.slice(0, 200)}`);
+      return null;
+    }
+
+    const html = await res.text();
+    if (!html) {
+      console.log("[ScraperAPI] HTML response was empty.");
+      return null;
+    }
+
+    const name = extractNameFromHtml(html);
+    const photo = extractPhotoFromHtml(html);
+
+    console.log(`[ScraperAPI] Extracted name: ${name}, photo: ${photo ? "Found" : "Not Found"}`);
+    return { name, photo };
+  } catch (err) {
+    clearTimeout(timer);
+    console.log("[ScraperAPI] Request failed with exception:", err.message);
+    return null;
+  }
+}
+
 /**
  * @param {string} slug - LinkedIn `/in/<slug>` handle (lowercase).
  * @returns {Promise<{name: string|null, photo: string|null}>}
@@ -88,6 +135,14 @@ export async function resolveLinkedinProfile(slug) {
     const zyteResult = await resolveViaZyte(slug);
     if (zyteResult && (zyteResult.name || zyteResult.photo)) {
       return zyteResult;
+    }
+  }
+
+  // If Scraper API Key is configured, attempt resolution through ScraperAPI.
+  if (process.env.SCRAPER_API_KEY) {
+    const scraperResult = await resolveViaScraperApi(slug);
+    if (scraperResult && (scraperResult.name || scraperResult.photo)) {
+      return scraperResult;
     }
   }
 
@@ -110,7 +165,8 @@ export async function resolveLinkedinProfile(slug) {
 
     if (!res.ok) {
       const serp = await fallbackFromGoogleSerp(slug);
-      return { name: serp.name, photo: serp.photo };
+      if (serp.name || serp.photo) return serp;
+      return await fallbackFromDuckDuckGoSerp(slug);
     }
 
     // Read enough HTML to get meta tags (they're in <head>, so first ~64KB is plenty).
@@ -143,11 +199,16 @@ export async function resolveLinkedinProfile(slug) {
 
     // If direct extraction failed entirely, try the SERP fallback.
     const serp = await fallbackFromGoogleSerp(slug);
-    return { name: name || serp.name, photo: photo || serp.photo };
+    if (serp.name || serp.photo) {
+      return { name: name || serp.name, photo: photo || serp.photo };
+    }
+    const ddgSerp = await fallbackFromDuckDuckGoSerp(slug);
+    return { name: name || ddgSerp.name, photo: photo || ddgSerp.photo };
   } catch {
     // If direct fetch threw an error, attempt the SERP fallback.
     const serp = await fallbackFromGoogleSerp(slug);
-    return { name: serp.name, photo: serp.photo };
+    if (serp.name || serp.photo) return serp;
+    return await fallbackFromDuckDuckGoSerp(slug);
   } finally {
     clearTimeout(timer);
   }
@@ -311,4 +372,62 @@ function extractNameFromTitle(raw) {
     );
 
   return decoded.trim() || null;
+}
+
+/**
+ * Fallback Strategy: Scrape DuckDuckGo HTML search results for name AND photo.
+ * This has much more lenient rate-limiting on cloud IPs compared to Google.
+ * @returns {Promise<{name: string|null, photo: string|null}>}
+ */
+async function fallbackFromDuckDuckGoSerp(slug) {
+  const query = `site:linkedin.com/in/${encodeURIComponent(slug)}`;
+  const url = `https://html.duckduckgo.com/html/?q=${query}`;
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      signal: ctrl.signal,
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+        Accept: "text/html",
+      },
+    });
+
+    if (!res.ok) {
+      console.log(`[DuckDuckGo] Search page returned status: ${res.status}`);
+      return { name: null, photo: null };
+    }
+
+    const html = await res.text();
+
+    // Look for the first result title which usually contains the name
+    // e.g. class="result__a" href="..." >Jane Doe - Company X - LinkedIn</a>
+    const ddgMatch = html.match(/class="result__a"[^>]*>([^<]+)\s*-.*LinkedIn/i) ||
+                     html.match(/class="result__a"[^>]*>([^<]+)<\/a>/i);
+    let name = null;
+    if (ddgMatch && ddgMatch[1]) {
+      name = extractNameFromTitle(ddgMatch[1]);
+    }
+
+    // Try to find any media.licdn.com thumbnail urls in the search results
+    let photo = null;
+    const imgRegex = /(?:src|data-src)="(https?:\/\/[^"]*media\.licdn\.com\/dms\/image[^"]*profile-displayphoto[^"]*)"/gi;
+    const imgMatch = imgRegex.exec(html);
+    if (imgMatch) {
+      photo = imgMatch[1].replace(/&amp;/g, "&");
+    }
+
+    console.log(`[DuckDuckGo] Extracted name: ${name}, photo: ${photo ? "Found" : "Not Found"}`);
+    return { name, photo };
+  } catch (e) {
+    console.log("[DuckDuckGo] Scrape exception:", e.message);
+    return { name: null, photo: null };
+  } finally {
+    clearTimeout(timer);
+  }
 }
