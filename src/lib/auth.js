@@ -160,7 +160,7 @@ if (linkedInClientId && linkedInClientSecret) {
       jwks_endpoint: "https://www.linkedin.com/oauth/openid/jwks",
       authorization: {
         url: "https://www.linkedin.com/oauth/v2/authorization",
-        params: { scope: "openid profile email r_verify r_profile_basicinfo w_member_social" },
+        params: { scope: process.env.LINKEDIN_SCOPE || "openid profile email" },
       },
       token: "https://www.linkedin.com/oauth/v2/accessToken",
       // Custom fetch avoids merged userinfo.params.projection (for /v2/me) breaking OIDC userinfo.
