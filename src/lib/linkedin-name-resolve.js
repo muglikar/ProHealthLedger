@@ -151,16 +151,24 @@ export async function resolveLinkedinProfile(slug) {
   const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
 
   try {
+    const headers = {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+      "Accept-Language": "en-US,en;q=0.9",
+      Accept: "text/html",
+    };
+
+    const liAt = (process.env.LINKEDIN_COOKIE_LI_AT || "").trim();
+    if (liAt) {
+      headers["Cookie"] = `li_at=${liAt}`;
+      console.log(`[LinkedIn Session] Fetching authenticated profile for slug: ${slug}`);
+    }
+
     const res = await fetch(url, {
       method: "GET",
       redirect: "follow",
       signal: ctrl.signal,
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-        "Accept-Language": "en-US,en;q=0.9",
-        Accept: "text/html",
-      },
+      headers: headers,
     });
 
     if (!res.ok) {
