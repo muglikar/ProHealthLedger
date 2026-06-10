@@ -1,12 +1,12 @@
 export const dynamic = "force-dynamic";
 
-async function testFetch(url, name) {
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 4000);
+export async function GET() {
+  const query = "site:linkedin.com/in/iantarakey";
+  const url = `https://www.bing.com/search?q=${encodeURIComponent(query)}`;
+
   try {
     const res = await fetch(url, {
       method: "GET",
-      signal: ctrl.signal,
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
@@ -14,32 +14,42 @@ async function testFetch(url, name) {
         Accept: "text/html",
       },
     });
-    clearTimeout(timer);
-    const text = await res.text();
-    return {
-      name,
-      status: res.status,
-      ok: res.ok,
-      length: text.length,
-      containsIan: text.toLowerCase().includes("ian"),
-      containsTarakey: text.toLowerCase().includes("tarakey"),
-      preview: text.slice(0, 400),
-    };
+
+    const html = await res.text();
+    
+    // Find where iantarakey is mentioned and get surrounding 200 chars
+    const index = html.toLowerCase().indexOf("iantarakey");
+    const snippet = index !== -1 ? html.slice(Math.max(0, index - 200), index + 400) : "not found";
+
+    // Let's also look for a href="https://...linkedin.com/in/
+    const linkMatches = [];
+    const linkRegex = /href="https?:\/\/[a-z]{2,3}\.linkedin\.com\/in\/[^"]+"/gi;
+    let match;
+    while ((match = linkRegex.exec(html)) !== null) {
+      linkMatches.push(match[0]);
+    }
+
+    // Let's print any h2 tags in the HTML
+    const h2Matches = [];
+    const h2Regex = /<h2[^>]*>([\s\S]*?)<\/h2>/gi;
+    while ((match = h2Regex.exec(html)) !== null) {
+      h2Matches.push(match[1].replace(/<[^>]*>/g, "").trim());
+    }
+
+    // Let's look for images containing licdn
+    const imgMatches = [];
+    const imgRegex = /src="([^"]*media\.licdn\.com[^"]*)"/gi;
+    while ((match = imgRegex.exec(html)) !== null) {
+      imgMatches.push(match[1]);
+    }
+
+    return Response.json({
+      snippet,
+      linkMatches,
+      h2Matches,
+      imgMatches,
+    });
   } catch (err) {
-    clearTimeout(timer);
-    return { name, error: err.message };
+    return Response.json({ error: err.message });
   }
-}
-
-export async function GET() {
-  const query = "site:linkedin.com/in/iantarakey";
-  const results = await Promise.all([
-    testFetch(`https://lite.duckduckgo.com/lite/?q=${encodeURIComponent(query)}`, "DDG Lite"),
-    testFetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`, "DDG HTML"),
-    testFetch(`https://www.bing.com/search?q=${encodeURIComponent(query)}`, "Bing"),
-    testFetch(`https://search.yahoo.com/search?p=${encodeURIComponent(query)}`, "Yahoo"),
-    testFetch(`https://www.ecosia.org/search?q=${encodeURIComponent(query)}`, "Ecosia"),
-  ]);
-
-  return Response.json({ results });
 }
