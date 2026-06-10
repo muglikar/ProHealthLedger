@@ -1,4 +1,5 @@
-import { readDataFile, writeDataFile, readRepoJson, writeRepoJson } from "@/lib/github";
+import { readDataFile, writeDataFile, readRepoJson, writeRepoJson, writeRepoFile } from "@/lib/github";
+import { resolveLinkedinProfile } from "@/lib/linkedin-name-resolve";
 
 /**
  * GET /api/cron/photo-scrape
@@ -53,69 +54,7 @@ function randomUA() {
   return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
 }
 
-async function fetchWithTimeout(url, timeoutMs = 6000) {
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, {
-      method: "GET",
-      signal: ctrl.signal,
-      headers: {
-        "User-Agent": randomUA(),
-        "Accept-Language": "en-US,en;q=0.9",
-        Accept: "text/html",
-      },
-    });
-    if (!res.ok) return null;
-    return await res.text();
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-function extractPhotoFromHtml(html) {
-  if (!html) return null;
-  const patterns = [
-    /<meta\s+(?:[^>]*?\s+)?(?:property|name)="og:image"\s+content="([^"]+)"/gi,
-    /<meta\s+content="([^"]+)"\s+(?:property|name)="og:image"/gi,
-  ];
-  for (const regex of patterns) {
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-      const src = match[1].replace(/&amp;/g, "&");
-      if (!isPlaceholder(src) && src.startsWith("http")) return src;
-    }
-  }
-  return null;
-}
-
-async function scrapePhoto(slug) {
-  // Strategy 1: Direct LinkedIn
-  const html = await fetchWithTimeout(
-    `https://www.linkedin.com/in/${encodeURIComponent(slug)}`
-  );
-  const direct = extractPhotoFromHtml(html);
-  if (direct) return direct;
-
-  // Brief pause before fallback
-  await new Promise((r) => setTimeout(r, 2000));
-
-  // Strategy 2: Google SERP for LinkedIn thumbnails
-  const query = `site:linkedin.com/in/${encodeURIComponent(slug)}`;
-  const serpHtml = await fetchWithTimeout(
-    `https://www.google.com/search?q=${query}&hl=en`
-  );
-  if (serpHtml) {
-    const imgRegex =
-      /(?:src|data-src)="(https?:\/\/[^"]*media\.licdn\.com\/dms\/image[^"]*profile-displayphoto[^"]*)"/gi;
-    const match = imgRegex.exec(serpHtml);
-    if (match) return match[1].replace(/&amp;/g, "&");
-  }
-
-  return null;
-}
+// Direct fetching and Google SERP scraping are handled via resolveLinkedinProfile.
 
 function shouldAttempt(slug, attempts, today) {
   const entry = attempts[slug];
@@ -221,15 +160,40 @@ export async function GET(req) {
       if (i > 0) await randomDelay();
 
       try {
-        const photo = await scrapePhoto(candidate.slug);
+        const resolved = await resolveLinkedinProfile(candidate.slug);
+        const photo = resolved?.photo;
 
         if (photo) {
+          let finalPhotoUrl = photo;
+          try {
+            console.log(`[cron] Downloading photo for ${candidate.slug}: ${photo}`);
+            const downloadRes = await fetch(photo);
+            if (downloadRes.ok) {
+              const contentType = downloadRes.headers.get("content-type") || "image/jpeg";
+              const ext = contentType.includes("png") ? "png" : "jpeg";
+              const buffer = await downloadRes.arrayBuffer();
+              const filePath = `public/${candidate.slug}.${ext}`;
+              
+              await writeRepoFile(filePath, buffer, `chore(cron): save local photo for ${candidate.slug}`);
+              finalPhotoUrl = `/${candidate.slug}.${ext}`;
+            }
+          } catch (imgErr) {
+            console.error(`[cron] Photo download/commit failed for ${candidate.slug}:`, imgErr);
+          }
+
           if (candidate.type === "profile") {
-            candidate.entry.profile_photo_url = photo;
+            candidate.entry.profile_photo_url = finalPhotoUrl;
+            candidate.entry.original_photo_url = photo;
+            candidate.entry.photo_storage = finalPhotoUrl.startsWith("/") ? "local" : "linkedin_cdn";
+            if (resolved.source) {
+              candidate.entry.resolution_source = resolved.source;
+              candidate.entry.confidence = resolved.confidence ?? 0;
+              candidate.entry.resolved_at = new Date().toISOString();
+            }
             profilesChanged = true;
             results.profiles.push(candidate.slug);
           } else {
-            candidate.entry.image = photo;
+            candidate.entry.image = finalPhotoUrl;
             usersChanged = true;
             results.users.push(candidate.userId);
           }

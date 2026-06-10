@@ -39,13 +39,45 @@ export async function GET(req) {
   }
 
   try {
-    const result = await resolveLinkedinProfile(slug);
-    const data = { name: result.name || null, photo: result.photo || null, userVote: { voted: false } };
+    const { data: profiles } = await readDataFile("data/profiles/_index.json").catch(() => ({ data: [] }));
+    const profile = profiles.find((p) => p.slug === slug);
 
-    if (userId) {
-      const { data: profiles } = await readDataFile("data/profiles/_index.json").catch(() => ({ data: [] }));
-      const profile = profiles.find((p) => p.slug === slug);
-      const existingSubmission = profile?.submissions?.find((s) => s.user === userId);
+    let name = null;
+    let photo = null;
+    let resolutionSource = null;
+    let confidence = 0;
+    let resolvedAt = null;
+    let originalPhotoUrl = null;
+
+    if (profile && profile.public_name) {
+      name = profile.public_name;
+      photo = profile.profile_photo_url || null;
+      resolutionSource = profile.resolution_source || "cache";
+      confidence = profile.confidence ?? 1.0;
+      resolvedAt = profile.resolved_at || null;
+      originalPhotoUrl = profile.original_photo_url || null;
+    } else {
+      const result = await resolveLinkedinProfile(slug);
+      name = result.name || null;
+      photo = result.photo || null;
+      resolutionSource = result.source || null;
+      confidence = result.confidence ?? 0;
+      resolvedAt = new Date().toISOString();
+      originalPhotoUrl = result.photo || null;
+    }
+
+    const data = {
+      name,
+      photo,
+      resolution_source: resolutionSource,
+      confidence,
+      resolved_at: resolvedAt,
+      original_photo_url: originalPhotoUrl,
+      userVote: { voted: false },
+    };
+
+    if (userId && profile) {
+      const existingSubmission = profile.submissions?.find((s) => s.user === userId);
       if (existingSubmission) {
         data.userVote = {
           voted: true,
@@ -69,7 +101,8 @@ export async function GET(req) {
         "Cache-Control": userId ? "private, no-cache" : "public, max-age=300",
       },
     });
-  } catch {
+  } catch (err) {
+    console.error("[preview-profile] error:", err);
     return Response.json({ name: null, photo: null, userVote: { voted: false } });
   }
 }
