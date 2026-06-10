@@ -472,18 +472,6 @@ function SubmitPageContent() {
             </div>
           </div>
 
-          <div className="form-group" data-tour="step-capacity-submitter">
-            <label htmlFor="submitter-capacity">Your Role & Organization (optional)</label>
-            <input
-              id="submitter-capacity"
-              type="text"
-              className="form-input"
-              placeholder="e.g. Engineering Manager at Acme Corp"
-              value={submitterCapacity}
-              onChange={(e) => setSubmitterCapacity(e.target.value)}
-            />
-          </div>
-
           <div className="form-group" data-tour="step-capacity-voted">
             <label htmlFor="voted-capacity">Their Role & Organization (optional)</label>
             <input
@@ -493,6 +481,18 @@ function SubmitPageContent() {
               placeholder="e.g. Senior Developer at Acme Corp"
               value={votedCapacity}
               onChange={(e) => setVotedCapacity(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group" data-tour="step-capacity-submitter">
+            <label htmlFor="submitter-capacity">Your Role & Organization (optional)</label>
+            <input
+              id="submitter-capacity"
+              type="text"
+              className="form-input"
+              placeholder="e.g. Engineering Manager at Acme Corp"
+              value={submitterCapacity}
+              onChange={(e) => setSubmitterCapacity(e.target.value)}
             />
           </div>
 

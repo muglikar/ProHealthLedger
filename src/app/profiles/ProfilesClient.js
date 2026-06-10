@@ -283,6 +283,7 @@ function VotesContent() {
             linkedin_url: p.linkedin_url,
             public_name: p.public_name,
             profile_photo_url: p.profile_photo_url,
+            original_photo_url: p.original_photo_url,
             photo_verified: p.photo_verified,
           }));
         })
@@ -500,6 +501,7 @@ function VotesContent() {
               recordHref: row.issue != null ? `${REPO_BASE}/issues/${row.issue}` : null,
               linkedinUrl: row.linkedin_url || null,
               profilePhotoUrl: row.profile_photo_url || null,
+              originalPhotoUrl: row.original_photo_url || null,
               profileSlug: row.profile_slug || null,
               submitterCapacity: row.submitter_capacity || null,
               votedCapacity: row.voted_capacity || null,
@@ -622,6 +624,7 @@ function VotesContent() {
                 <div className="votes-profile-panel-header" style={{ alignItems: "flex-start" }}>
                   <ProfilePhoto
                     photoUrl={p.profile_photo_url}
+                    originalPhotoUrl={p.original_photo_url}
                     name={formatProfessionalDisplayName(p.slug, p.public_name)}
                     slug={p.slug}
                     size={84}
@@ -765,6 +768,7 @@ function VotesContent() {
                             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                               <ProfilePhoto
                                 photoUrl={v.profile_photo_url}
+                                originalPhotoUrl={v.original_photo_url}
                                 name={formatProfessionalDisplayName(v.profile_slug, v.public_name)}
                                 slug={v.profile_slug}
                                 size={36}
@@ -976,6 +980,7 @@ function VotesContent() {
           recordHref={commentPopup.recordHref}
           linkedinUrl={commentPopup.linkedinUrl}
           profilePhotoUrl={commentPopup.profilePhotoUrl}
+          originalPhotoUrl={commentPopup.originalPhotoUrl}
           profileSlug={commentPopup.profileSlug}
           submitterCapacity={commentPopup.submitterCapacity}
           votedCapacity={commentPopup.votedCapacity}

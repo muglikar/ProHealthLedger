@@ -16,6 +16,7 @@ import { useSession } from "next-auth/react";
  */
 export default function ProfilePhoto({
   photoUrl,
+  originalPhotoUrl,
   name,
   slug,
   size = 48,
@@ -26,6 +27,13 @@ export default function ProfilePhoto({
   const [flagged, setFlagged] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [promptDismissed, setPromptDismissed] = useState(false);
+  const [currentPhoto, setCurrentPhoto] = useState(photoUrl);
+
+  // Sync state if photoUrl changes
+  useEffect(() => {
+    setCurrentPhoto(photoUrl);
+    setImgError(false);
+  }, [photoUrl]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !slug) return;
@@ -35,8 +43,6 @@ export default function ProfilePhoto({
     }
     const flaggedVal = localStorage.getItem(`phl_photo_flag_${slug}`);
     if (flaggedVal) {
-      // If the flagged state was for the exact current photo, hide it.
-      // If the photo has been updated since then, clear the local flag so they see the new photo.
       if (photoUrl && flaggedVal === photoUrl) {
         setFlagged(true);
         setPromptDismissed(true);
@@ -70,7 +76,16 @@ export default function ProfilePhoto({
     .map((w) => w[0]?.toUpperCase() || "")
     .join("");
 
-  const showPhoto = photoUrl && !flagged && !imgError;
+  const showPhoto = currentPhoto && !flagged && !imgError;
+
+  const handleImgError = useCallback(() => {
+    if (currentPhoto !== originalPhotoUrl && originalPhotoUrl) {
+      console.log(`[ProfilePhoto] Local photo ${currentPhoto} failed. Falling back to CDN: ${originalPhotoUrl}`);
+      setCurrentPhoto(originalPhotoUrl);
+    } else {
+      setImgError(true);
+    }
+  }, [currentPhoto, originalPhotoUrl]);
 
   const handleYes = useCallback(async () => {
     setPromptDismissed(true);
@@ -97,7 +112,6 @@ export default function ProfilePhoto({
       if (slug && photoUrl) {
         localStorage.setItem(`phl_photo_flag_${slug}`, photoUrl);
         window.dispatchEvent(new CustomEvent("phl_photo_flagged", { detail: slug }));
-        // Fire-and-forget flag to the API
         try {
           await fetch("/api/flag-photo", {
             method: "POST",
@@ -116,14 +130,14 @@ export default function ProfilePhoto({
     <div className={`pphoto-wrapper ${className}`.trim()}>
       {showPhoto ? (
         <img
-          src={photoUrl}
+          src={currentPhoto}
           alt=""
           className="pphoto-img"
           width={size}
           height={size}
           loading="lazy"
           referrerPolicy="no-referrer"
-          onError={() => setImgError(true)}
+          onError={handleImgError}
           style={{ width: size, height: size }}
         />
       ) : (

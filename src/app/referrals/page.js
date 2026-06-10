@@ -258,6 +258,7 @@ export default function ReferralsPage() {
                         {r.profile_slug !== "__home__" && (
                           <ProfilePhoto
                             photoUrl={r.profile_photo_url || null}
+                            originalPhotoUrl={r.original_photo_url || null}
                             name={r.profile_name || r.profile_slug}
                             slug={r.profile_slug}
                             size={32}

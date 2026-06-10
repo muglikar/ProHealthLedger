@@ -60,6 +60,7 @@ export default function DirectoryClient({ profiles }) {
           >
             <ProfilePhoto
               photoUrl={p.profile_photo_url}
+              originalPhotoUrl={p.original_photo_url}
               name={displayName}
               slug={p.slug}
               size={52}

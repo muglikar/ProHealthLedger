@@ -12,6 +12,7 @@ export default function CommentReadModal({
   recordHref,
   linkedinUrl,
   profilePhotoUrl,
+  originalPhotoUrl,
   profileSlug,
   submitterCapacity,
   votedCapacity,
@@ -60,6 +61,7 @@ export default function CommentReadModal({
             <span className="comment-read-modal-v" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <ProfilePhoto
                 photoUrl={profilePhotoUrl || null}
+                originalPhotoUrl={originalPhotoUrl || null}
                 name={professional || "?"}
                 slug={profileSlug || null}
                 size={44}

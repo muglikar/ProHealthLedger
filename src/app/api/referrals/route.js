@@ -108,12 +108,16 @@ export async function GET(req) {
     const userProfileMap = {};
     const slugToUrlMap = {};
     const slugToNameMap = {};
+    const slugToPhotoMap = {};
+    const slugToOriginalPhotoMap = {};
 
     if (Array.isArray(allProfilesRaw)) {
       allProfilesRaw.forEach(p => {
         if (p.slug) {
           if (p.linkedin_url) slugToUrlMap[p.slug] = p.linkedin_url;
           if (p.public_name) slugToNameMap[p.slug] = cleanLinkedInNameDecorators(p.public_name);
+          if (p.profile_photo_url) slugToPhotoMap[p.slug] = p.profile_photo_url;
+          if (p.original_photo_url) slugToOriginalPhotoMap[p.slug] = p.original_photo_url;
         }
         if (p.submissions) {
           p.submissions.forEach(s => {
@@ -143,6 +147,8 @@ export async function GET(req) {
         ...r,
         profile_name: cleanLinkedInNameDecorators(displayName),
         profile_linkedin_url: slugToUrlMap[r.profile_slug] || null,
+        profile_photo_url: slugToPhotoMap[r.profile_slug] || null,
+        original_photo_url: slugToOriginalPhotoMap[r.profile_slug] || null,
         signup_names: (r.signups || []).map((id, idx) => {
           const storedName = r.signup_names?.[idx];
           const rawName = (storedName && storedName !== id) ? storedName : (userMap[id] || id);
