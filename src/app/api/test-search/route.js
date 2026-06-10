@@ -1,9 +1,7 @@
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const query = "site:linkedin.com/in/iantarakey";
-  const url = `https://www.bing.com/search?q=${encodeURIComponent(query)}`;
-
+async function checkYahoo(query) {
+  const url = `https://search.yahoo.com/search?p=${encodeURIComponent(query)}`;
   try {
     const res = await fetch(url, {
       method: "GET",
@@ -16,8 +14,6 @@ export async function GET() {
     });
 
     const html = await res.text();
-    
-    // Find all indexes of "tarakey" (case-insensitive)
     const indexes = [];
     let pos = html.toLowerCase().indexOf("tarakey");
     while (pos !== -1) {
@@ -28,16 +24,27 @@ export async function GET() {
     const snippets = indexes.map((idx) => {
       return {
         index: idx,
-        text: html.slice(Math.max(0, idx - 150), idx + 250)
+        text: html.slice(Math.max(0, idx - 100), idx + 200)
       };
     });
 
-    return Response.json({
-      htmlLength: html.length,
-      occurrencesCount: indexes.length,
+    return {
+      query,
+      status: res.status,
+      occurrences: indexes.length,
       snippets,
-    });
+    };
   } catch (err) {
-    return Response.json({ error: err.message });
+    return { query, error: err.message };
   }
+}
+
+export async function GET() {
+  const results = await Promise.all([
+    checkYahoo("site:linkedin.com/in/iantarakey"),
+    checkYahoo("iantarakey linkedin"),
+    checkYahoo("Ian Tarakey Southbank"),
+  ]);
+
+  return Response.json({ results });
 }
