@@ -69,7 +69,7 @@ async function resolveViaZyte(slug) {
 
     console.log(`[Zyte] Extracted name: ${name}, photo: ${photo ? "Found" : "Not Found"}`);
 
-    return { name, photo };
+    return { name, photo, source: "zyte", confidence: 1.0 };
   } catch (err) {
     console.log("[Zyte] Request failed with exception:", err.message);
     return null;
@@ -115,7 +115,7 @@ async function resolveViaScraperApi(slug) {
     const photo = extractPhotoFromHtml(html);
 
     console.log(`[ScraperAPI] Extracted name: ${name}, photo: ${photo ? "Found" : "Not Found"}`);
-    return { name, photo };
+    return { name, photo, source: "scraperapi", confidence: 1.0 };
   } catch (err) {
     clearTimeout(timer);
     console.log("[ScraperAPI] Request failed with exception:", err.message);
@@ -128,7 +128,7 @@ async function resolveViaScraperApi(slug) {
  * @returns {Promise<{name: string|null, photo: string|null}>}
  */
 export async function resolveLinkedinProfile(slug) {
-  if (!slug || typeof slug !== "string") return { name: null, photo: null };
+  if (!slug || typeof slug !== "string") return { name: null, photo: null, source: null, confidence: 0 };
 
   // If Zyte API Key is configured, attempt resolution through Zyte first.
   if (process.env.ZYTE_API_KEY) {
@@ -153,16 +153,10 @@ export async function resolveLinkedinProfile(slug) {
   try {
     const headers = {
       "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
       "Accept-Language": "en-US,en;q=0.9",
       Accept: "text/html",
     };
-
-    const liAt = (process.env.LINKEDIN_COOKIE_LI_AT || "").trim();
-    if (liAt) {
-      headers["Cookie"] = `li_at=${liAt}`;
-      console.log(`[LinkedIn Session] Fetching authenticated profile for slug: ${slug}`);
-    }
 
     const res = await fetch(url, {
       method: "GET",
@@ -181,7 +175,7 @@ export async function resolveLinkedinProfile(slug) {
 
     // Read enough HTML to get meta tags (they're in <head>, so first ~64KB is plenty).
     const reader = res.body?.getReader();
-    if (!reader) return { name: null, photo: null };
+    if (!reader) return { name: null, photo: null, source: "direct", confidence: 0 };
 
     let html = "";
     const decoder = new TextDecoder();
@@ -204,20 +198,22 @@ export async function resolveLinkedinProfile(slug) {
       return {
         name: name || null,
         photo: photo || null,
+        source: "direct",
+        confidence: 0.95,
       };
     }
 
     // If direct extraction failed entirely, try the SERP fallback.
     const serp = await fallbackFromGoogleSerp(slug);
     if (serp.name || serp.photo) {
-      return { name: name || serp.name, photo: photo || serp.photo };
+      return serp;
     }
     const yahooSerp = await fallbackFromYahooSerp(slug);
     if (yahooSerp.name || yahooSerp.photo) {
-      return { name: name || yahooSerp.name, photo: photo || yahooSerp.photo };
+      return yahooSerp;
     }
     const ddgSerp = await fallbackFromDuckDuckGoSerp(slug);
-    return { name: name || ddgSerp.name, photo: photo || ddgSerp.photo };
+    return ddgSerp;
   } catch {
     // If direct fetch threw an error, attempt the SERP fallback.
     const serp = await fallbackFromGoogleSerp(slug);
@@ -285,12 +281,12 @@ async function fallbackFromGoogleSerp(slug) {
     const imgRegex = /(?:src|data-src)="(https?:\/\/[^"]*media\.licdn\.com\/dms\/image[^"]*profile-displayphoto[^"]*)"/gi;
     const imgMatch = imgRegex.exec(html);
     if (imgMatch) {
-      photo = imgMatch[1].replace(/&amp;/g, "&");
+      photo = normalizePhotoUrl(imgMatch[1].replace(/&amp;/g, "&"));
     }
 
-    return { name, photo };
+    return { name, photo, source: "google", confidence: 0.8 };
   } catch {
-    return { name: null, photo: null };
+    return { name: null, photo: null, source: "google", confidence: 0 };
   } finally {
     clearTimeout(timer);
   }
@@ -302,6 +298,14 @@ async function fallbackFromGoogleSerp(slug) {
  * Filters out LinkedIn's generic placeholder images so we only store
  * actual profile photos.
  */
+export function normalizePhotoUrl(url) {
+  if (!url) return null;
+  if (url.includes("profile-displayphoto-shrink")) {
+    return url.replace(/profile-displayphoto-shrink_\d+_\d+/i, "profile-displayphoto-shrink_200_200");
+  }
+  return url;
+}
+
 function extractPhotoFromHtml(html) {
   if (!html) return null;
 
@@ -325,7 +329,7 @@ function extractPhotoFromHtml(html) {
   if (!url.includes("media.licdn.com")) return null;
   if (url.includes("ghost") || url.includes("default")) return null;
 
-  return url;
+  return normalizePhotoUrl(url);
 }
 
 /**
@@ -435,14 +439,14 @@ async function fallbackFromDuckDuckGoSerp(slug) {
     const imgRegex = /(?:src|data-src)="(https?:\/\/[^"]*media\.licdn\.com\/dms\/image[^"]*profile-displayphoto[^"]*)"/gi;
     const imgMatch = imgRegex.exec(html);
     if (imgMatch) {
-      photo = imgMatch[1].replace(/&amp;/g, "&");
+      photo = normalizePhotoUrl(imgMatch[1].replace(/&amp;/g, "&"));
     }
 
     console.log(`[DuckDuckGo] Extracted name: ${name}, photo: ${photo ? "Found" : "Not Found"}`);
-    return { name, photo };
+    return { name, photo, source: "duckduckgo", confidence: 0.75 };
   } catch (e) {
     console.log("[DuckDuckGo] Scrape exception:", e.message);
-    return { name: null, photo: null };
+    return { name: null, photo: null, source: "duckduckgo", confidence: 0 };
   } finally {
     clearTimeout(timer);
   }
@@ -513,13 +517,13 @@ async function fallbackFromYahooSerp(slug) {
     const imgRegex = /(?:src|data-src)="(https?:\/\/[^"]*media\.licdn\.com\/dms\/image[^"]*profile-displayphoto[^"]*)"/gi;
     const imgMatch = imgRegex.exec(html);
     if (imgMatch) {
-      photo = imgMatch[1].replace(/&amp;/g, "&");
+      photo = normalizePhotoUrl(imgMatch[1].replace(/&amp;/g, "&"));
     }
 
-    return { name, photo };
+    return { name, photo, source: "yahoo", confidence: 0.75 };
   } catch (e) {
     console.log("[Yahoo] Scrape exception:", e.message);
-    return { name: null, photo: null };
+    return { name: null, photo: null, source: "yahoo", confidence: 0 };
   } finally {
     clearTimeout(timer);
   }
