@@ -13,7 +13,7 @@ export async function GET(req) {
   const url = customUrl || `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
   
   try {
-    const res = await fetch("https://api.zyte.com/v1/webpage", {
+    const res = await fetch("https://api.zyte.com/v1/extract", {
       method: "POST",
       headers: {
         "Authorization": "Basic " + btoa(apiKey + ":"),
