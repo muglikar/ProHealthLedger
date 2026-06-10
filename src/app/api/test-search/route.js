@@ -1,7 +1,10 @@
 export const dynamic = "force-dynamic";
 
-async function checkYahoo(query) {
-  const url = `https://search.yahoo.com/search?p=${encodeURIComponent(query)}`;
+export async function GET(req) {
+  const { searchParams } = new URL(req.url);
+  const q = searchParams.get("q") || "iantarakey linkedin";
+  const url = `https://search.yahoo.com/search?p=${encodeURIComponent(q)}`;
+
   try {
     const res = await fetch(url, {
       method: "GET",
@@ -14,37 +17,29 @@ async function checkYahoo(query) {
     });
 
     const html = await res.text();
-    const indexes = [];
-    let pos = html.toLowerCase().indexOf("tarakey");
-    while (pos !== -1) {
-      indexes.push(pos);
-      pos = html.toLowerCase().indexOf("tarakey", pos + 1);
+    
+    // We want to extract links that point to linkedin.com/in/
+    // A Yahoo result link typically looks like:
+    // <a class=" ac-algo fz-20 lh-24 text-d" href="...url..." ...>...text...</a>
+    // Or just any <a> tag containing linkedin.com/in/
+    const results = [];
+    const aRegex = /<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+    let match;
+    while ((match = aRegex.exec(html)) !== null) {
+      const href = match[1];
+      const text = match[2].replace(/<[^>]*>/g, "").trim();
+      if (href.includes("linkedin.com/in/") || text.toLowerCase().includes("linkedin")) {
+        results.push({ href, text });
+      }
     }
 
-    const snippets = indexes.map((idx) => {
-      return {
-        index: idx,
-        text: html.slice(Math.max(0, idx - 100), idx + 200)
-      };
+    return Response.json({
+      q,
+      htmlLength: html.length,
+      resultsCount: results.length,
+      results: results.slice(0, 10),
     });
-
-    return {
-      query,
-      status: res.status,
-      occurrences: indexes.length,
-      snippets,
-    };
   } catch (err) {
-    return { query, error: err.message };
+    return Response.json({ error: err.message });
   }
-}
-
-export async function GET() {
-  const results = await Promise.all([
-    checkYahoo("site:linkedin.com/in/iantarakey"),
-    checkYahoo("iantarakey linkedin"),
-    checkYahoo("Ian Tarakey Southbank"),
-  ]);
-
-  return Response.json({ results });
 }
