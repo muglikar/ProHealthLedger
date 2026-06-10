@@ -17,37 +17,25 @@ export async function GET() {
 
     const html = await res.text();
     
-    // Find where iantarakey is mentioned and get surrounding 200 chars
-    const index = html.toLowerCase().indexOf("iantarakey");
-    const snippet = index !== -1 ? html.slice(Math.max(0, index - 200), index + 400) : "not found";
-
-    // Let's also look for a href="https://...linkedin.com/in/
-    const linkMatches = [];
-    const linkRegex = /href="https?:\/\/[a-z]{2,3}\.linkedin\.com\/in\/[^"]+"/gi;
-    let match;
-    while ((match = linkRegex.exec(html)) !== null) {
-      linkMatches.push(match[0]);
+    // Find all indexes of "tarakey" (case-insensitive)
+    const indexes = [];
+    let pos = html.toLowerCase().indexOf("tarakey");
+    while (pos !== -1) {
+      indexes.push(pos);
+      pos = html.toLowerCase().indexOf("tarakey", pos + 1);
     }
 
-    // Let's print any h2 tags in the HTML
-    const h2Matches = [];
-    const h2Regex = /<h2[^>]*>([\s\S]*?)<\/h2>/gi;
-    while ((match = h2Regex.exec(html)) !== null) {
-      h2Matches.push(match[1].replace(/<[^>]*>/g, "").trim());
-    }
-
-    // Let's look for images containing licdn
-    const imgMatches = [];
-    const imgRegex = /src="([^"]*media\.licdn\.com[^"]*)"/gi;
-    while ((match = imgRegex.exec(html)) !== null) {
-      imgMatches.push(match[1]);
-    }
+    const snippets = indexes.map((idx) => {
+      return {
+        index: idx,
+        text: html.slice(Math.max(0, idx - 150), idx + 250)
+      };
+    });
 
     return Response.json({
-      snippet,
-      linkMatches,
-      h2Matches,
-      imgMatches,
+      htmlLength: html.length,
+      occurrencesCount: indexes.length,
+      snippets,
     });
   } catch (err) {
     return Response.json({ error: err.message });
