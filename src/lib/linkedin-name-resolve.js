@@ -488,7 +488,7 @@ async function fallbackFromYahooSerp(slug) {
 
       const isTargetProfile = targetUrl.toLowerCase().includes(`/in/${slug}`);
       if (isTargetProfile) {
-        let text = rawText.replace(/<[^>]*>/g, "").trim();
+        let text = rawText.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
         // Remove Yahoo search result title link prefix (e.g. "LinkedInhttps://...")
         text = text.replace(/^LinkedInhttps?:\/\/[^\s]+(\s+›\s+[^\s]+)*/i, "").trim();
         text = text.replace(/^https?:\/\/[^\s]+(\s+›\s+[^\s]+)*/i, "").trim();
