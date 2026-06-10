@@ -1,9 +1,38 @@
 export const dynamic = "force-dynamic";
 
+function extractNameFromTitle(raw) {
+  if (!raw || typeof raw !== "string") return null;
+
+  let s = raw.trim();
+  s = s.replace(/^\(\d+\)\s*/, "");
+  s = s.replace(/\s*\|\s*LinkedIn\s*$/i, "");
+
+  const firstSegment = s.split(/\s+-\s+/)[0].trim();
+
+  if (!firstSegment) return null;
+  if (firstSegment.length < 2) return null;
+  if (/linkedin\.com/i.test(firstSegment)) return null;
+  if (/^linkedin$/i.test(firstSegment)) return null;
+
+  const decoded = firstSegment
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) =>
+      String.fromCharCode(parseInt(hex, 16))
+    );
+
+  return decoded.trim() || null;
+}
+
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const q = searchParams.get("q") || "iantarakey linkedin";
-  const url = `https://search.yahoo.com/search?p=${encodeURIComponent(q)}`;
+  const slug = searchParams.get("slug") || "iantarakey";
+  const query = `${slug} linkedin`;
+  const url = `https://search.yahoo.com/search?p=${encodeURIComponent(query)}`;
 
   try {
     const res = await fetch(url, {
@@ -17,27 +46,47 @@ export async function GET(req) {
     });
 
     const html = await res.text();
-    
-    // We want to extract links that point to linkedin.com/in/
-    // A Yahoo result link typically looks like:
-    // <a class=" ac-algo fz-20 lh-24 text-d" href="...url..." ...>...text...</a>
-    // Or just any <a> tag containing linkedin.com/in/
-    const results = [];
     const aRegex = /<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
     let match;
+    let name = null;
+    let rawMatches = [];
+
     while ((match = aRegex.exec(html)) !== null) {
-      const href = match[1];
-      const text = match[2].replace(/<[^>]*>/g, "").trim();
-      if (href.includes("linkedin.com/in/") || text.toLowerCase().includes("linkedin")) {
-        results.push({ href, text });
+      const rawHref = match[1];
+      const rawText = match[2];
+      
+      let targetUrl = rawHref;
+      const ruMatch = rawHref.match(/[?&]RU=([^&]+)/i);
+      if (ruMatch) {
+        try {
+          targetUrl = decodeURIComponent(ruMatch[1]);
+        } catch {}
+      }
+
+      const isTargetProfile = targetUrl.toLowerCase().includes(`/in/${slug}`);
+      if (isTargetProfile) {
+        let text = rawText.replace(/<[^>]*>/g, "").trim();
+        const cleanedText1 = text.replace(/^LinkedInhttps?:\/\/[^\s]+(\s+›\s+[^\s]+)*/i, "").trim();
+        const cleanedText2 = cleanedText1.replace(/^https?:\/\/[^\s]+(\s+›\s+[^\s]+)*/i, "").trim();
+        name = extractNameFromTitle(cleanedText2);
+        
+        rawMatches.push({
+          rawHref,
+          targetUrl,
+          text,
+          cleanedText1,
+          cleanedText2,
+          extractedName: name
+        });
       }
     }
 
     return Response.json({
-      q,
-      htmlLength: html.length,
-      resultsCount: results.length,
-      results: results.slice(0, 10),
+      slug,
+      query,
+      resultsFound: rawMatches.length,
+      resolvedName: name,
+      matches: rawMatches,
     });
   } catch (err) {
     return Response.json({ error: err.message });
