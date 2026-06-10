@@ -27,6 +27,8 @@ function SubmitPageContent() {
   const [preview, setPreview] = useState(null); // { name, photo } | null
   const [previewLoading, setPreviewLoading] = useState(false);
   const [photoFlagged, setPhotoFlagged] = useState(false);
+  const [manualName, setManualName] = useState("");
+  const [showManualName, setShowManualName] = useState(false);
   const previewAbortRef = useRef(null);
 
   useEffect(() => {
@@ -47,6 +49,8 @@ function SubmitPageContent() {
       setPreview(null);
       setPreviewLoading(false);
       setPhotoFlagged(false);
+      setShowManualName(false);
+      setManualName("");
       return;
     }
 
@@ -67,11 +71,13 @@ function SubmitPageContent() {
         .then((data) => {
           setPreview(data);
           setPreviewLoading(false);
+          setShowManualName(!data?.name);
         })
         .catch((err) => {
           if (err.name !== "AbortError") {
             setPreview(null);
             setPreviewLoading(false);
+            setShowManualName(true);
           }
         });
     }, 600); // 600ms debounce
@@ -99,6 +105,9 @@ function SubmitPageContent() {
       const payload = { linkedinUrl, vote, reason, submitterCapacity, votedCapacity, photoFlagged };
       if (!session?.linkedinProfileUrl) {
         payload.submitterLinkedinUrl = submitterLinkedinUrl;
+      }
+      if (showManualName && manualName.trim()) {
+        payload.publicName = manualName.trim();
       }
       const res = await fetch("/api/submit-vote", {
         method: "POST",
@@ -133,6 +142,8 @@ function SubmitPageContent() {
       setSubmitterLinkedinUrl("");
       setPreview(null);
       setPhotoFlagged(false);
+      setManualName("");
+      setShowManualName(false);
     } catch (err) {
       setError(err?.message || "Something went wrong. Please try again.");
     } finally {
@@ -398,6 +409,26 @@ function SubmitPageContent() {
                 )}
               </div>
             )}
+
+            {showManualName && (
+              <div className="form-group" style={{ marginTop: '16px' }}>
+                <label htmlFor="manual-name" style={{ color: 'var(--accent)', fontWeight: '700' }}>
+                  Professional&apos;s Name
+                </label>
+                <p style={{ fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>
+                  We couldn&apos;t automatically load this person&apos;s name due to LinkedIn anti-bot protection. Please enter their name manually.
+                </p>
+                <input
+                  id="manual-name"
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Ian Tarakey"
+                  value={manualName}
+                  onChange={(e) => setManualName(e.target.value)}
+                  required={showManualName}
+                />
+              </div>
+            )}
           </div>
 
 
@@ -512,7 +543,8 @@ function SubmitPageContent() {
               !linkedinUrl ||
               !vote ||
               (!session.linkedinProfileUrl && !submitterLinkedinUrl) ||
-              preview?.userVote?.reason_edited
+              preview?.userVote?.reason_edited ||
+              (showManualName && !manualName.trim())
             }
             data-tour="step-submit"
           >

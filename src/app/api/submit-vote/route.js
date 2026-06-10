@@ -39,7 +39,7 @@ export async function POST(req) {
   }
 
   const body = await req.json();
-  const { linkedinUrl, vote, reason, submitterLinkedinUrl, submitterCapacity, votedCapacity, photoFlagged } = body;
+  const { linkedinUrl, vote, reason, submitterLinkedinUrl, submitterCapacity, votedCapacity, photoFlagged, publicName } = body;
   const userId = session.userId;
   const displayName = session.displayName || userId;
 
@@ -218,7 +218,7 @@ export async function POST(req) {
   const today = new Date().toISOString().split("T")[0];
 
   const titleName =
-    formatProfessionalDisplayName(slug, profileForTitle?.public_name) ||
+    formatProfessionalDisplayName(slug, profileForTitle?.public_name || publicName) ||
     slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const alreadyVoted = existingUser?.contributions?.some(
@@ -491,6 +491,13 @@ export async function POST(req) {
       submissions: [],
     };
     profiles.push(profile);
+  }
+
+  // If the voter provided a manual name (e.g. because lookup failed), use it.
+  if (publicName && typeof publicName === "string" && publicName.trim()) {
+    if (!profile.public_name) {
+      profile.public_name = publicName.trim();
+    }
   }
 
   // Auto-resolve the real name and profile photo from LinkedIn if not already set.
