@@ -3,13 +3,14 @@ export const dynamic = "force-dynamic";
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const slug = (searchParams.get("slug") || "iantarakey").trim();
+  const customUrl = searchParams.get("url");
   const apiKey = (process.env.ZYTE_API_KEY || "").trim();
 
   if (!apiKey) {
     return Response.json({ error: "No ZYTE_API_KEY configured on this server." });
   }
 
-  const url = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
+  const url = customUrl || `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
   
   try {
     const res = await fetch("https://api.zyte.com/v1/webpage", {
