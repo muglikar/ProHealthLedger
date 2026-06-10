@@ -8,8 +8,11 @@ import {
 } from "@/lib/rate-limit";
 import { createVouchOgImageResponse } from "@/lib/create-vouch-og-image-response";
 import { displayFromParam } from "@/lib/og-vouch-card";
-import { readRepoJson, writeRepoJson } from "@/lib/github";
+import { readRepoJson, writeRepoJson, readDataFile } from "@/lib/github";
 import { logServerEvent } from "@/lib/telemetry-server";
+import { resolveLinkedinProfile } from "@/lib/linkedin-name-resolve";
+import { formatProfessionalDisplayName } from "@/lib/profiles";
+
 
 /**
  * POST /api/share-linkedin
@@ -35,93 +38,7 @@ import { logServerEvent } from "@/lib/telemetry-server";
  * Body: { postUrn: string }
  */
 
-/**
- * Scrape the true display name from a member's public LinkedIn profile.
- */
-async function resolveVoucheeName(vanitySlug) {
-  if (!vanitySlug) return null;
-  const slug = String(vanitySlug).trim().toLowerCase();
-  if (!slug || slug.length < 2) return null;
 
-  const scraperApiKey = process.env.SCRAPER_API_KEY;
-  const linkedinUrl = `https://www.linkedin.com/in/${encodeURIComponent(slug)}`;
-
-  // --- Attempt 1: Official Scraper API (Scientific Option #2) ---
-  if (scraperApiKey) {
-    try {
-      console.log(`Attempting ScraperAPI for ${slug}...`);
-      const scraperUrl = `http://api.scraperapi.com?api_key=${scraperApiKey}&url=${encodeURIComponent(linkedinUrl)}&render=false`;
-      const res = await fetch(scraperUrl, { signal: AbortSignal.timeout(10000) });
-      if (res.ok) {
-        const html = await res.text();
-        const titleMatch = html.match(/<title>(.*?)\s*-.*LinkedIn<\/title>/i) || html.match(/<title>(.*?)<\/title>/i);
-        if (titleMatch && titleMatch[1] && !titleMatch[1].toLowerCase().includes("security") && !titleMatch[1].toLowerCase().includes("captcha")) {
-          const name = titleMatch[1].trim();
-          await logServerEvent("scraper_success", { slug, method: "ScraperAPI", name });
-          return name;
-        }
-      }
-    } catch (e) {
-      await logServerEvent("scraper_error", { slug, method: "ScraperAPI", error: e.message });
-      console.warn("ScraperAPI failed:", e.message);
-    }
-  }
-
-  // --- Attempt 2: Direct Fetch (Works in dev, blocked on some cloud IPs) ---
-  try {
-    await logServerEvent("scraper_attempt", { slug, method: "Direct" });
-    const res = await fetch(linkedinUrl, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-        "Accept-Language": "en-US,en;q=0.9",
-        Accept: "text/html,application/xhtml+xml",
-      },
-      redirect: "follow",
-      signal: AbortSignal.timeout(6000),
-    });
-
-    if (res.ok) {
-      const html = await res.text();
-      const titleMatch = html.match(/<title>(.*?)\s*-.*LinkedIn<\/title>/i) || html.match(/<title>(.*?)<\/title>/i);
-      if (titleMatch && titleMatch[1] && !titleMatch[1].toLowerCase().includes("security") && !titleMatch[1].toLowerCase().includes("captcha")) {
-        const name = titleMatch[1].trim();
-        await logServerEvent("scraper_success", { slug, method: "Direct", name });
-        return name;
-      }
-    }
-  } catch (e) {
-    await logServerEvent("scraper_error", { slug, method: "Direct", error: e.message });
-    console.warn("Direct fetch failed:", e.message);
-  }
-
-  // --- Attempt 3: Search Engine Fallback (Scientific Option #4) ---
-  try {
-    await logServerEvent("scraper_attempt", { slug, method: "DuckDuckGo" });
-    const ddgUrl = `https://duckduckgo.com/html/?q=site:linkedin.com/in/${encodeURIComponent(slug)}`;
-    const res = await fetch(ddgUrl, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (res.ok) {
-      const html = await res.text();
-      // Look for the first result title which usually contains the name
-      const ddgMatch = html.match(/class="result__a"[^>]*>([^<]+)\s*-.*LinkedIn/i);
-      if (ddgMatch && ddgMatch[1]) {
-        const name = ddgMatch[1].trim();
-        await logServerEvent("scraper_success", { slug, method: "DuckDuckGo", name });
-        return name;
-      }
-    }
-  } catch (e) {
-    await logServerEvent("scraper_error", { slug, method: "DuckDuckGo", error: e.message });
-    console.warn("Search fallback failed:", e.message);
-  }
-
-  await logServerEvent("scraper_failure_all", { slug });
-
-  return null;
-}
 
 const SITE_ORIGIN = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://prohealthledger.org"
@@ -449,21 +366,63 @@ export async function POST(req) {
     MAX_NAME_PART
   );
 
-  // --- Real-time Name Resolution Fallback ---
-  // If the vouchee's name is just the unbroken slug, try to scrape it
-  let scrapedName = null;
-  if (voucheeSlug && safeVouchee.toLowerCase() === voucheeSlug.replace(/-/g, '').toLowerCase()) {
-    scrapedName = await resolveVoucheeName(voucheeSlug);
+  // --- Fallback Name Resolution Hierarchy ---
+  let resolvedName = null;
+  const slug = String(voucheeSlug || "").trim().toLowerCase();
+
+  // 1. Try to check database index first (no network call)
+  if (slug) {
+    try {
+      const { data: profiles } = await readDataFile("data/profiles/_index.json").catch(() => ({ data: [] }));
+      const profile = profiles.find((p) => p.slug === slug);
+      if (profile && profile.public_name) {
+        resolvedName = profile.public_name;
+        console.log(`[share-linkedin] Database cache hit for slug "${slug}": "${resolvedName}"`);
+      }
+    } catch (dbErr) {
+      console.warn("[share-linkedin] Database read failed:", dbErr.message);
+    }
   }
 
-  // If we successfully scraped the true name, update the local variables
-  // so that the effectiveCommentary and cleanTitle use the correct spacing.
+  // 2. Fall back to central resolver with 5s timeout ONLY if:
+  // - name is not resolved yet,
+  // - and input name looks like a raw unspaced slug (e.g. same characters as slug without hyphens)
+  const isInputUnspacedSlug = slug && safeVouchee.toLowerCase() === slug.replace(/-/g, '').toLowerCase();
+  if (!resolvedName && isInputUnspacedSlug) {
+    try {
+      console.log(`[share-linkedin] Cache miss. Attempting central resolver with 5s timeout for "${slug}"...`);
+      
+      const resolvePromise = resolveLinkedinProfile(slug);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Timeout")), 5000)
+      );
+
+      const result = await Promise.race([resolvePromise, timeoutPromise]);
+      if (result && result.name) {
+        resolvedName = result.name;
+        console.log(`[share-linkedin] Central resolver succeeded: "${resolvedName}"`);
+      }
+    } catch (resolveErr) {
+      console.warn("[share-linkedin] Central resolver failed or timed out:", resolveErr.message);
+    }
+  }
+
+  // 3. Fall back to formatting slug as last-resort prettification
+  if (!resolvedName) {
+    if (isInputUnspacedSlug) {
+      resolvedName = formatProfessionalDisplayName(slug, safeVouchee);
+      console.log(`[share-linkedin] Last-resort fallback formatting for "${slug}": "${resolvedName}"`);
+    } else {
+      resolvedName = safeVouchee;
+    }
+  }
+
+  // Update effective commentary & title using resolvedName
   let effectiveCommentary = finalCommentary;
-  if (scrapedName && scrapedName.toLowerCase() !== safeVouchee.toLowerCase()) {
-    // Replace all occurrences of the unbroken string with the properly spaced string
+  if (resolvedName && resolvedName.toLowerCase() !== safeVouchee.toLowerCase()) {
     const escapedVouchee = safeVouchee.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    effectiveCommentary = effectiveCommentary.replace(new RegExp(escapedVouchee, 'g'), scrapedName);
-    safeVouchee = scrapedName; // Use scraped name for OG image title
+    effectiveCommentary = effectiveCommentary.replace(new RegExp(escapedVouchee, 'g'), resolvedName);
+    safeVouchee = resolvedName;
   }
 
   const fallbackTitle = clampString(
