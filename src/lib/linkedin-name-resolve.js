@@ -166,6 +166,8 @@ export async function resolveLinkedinProfile(slug) {
     if (!res.ok) {
       const serp = await fallbackFromGoogleSerp(slug);
       if (serp.name || serp.photo) return serp;
+      const yahoo = await fallbackFromYahooSerp(slug);
+      if (yahoo.name || yahoo.photo) return yahoo;
       return await fallbackFromDuckDuckGoSerp(slug);
     }
 
@@ -202,12 +204,18 @@ export async function resolveLinkedinProfile(slug) {
     if (serp.name || serp.photo) {
       return { name: name || serp.name, photo: photo || serp.photo };
     }
+    const yahooSerp = await fallbackFromYahooSerp(slug);
+    if (yahooSerp.name || yahooSerp.photo) {
+      return { name: name || yahooSerp.name, photo: photo || yahooSerp.photo };
+    }
     const ddgSerp = await fallbackFromDuckDuckGoSerp(slug);
     return { name: name || ddgSerp.name, photo: photo || ddgSerp.photo };
   } catch {
     // If direct fetch threw an error, attempt the SERP fallback.
     const serp = await fallbackFromGoogleSerp(slug);
     if (serp.name || serp.photo) return serp;
+    const yahooSerp = await fallbackFromYahooSerp(slug);
+    if (yahooSerp.name || yahooSerp.photo) return yahooSerp;
     return await fallbackFromDuckDuckGoSerp(slug);
   } finally {
     clearTimeout(timer);
@@ -426,6 +434,83 @@ async function fallbackFromDuckDuckGoSerp(slug) {
     return { name, photo };
   } catch (e) {
     console.log("[DuckDuckGo] Scrape exception:", e.message);
+    return { name: null, photo: null };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Fallback Strategy: Scrape Yahoo search results for name AND photo.
+ * @returns {Promise<{name: string|null, photo: string|null}>}
+ */
+async function fallbackFromYahooSerp(slug) {
+  const query = `${slug} linkedin`;
+  const url = `https://search.yahoo.com/search?p=${encodeURIComponent(query)}`;
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      signal: ctrl.signal,
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+        Accept: "text/html",
+      },
+    });
+
+    if (!res.ok) {
+      console.log(`[Yahoo] Search page returned status: ${res.status}`);
+      return { name: null, photo: null };
+    }
+
+    const html = await res.text();
+    const aRegex = /<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+    let match;
+    let name = null;
+    let photo = null;
+
+    while ((match = aRegex.exec(html)) !== null) {
+      const rawHref = match[1];
+      const rawText = match[2];
+      
+      let targetUrl = rawHref;
+      const ruMatch = rawHref.match(/\/RU=([^/]+)/i);
+      if (ruMatch) {
+        try {
+          targetUrl = decodeURIComponent(ruMatch[1]);
+        } catch {}
+      }
+
+      const isTargetProfile = targetUrl.toLowerCase().includes(`/in/${slug}`);
+      if (isTargetProfile) {
+        let text = rawText.replace(/<[^>]*>/g, "").trim();
+        // Remove Yahoo search result title link prefix (e.g. "LinkedInhttps://...")
+        text = text.replace(/^LinkedInhttps?:\/\/[^\s]+(\s+›\s+[^\s]+)*/i, "").trim();
+        text = text.replace(/^https?:\/\/[^\s]+(\s+›\s+[^\s]+)*/i, "").trim();
+
+        name = extractNameFromTitle(text);
+        if (name) {
+          console.log(`[Yahoo] Resolved name: "${name}" from URL text: "${text}"`);
+          break;
+        }
+      }
+    }
+
+    // Try to find any media.licdn.com thumbnail urls in the search page
+    const imgRegex = /(?:src|data-src)="(https?:\/\/[^"]*media\.licdn\.com\/dms\/image[^"]*profile-displayphoto[^"]*)"/gi;
+    const imgMatch = imgRegex.exec(html);
+    if (imgMatch) {
+      photo = imgMatch[1].replace(/&amp;/g, "&");
+    }
+
+    return { name, photo };
+  } catch (e) {
+    console.log("[Yahoo] Scrape exception:", e.message);
     return { name: null, photo: null };
   } finally {
     clearTimeout(timer);
