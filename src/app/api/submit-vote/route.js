@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { readDataFile, writeDataFile, createIssue } from "@/lib/github";
+import { readDataFile, writeDataFile, createIssue, writeRepoFile } from "@/lib/github";
 import { canSubmitNegativeVote } from "@/lib/karma";
 import { formatProfessionalDisplayName } from "@/lib/profiles";
 import { isFlagBlockedForLinkedinUrl } from "@/lib/protected-profiles";
@@ -497,28 +497,81 @@ export async function POST(req) {
   if (publicName && typeof publicName === "string" && publicName.trim()) {
     if (!profile.public_name) {
       profile.public_name = publicName.trim();
+      profile.resolution_source = "manual";
+      profile.confidence = 1.0;
+      profile.resolved_at = new Date().toISOString();
     }
   }
 
   // Auto-resolve the real name and profile photo from LinkedIn if not already set.
-  if (!profile.public_name || !profile.profile_photo_url) {
+  let resolved = null;
+  if (!profile.public_name || !profile.profile_photo_url || (profile.profile_photo_url && profile.profile_photo_url.startsWith("http"))) {
     try {
-      const resolved = await resolveLinkedinProfile(slug);
+      resolved = await resolveLinkedinProfile(slug);
       if (resolved.name && !profile.public_name) {
         profile.public_name = resolved.name;
       }
-      if (resolved.photo && !profile.profile_photo_url) {
-        profile.profile_photo_url = resolved.photo;
+
+      // Store resolution metadata
+      if (resolved.source) {
+        profile.resolution_source = resolved.source;
+        profile.confidence = resolved.confidence ?? 0;
+        profile.resolved_at = new Date().toISOString();
       }
-    } catch {
-      // Non-fatal — slug-derived name and no photo is the fallback.
+
+      if (resolved.photo) {
+        profile.original_photo_url = resolved.photo;
+      }
+    } catch (err) {
+      console.warn("[submit-vote] resolve profile failed:", err);
     }
+  }
+
+  // Handle local photo download and commit if the photo URL starts with http
+  const photoUrlToDownload = resolved?.photo || (profile.profile_photo_url && profile.profile_photo_url.startsWith("http") ? profile.profile_photo_url : null);
+  const localPhotoPath = profile.profile_photo_url;
+  const isLocalPhotoValid = localPhotoPath && localPhotoPath.startsWith("/");
+
+  if (photoUrlToDownload && !isLocalPhotoValid) {
+    try {
+      console.log(`[submit-vote] Downloading photo from CDN: ${photoUrlToDownload}`);
+      const downloadRes = await fetch(photoUrlToDownload);
+      if (downloadRes.ok) {
+        const contentType = downloadRes.headers.get("content-type") || "image/jpeg";
+        const ext = contentType.includes("png") ? "png" : "jpeg";
+        const buffer = await downloadRes.arrayBuffer();
+
+        const filePath = `public/${slug}.${ext}`;
+        console.log(`[submit-vote] Committing image to repository: ${filePath}`);
+
+        // This is non-blocking to vote submission, caught errors won't bubble up.
+        await writeRepoFile(filePath, buffer, `chore: save local profile photo for ${slug}`);
+
+        // Update database photo URL to point to the local path
+        profile.profile_photo_url = `/${slug}.${ext}`;
+        profile.photo_storage = "local";
+      } else {
+        console.warn(`[submit-vote] CDN photo fetch returned status: ${downloadRes.status}`);
+        profile.profile_photo_url = photoUrlToDownload;
+        profile.photo_storage = "linkedin_cdn";
+      }
+    } catch (imgErr) {
+      console.error("[submit-vote] Non-fatal image download/commit failure:", imgErr);
+      profile.profile_photo_url = photoUrlToDownload;
+      profile.photo_storage = "linkedin_cdn";
+    }
+  } else if (isLocalPhotoValid) {
+    profile.photo_storage = "local";
+  } else {
+    profile.photo_storage = "placeholder";
   }
 
   // If the voter flagged the photo as wrong, clear it so it can be re-resolved
   // on the next vote submission, and record the flag on this submission.
-  if (photoFlagged && profile.profile_photo_url) {
+  if (photoFlagged) {
     profile.profile_photo_url = null;
+    profile.original_photo_url = null;
+    profile.photo_storage = "placeholder";
     submission.photo_flagged = true;
   }
 
