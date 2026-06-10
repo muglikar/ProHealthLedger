@@ -33,7 +33,7 @@ async function resolveViaZyte(slug) {
   console.log(`[Zyte] Resolving public profile for slug: ${slug} via Zyte API...`);
 
   try {
-    const res = await fetch("https://api.zyte.com/v1/webpage", {
+    const res = await fetch("https://api.zyte.com/v1/extract", {
       method: "POST",
       headers: {
         "Authorization": "Basic " + btoa(apiKey + ":"),
