@@ -26,9 +26,11 @@ export async function GET(req) {
   const userId = session?.userId || null;
   const cacheKey = `${userId || "anon"}:${slug}`;
 
+  const bypass = searchParams.get("bypass") === "true";
+
   // Check in-memory cache
   const cached = cache.get(cacheKey);
-  if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {
+  if (!bypass && cached && Date.now() - cached.ts < CACHE_TTL_MS) {
     return Response.json(cached.data, {
       headers: {
         "Cache-Control": userId ? "private, no-cache" : "public, max-age=300",
