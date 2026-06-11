@@ -542,7 +542,7 @@ function SubmitPageContent() {
               submitting ||
               !linkedinUrl ||
               !vote ||
-              (!session.linkedinProfileUrl && !submitterLinkedinUrl) ||
+              (!preview?.userVote?.voted && !session.linkedinProfileUrl && !submitterLinkedinUrl) ||
               preview?.userVote?.reason_edited ||
               (showManualName && !manualName.trim())
             }

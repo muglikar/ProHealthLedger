@@ -323,6 +323,21 @@ export const authOptions = {
       }
       if (token.linkedinProfileUrl) {
         session.linkedinProfileUrl = String(token.linkedinProfileUrl);
+      } else if (token.userId) {
+        try {
+          const { data: users } = await readRepoJson("data/users/_index.json").catch(() => ({ data: [] }));
+          let sessionUserId = String(token.userId).replace("github:", "").replace("linkedin:", "");
+          if (sessionUserId === "CAOSO1oig0") sessionUserId = "muglikar";
+          const dbUser = users?.find?.((u) => {
+            const uid = (u.user_id || u.github_username || "").replace("github:", "").replace("linkedin:", "");
+            return uid === sessionUserId;
+          });
+          if (dbUser?.linkedin_url) {
+            session.linkedinProfileUrl = dbUser.linkedin_url;
+          }
+        } catch (e) {
+          console.warn("Failed to read user for session linkedinProfileUrl:", e);
+        }
       }
       session.siteAdmin = Boolean(token.siteAdmin);
       // Flag so the client knows direct LinkedIn posting is available (token stays server-side)
