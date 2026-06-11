@@ -16,7 +16,7 @@ const SITE_URL = "https://prohealthledger.org";
 function buildShareText(displayName, firstPerson = false, vote = "yes") {
   if (firstPerson) {
     // Styles 4 & 5 (Self-Share)
-    const hashtags = "#CareerGrowth #PersonalBranding #Networking #ProfessionalDevelopment #FutureOfWork";
+    const hashtags = "#ProfessionalHealthLedger #PHL #CareerGrowth #PersonalBranding #Networking #ProfessionalDevelopment #FutureOfWork";
     const options = [
       {
         text: "Your professional career track record belongs to you — not to the HR department of your previous company.\n\n" +
@@ -37,7 +37,7 @@ function buildShareText(displayName, firstPerson = false, vote = "yes") {
     return options[Math.floor(Math.random() * options.length)];
   }
 
-  const hashtags = "#ProfessionalIntegrity #WorkplaceCulture #Accountability #Transparency #LeadershipDevelopment";
+  const hashtags = "#ProfessionalHealthLedger #PHL #ProfessionalIntegrity #WorkplaceCulture #Accountability #Transparency #LeadershipDevelopment";
 
   if (vote === "no") {
     const options = [

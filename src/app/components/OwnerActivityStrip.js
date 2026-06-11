@@ -59,7 +59,7 @@ Let’s build a workplace culture where conduct and how one treats people matter
 
 👉 Explore the ledger, lookup someone, or vouch for a world-class colleague today: [Link in the first comment]
 
-#FutureOfWork #WorkplaceCulture #Leadership #Management #Transparency #OpenSource #Accountability #ProfessionalHealthLedger`;
+#FutureOfWork #WorkplaceCulture #Leadership #Management #Transparency #OpenSource #Accountability #ProfessionalHealthLedger #PHL`;
 
 export default function OwnerActivityStrip() {
   const { data: session, status } = useSession();

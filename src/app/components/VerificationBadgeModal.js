@@ -34,7 +34,7 @@ export default function VerificationBadgeModal({ profileSlug, publicName, onClos
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           mode: "badge",
-          commentary: "I'm proud to be recognized as a Verified Professional on the Professional Health Ledger. Transparency and accountability matter!",
+          commentary: "I'm proud to be recognized as a Verified Professional on the Professional Health Ledger. Transparency and accountability matter!\n\n#ProfessionalHealthLedger #PHL #ProfessionalIntegrity #Accountability #Transparency",
           articleUrl: profileUrl,
           articleTitle: `${publicName || "Verified Professional"} on Pro-Health Ledger`,
           articleDescription: "See verified professional vouches and community trust on Pro-Health Ledger.",

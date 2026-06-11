@@ -63,7 +63,7 @@ export async function POST(req) {
 
     const shareUrl = `${SITE_URL}/?ref=${referral.ref_code}`;
 
-    const linkedinText = `Hey, I just vouched for ${displayName} on Professional Health Ledger — a free, transparent directory of honest professional experiences.\n\nCheck it out and share your experience too!\n\n${shareUrl}\n\n#ProHealthLedger #OpenSource #ProfessionalReputation`;
+    const linkedinText = `Hey, I just vouched for ${displayName} on Professional Health Ledger — a free, transparent directory of honest professional experiences.\n\nCheck it out and share your experience too!\n\n${shareUrl}\n\n#ProfessionalHealthLedger #PHL #ProHealthLedger #OpenSource #ProfessionalReputation`;
 
     const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
 
