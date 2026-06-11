@@ -1259,9 +1259,11 @@
       }
     ],
     "public_name": "Apurva Raj",
-    "resolution_source": "direct",
-    "confidence": 0.95,
-    "resolved_at": "2026-06-11T05:13:36.587Z",
-    "photo_storage": "placeholder"
+    "resolution_source": "manual",
+    "confidence": 1.0,
+    "resolved_at": "2026-06-11T05:15:00.000Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQHZKdlfqJbYuw/profile-displayphoto-crop_800_800/B4DZvhgnjpG0AM-/0/1769014983595?e=1782950400&v=beta&t=5rsX-VyQ8geF9NWTv39LPcSqOniXM2MUcd0niXQSCjU",
+    "profile_photo_url": "/apurva-raj-27279b16b.jpeg",
+    "photo_storage": "local"
   }
 ]
