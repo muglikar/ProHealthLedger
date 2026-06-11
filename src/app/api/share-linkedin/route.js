@@ -494,6 +494,28 @@ export async function POST(req) {
     // was the failing part.
     if (!liRes.ok || liRes.status >= 400) {
       const errDetail = await liRes.text().catch(() => "");
+
+      // If LinkedIn says ACCESS_DENIED / insufficient scopes, retrying is futile.
+      // The user needs to sign out and sign back in to pick up the new
+      // w_member_social scope.  Return a clear message instead of burning
+      // through two more retry loops.
+      if (liRes.status === 403 && errDetail.includes("ACCESS_DENIED")) {
+        console.error(
+          "LinkedIn 403 ACCESS_DENIED — token lacks w_member_social scope.",
+          errDetail,
+        );
+        return Response.json(
+          {
+            error:
+              "Your LinkedIn session doesn't have permission to post. " +
+              "Please sign out and sign back in with LinkedIn to grant the updated permissions, then try again.",
+            code: "LINKEDIN_SCOPE_MISSING",
+            status: 403,
+          },
+          { status: 403 }
+        );
+      }
+
       console.warn(
         "Full post failed:",
         liRes.status,

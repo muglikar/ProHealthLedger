@@ -160,7 +160,12 @@ if (linkedInClientId && linkedInClientSecret) {
       jwks_endpoint: "https://www.linkedin.com/oauth/openid/jwks",
       authorization: {
         url: "https://www.linkedin.com/oauth/v2/authorization",
-        params: { scope: process.env.LINKEDIN_SCOPE || "openid profile email" },
+        params: {
+          // w_member_social is required for POST /rest/posts and image uploads.
+          // The "Share on LinkedIn" product must be enabled in the LinkedIn
+          // Developer App dashboard for this scope to be granted.
+          scope: process.env.LINKEDIN_SCOPE || "openid profile email w_member_social",
+        },
       },
       token: "https://www.linkedin.com/oauth/v2/accessToken",
       // Custom fetch avoids merged userinfo.params.projection (for /v2/me) breaking OIDC userinfo.
