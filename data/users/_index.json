@@ -291,9 +291,15 @@
         "vote": "yes",
         "issue": 57,
         "date": "2026-06-10"
+      },
+      {
+        "profile_slug": "apurva-raj-27279b16b",
+        "vote": "yes",
+        "issue": 58,
+        "date": "2026-06-11"
       }
     ],
-    "yes_count": 27,
+    "yes_count": 28,
     "no_count": 20,
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
   },
