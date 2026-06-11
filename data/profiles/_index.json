@@ -1236,5 +1236,33 @@
     "original_photo_url": "https://media.licdn.com/dms/image/v2/D5603AQHNW9PAtDwsgA/profile-displayphoto-shrink_200_200/B56ZYumC9xH0AY-/0/1744538448872?e=2147483647&v=beta&t=x3pvhFQrq5hlGTRTv9gcj1mzicX15G-lLnVbwk5kK8Q",
     "profile_photo_url": "/iantarakey.jpeg",
     "photo_storage": "local"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/apurva-raj-27279b16b",
+    "slug": "apurva-raj-27279b16b",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1782950400&v=beta&t=_3uGL4qOVCwOsBMPmRcTIub5CMjTiVioPA9k9wYuROQ",
+        "submitter_linkedin_url": "https://www.linkedin.com/in/muglikar/",
+        "vote": "yes",
+        "issue": 58,
+        "date": "2026-06-11",
+        "submitter_capacity": "VP of AI/ML, Principal Architect at Kalyani Group (KSMS TSPL)",
+        "voted_capacity": "Data Scientist at Kalyani Group (KSMS TSPL)",
+        "reason": "Apurva had created a beautiful and extremely granular dashboard for IoT Data for Energy consumtion, Production and Downtime for all available Bharat Forge Plants. If given good prospectively important projects to work on, she will definitely be an asset to any organization.",
+        "reason_pending": true
+      }
+    ],
+    "public_name": "Apurva Raj",
+    "resolution_source": "direct",
+    "confidence": 0.95,
+    "resolved_at": "2026-06-11T05:13:36.587Z",
+    "photo_storage": "placeholder"
   }
 ]
