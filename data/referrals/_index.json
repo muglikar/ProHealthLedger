@@ -298,5 +298,15 @@
     "created_at": "2026-06-11",
     "clicks": 2,
     "signups": []
+  },
+  {
+    "ref_code": "133afb6d",
+    "sharer_id": "linkedin:CAOSO1oig0",
+    "sharer_name": "Anand Muglikar",
+    "profile_slug": "vinay-tiwari-7326723a",
+    "profile_name": "Vinay Tiwari",
+    "created_at": "2026-06-12",
+    "clicks": 0,
+    "signups": []
   }
 ]
