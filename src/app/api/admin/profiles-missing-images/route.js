@@ -35,6 +35,8 @@ export async function GET(req) {
       profile_photo_url: p.profile_photo_url
     }));
 
+    result.sort((a, b) => a.public_name.localeCompare(b.public_name));
+
     return Response.json(result);
   } catch (error) {
     console.error("[profiles-missing-images] error:", error);
