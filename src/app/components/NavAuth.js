@@ -124,6 +124,9 @@ export default function NavAuth() {
               <Link href="/admin/moderate" className="nav-dropdown-item">
                 Moderate Entries
               </Link>
+              <Link href="/admin/tools" className="nav-dropdown-item">
+                Admin Tools
+              </Link>
               <Link href="/admin/removals" className="nav-dropdown-item">
                 Removal Requests
               </Link>
