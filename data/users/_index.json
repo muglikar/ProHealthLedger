@@ -297,10 +297,16 @@
         "vote": "yes",
         "issue": 58,
         "date": "2026-06-11"
+      },
+      {
+        "profile_slug": "antony-chacko-97061720",
+        "vote": "no",
+        "issue": 61,
+        "date": "2026-06-12"
       }
     ],
     "yes_count": 28,
-    "no_count": 20,
+    "no_count": 21,
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
   },
   {
