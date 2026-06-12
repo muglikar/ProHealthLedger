@@ -14,23 +14,38 @@ export async function POST(req) {
   }
 
   try {
-    const { slug, imageData, fileName } = await req.json();
+    const { slug, imageData, imageUrl } = await req.json();
 
-    if (!slug || !imageData) {
-      return Response.json({ error: "Slug and image data are required." }, { status: 400 });
+    if (!slug) {
+      return Response.json({ error: "Slug is required." }, { status: 400 });
+    }
+    if (!imageData && !imageUrl) {
+      return Response.json({ error: "Either image file or image URL is required." }, { status: 400 });
     }
 
-    // Determine extension (default to jpeg)
+    let buffer;
     let ext = "jpeg";
-    const mimeMatch = imageData.match(/^data:image\/(\w+);base64,/);
-    if (mimeMatch) {
-      ext = mimeMatch[1];
-    }
-    if (ext === "png") ext = "png";
-    else ext = "jpeg"; // normalize to jpeg unless png
 
-    const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
-    const buffer = Buffer.from(base64Data, "base64");
+    if (imageUrl) {
+      const fetchRes = await fetch(imageUrl, { signal: AbortSignal.timeout(10000) });
+      if (!fetchRes.ok) {
+        throw new Error(`Failed to fetch image from URL: ${fetchRes.status} ${fetchRes.statusText}`);
+      }
+      const contentType = fetchRes.headers.get("content-type") || "image/jpeg";
+      ext = contentType.includes("png") ? "png" : "jpeg";
+      const arrayBuffer = await fetchRes.arrayBuffer();
+      buffer = Buffer.from(arrayBuffer);
+    } else {
+      const mimeMatch = imageData.match(/^data:image\/(\w+);base64,/);
+      if (mimeMatch) {
+        ext = mimeMatch[1];
+      }
+      if (ext === "png") ext = "png";
+      else ext = "jpeg";
+
+      const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
+      buffer = Buffer.from(base64Data, "base64");
+    }
 
     const imageFileName = `${slug}.${ext}`;
     const filePath = `public/${imageFileName}`;

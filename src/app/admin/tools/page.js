@@ -8,6 +8,8 @@ export default function AdminToolsPage() {
   const { data: session, status } = useSession();
   const [missingImages, setMissingImages] = useState([]);
   const [selectedSlug, setSelectedSlug] = useState("");
+  const [uploadMethod, setUploadMethod] = useState("file"); // "file" or "url"
+  const [imageUrl, setImageUrl] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -65,8 +67,12 @@ export default function AdminToolsPage() {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!selectedSlug || !imagePreview) {
-      setUploadError("Please select a profile and an image file.");
+    if (uploadMethod === "file" && !imagePreview) {
+      setUploadError("Please select an image file.");
+      return;
+    }
+    if (uploadMethod === "url" && !imageUrl.trim()) {
+      setUploadError("Please enter an image URL.");
       return;
     }
 
@@ -75,23 +81,28 @@ export default function AdminToolsPage() {
     setUploadSuccess("");
 
     try {
+      const payload = { slug: selectedSlug };
+      if (uploadMethod === "url") {
+        payload.imageUrl = imageUrl.trim();
+      } else {
+        payload.imageData = imagePreview;
+      }
+
       const res = await fetch("/api/admin/upload-profile-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug: selectedSlug,
-          imageData: imagePreview,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Failed to upload image.");
+        throw new Error(data.error || "Failed to save image.");
       }
 
-      setUploadSuccess(`Successfully uploaded image for ${selectedSlug}!`);
+      setUploadSuccess(`Successfully saved image for ${selectedSlug}!`);
       setImageFile(null);
       setImagePreview("");
+      setImageUrl("");
       await fetchMissingImages();
     } catch (err) {
       setUploadError(err.message);
@@ -154,7 +165,7 @@ export default function AdminToolsPage() {
           📸 Upload Profile Images
         </h2>
         <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", marginBottom: "20px" }}>
-          Select a profile that is missing a photo, upload an image file, and save it locally in the repository.
+          Select a profile that is missing a photo, upload an image file or fetch from a URL, and save it locally in the repository.
         </p>
 
         {missingImages.length === 0 ? (
@@ -182,33 +193,74 @@ export default function AdminToolsPage() {
               </select>
             </div>
 
-            <div className="form-group" style={{ marginBottom: "20px" }}>
-              <label htmlFor="image-file">Choose Image File</label>
-              <input
-                id="image-file"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                style={{ display: "block", width: "100%", padding: "8px 0" }}
-              />
-              {imagePreview && (
-                <div style={{ marginTop: "12px" }}>
-                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "6px" }}>Preview:</p>
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border)" }}
+            <div className="form-group" style={{ marginBottom: "16px" }}>
+              <label>Image Source</label>
+              <div style={{ display: "flex", gap: "16px", marginBottom: "12px", marginTop: "6px" }}>
+                <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "0.9rem" }}>
+                  <input
+                    type="radio"
+                    name="uploadMethod"
+                    value="file"
+                    checked={uploadMethod === "file"}
+                    onChange={() => setUploadMethod("file")}
                   />
-                </div>
-              )}
+                  Upload File
+                </label>
+                <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "0.9rem" }}>
+                  <input
+                    type="radio"
+                    name="uploadMethod"
+                    value="url"
+                    checked={uploadMethod === "url"}
+                    onChange={() => setUploadMethod("url")}
+                  />
+                  Paste Image URL
+                </label>
+              </div>
             </div>
+
+            {uploadMethod === "file" ? (
+              <div className="form-group" style={{ marginBottom: "20px" }}>
+                <label htmlFor="image-file">Choose Image File</label>
+                <input
+                  id="image-file"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ display: "block", width: "100%", padding: "8px 0" }}
+                />
+                {imagePreview && (
+                  <div style={{ marginTop: "12px" }}>
+                    <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "6px" }}>Preview:</p>
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border)" }}
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="form-group" style={{ marginBottom: "20px" }}>
+                <label htmlFor="image-url">Image URL</label>
+                <input
+                  id="image-url"
+                  type="url"
+                  placeholder="https://example.com/photo.jpg"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  style={{ width: "100%", padding: "10px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)" }}
+                  required={uploadMethod === "url"}
+                />
+              </div>
+            )}
 
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={uploading || !imagePreview}
+              disabled={uploading || (uploadMethod === "file" ? !imagePreview : !imageUrl.trim())}
             >
-              {uploading ? "Uploading & Committing…" : "Upload & Save Image"}
+              {uploading ? "Saving Image…" : "Save Image"}
             </button>
           </form>
         )}
