@@ -8,6 +8,7 @@ export default function AdminToolsPage() {
   const { data: session, status } = useSession();
   const [missingImages, setMissingImages] = useState([]);
   const [selectedSlug, setSelectedSlug] = useState("");
+  const [showAllProfiles, setShowAllProfiles] = useState(false);
   const [uploadMethod, setUploadMethod] = useState("file"); // "file" or "url"
   const [imageUrl, setImageUrl] = useState("");
   const [imageFile, setImageFile] = useState(null);
@@ -28,30 +29,30 @@ export default function AdminToolsPage() {
     session?.userId &&
     (Boolean(session.siteAdmin) || isRepoMaintainerUserId(session.userId));
 
-  const fetchMissingImages = useCallback(async () => {
+  const fetchMissingImages = useCallback(async (showAll = showAllProfiles) => {
     try {
-      const res = await fetch("/api/admin/profiles-missing-images");
+      const res = await fetch(`/api/admin/profiles-missing-images?all=${showAll}`);
       if (res.ok) {
         const data = await res.json();
         setMissingImages(data);
         if (data.length > 0) {
-          setSelectedSlug(data[0].slug);
+          setSelectedSlug(prev => data.some(d => d.slug === prev) ? prev : data[0].slug);
         } else {
           setSelectedSlug("");
         }
       }
     } catch (err) {
-      console.error("Failed to fetch profiles missing images:", err);
+      console.error("Failed to fetch profiles:", err);
     }
-  }, []);
+  }, [showAllProfiles]);
 
   useEffect(() => {
     if (!isAdmin) {
       setLoading(false);
       return;
     }
-    fetchMissingImages().finally(() => setLoading(false));
-  }, [isAdmin, fetchMissingImages]);
+    fetchMissingImages(showAllProfiles).finally(() => setLoading(false));
+  }, [isAdmin, showAllProfiles, fetchMissingImages]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -167,6 +168,17 @@ export default function AdminToolsPage() {
         <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", marginBottom: "20px" }}>
           Select a profile that is missing a photo, upload an image file or fetch from a URL, and save it locally in the repository.
         </p>
+
+        <div className="form-group" style={{ marginBottom: "20px" }}>
+          <label style={{ display: "inline-flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+            <input
+              type="checkbox"
+              checked={showAllProfiles}
+              onChange={(e) => setShowAllProfiles(e.target.checked)}
+            />
+            Show all profiles (allow changing existing photos)
+          </label>
+        </div>
 
         {missingImages.length === 0 ? (
           <div style={{ padding: "16px", background: "rgba(59, 130, 246, 0.05)", borderRadius: "var(--radius-sm)", color: "var(--accent)" }}>
