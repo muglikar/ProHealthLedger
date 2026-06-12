@@ -303,9 +303,15 @@
         "vote": "no",
         "issue": 61,
         "date": "2026-06-12"
+      },
+      {
+        "profile_slug": "rahmath-sultana-3a9b08148",
+        "vote": "yes",
+        "issue": 62,
+        "date": "2026-06-12"
       }
     ],
-    "yes_count": 28,
+    "yes_count": 29,
     "no_count": 21,
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
   },
