@@ -315,9 +315,15 @@
         "vote": "yes",
         "issue": 63,
         "date": "2026-06-12"
+      },
+      {
+        "profile_slug": "siddharatha-lele",
+        "vote": "yes",
+        "issue": 64,
+        "date": "2026-06-12"
       }
     ],
-    "yes_count": 30,
+    "yes_count": 31,
     "no_count": 21,
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
   },
