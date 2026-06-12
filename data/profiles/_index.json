@@ -1307,13 +1307,16 @@
         "vote": "yes",
         "issue": 62,
         "date": "2026-06-12",
-        "voted_capacity": "Digital Workplace AI specialist  Feb 2025 - Present · 1 yr 5 mos  India · Remote"
+        "submitter_capacity": "Vice President AI/ML - Principal Architect at Kalyani Group",
+        "voted_capacity": "Digital Workplace AI specialist at Brio Technologies"
       }
     ],
     "public_name": "Rahmath sultana",
-    "resolution_source": "direct",
-    "confidence": 0.95,
+    "resolution_source": "manual",
+    "confidence": 1.0,
     "resolved_at": "2026-06-12T15:23:54.405Z",
-    "photo_storage": "placeholder"
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D5603AQGdlViKZtopmQ/profile-displayphoto-shrink_800_800/B56Zc.pnKrHoAc-/0/1749102786674?e=1782950400&v=beta&t=uTBj4Bdb1oiDwF52xESDlIBX3oDgXwrw_C_jHfq47u4",
+    "profile_photo_url": "/rahmath-sultana-3a9b08148.jpeg",
+    "photo_storage": "local"
   }
 ]
