@@ -102,7 +102,16 @@ function SubmitPageContent() {
     setResult(null);
 
     try {
-      const payload = { linkedinUrl, vote, reason, submitterCapacity, votedCapacity, photoFlagged };
+      const payload = {
+        linkedinUrl,
+        vote,
+        reason,
+        submitterCapacity,
+        votedCapacity,
+        photoFlagged,
+        resolvedName: preview?.name || null,
+        resolvedPhoto: preview?.photo || null
+      };
       if (!session?.linkedinProfileUrl) {
         payload.submitterLinkedinUrl = submitterLinkedinUrl;
       }

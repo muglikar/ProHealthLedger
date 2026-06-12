@@ -1365,6 +1365,12 @@
         "voted_capacity": "Network Executive at Tata Communications Ltd"
       }
     ],
-    "photo_storage": "placeholder"
+    "public_name": "Siddharth Lele",
+    "resolution_source": "manual",
+    "confidence": 1.0,
+    "resolved_at": "2026-06-12T15:53:00.000Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQFGHLAuXPNJUA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1690683196177?e=2147483647&v=beta&t=qfUpAz43YtYBtfbaW5KUEupurP4dbvwvvekG2V8Gf1w",
+    "profile_photo_url": "/siddharatha-lele.jpeg",
+    "photo_storage": "local"
   }
 ]

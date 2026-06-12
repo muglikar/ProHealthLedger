@@ -39,7 +39,7 @@ export async function POST(req) {
   }
 
   const body = await req.json();
-  const { linkedinUrl, vote, reason, submitterLinkedinUrl, submitterCapacity, votedCapacity, photoFlagged, publicName } = body;
+  const { linkedinUrl, vote, reason, submitterLinkedinUrl, submitterCapacity, votedCapacity, photoFlagged, publicName, resolvedName, resolvedPhoto } = body;
   const userId = session.userId;
   const displayName = session.displayName || userId;
 
@@ -507,7 +507,17 @@ export async function POST(req) {
   let resolved = null;
   if (!profile.public_name || !profile.profile_photo_url || (profile.profile_photo_url && profile.profile_photo_url.startsWith("http"))) {
     try {
-      resolved = await resolveLinkedinProfile(slug);
+      if (resolvedName || resolvedPhoto) {
+        resolved = {
+          name: resolvedName || null,
+          photo: resolvedPhoto || null,
+          source: "client-preview",
+          confidence: 0.95
+        };
+      } else {
+        resolved = await resolveLinkedinProfile(slug);
+      }
+
       if (resolved.name && !profile.public_name) {
         profile.public_name = resolved.name;
       }
