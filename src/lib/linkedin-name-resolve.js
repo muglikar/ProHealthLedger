@@ -373,7 +373,7 @@ function extractNameFromTitle(raw) {
   s = s.replace(/^\(\d+\)\s*/, "");
   s = s.replace(/\s*\|\s*LinkedIn\s*$/i, "");
 
-  const firstSegment = s.split(/\s+-\s+/)[0].trim();
+  const firstSegment = s.split(/\s+[-–—|:]\s+/)[0].trim();
 
   if (!firstSegment) return null;
   if (firstSegment.length < 2) return null;
