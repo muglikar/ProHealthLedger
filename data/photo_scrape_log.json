@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-06-11T03:05:50.316Z",
+  "last_run": "2026-06-13T03:59:34.584Z",
   "attempts": {
     "abhijit-moharir-6291274": {
       "last_attempt": "2026-05-28",
@@ -22,28 +22,32 @@
       "failures": 0
     },
     "jeewanjyotiagarwal": {
-      "last_attempt": "2026-06-05",
-      "failures": 3
+      "last_attempt": "2026-06-13",
+      "failures": 4
     },
     "pankaj-chaudhari-65561b12": {
       "last_attempt": "2026-06-05",
       "failures": 3
     },
     "user:linkedin:YPuTuKfNvt": {
-      "last_attempt": "2026-06-05",
-      "failures": 3
+      "last_attempt": "2026-06-13",
+      "failures": 0
     },
     "user:linkedin:IwyCjgJprL": {
-      "last_attempt": "2026-06-05",
-      "failures": 3
+      "last_attempt": "2026-06-13",
+      "failures": 0
     },
     "jasmita-mukherjee": {
       "last_attempt": "2026-06-07",
       "failures": 2
     },
     "akriti-singh-1115b1178": {
-      "last_attempt": "2026-06-08",
-      "failures": 2
+      "last_attempt": "2026-06-13",
+      "failures": 3
+    },
+    "antony-chacko-97061720": {
+      "last_attempt": "2026-06-13",
+      "failures": 1
     }
   }
 }
