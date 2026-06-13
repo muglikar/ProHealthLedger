@@ -318,5 +318,15 @@
     "created_at": "2026-06-12",
     "clicks": 0,
     "signups": []
+  },
+  {
+    "ref_code": "a54f3253",
+    "sharer_id": "linkedin:CAOSO1oig0",
+    "sharer_name": "Anand Muglikar",
+    "profile_slug": "anup-baug-726a6023",
+    "profile_name": "Anup Baug",
+    "created_at": "2026-06-13",
+    "clicks": 0,
+    "signups": []
   }
 ]
