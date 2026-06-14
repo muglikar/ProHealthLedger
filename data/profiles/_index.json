@@ -633,7 +633,7 @@
     "slug": "muglikar",
     "public_name": "Anand Muglikar",
     "votes": {
-      "yes": 5,
+      "yes": 6,
       "no": 0
     },
     "submissions": [
@@ -678,12 +678,25 @@
         "issue": 44,
         "date": "2026-05-12",
         "reason": "I would be happy to work with Anand Sir again because of his supportive mentorship, clear guidance, and encouraging work environment. His approach to teaching and problem-solving helped me strengthen my technical understanding and confidence. Working under his guidance was a valuable learning experience that contributed positively to my professional growth."
+      },
+      {
+        "user": "linkedin:8L6oW7AZGF",
+        "display_name": "Jasmita Mukherjee",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHIb7yhitCgBQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1720731312078?e=1782345600&v=beta&t=-tyCH-x4wfAiXrazW9N-LeJ0mpsupUOnlC9TXe25bAU",
+        "vote": "yes",
+        "issue": 66,
+        "date": "2026-06-14"
       }
     ],
-    "profile_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI",
+    "profile_photo_url": "/muglikar.jpeg",
     "photo_verified": true,
     "photo_verified_by": "admin-auto",
-    "photo_verified_at": "2026-05-27"
+    "photo_verified_at": "2026-05-27",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-06-14T05:46:22.559Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI",
+    "photo_storage": "local"
   },
   {
     "linkedin_url": "https://www.linkedin.com/in/rutooj-deshpande",
