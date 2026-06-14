@@ -452,7 +452,17 @@
     "display_name": "Jasmita Mukherjee",
     "email": "jasmitamukherjee6@gmail.com",
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHIb7yhitCgBQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1720731312078?e=1782345600&v=beta&t=-tyCH-x4wfAiXrazW9N-LeJ0mpsupUOnlC9TXe25bAU",
-    "last_login": "2026-06-05T11:37:03.508Z"
+    "last_login": "2026-06-05T11:37:03.508Z",
+    "contributions": [
+      {
+        "profile_slug": "muglikar",
+        "vote": "yes",
+        "issue": 66,
+        "date": "2026-06-14"
+      }
+    ],
+    "yes_count": 1,
+    "no_count": 0
   },
   {
     "user_id": "332364",
