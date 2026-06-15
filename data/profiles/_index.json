@@ -1442,5 +1442,32 @@
     "original_photo_url": "https://media.licdn.com/dms/image/v2/C4D03AQFIKD-3vLVb_Q/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1516504832187?e=2147483647&v=beta&t=h_AcUVGCiYvtsf2NPh97aPEdImnR_o4jfK39AXFrJcM",
     "profile_photo_url": "/amitragarwal1.jpeg",
     "photo_storage": "local"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/aastha-aastha-a87851192",
+    "slug": "aastha-aastha-a87851192",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1782950400&v=beta&t=_3uGL4qOVCwOsBMPmRcTIub5CMjTiVioPA9k9wYuROQ",
+        "vote": "no",
+        "issue": 70,
+        "date": "2026-06-15",
+        "submitter_capacity": "Global Head of Data Science at Partex.ai",
+        "voted_capacity": "Software Engineer at Partex.ai"
+      }
+    ],
+    "public_name": "Aastha Aastha",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-06-15T03:18:23.163Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQHdOqmNB_aH_Q/profile-displayphoto-scale_200_200/B4DZvhQRRAJwAc-/0/1769010698095?e=2147483647&v=beta&t=KtwkGHTRGA82fpLwstEApj8DWBJ9FbfnNltbOMl2Rt0",
+    "profile_photo_url": "/aastha-aastha-a87851192.jpeg",
+    "photo_storage": "local"
   }
 ]
