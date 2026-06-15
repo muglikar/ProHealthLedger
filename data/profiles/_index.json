@@ -1495,9 +1495,10 @@
       }
     ],
     "public_name": "Sanyogita Purandare, Ph.D.",
-    "resolution_source": "client-preview",
-    "confidence": 0.95,
-    "resolved_at": "2026-06-15T03:45:20.466Z",
-    "photo_storage": "placeholder"
+    "resolution_source": "manual",
+    "confidence": 1,
+    "resolved_at": "2026-06-15T03:49:26.837Z",
+    "photo_storage": "local",
+    "profile_photo_url": "/sanyogitapurandare.jpeg"
   }
 ]
