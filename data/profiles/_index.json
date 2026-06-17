@@ -1596,5 +1596,30 @@
     "resolved_at": "2026-06-17T10:46:17.226Z",
     "photo_storage": "local",
     "profile_photo_url": "/ashishkarale.jpeg"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/rajanka-bomble-9bba651b7",
+    "slug": "rajanka-bomble-9bba651b7",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1782950400&v=beta&t=_3uGL4qOVCwOsBMPmRcTIub5CMjTiVioPA9k9wYuROQ",
+        "vote": "no",
+        "issue": 76,
+        "date": "2026-06-17"
+      }
+    ],
+    "public_name": "Rajanka Bomble",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-06-17T10:49:41.470Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D5603AQFuWi1LoJGuPQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1709995661864?e=2147483647&v=beta&t=oTqS6d6lDzt5yO4XvgpwcQzNjuZy2HhRWB1AnAbkk_g",
+    "profile_photo_url": "/rajanka-bomble-9bba651b7.jpeg",
+    "photo_storage": "local"
   }
 ]
