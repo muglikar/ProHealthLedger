@@ -351,10 +351,16 @@
         "vote": "no",
         "issue": 72,
         "date": "2026-06-17"
+      },
+      {
+        "profile_slug": "atharva-kulkarni-515470146",
+        "vote": "no",
+        "issue": 73,
+        "date": "2026-06-17"
       }
     ],
     "yes_count": 33,
-    "no_count": 24,
+    "no_count": 25,
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
   },
   {
