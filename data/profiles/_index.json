@@ -1500,5 +1500,30 @@
     "resolved_at": "2026-06-15T03:49:26.837Z",
     "photo_storage": "local",
     "profile_photo_url": "/sanyogitapurandare.jpeg"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/shubham-indulkar-a081b9150",
+    "slug": "shubham-indulkar-a081b9150",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1782950400&v=beta&t=_3uGL4qOVCwOsBMPmRcTIub5CMjTiVioPA9k9wYuROQ",
+        "vote": "no",
+        "issue": 72,
+        "date": "2026-06-17"
+      }
+    ],
+    "public_name": "shubham Indulkar",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-06-17T10:36:54.974Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/C4D03AQE6XXuk4gVeHw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1658761804942?e=2147483647&v=beta&t=1naU59zcMOMFDOXtxstaAahQ222TaWcsOtugHP4BqjI",
+    "profile_photo_url": "/shubham-indulkar-a081b9150.jpeg",
+    "photo_storage": "local"
   }
 ]
