@@ -1843,9 +1843,10 @@
       }
     ],
     "public_name": "Jubin Mahajan",
-    "resolution_source": "client-preview",
-    "confidence": 0.95,
-    "resolved_at": "2026-06-17T11:57:45.626Z",
-    "photo_storage": "placeholder"
+    "resolution_source": "manual",
+    "confidence": 1,
+    "resolved_at": "2026-06-17T11:58:01.525Z",
+    "photo_storage": "local",
+    "profile_photo_url": "/jubinmahajan.jpeg"
   }
 ]
