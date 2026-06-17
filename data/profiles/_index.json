@@ -1544,9 +1544,10 @@
       }
     ],
     "public_name": "Atharva Kulkarni",
-    "resolution_source": "client-preview",
-    "confidence": 0.95,
-    "resolved_at": "2026-06-17T10:40:36.728Z",
-    "photo_storage": "placeholder"
+    "resolution_source": "manual",
+    "confidence": 1,
+    "resolved_at": "2026-06-17T10:40:57.616Z",
+    "photo_storage": "local",
+    "profile_photo_url": "/atharva-kulkarni-515470146.jpeg"
   }
 ]
