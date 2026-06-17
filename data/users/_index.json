@@ -417,9 +417,15 @@
         "vote": "no",
         "issue": 83,
         "date": "2026-06-17"
+      },
+      {
+        "profile_slug": "vishwayogi",
+        "vote": "yes",
+        "issue": 84,
+        "date": "2026-06-17"
       }
     ],
-    "yes_count": 34,
+    "yes_count": 35,
     "no_count": 34,
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
   },
