@@ -405,9 +405,15 @@
         "vote": "no",
         "issue": 81,
         "date": "2026-06-17"
+      },
+      {
+        "profile_slug": "arashad-ahamad-201bb933",
+        "vote": "yes",
+        "issue": 82,
+        "date": "2026-06-17"
       }
     ],
-    "yes_count": 33,
+    "yes_count": 34,
     "no_count": 33,
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
   },
