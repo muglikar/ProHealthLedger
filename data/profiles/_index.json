@@ -1669,5 +1669,30 @@
     "confidence": 0.95,
     "resolved_at": "2026-06-17T11:18:53.741Z",
     "photo_storage": "placeholder"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/sohamdhongade",
+    "slug": "sohamdhongade",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1782950400&v=beta&t=_3uGL4qOVCwOsBMPmRcTIub5CMjTiVioPA9k9wYuROQ",
+        "vote": "no",
+        "issue": 79,
+        "date": "2026-06-17"
+      }
+    ],
+    "public_name": "Soham Dhongade",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-06-17T11:20:53.267Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D5603AQF3eaCU9lLH_w/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1700562929385?e=2147483647&v=beta&t=tXQ05LUvIR9_3U2sx-KnksmKzPBMv78QqdBIZveg81g",
+    "profile_photo_url": "/sohamdhongade.jpeg",
+    "photo_storage": "local"
   }
 ]
