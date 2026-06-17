@@ -1713,9 +1713,10 @@
       }
     ],
     "public_name": "Diksha Ingle",
-    "resolution_source": "client-preview",
-    "confidence": 0.95,
-    "resolved_at": "2026-06-17T11:25:26.764Z",
-    "photo_storage": "placeholder"
+    "resolution_source": "manual",
+    "confidence": 1,
+    "resolved_at": "2026-06-17T11:25:41.801Z",
+    "photo_storage": "local",
+    "profile_photo_url": "/diksha-ingle-318134193.png"
   }
 ]
