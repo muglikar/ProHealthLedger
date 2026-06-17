@@ -1718,5 +1718,30 @@
     "resolved_at": "2026-06-17T11:25:41.801Z",
     "photo_storage": "local",
     "profile_photo_url": "/diksha-ingle-318134193.png"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/prajakta-sahu-5b26211b1",
+    "slug": "prajakta-sahu-5b26211b1",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1782950400&v=beta&t=_3uGL4qOVCwOsBMPmRcTIub5CMjTiVioPA9k9wYuROQ",
+        "vote": "no",
+        "issue": 81,
+        "date": "2026-06-17"
+      }
+    ],
+    "public_name": "Prajakta Sahu",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-06-17T11:31:46.382Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQFsnbVia6pZTg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1721236887085?e=2147483647&v=beta&t=jTXLVslxH-dwx0XEuD0fHdUgLnIrhyRmS2ngSvJuhfQ",
+    "profile_photo_url": "/prajakta-sahu-5b26211b1.jpeg",
+    "photo_storage": "local"
   }
 ]
