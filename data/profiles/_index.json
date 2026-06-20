@@ -1220,11 +1220,9 @@
       }
     ],
     "public_name": "Akriti Singh",
-    "profile_photo_url": "/akriti-singh-1115b1178.jpeg",
-    "photo_storage": "local",
-    "resolution_source": "manual",
-    "confidence": 1,
-    "resolved_at": "2026-06-15T03:49:13.939Z"
+    "profile_photo_url": null,
+    "photo_storage": "placeholder",
+    "photo_verified": false
   },
   {
     "linkedin_url": "https://www.linkedin.com/in/iantarakey",
