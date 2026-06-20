@@ -67,6 +67,7 @@ export default function OwnerActivityStrip() {
   const [dismissing, setDismissing] = useState(false);
   const [copied, setCopied] = useState(false);
   const [lastPostedDate, setLastPostedDate] = useState("");
+  const [pendingCount, setPendingCount] = useState(0);
 
   const isLedgerAdmin =
     Boolean(session?.siteAdmin) ||
@@ -78,6 +79,12 @@ export default function OwnerActivityStrip() {
       const r = await fetch("/api/owner-activity");
       if (r.ok) setPayload(await r.json());
       else setPayload(null);
+
+      const rMod = await fetch("/api/moderate?status=pending");
+      if (rMod.ok) {
+        const jMod = await rMod.json();
+        setPendingCount(jMod.length);
+      }
     } catch {
       setPayload(null);
     }
@@ -194,9 +201,11 @@ export default function OwnerActivityStrip() {
             <Link href="/transparency" className="owner-activity-strip-link">
               Audit trail
             </Link>
-            <Link href="/admin/moderate" className="owner-activity-strip-link">
-              Moderate
-            </Link>
+            {pendingCount > 0 && (
+              <Link href="/admin/moderate" className="owner-activity-strip-link">
+                Moderate ({pendingCount})
+              </Link>
+            )}
             <button
               type="button"
               className="btn btn-secondary btn-sm owner-activity-strip-dismiss"

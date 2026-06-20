@@ -28,21 +28,15 @@ const FETCH_TIMEOUT_MS = 4000;
 const RETRY_DELAY_MS = 250;
 const MAX_REDIRECT_DEPTH = 2;
 
-/** In-memory cache. Best-effort: lifetime is bounded by the serverless instance. */
+/** In-memory cache disabled to ensure real-time name resolution and prevent stale results. */
 const cache = new Map();
 
 function readCache(key) {
-  const entry = cache.get(key);
-  if (!entry) return null;
-  if (Date.now() > entry.until) {
-    cache.delete(key);
-    return null;
-  }
-  return entry.value;
+  return null;
 }
 
 function writeCache(key, value, ttlMs) {
-  cache.set(key, { value, until: Date.now() + ttlMs });
+  // cache disabled
 }
 
 function isWellFormedSlug(s) {

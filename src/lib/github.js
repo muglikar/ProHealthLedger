@@ -117,3 +117,19 @@ export async function writeRepoFile(filePath, buffer, message) {
   }
   return res.json();
 }
+
+export async function deleteRepoFile(filePath, sha, message) {
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${filePath}`;
+  const payload = { message, sha };
+  const res = await fetch(url, {
+    method: "DELETE",
+    headers: headers(),
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`GitHub API error: ${res.status} - ${err}`);
+  }
+  return res.json();
+}
+

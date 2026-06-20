@@ -39,7 +39,7 @@ export async function POST(req) {
   }
 
   const body = await req.json();
-  const { linkedinUrl, vote, reason, submitterLinkedinUrl, submitterCapacity, votedCapacity, photoFlagged, publicName, resolvedName, resolvedPhoto } = body;
+  const { linkedinUrl, vote, reason, submitterLinkedinUrl, submitterCapacity, votedCapacity, photoFlagged, publicName, resolvedName, resolvedPhoto, manualPhotoUrl } = body;
   const userId = session.userId;
   const displayName = session.displayName || userId;
 
@@ -248,21 +248,52 @@ export async function POST(req) {
       }
       const newReason = (reason || "").trim();
       const oldReason = (existingSubmission.reason || "").trim();
-      if (newReason === oldReason) {
+
+      const validManualPhoto = manualPhotoUrl && isValidLinkedinImageUrl(manualPhotoUrl) ? manualPhotoUrl : null;
+
+      if (
+        newReason === oldReason &&
+        !validManualPhoto
+      ) {
         return Response.json(
           {
-            error: `No changes detected in your comment.`,
+            error: `No changes detected in your comment or photo.`,
           },
           { status: 400 }
         );
       }
 
-      // Proceed with updating the comment
-      const reasonTrimmed = newReason;
-      const needsModeration = reasonTrimmed.length > 0;
-      const safety = reasonTrimmed
-        ? await analyzeReasonSafety(reasonTrimmed)
+      const isCommentChanged = newReason !== oldReason;
+      const needsModeration = isCommentChanged && newReason.length > 0;
+      const safety = needsModeration
+        ? await analyzeReasonSafety(newReason)
         : { hasRisk: false, blockApprove: false, hits: [], llm: null };
+
+      // Handle manual photo update
+      if (validManualPhoto) {
+        profileForTitle.profile_photo_url = validManualPhoto;
+        profileForTitle.original_photo_url = validManualPhoto;
+        profileForTitle.photo_storage = "placeholder";
+
+        try {
+          console.log(`[submit-vote-edit] Downloading photo from manual URL: ${validManualPhoto}`);
+          const downloadRes = await fetch(validManualPhoto);
+          if (downloadRes.ok) {
+            const contentType = downloadRes.headers.get("content-type") || "image/jpeg";
+            const ext = contentType.includes("png") ? "png" : "jpeg";
+            const buffer = await downloadRes.arrayBuffer();
+            const filePath = `public/${slug}.${ext}`;
+            await writeRepoFile(filePath, buffer, `chore: save local profile photo for ${slug}`);
+            profileForTitle.profile_photo_url = `/${slug}.${ext}`;
+            profileForTitle.photo_storage = "local";
+          } else {
+            profileForTitle.photo_storage = "linkedin_cdn";
+          }
+        } catch (imgErr) {
+          console.error("[submit-vote-edit] Non-fatal image download/commit failure:", imgErr);
+          profileForTitle.photo_storage = "linkedin_cdn";
+        }
+      }
 
       // Create GitHub Audit issue for the edit
       const issueBody = [
@@ -276,8 +307,16 @@ export async function POST(req) {
         ``,
         `### New Brief Reason`,
         ``,
-        reasonTrimmed || "_No response (comment removed)_",
+        isCommentChanged ? (newReason || "_No response (comment removed)_") : (oldReason || "_No response_"),
         ``,
+        ...(validManualPhoto
+          ? [
+              `### Manual Photo URL Added`,
+              ``,
+              validManualPhoto,
+              ``,
+            ]
+          : []),
         `### Submitted via`,
         ``,
         `Website form (Edit Comment)`,
@@ -287,7 +326,7 @@ export async function POST(req) {
       ].join("\n");
 
       const issueLabels = ["vote", "comment-edit"];
-      if (reasonTrimmed) issueLabels.push("moderation-pending");
+      if (needsModeration) issueLabels.push("moderation-pending");
 
       let editIssue;
       try {
@@ -306,27 +345,31 @@ export async function POST(req) {
       const issueNumber = editIssue.number;
 
       // Update existingSubmission fields
-      existingSubmission.reason = reasonTrimmed || undefined;
-      if (!reasonTrimmed) {
-        delete existingSubmission.reason;
-      }
-      existingSubmission.reason_edited = true;
-      existingSubmission.issue = issueNumber;
-      if (needsModeration) {
-        existingSubmission.reason_pending = true;
-        if (safety.hasRisk) {
-          existingSubmission.reason_safety_flags = {
-            block_approve: Boolean(safety.blockApprove),
-            hits: safety.hits,
-            llm: safety.llm,
-          };
+      if (isCommentChanged) {
+        existingSubmission.reason = newReason || undefined;
+        if (!newReason) {
+          delete existingSubmission.reason;
+        }
+        existingSubmission.reason_edited = true;
+        
+        if (needsModeration) {
+          existingSubmission.reason_pending = true;
+          if (safety.hasRisk) {
+            existingSubmission.reason_safety_flags = {
+              block_approve: Boolean(safety.blockApprove),
+              hits: safety.hits,
+              llm: safety.llm,
+            };
+          } else {
+            delete existingSubmission.reason_safety_flags;
+          }
         } else {
+          delete existingSubmission.reason_pending;
           delete existingSubmission.reason_safety_flags;
         }
-      } else {
-        delete existingSubmission.reason_pending;
-        delete existingSubmission.reason_safety_flags;
       }
+
+      existingSubmission.issue = issueNumber;
 
       // Write updated profiles list back to data
       try {
@@ -505,13 +548,21 @@ export async function POST(req) {
 
   // Auto-resolve the real name and profile photo from LinkedIn if not already set.
   let resolved = null;
-  if (!profile.public_name || !profile.profile_photo_url || (profile.profile_photo_url && profile.profile_photo_url.startsWith("http"))) {
+  const validManualPhoto = manualPhotoUrl && isValidLinkedinImageUrl(manualPhotoUrl) ? manualPhotoUrl : null;
+
+  if (validManualPhoto) {
+    profile.profile_photo_url = validManualPhoto;
+    profile.original_photo_url = validManualPhoto;
+    profile.photo_storage = "placeholder"; // force download
+  }
+
+  if (!profile.public_name || !profile.profile_photo_url || validManualPhoto || (profile.profile_photo_url && profile.profile_photo_url.startsWith("http"))) {
     try {
-      if (resolvedName || resolvedPhoto) {
+      if (resolvedName || resolvedPhoto || validManualPhoto) {
         resolved = {
           name: resolvedName || null,
-          photo: resolvedPhoto || null,
-          source: "client-preview",
+          photo: validManualPhoto || resolvedPhoto || null,
+          source: validManualPhoto ? "manual-photo-input" : "client-preview",
           confidence: 0.95
         };
       } else {
@@ -679,4 +730,19 @@ function countRecentYesVouches(userEntry, lookbackDays) {
     if (now - t <= windowMs) count += 1;
   }
   return count;
+}
+
+function isValidLinkedinImageUrl(url) {
+  if (!url || typeof url !== "string") return false;
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.hostname.endsWith("licdn.com") &&
+      parsed.pathname.includes("/dms/image") &&
+      !url.includes("ghost") &&
+      !url.includes("default")
+    );
+  } catch {
+    return false;
+  }
 }

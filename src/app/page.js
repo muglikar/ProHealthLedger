@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import SupportSection from "./components/SupportSection";
 
 const siteUrl = "https://prohealthledger.org";
@@ -34,7 +35,16 @@ export default function Home() {
       <section className="home-above-fold" aria-labelledby="home-hero-title">
         <div className="home-hero-container">
           <div className="hero-visual">
-            <img src="/heroImage.png" alt="Professionals succeeding with ProHealthLedger" className="hero-image" />
+            <Image
+              src="/heroImage.png"
+              alt="Professionals succeeding with ProHealthLedger"
+              className="hero-image"
+              width={800}
+              height={500}
+              priority
+              sizes="(max-width: 900px) 100vw, 600px"
+              style={{ height: "auto" }}
+            />
           </div>
 
           <header className="home-hero-block hero-content">

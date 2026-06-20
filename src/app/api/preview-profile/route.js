@@ -69,6 +69,8 @@ export async function GET(req) {
           vote: existingSubmission.vote,
           reason: existingSubmission.reason || "",
           reason_edited: Boolean(existingSubmission.reason_edited),
+          submitter_capacity: existingSubmission.submitter_capacity || "",
+          voted_capacity: existingSubmission.voted_capacity || "",
         };
       }
     }

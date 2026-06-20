@@ -529,6 +529,9 @@ function VotesContent() {
         <p className="submit-hero-sub">
           <Link href="/">What the heck is this?</Link>
         </p>
+        <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", marginTop: "8px" }}>
+          💡 <strong>Tip:</strong> Click any comment in the table below to view the full text and voter/profile details in a pop-up.
+        </p>
         <p>
           Every vote ever cast on the ledger. Search by name or LinkedIn URL. Comments
           redacted by a moderator are marked as such — never silently removed — and
@@ -749,7 +752,7 @@ function VotesContent() {
                         <th className="audit-col-prof">Professional</th>
                         <th className="audit-col-vote">Would work with again?</th>
                         <th className="audit-col-share">Share</th>
-                        <th className="audit-table-col-comment">Comment</th>
+                        <th className="audit-table-col-comment">Comment (click to expand)</th>
                         <th>Submitted By</th>
                         <th>Record</th>
                         <th>Date</th>

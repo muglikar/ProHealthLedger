@@ -16,6 +16,7 @@ export default function AdminToolsPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState("");
+  const [removingPhoto, setRemovingPhoto] = useState(false);
 
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
@@ -112,6 +113,37 @@ export default function AdminToolsPage() {
     }
   };
 
+  const handleRemovePhoto = async () => {
+    if (!selectedSlug) return;
+    if (!confirm(`Are you sure you want to remove the profile photo for ${selectedSlug}?`)) {
+      return;
+    }
+
+    setRemovingPhoto(true);
+    setUploadError("");
+    setUploadSuccess("");
+
+    try {
+      const res = await fetch("/api/admin/remove-profile-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: selectedSlug }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to remove image.");
+      }
+
+      setUploadSuccess(`Successfully removed image for ${selectedSlug}!`);
+      await fetchMissingImages();
+    } catch (err) {
+      setUploadError(err.message);
+    } finally {
+      setRemovingPhoto(false);
+    }
+  };
+
   const handleAiSubmit = async (e) => {
     e.preventDefault();
     if (!aiPrompt.trim()) return;
@@ -203,7 +235,47 @@ export default function AdminToolsPage() {
                   </option>
                 ))}
               </select>
-            </div>
+             </div>
+
+            {(() => {
+              const selectedProfile = missingImages.find((p) => p.slug === selectedSlug);
+              if (selectedProfile && selectedProfile.profile_photo_url && !selectedProfile.profile_photo_url.includes("placeholder")) {
+                return (
+                  <div style={{ marginBottom: "20px", display: "flex", alignItems: "center", gap: "16px", background: "var(--bg)", padding: "12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)" }}>
+                    <img
+                      src={selectedProfile.profile_photo_url}
+                      alt={selectedProfile.public_name}
+                      style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border)" }}
+                    />
+                    <div>
+                      <p style={{ margin: 0, fontWeight: "600", fontSize: "0.9rem", color: "var(--text)" }}>Current Photo</p>
+                      <p style={{ margin: "2px 0 8px 0", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                        Storage: {selectedProfile.photo_storage || "unknown"}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleRemovePhoto}
+                        disabled={removingPhoto}
+                        style={{
+                          padding: "6px 12px",
+                          fontSize: "0.8rem",
+                          background: "#ef4444",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: "var(--radius-sm)",
+                          cursor: "pointer",
+                          fontWeight: "600",
+                          transition: "opacity 0.2s"
+                        }}
+                      >
+                        {removingPhoto ? "Removing..." : "Remove Photo"}
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })()}
 
             <div className="form-group" style={{ marginBottom: "16px" }}>
               <label>Image Source</label>

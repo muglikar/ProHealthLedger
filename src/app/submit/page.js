@@ -29,6 +29,7 @@ function SubmitPageContent() {
   const [photoFlagged, setPhotoFlagged] = useState(false);
   const [manualName, setManualName] = useState("");
   const [showManualName, setShowManualName] = useState(false);
+  const [manualPhotoUrl, setManualPhotoUrl] = useState("");
   const previewAbortRef = useRef(null);
 
   useEffect(() => {
@@ -89,9 +90,13 @@ function SubmitPageContent() {
     if (preview?.userVote?.voted) {
       setVote(preview.userVote.vote);
       setReason(preview.userVote.reason || "");
+      setSubmitterCapacity(preview.userVote.submitter_capacity || "");
+      setVotedCapacity(preview.userVote.voted_capacity || "");
     } else if (preview) {
       setVote("");
       setReason("");
+      setSubmitterCapacity("");
+      setVotedCapacity("");
     }
   }, [preview]);
 
@@ -112,6 +117,12 @@ function SubmitPageContent() {
         resolvedName: preview?.name || null,
         resolvedPhoto: preview?.photo || null
       };
+      if (manualPhotoUrl && manualPhotoUrl.trim()) {
+        if (!isValidLinkedinImageUrl(manualPhotoUrl.trim())) {
+          throw new Error("Please enter a valid LinkedIn display picture URL.");
+        }
+        payload.manualPhotoUrl = manualPhotoUrl.trim();
+      }
       if (!session?.linkedinProfileUrl) {
         payload.submitterLinkedinUrl = submitterLinkedinUrl;
       }
@@ -419,6 +430,30 @@ function SubmitPageContent() {
               </div>
             )}
 
+            {!previewLoading && preview && (!preview.photo || photoFlagged) && (
+              <div className="form-group" style={{ marginTop: '16px' }}>
+                <label htmlFor="manual-photo-url" style={{ color: 'var(--accent)', fontWeight: '700' }}>
+                  LinkedIn Photo URL (optional)
+                </label>
+                <p style={{ fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>
+                  We couldn&apos;t automatically load this person&apos;s photo. Paste a valid LinkedIn profile display photo URL (from <code>media.licdn.com</code>) to display it.
+                </p>
+                <input
+                  id="manual-photo-url"
+                  type="url"
+                  className="form-input"
+                  placeholder="https://media.licdn.com/dms/image/..."
+                  value={manualPhotoUrl}
+                  onChange={(e) => setManualPhotoUrl(e.target.value)}
+                />
+                {manualPhotoUrl && !isValidLinkedinImageUrl(manualPhotoUrl) && (
+                  <p style={{ color: "var(--error)", fontSize: "0.8rem", marginTop: "4px" }}>
+                    ⚠️ Must be a valid LinkedIn image URL (from <code>media.licdn.com</code>) and not a placeholder.
+                  </p>
+                )}
+              </div>
+            )}
+
             {showManualName && (
               <div className="form-group" style={{ marginTop: '16px' }}>
                 <label htmlFor="manual-name" style={{ color: 'var(--accent)', fontWeight: '700' }}>
@@ -490,6 +525,7 @@ function SubmitPageContent() {
               placeholder="e.g. Senior Developer at Acme Corp"
               value={votedCapacity}
               onChange={(e) => setVotedCapacity(e.target.value)}
+              disabled={preview?.userVote?.voted}
             />
           </div>
 
@@ -502,6 +538,7 @@ function SubmitPageContent() {
               placeholder="e.g. Engineering Manager at Acme Corp"
               value={submitterCapacity}
               onChange={(e) => setSubmitterCapacity(e.target.value)}
+              disabled={preview?.userVote?.voted}
             />
           </div>
 
@@ -577,4 +614,19 @@ export default function SubmitPage() {
       <SubmitPageContent />
     </Suspense>
   );
+}
+
+function isValidLinkedinImageUrl(url) {
+  if (!url || typeof url !== "string") return false;
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.hostname.endsWith("licdn.com") &&
+      parsed.pathname.includes("/dms/image") &&
+      !url.includes("ghost") &&
+      !url.includes("default")
+    );
+  } catch {
+    return false;
+  }
 }

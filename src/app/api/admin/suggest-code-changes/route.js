@@ -22,8 +22,53 @@ export async function POST(req) {
     const openAiKey = (process.env.OPENAI_API_KEY || "").trim();
 
     if (!geminiKey && !openAiKey) {
+      const fs = require("fs");
+      const path = require("path");
+      const dirPath = path.join(process.cwd(), "data");
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+
+      const promptFilePath = path.join(dirPath, "ai_prompt.json");
+      fs.writeFileSync(
+        promptFilePath,
+        JSON.stringify(
+          {
+            prompt: prompt,
+            status: "pending",
+            response: null,
+            timestamp: new Date().toISOString(),
+          },
+          null,
+          2
+        )
+      );
+
+      // Poll for response for up to 10 seconds
+      const startTime = Date.now();
+      let responseText = "";
+      while (Date.now() - startTime < 10000) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        try {
+          if (fs.existsSync(promptFilePath)) {
+            const fileData = JSON.parse(fs.readFileSync(promptFilePath, "utf8"));
+            if (fileData.status === "completed" && fileData.response) {
+              responseText = fileData.response;
+              break;
+            }
+          }
+        } catch (e) {
+          // ignore read errors
+        }
+      }
+
+      if (responseText) {
+        return Response.json({ response: responseText });
+      }
+
       return Response.json({
-        response: "⚠️ **No LLM API keys configured.**\n\nPlease set either `GEMINI_API_KEY` or `OPENAI_API_KEY` in your `.env` file to enable AI code change suggestions directly from this panel."
+        response:
+          "⏳ **No LLM API keys configured in `.env`. Prompt queued for Antigravity (the agent).**\n\nYour prompt has been written to `data/ai_prompt.json` in the workspace.\n\nPlease ask the agent in the chat terminal to process this prompt, or wait a moment if the agent is currently working on it, then try submitting again."
       });
     }
 
