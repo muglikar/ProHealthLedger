@@ -182,14 +182,29 @@ function SubmitPageContent() {
   if (!session) {
     return (
       <section className="submit-hero">
-        <h1>Share Your Experience</h1>
+        <h1>Vouch for a Great Boss or Colleague</h1>
         <p className="submit-hero-sub">
           <Link href="/">What the heck is this?</Link>
+        </p>
+        <p>
+          Sign in to celebrate a great boss or colleague &mdash; or flag someone
+          who needs accountability.
         </p>
         <p>
           Sign in to submit your vote. We verify your identity so each person
           can only vote once per professional — no duplicates allowed.
         </p>
+
+        <aside className="good-boss-callout" aria-label="Celebrate great leaders" style={{ marginBottom: 24 }}>
+          <span className="good-boss-callout-icon" aria-hidden>🌟</span>
+          <div className="good-boss-callout-body">
+            <h3>Know a great boss or colleague?</h3>
+            <p>
+              Vouch for them &mdash; it&apos;s the easiest way to protect great leadership.
+              Your first vouch unlocks all comments for 1 week.
+            </p>
+          </div>
+        </aside>
         <div className="signin-options">
           <button
             className="btn btn-signin btn-github"
@@ -249,15 +264,15 @@ function SubmitPageContent() {
             <h3>What happens?</h3>
             <p>
               You answer one question about a professional. Your vote is
-              permanent and public. You can add or edit your comment/reason once after submitting.
+              permanent and public. Your first vouch unlocks full comment
+              access for 1 week.
             </p>
           </div>
           <div className="submit-step">
-            <h3>Positivity first</h3>
+            <h3>Celebrate first</h3>
             <p>
-              Your first contribution must be a positive vouch. After that,
-              each <strong>positive vouch</strong> earns <strong>1 flag</strong>{" "}
-              credit; each negative vote uses one credit.
+              Your first contribution is a vouch. Celebrating a great boss
+              or colleague unlocks full comment access and earns flag credits.
             </p>
           </div>
         </div>
@@ -271,7 +286,7 @@ function SubmitPageContent() {
       <section className="submit-hero">
         <div className="submit-hero-header">
           <div className="submit-hero-title-wrap">
-            <h1 data-tour="step-welcome">Share Your Experience</h1>
+            <h1 data-tour="step-welcome">Vouch for a Great Boss or Colleague</h1>
             <button className="btn-tour-trigger" onClick={() => setShowTour(true)} aria-label="Take a guided tour">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5" />

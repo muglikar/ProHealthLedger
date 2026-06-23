@@ -28,9 +28,9 @@ const siteUrl = "https://prohealthledger.org";
  */
 export const metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Professional Health Ledger — Know Who You're Working With",
+  title: "Professional Health Ledger — Celebrate Great Leaders, Hold All Accountable",
   description:
-    "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
+    "The Good Boss & Good Colleagues Ledger. A free, public directory of professional experiences. Vouch for great leaders. Flag those who need accountability.",
   icons: {
     icon: { url: "/logo.png", type: "image/png", sizes: "512x512" },
     apple: {
@@ -40,9 +40,9 @@ export const metadata = {
     },
   },
   openGraph: {
-    title: "Professional Health Ledger — Know Who You're Working With",
+    title: "Professional Health Ledger — Celebrate Great Leaders, Hold All Accountable",
     description:
-      "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
+      "The Good Boss & Good Colleagues Ledger. A free, public directory of professional experiences. Vouch for great leaders. Flag those who need accountability.",
     url: siteUrl,
     siteName: "Professional Health Ledger",
     locale: "en_US",
@@ -50,9 +50,9 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Professional Health Ledger",
+    title: "Professional Health Ledger — The Good Boss & Good Colleagues Ledger",
     description:
-      "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.",
+      "A free, public directory of professional experiences. Vouch for great leaders. Flag those who need accountability.",
   },
 };
 
@@ -83,12 +83,12 @@ export default function RootLayout({ children }) {
           <footer className="footer">
             <div className="footer-inner">
               <p className="disclaimer">
-                ProHealthLedger is an open-source SaaS utility and technical
-                accountability tool provided by an independent developer. This
-                ledger is a collection of subjective professional experiences.
-                The platform does not author, verify, or endorse any rating.
-                Every vote reflects one individual&apos;s personal opinion. Use
-                at your own discretion.
+                ProHealthLedger is the Good Boss &amp; Good Colleagues Ledger — an
+                open-source SaaS utility and technical accountability tool
+                provided by an independent developer. This ledger is a collection
+                of subjective professional experiences. The platform does not
+                author, verify, or endorse any rating. Every vote reflects one
+                individual&apos;s personal opinion. Use at your own discretion.
               </p>
               <div className="footer-links">
                 <Link href="/profiles">Full Audit Trail</Link>
@@ -119,7 +119,7 @@ export default function RootLayout({ children }) {
               </div>
               <p className="copyright">
                 © {new Date().getFullYear()} Professional Health Ledger —
-                IT & Software Services: Maintenance & Sponsorship — Professional Sponsorship Tiers, Fully Transparent.
+                The Good Boss &amp; Good Colleagues Ledger — IT &amp; Software Services: Maintenance &amp; Sponsorship — Professional Sponsorship Tiers, Fully Transparent.
               </p>
               <p className="footer-attribution">
                 Icons by Flaticon —{" "}

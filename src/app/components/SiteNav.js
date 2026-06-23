@@ -11,7 +11,7 @@ import SharePHLButton from "./SharePHLButton";
 const NAV_LINKS = [
   { href: "/profiles", label: "Votes" },
   { href: "/contributors", label: "Contributors" },
-  { href: "/submit", label: "Submit" },
+  { href: "/submit", label: "Vouch or Flag" },
   { href: "/referrals", label: "Referrals" },
 ];
 
@@ -48,7 +48,7 @@ export default function SiteNav() {
             className="logo-icon"
             priority
           />
-          <span className="nav-logo-text">ProHealthLedger</span>
+          <span className="nav-logo-text" title="The Good Boss & Good Colleagues Ledger">ProHealthLedger</span>
         </Link>
 
         <div className="nav-desktop-only nav-right">

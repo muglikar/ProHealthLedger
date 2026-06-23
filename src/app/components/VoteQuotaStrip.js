@@ -44,10 +44,31 @@ function IconFlag({ className }) {
   );
 }
 
+function IconEye({ className }) {
+  return (
+    <svg
+      className={className}
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
 export default function VoteQuotaStrip() {
   const { data: session, status } = useSession();
   const [stats, setStats] = useState(null);
   const stripRef = useRef(null);
+
 
   /** Lets the homepage fold use `calc(100dvh - nav - strip - …)` accurately. */
   useLayoutEffect(() => {
@@ -113,6 +134,9 @@ export default function VoteQuotaStrip() {
     no_count,
     flags_available,
     vouches_until_next_credit,
+    view_credit_active,
+    view_credit_expires_at,
+    view_credit_days_left,
   } = stats;
 
   const stripClass =
@@ -160,7 +184,7 @@ export default function VoteQuotaStrip() {
         <div
           className="vote-quota-strip-chips"
           role="group"
-          aria-label="Vouches submitted and flag credits available"
+          aria-label="Vouches submitted, flag credits available, and view access duration"
         >
           <div
             className="vote-quota-chip vote-quota-chip--vouch"
@@ -181,6 +205,20 @@ export default function VoteQuotaStrip() {
               <span className="vote-quota-chip-label">Flags left</span>
               <span className="vote-quota-chip-value">
                 {yes_count < 1 ? "—" : flags_available}
+              </span>
+            </span>
+          </div>
+          <div
+            className={`vote-quota-chip vote-quota-chip--view${!view_credit_active ? " is-expired" : ""}`}
+            title={view_credit_active ? `View access expires at ${new Date(view_credit_expires_at).toLocaleDateString()}` : "View access expired"}
+          >
+            <IconEye className="vote-quota-chip-icon" />
+            <span className="vote-quota-chip-text">
+              <span className="vote-quota-chip-label">View Access</span>
+              <span className="vote-quota-chip-value">
+                {view_credit_active
+                  ? `${view_credit_days_left}d`
+                  : <Link href="/submit" className="view-credit-renew-link">Renew</Link>}
               </span>
             </span>
           </div>

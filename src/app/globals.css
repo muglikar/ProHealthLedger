@@ -6467,3 +6467,225 @@ button.audit-comment-link:focus-visible {
     text-align: center;
   }
 }
+
+
+/* ── Good Boss & Good Colleagues Callout ── */
+
+.good-boss-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin: 32px 0;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.good-boss-callout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.18);
+}
+
+.good-boss-callout-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.good-boss-callout-body {
+  flex: 1;
+}
+
+.good-boss-callout-body h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #92400e;
+  letter-spacing: -0.01em;
+}
+
+.good-boss-callout-body p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #78350f;
+  line-height: 1.6;
+}
+
+.good-boss-callout .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+}
+
+@media (max-width: 600px) {
+  .good-boss-callout {
+    flex-direction: column;
+    padding: 20px;
+    gap: 12px;
+  }
+}
+
+
+/* ── Comment Locked State ── */
+
+.comment-locked {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.comment-locked-icon {
+  font-size: 1rem;
+}
+
+.comment-locked-link {
+  color: var(--accent) !important;
+  font-weight: 600;
+  font-style: normal;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.comment-locked-link:hover {
+  opacity: 0.8;
+}
+
+
+/* ── Comment Gate Banner ── */
+
+.comment-gate-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 1px solid #93c5fd;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 16px 0 24px;
+  font-size: 0.9rem;
+  color: #1e40af;
+  animation: fadeInSlide 0.4s ease;
+}
+
+.comment-gate-banner-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.comment-gate-banner-body {
+  flex: 1;
+}
+
+.comment-gate-banner-body strong {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.comment-gate-banner-body a {
+  color: #1e40af;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.comment-gate-banner-dismiss {
+  background: none;
+  border: none;
+  color: #93c5fd;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 4px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.comment-gate-banner-dismiss:hover {
+  color: #1e40af;
+}
+
+.comment-gate-banner--expired {
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  border-color: #fdba74;
+  color: #9a3412;
+}
+
+.comment-gate-banner--expired a {
+  color: #9a3412;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ── View Credit Chip (VoteQuotaStrip) ── */
+
+.vote-quota-chip--view {
+  background: rgba(59, 130, 246, 0.08) !important;
+  color: #2563eb !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+}
+
+.vote-quota-chip--view.is-expired {
+  background: rgba(239, 68, 68, 0.08) !important;
+  color: #dc2626 !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+.view-credit-renew-link {
+  color: #dc2626 !important;
+  font-weight: 700 !important;
+  text-decoration: underline !important;
+  font-size: 0.8rem !important;
+}
+
+
+/* ── Watch Profile Button ── */
+
+.watch-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #94a3b8;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.watch-profile-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.04);
+}
+
+.watch-profile-btn.is-watching {
+  border-color: #f59e0b;
+  color: #d97706;
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.watch-profile-btn svg {
+  width: 16px;
+  height: 16px;
+}

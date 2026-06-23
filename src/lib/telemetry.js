@@ -33,3 +33,19 @@ export function trackError(error, source = "client") {
     source,
   });
 }
+
+/**
+ * Track search queries with their result counts.
+ */
+export function trackSearch(query, resultCount) {
+  if (!query || !query.trim()) return;
+  const q = query.trim();
+  if (resultCount === 0) {
+    trackEvent("search_zero_results", { query: q });
+  } else if (resultCount > 0 && resultCount <= 3) {
+    trackEvent("search_low_results", { query: q, results: resultCount });
+  } else {
+    trackEvent("profile_search", { query: q, results: resultCount });
+  }
+}
+

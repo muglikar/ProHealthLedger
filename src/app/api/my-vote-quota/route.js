@@ -6,6 +6,7 @@ import {
   flagCreditsEarned,
   flagsAvailable,
   vouchesUntilNextCredit,
+  hasActiveViewCredit,
 } from "@/lib/karma";
 
 export async function GET() {
@@ -31,6 +32,8 @@ export async function GET() {
   const available = flagsAvailable(u || {});
   const earned = flagCreditsEarned(yes_count);
   const until_next = vouchesUntilNextCredit(yes_count, no_count);
+  
+  const viewCredit = hasActiveViewCredit(u || {});
 
   return Response.json({
     yes_count,
@@ -39,5 +42,9 @@ export async function GET() {
     credits_earned: earned,
     vouches_per_flag: VOUCHES_PER_FLAG,
     vouches_until_next_credit: until_next,
+    view_credit_active: viewCredit.active,
+    view_credit_expires_at: viewCredit.expiresAt,
+    view_credit_days_left: viewCredit.daysLeft,
   });
 }
+

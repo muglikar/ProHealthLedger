@@ -5,6 +5,10 @@ import { getClientIp } from "@/lib/rate-limit";
 
 const EVENTS_PATH = "data/telemetry/events.json";
 
+// In-memory counter for sampling search telemetry to reduce API/disk pressure
+let searchEventCounter = 0;
+const SEARCH_SAMPLING_RATE = 5;
+
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions);
@@ -36,22 +40,34 @@ export async function POST(req) {
       metadata,
     };
 
-    // Append to events log
-    // Note: In high traffic, we would buffer these, but for "scientific" Git-based data,
-    // we'll append directly.
-    const { data: events, sha } = await readDataFile(EVENTS_PATH).catch(() => ({ data: [], sha: null }));
-    
-    // Simple rotation: Keep only the last 5000 events to prevent file size bloat
-    const updatedEvents = [...(Array.isArray(events) ? events : []), event].slice(-5000);
+    // Determine if we should persist this event (sample search events)
+    const isSearchEvent = name === "search_zero_results" || name === "search_low_results" || name === "profile_search";
+    let shouldPersist = true;
 
-    /* 
-    await writeDataFile(
-      EVENTS_PATH,
-      updatedEvents,
-      sha,
-      `telemetry: record event ${name}${userId ? ` for ${userId}` : ` from IP ${ip}`} [skip ci]`
-    );
-    */
+    if (isSearchEvent) {
+      searchEventCounter++;
+      if (searchEventCounter % SEARCH_SAMPLING_RATE !== 0) {
+        shouldPersist = false;
+      }
+    }
+
+    if (shouldPersist) {
+      // Fire-and-forget: do NOT await the file read/write
+      (async () => {
+        try {
+          const { data: events, sha } = await readDataFile(EVENTS_PATH).catch(() => ({ data: [], sha: null }));
+          const updatedEvents = [...(Array.isArray(events) ? events : []), event].slice(-5000);
+          await writeDataFile(
+            EVENTS_PATH,
+            updatedEvents,
+            sha,
+            `telemetry: record event ${name}${userId ? ` for ${userId}` : ` from IP ${ip}`} [skip ci]`
+          );
+        } catch (err) {
+          console.warn("Failed to write telemetry data in background:", err);
+        }
+      })();
+    }
 
     return Response.json({ success: true });
   } catch (err) {

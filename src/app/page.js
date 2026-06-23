@@ -48,18 +48,18 @@ export default function Home() {
           </div>
 
           <header className="home-hero-block hero-content">
-            <span className="hero-badge">Free · Public · Permanent</span>
+            <span className="hero-badge">Free Summaries · Public · Permanent</span>
             <h1 id="home-hero-title">
               Know who you&apos;re working with{" "}
               <span className="hero-highlight hero-highlight--emphasis">before you commit.</span>
             </h1>
             <p className="hero-lede">
-              One question:{" "}
+              Celebrate great leaders. Hold all accountable.{" "}
               <strong className="hero-lede-quote">
                 &ldquo;Would you work with them again?&rdquo;
               </strong>
               <span className="hero-lede-rest">
-                Public ledger — no star ratings, no long reviews.
+                The Good Boss &amp; Good Colleagues Ledger — no star ratings, no long reviews.
               </span>
             </p>
             <p className="hero-trust-line">
@@ -68,7 +68,7 @@ export default function Home() {
             </p>
             <div className="hero-actions">
               <Link href="/submit" className="btn btn-primary">
-                Share Your Experience
+                Vouch for a Great Boss or Colleague
               </Link>
               <Link href="/profiles" className="btn btn-secondary">
                 Look Up Someone
@@ -116,9 +116,9 @@ export default function Home() {
           <ol className="home-steps-compact" role="list">
             <li>
               <span className="home-step-num">1</span>
-              <strong className="home-step-label">📤 Share</strong>
+              <strong className="home-step-label">📤 Celebrate</strong>
               <span className="home-step-desc">
-                Paste a LinkedIn URL; answer the one question (optional reason).
+                Vouch for a boss or colleague you&apos;d work with again. Paste their LinkedIn URL and answer one question.
               </span>
             </li>
             <li>
@@ -143,14 +143,28 @@ export default function Home() {
             ⚖️
           </span>
           <div>
-            <h3>Positivity comes first</h3>
+            <h3>Celebrate first</h3>
             <p>
-              Your first contribution must be a positive vouch. After that, each
-              vouch earns one flag credit; each flag uses one credit.
+              Your first vouch unlocks all comments for 1 week. Each vouch
+              renews your access and earns one flag credit.
             </p>
           </div>
         </aside>
       </section>
+
+      <aside className="good-boss-callout" aria-label="Celebrate great leaders">
+        <span className="good-boss-callout-icon" aria-hidden>🌟</span>
+        <div className="good-boss-callout-body">
+          <h3>If you love your boss or colleague, celebrate them.</h3>
+          <p>
+            Vouch for them so the best talent knows who to work with.
+            Your vouch is a gift that costs nothing and protects everything.
+          </p>
+          <Link href="/submit" className="btn btn-primary" style={{ marginTop: 12 }}>
+            Vouch Now
+          </Link>
+        </div>
+      </aside>
 
       <aside className="speak-up-box" aria-label="Your rights">
         <span className="speak-up-icon" aria-hidden>

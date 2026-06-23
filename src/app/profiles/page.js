@@ -5,7 +5,7 @@ const SITE_URL = "https://prohealthledger.org";
 const OG_IMAGE = `${SITE_URL}/og_banner.png`;
 
 const DEFAULT_DESC =
-  "A free, public, and transparent directory of professional experiences. Look up anyone, read honest reviews, and share your own truth to build accountability.";
+  "The Good Boss & Good Colleagues Ledger. A free, public, and transparent directory of professional experiences. Look up anyone, vouch for great leaders, and help build accountability.";
 
 async function resolvedSearchParams(searchParams) {
   if (searchParams == null) return {};

@@ -8,6 +8,7 @@ import { verifyLinkedinSlug } from "@/lib/linkedin-slug-verify";
 import { analyzeReasonSafety } from "@/lib/content-safety";
 import { createProfileLinkChangeRequest } from "@/lib/profile-link-change-requests";
 import { resolveLinkedinProfile } from "@/lib/linkedin-name-resolve";
+import { notifyProfileWatchers } from "@/lib/push-notify";
 import {
   envLimit,
   getClientIp,
@@ -694,6 +695,11 @@ export async function POST(req) {
       { status: 500 }
     );
   }
+
+  // Trigger push notifications for profile watchers (non-blocking)
+  notifyProfileWatchers(slug, { vote, displayName }).catch((err) => {
+    console.error("Failed to notify watchers in background:", err);
+  });
 
   return Response.json({
     success: true,

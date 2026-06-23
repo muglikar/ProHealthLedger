@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import ProfilePhoto from "@/app/components/ProfilePhoto";
 
 export default function CommentReadModal({
@@ -17,6 +18,7 @@ export default function CommentReadModal({
   submitterCapacity,
   votedCapacity,
   text,
+  reasonLocked,
   onClose,
 }) {
   useEffect(() => {
@@ -120,7 +122,21 @@ export default function CommentReadModal({
 
         <div className="comment-read-modal-comment-section">
           <h4 className="comment-read-modal-comment-heading">Comment</h4>
-          <div className="comment-read-modal-body">{text}</div>
+          {reasonLocked ? (
+            <div className="comment-read-modal-body" style={{ textAlign: "center", padding: "20px 0" }}>
+              <span style={{ fontSize: "1.5rem", display: "block", marginBottom: 8 }} aria-hidden>🔒</span>
+              <p style={{ margin: 0, fontSize: "0.9rem", color: "#64748b" }}>
+                Comments and professional roles are locked.
+              </p>
+              <p style={{ margin: "4px 0 0 0", fontSize: "0.9rem" }}>
+                <Link href="/submit" onClick={onClose} style={{ color: "var(--accent)", fontWeight: 600, textDecoration: "underline" }}>
+                  Sign in &amp; vouch to unlock &rarr;
+                </Link>
+              </p>
+            </div>
+          ) : (
+            <div className="comment-read-modal-body">{text}</div>
+          )}
         </div>
       </div>
     </>

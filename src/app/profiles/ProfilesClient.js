@@ -11,7 +11,9 @@ import CiteVouchModal from "@/app/components/CiteVouchModal";
 import VerificationBadgeModal from "@/app/components/VerificationBadgeModal";
 import SupportSection from "@/app/components/SupportSection";
 import ProfilePhoto from "@/app/components/ProfilePhoto";
-import { trackEvent } from "@/lib/telemetry";
+import CommentGateBanner from "@/app/components/CommentGateBanner";
+import WatchProfileButton from "@/app/components/WatchProfileButton";
+import { trackEvent, trackSearch } from "@/lib/telemetry";
 
 const REPO_BASE = "https://github.com/muglikar/ProHealthLedger";
 
@@ -63,11 +65,38 @@ function VotesContent() {
   const searchParams = useSearchParams();
   const params = useParams();
   const initialSearch = searchParams.get("search") || params?.slug || "";
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const currentUserId = session?.userId || "";
 
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [viewCreditActive, setViewCreditActive] = useState(false);
+  const [hasVouchedBefore, setHasVouchedBefore] = useState(false);
+
+  useEffect(() => {
+    if (status !== "authenticated") {
+      setViewCreditActive(false);
+      setHasVouchedBefore(false);
+      return;
+    }
+    function loadQuota() {
+      fetch("/api/my-vote-quota")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && !data.error) {
+            setViewCreditActive(!!data.view_credit_active);
+            setHasVouchedBefore(data.yes_count >= 1);
+          }
+        })
+        .catch(() => {});
+    }
+    loadQuota();
+
+    window.addEventListener("prohl-vote-recorded", loadQuota);
+    return () => {
+      window.removeEventListener("prohl-vote-recorded", loadQuota);
+    };
+  }, [status]);
   const [search, setSearch] = useState(initialSearch);
   const [sortMode, setSortMode] = useState("flags");
   const [shareModalData, setShareModalData] = useState(null);
@@ -209,38 +238,56 @@ function VotesContent() {
   /* ── Fetch ── */
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/profiles").then((res) => res.json()).catch(() => []),
-      fetch("/api/contributor-photos").then((res) => res.json()).catch(() => ({})),
-    ]).then(([profilesData, cpMap]) => {
-      const profilesList = Array.isArray(profilesData) ? profilesData : [];
-      setProfiles(profilesList);
-      const upMap = {};
-      profilesList.forEach((p) => {
-        if (p.submissions) {
-          p.submissions.forEach((s) => {
-            if (s.user && s.submitter_linkedin_url) {
-              upMap[s.user] = s.submitter_linkedin_url;
+    if (status === "loading") return;
+
+    function loadProfiles() {
+      setLoading(true);
+      Promise.all([
+        fetch(session ? "/api/profiles?auth=1" : "/api/profiles")
+          .then((res) => res.json())
+          .catch(() => []),
+        fetch("/api/contributor-photos")
+          .then((res) => res.json())
+          .catch(() => ({})),
+      ])
+        .then(([profilesData, cpMap]) => {
+          const profilesList = Array.isArray(profilesData) ? profilesData : [];
+          setProfiles(profilesList);
+          const upMap = {};
+          profilesList.forEach((p) => {
+            if (p.submissions) {
+              p.submissions.forEach((s) => {
+                if (s.user && s.submitter_linkedin_url) {
+                  upMap[s.user] = s.submitter_linkedin_url;
+                }
+              });
             }
           });
-        }
-      });
-      setUserProfileMap(upMap);
-      setContribPhotoMap(cpMap || {});
-      setLoading(false);
-    }).catch(() => {
-      setProfiles([]);
-      setLoading(false);
-    });
-  }, []);
+          setUserProfileMap(upMap);
+          setContribPhotoMap(cpMap || {});
+          setLoading(false);
+        })
+        .catch(() => {
+          setProfiles([]);
+          setLoading(false);
+        });
+    }
+
+    loadProfiles();
+
+    window.addEventListener("prohl-vote-recorded", loadProfiles);
+    return () => {
+      window.removeEventListener("prohl-vote-recorded", loadProfiles);
+    };
+  }, [status, session]);
 
   useEffect(() => {
     if (!search) return;
     const timer = setTimeout(() => {
-      trackEvent("profile_search", { query: search });
+      trackSearch(search, filteredVotes.length);
     }, 1500);
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, filteredVotes.length]);
 
   /* ── Search ── */
 
@@ -417,6 +464,42 @@ function VotesContent() {
   }
 
   function commentCell(row) {
+    if (row.reason_locked) {
+      const profName = formatProfessionalDisplayName(row.profile_slug, row.public_name);
+      return (
+        <div style={{ display: "flex", alignItems: "center", width: "100%", minWidth: 0, gap: "8px" }}>
+          <button
+            type="button"
+            className="audit-comment-link comment-locked"
+            style={{ flex: 1, minWidth: 0, border: 'none', background: 'transparent', textAlign: 'left', cursor: 'pointer' }}
+            title="Sign in & vouch to read comments"
+            aria-label="Sign in & vouch to read comments"
+            onClick={() =>
+              setCommentPopup({
+                text: "",
+                professional: profName,
+                vote: row.vote,
+                submittedBy: submitterPlain(row),
+                date: row.date || "—",
+                issue: row.issue,
+                recordHref: row.issue != null ? `${REPO_BASE}/issues/${row.issue}` : null,
+                linkedinUrl: row.linkedin_url || null,
+                profilePhotoUrl: row.profile_photo_url || null,
+                originalPhotoUrl: row.original_photo_url || null,
+                profileSlug: row.profile_slug || null,
+                submitterCapacity: null,
+                votedCapacity: null,
+                reasonLocked: true,
+              })
+            }
+          >
+            <span className="comment-locked-icon">🔒</span>
+            <span className="comment-locked-link">Unlock comment</span>
+          </button>
+        </div>
+      );
+    }
+
     if (row.reason_pending) {
       return <span className="audit-comment-pending">Pending review</span>;
     }
@@ -505,6 +588,7 @@ function VotesContent() {
               profileSlug: row.profile_slug || null,
               submitterCapacity: row.submitter_capacity || null,
               votedCapacity: row.voted_capacity || null,
+              reasonLocked: false,
             })
           }
         >
@@ -545,6 +629,12 @@ function VotesContent() {
           </a>.
         </p>
       </div>
+
+      <CommentGateBanner
+        session={session}
+        viewCreditActive={viewCreditActive}
+        hasVouchedBefore={hasVouchedBefore}
+      />
 
       <div className="search-bar-container" style={{ position: "relative" }}>
         <input
@@ -593,10 +683,23 @@ function VotesContent() {
           <div className="empty-state-icon">{query ? "🔍" : "📜"}</div>
           <h3>{query ? "No votes match that search" : "No votes recorded yet"}</h3>
           <p>
-            {query
-              ? "Try a different name or spelling."
-              : "Once people start voting, every single vote will appear here."}
+            {query ? (
+              <>
+                This profile isn&apos;t on the ledger yet. Be the first to{" "}
+                <Link href={`/submit?linkedin=${encodeURIComponent(search.includes("linkedin.com") ? search : "https://www.linkedin.com/in/" + query.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9_-]/g, ""))}`} style={{ color: "var(--accent)", textDecoration: "underline" }}>
+                  vouch
+                </Link>{" "}
+                &mdash; or watch for updates.
+              </>
+            ) : (
+              "Once people start voting, every single vote will appear here."
+            )}
           </p>
+          {query && (
+            <div style={{ marginTop: 16 }}>
+              <WatchProfileButton slug={query.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9_-]/g, "")} />
+            </div>
+          )}
         </div>
       ) : (
         <>
@@ -665,6 +768,9 @@ function VotesContent() {
                     </div>
                     <div className="submission-count" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "8px" }}>
                       {totalCount} vote{totalCount !== 1 ? "s" : ""} from the community
+                    </div>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap", marginBottom: "8px" }}>
+                      <WatchProfileButton slug={p.slug} />
                     </div>
                     {(() => {
                       const mySubmission = deduped.find(
@@ -940,6 +1046,21 @@ function VotesContent() {
                       <h4 className="comment-read-modal-comment-heading" style={{ margin: "0 0 8px 0", fontSize: "0.9rem", color: "#64748b" }}>Comment</h4>
                       <div className="comment-read-modal-body" style={{ background: "#f8fafc", padding: "12px", borderRadius: "8px", fontSize: "0.95rem", lineHeight: "1.5" }}>
                         {(() => {
+                          if (v.reason_locked) {
+                            return (
+                              <div style={{ textAlign: "center", padding: "8px 0" }}>
+                                <span style={{ fontSize: "1.2rem", display: "block", marginBottom: 4 }} aria-hidden>🔒</span>
+                                <p style={{ margin: 0, fontSize: "0.85rem", color: "#64748b" }}>
+                                  Comments and roles are locked.
+                                </p>
+                                <p style={{ margin: "4px 0 0 0", fontSize: "0.85rem" }}>
+                                  <Link href="/submit" style={{ color: "var(--accent)", fontWeight: 600, textDecoration: "underline" }}>
+                                    Sign in &amp; vouch to unlock &rarr;
+                                  </Link>
+                                </p>
+                              </div>
+                            );
+                          }
                           if (v.reason_pending) return <span className="audit-comment-pending">Pending review</span>;
                           if (v.reason_redacted) {
                             const date = (v.redacted_at || "").slice(0, 10) || "unknown date";
@@ -988,6 +1109,7 @@ function VotesContent() {
           submitterCapacity={commentPopup.submitterCapacity}
           votedCapacity={commentPopup.votedCapacity}
           text={commentPopup.text}
+          reasonLocked={commentPopup.reasonLocked}
           onClose={() => setCommentPopup(null)}
         />
       )}
