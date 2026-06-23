@@ -6482,6 +6482,7 @@ button.audit-comment-link:focus-visible {
   margin: 32px 0;
   box-shadow: 0 4px 16px rgba(245, 158, 11, 0.12);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: left;
 }
 
 .good-boss-callout:hover {

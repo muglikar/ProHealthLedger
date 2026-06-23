@@ -281,14 +281,6 @@ function VotesContent() {
     };
   }, [status, session]);
 
-  useEffect(() => {
-    if (!search) return;
-    const timer = setTimeout(() => {
-      trackSearch(search, filteredVotes.length);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, [search, filteredVotes.length]);
-
   /* ── Search ── */
 
   const normalizeQuery = (q) => {
@@ -380,6 +372,14 @@ function VotesContent() {
     });
     return copy;
   }, [filteredVotes, sortMode, slugToFlagCount, slugToVouchCount]);
+
+  useEffect(() => {
+    if (!search) return;
+    const timer = setTimeout(() => {
+      trackSearch(search, filteredVotes.length);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [search, filteredVotes.length]);
 
   /* ── Profile context panel (when search narrows to one professional) ── */
 
