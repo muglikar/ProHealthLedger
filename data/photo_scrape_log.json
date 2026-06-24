@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-06-23T03:10:44.192Z",
+  "last_run": "2026-06-24T03:25:16.746Z",
   "attempts": {
     "abhijit-moharir-6291274": {
       "last_attempt": "2026-05-28",
@@ -50,16 +50,16 @@
       "failures": 3
     },
     "harsh-attri-721899159": {
-      "last_attempt": "2026-06-20",
-      "failures": 2
+      "last_attempt": "2026-06-24",
+      "failures": 3
     },
     "pawankumar-yendigeri-259471146": {
-      "last_attempt": "2026-06-20",
-      "failures": 2
+      "last_attempt": "2026-06-24",
+      "failures": 3
     },
     "swati-yedekar-55849721": {
-      "last_attempt": "2026-06-20",
-      "failures": 2
+      "last_attempt": "2026-06-24",
+      "failures": 3
     }
   }
 }
