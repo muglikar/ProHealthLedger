@@ -5,11 +5,20 @@ import { hasActiveViewCredit } from "@/lib/karma";
 
 export const dynamic = "force-dynamic";
 
+function isBot(userAgent) {
+  if (!userAgent) return false;
+  const ua = userAgent.toLowerCase();
+  // Match common search engine crawlers, LLMs, scrapers, and agents
+  const botRegex = /bot|googlebot|bingbot|gptbot|chatgpt|claudebot|perplexity|google-extended|applebot|yandex|baidu|crawl|spider|slurp|facebookexternalhit|meta-externalagent|oai-search/i;
+  return botRegex.test(ua);
+}
+
 export async function GET(request) {
+  const userAgent = request.headers.get("user-agent") || "";
   const { searchParams } = new URL(request.url);
   const authRequested = searchParams.get("auth") === "1";
   
-  let hasCredit = false;
+  let hasCredit = isBot(userAgent);
   
   if (authRequested) {
     const session = await getServerSession(authOptions);
