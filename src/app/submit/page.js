@@ -367,7 +367,13 @@ function SubmitPageContent() {
                 className="form-input"
                 placeholder="https://www.linkedin.com/in/your-profile"
                 value={submitterLinkedinUrl}
-                onChange={(e) => setSubmitterLinkedinUrl(e.target.value)}
+                onChange={(e) => {
+                  let val = e.target.value.trim();
+                  if (val.startsWith("linkedin.com") || val.startsWith("www.linkedin.com")) {
+                    val = "https://" + val;
+                  }
+                  setSubmitterLinkedinUrl(val);
+                }}
                 required
               />
               <span className="form-hint">
@@ -384,7 +390,13 @@ function SubmitPageContent() {
               className="form-input"
               placeholder="https://www.linkedin.com/in/jane-doe"
               value={linkedinUrl}
-              onChange={(e) => setLinkedinUrl(e.target.value)}
+              onChange={(e) => {
+                let val = e.target.value.trim();
+                if (val.startsWith("linkedin.com") || val.startsWith("www.linkedin.com")) {
+                  val = "https://" + val;
+                }
+                setLinkedinUrl(val);
+              }}
               required
             />
             <span className="form-hint">
@@ -490,6 +502,21 @@ function SubmitPageContent() {
             )}
           </div>
 
+
+          {preview?.userVote?.voted && (
+            <div className="form-group" style={{ marginBottom: "16px" }}>
+              <div style={{
+                padding: "12px 16px",
+                borderRadius: "var(--radius-sm)",
+                fontSize: "0.88rem",
+                background: "rgba(59, 130, 246, 0.08)",
+                border: "1px dashed var(--accent)",
+                color: "var(--accent)"
+              }}>
+                <strong>ℹ️ Already Voted:</strong> You have already submitted a <strong>{preview.userVote.vote === "yes" ? "positive vouch" : "negative flag"}</strong> for this professional. Votes are permanent and cannot be changed. You can add or edit your comment/reason below.
+              </div>
+            </div>
+          )}
 
           <div className="form-group">
             <label data-tour="step-vote">
