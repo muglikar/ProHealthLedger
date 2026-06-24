@@ -8,8 +8,8 @@ export const dynamic = "force-dynamic";
 function isBot(userAgent) {
   if (!userAgent) return false;
   const ua = userAgent.toLowerCase();
-  // Match common search engine crawlers, LLMs, scrapers, and agents
-  const botRegex = /bot|googlebot|bingbot|gptbot|chatgpt|claudebot|perplexity|google-extended|applebot|yandex|baidu|crawl|spider|slurp|facebookexternalhit|meta-externalagent|oai-search/i;
+  // Match common search engine crawlers, LLMs, scrapers, agents, and archivers
+  const botRegex = /bot|googlebot|bingbot|gptbot|chatgpt|claudebot|perplexity|google-extended|applebot|yandex|baidu|crawl|spider|slurp|facebookexternalhit|meta-externalagent|oai-search|ia_archiver|archive/i;
   return botRegex.test(ua);
 }
 
