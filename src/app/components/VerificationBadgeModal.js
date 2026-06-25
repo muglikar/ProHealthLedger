@@ -9,7 +9,7 @@ export default function VerificationBadgeModal({ profileSlug, publicName, onClos
   const [posting, setPosting] = useState(false);
   const [postResult, setPostResult] = useState(null);
 
-  const profileUrl = `https://prohealthledger.org/p/directory/directory/${encodeURIComponent(profileSlug)}`;
+  const profileUrl = `https://prohealthledger.org/profile/${encodeURIComponent(profileSlug)}`;
   
   const embedHtml = `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block; font-family: -apple-system, system-ui, sans-serif; font-size: 13px; font-weight: 700; color: #ffffff; background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); padding: 10px 20px; border-radius: 999px; text-decoration: none; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); border: 1px solid rgba(255,255,255,0.2);">
   <span style="margin-right: 6px; font-size: 15px;">💎</span> Verified Professional on Pro-Health Ledger

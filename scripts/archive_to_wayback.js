@@ -79,7 +79,7 @@ async function runArchival() {
     const urlSlug = rawUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || profile.slug || profile.public_name;
     
     if (urlSlug) {
-      urlsToArchive.push(`${SITE_URL}/p/directory/directory/${encodeURIComponent(urlSlug)}`);
+      urlsToArchive.push(`${SITE_URL}/profile/${encodeURIComponent(urlSlug)}`);
     }
   }
 

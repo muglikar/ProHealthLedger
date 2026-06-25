@@ -69,7 +69,7 @@ export default function DirectoryClient({ profiles }) {
             <div style={{ flex: 1, minWidth: 0 }}>
               <h2 style={{ fontSize: "1.2rem", margin: "0 0 10px 0" }}>
                 <Link
-                  href={`/p/directory/directory/${encodeURIComponent(urlSlug)}`}
+                  href={`/profile/${encodeURIComponent(urlSlug)}`}
                   style={{ color: "var(--accent)", textDecoration: "none", fontWeight: "bold" }}
                 >
                   {displayName}

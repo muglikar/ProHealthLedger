@@ -18,6 +18,25 @@ export default async function DirectoryPage() {
       </header>
 
       <DirectoryClient profiles={publicProfiles} />
+
+      {/* Visually hidden comments for crawlers and screen readers */}
+      <div className="sr-only" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+        {publicProfiles.map((p) => {
+          if (!p.submissions || p.submissions.length === 0) return null;
+          return (
+            <div key={p.slug}>
+              <h2>Comments for {p.public_name || p.slug}</h2>
+              {p.submissions.map((sub, i) => (
+                <article key={i}>
+                  <p><strong>{sub.display_name || sub.user || "Verified Professional"}</strong> voted {sub.vote}</p>
+                  <p>{sub.reason || sub.comment || "Verified professional review for conduct and behavior."}</p>
+                  <p>Date: {sub.date}</p>
+                </article>
+              ))}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

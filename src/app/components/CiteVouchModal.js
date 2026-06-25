@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function CiteVouchModal({ vouch, profileSlug, publicName, onClose }) {
   const [copied, setCopied] = useState(false);
-  const profileUrl = `https://prohealthledger.org/p/directory/directory/${encodeURIComponent(profileSlug)}`;
+  const profileUrl = `https://prohealthledger.org/profile/${encodeURIComponent(profileSlug)}`;
   
   const citationHtml = `<blockquote cite="${profileUrl}">
   <p>"${vouch.reason || vouch.comment || 'Verified professional vouch for conduct and behavior.'}"</p>
