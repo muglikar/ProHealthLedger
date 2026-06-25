@@ -23,6 +23,10 @@ export default function AdminToolsPage() {
   const [aiResponse, setAiResponse] = useState("");
   const [aiError, setAiError] = useState("");
 
+  const [logs, setLogs] = useState([]);
+  const [logsLoading, setLogsLoading] = useState(true);
+  const [logsError, setLogsError] = useState("");
+
   const [loading, setLoading] = useState(true);
 
   const isAdmin =
@@ -47,13 +51,36 @@ export default function AdminToolsPage() {
     }
   }, [showAllProfiles]);
 
+  const fetchSystemLogs = useCallback(async () => {
+    setLogsLoading(true);
+    setLogsError("");
+    try {
+      const res = await fetch("/api/admin/system-logs");
+      if (res.ok) {
+        const data = await res.json();
+        setLogs(data);
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        setLogsError(errData.error || "Failed to fetch activity reports.");
+      }
+    } catch (err) {
+      setLogsError("Failed to fetch activity reports.");
+      console.error(err);
+    } finally {
+      setLogsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!isAdmin) {
       setLoading(false);
       return;
     }
-    fetchMissingImages(showAllProfiles).finally(() => setLoading(false));
-  }, [isAdmin, showAllProfiles, fetchMissingImages]);
+    Promise.all([
+      fetchMissingImages(showAllProfiles),
+      fetchSystemLogs()
+    ]).finally(() => setLoading(false));
+  }, [isAdmin, showAllProfiles, fetchMissingImages, fetchSystemLogs]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -350,6 +377,87 @@ export default function AdminToolsPage() {
         )}
       </section>
 
+      {/* Activity Logs Section */}
+      <section style={{ background: "var(--bg-card)", padding: "24px", borderRadius: "var(--radius)", marginBottom: "32px", border: "1px solid var(--border)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          <h2 style={{ fontSize: "1.25rem", fontWeight: "700", margin: 0, color: "var(--text)" }}>
+            ⚙️ Backup & Archiving Activity Reports
+          </h2>
+          <button
+            onClick={fetchSystemLogs}
+            disabled={logsLoading}
+            style={{
+              padding: "6px 12px",
+              fontSize: "0.8rem",
+              background: "var(--bg)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-sm)",
+              color: "var(--text)",
+              cursor: "pointer",
+              fontWeight: "600",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px"
+            }}
+          >
+            {logsLoading ? "Refreshing..." : "↻ Refresh"}
+          </button>
+        </div>
+        <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", marginBottom: "20px" }}>
+          Monitor the automatic weekly backups of database logs and daily archiving checks on Wayback Machine & archive.is.
+        </p>
+
+        {logsError && (
+          <div className="form-error" style={{ marginBottom: "16px" }}>
+            {logsError}
+          </div>
+        )}
+
+        {logsLoading && logs.length === 0 ? (
+          <div style={{ padding: "20px", textAlign: "center", color: "var(--text-secondary)" }}>
+            Loading activity status reports...
+          </div>
+        ) : logs.length === 0 ? (
+          <div style={{ padding: "20px", textAlign: "center", color: "var(--text-secondary)", background: "var(--bg)", borderRadius: "var(--radius-sm)", border: "1px dashed var(--border)" }}>
+            No status reports found.
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", maxHeight: "300px", overflowY: "auto", paddingRight: "4px" }}>
+            {logs.map((log, idx) => (
+              <div
+                key={idx}
+                style={{
+                  padding: "14px",
+                  background: "var(--bg)",
+                  borderRadius: "var(--radius-sm)",
+                  border: "1px solid var(--border)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px"
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span style={{ fontWeight: "600", color: "var(--text)", fontSize: "0.95rem" }}>
+                      {formatActivityName(log.activity)}
+                    </span>
+                    {getStatusBadge(log.status)}
+                  </div>
+                  <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                    {new Date(log.timestamp).toLocaleString()}
+                  </span>
+                </div>
+                {log.details && (
+                  <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-secondary)", whiteSpace: "pre-wrap" }}>
+                    {log.details}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* AI Suggest Code Changes */}
       <section style={{ background: "var(--bg-card)", padding: "24px", borderRadius: "var(--radius)", border: "1px solid var(--border)" }}>
         <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "16px", color: "var(--text)" }}>
@@ -396,5 +504,30 @@ export default function AdminToolsPage() {
         )}
       </section>
     </div>
+  );
+}
+
+function formatActivityName(act) {
+  if (act === "weekly_backup") return "Weekly Google Drive Backup";
+  if (act === "daily_archival") return "Daily Archiving (Wayback & Archive.is)";
+  return act.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function getStatusBadge(status) {
+  const isSuccess = status === "success";
+  return (
+    <span
+      style={{
+        padding: "4px 8px",
+        borderRadius: "4px",
+        fontSize: "0.75rem",
+        fontWeight: "bold",
+        backgroundColor: isSuccess ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)",
+        color: isSuccess ? "#10b981" : "#ef4444",
+        border: `1px solid ${isSuccess ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)"}`,
+      }}
+    >
+      {status.toUpperCase()}
+    </span>
   );
 }

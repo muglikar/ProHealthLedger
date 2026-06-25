@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   backup-data:
@@ -15,6 +15,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Install rclone
         run: curl -fsSL https://rclone.org/install.sh | sudo bash
@@ -26,3 +31,15 @@ jobs:
           GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
         run: bash ./scripts/backup-data-to-gdrive.sh
+
+      - name: Log Success
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/log_system_activity.js --activity="weekly_backup" --status="success" --details="Successfully backed up data/ directory to Google Drive."
+
+      - name: Log Failure
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/log_system_activity.js --activity="weekly_backup" --status="failure" --details="Weekly Google Drive backup workflow run failed."
