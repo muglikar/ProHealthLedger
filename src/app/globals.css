@@ -2797,7 +2797,7 @@ a:hover {
   border: 1px solid var(--border);
   border-bottom: none;
   border-radius: var(--radius) var(--radius) 0 0;
-  touch-action: pan-x;
+  touch-action: none;
   cursor: pointer;
   display: flex;
   align-items: center;
