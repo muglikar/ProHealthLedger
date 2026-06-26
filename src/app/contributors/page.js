@@ -7,6 +7,7 @@ import ProfilePhoto from "@/app/components/ProfilePhoto";
 export default function ContributorsPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetch("/api/contributors")
@@ -27,6 +28,10 @@ export default function ContributorsPage() {
       (b.no_count ?? 0) -
       ((a.yes_count ?? 0) + (a.no_count ?? 0))
   );
+
+  const ITEMS_PER_PAGE = 50;
+  const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE);
+  const paginated = sorted.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   function profileUrl(user) {
     if (!user) return null;
@@ -72,7 +77,8 @@ export default function ContributorsPage() {
         </div>
       ) : (
         <div className="leaderboard">
-          {sorted.map((user, idx) => {
+          {paginated.map((user, idx) => {
+            const absoluteIdx = (currentPage - 1) * ITEMS_PER_PAGE + idx;
             const rawId =
               user.user_id ||
               (user.github_username ? `github:${user.github_username}` : "");
@@ -85,9 +91,9 @@ export default function ContributorsPage() {
                 className="leaderboard-row"
               >
                 <div
-                  className={`leaderboard-rank${idx < 3 ? " top-3" : ""}`}
+                  className={`leaderboard-rank${absoluteIdx < 3 ? " top-3" : ""}`}
                 >
-                  {idx + 1}
+                  {absoluteIdx + 1}
                 </div>
                 <ProfilePhoto
                   photoUrl={user.image || null}
@@ -131,6 +137,28 @@ export default function ContributorsPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "16px", marginTop: "24px", marginBottom: "40px" }}>
+          <button
+            className="btn btn-secondary"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          >
+            Previous
+          </button>
+          <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            className="btn btn-secondary"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </button>
         </div>
       )}
     </>

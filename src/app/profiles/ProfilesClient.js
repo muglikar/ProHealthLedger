@@ -99,6 +99,11 @@ function VotesContent() {
   }, [status]);
   const [search, setSearch] = useState(initialSearch);
   const [sortMode, setSortMode] = useState("flags");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, sortMode]);
   const [shareModalData, setShareModalData] = useState(null);
   const [commentPopup, setCommentPopup] = useState(null);
   const [citeModalData, setCiteModalData] = useState(null);
@@ -372,6 +377,10 @@ function VotesContent() {
     });
     return copy;
   }, [filteredVotes, sortMode, slugToFlagCount, slugToVouchCount]);
+
+  const ITEMS_PER_PAGE = 50;
+  const totalPages = Math.ceil(sortedVotes.length / ITEMS_PER_PAGE);
+  const paginatedVotes = sortedVotes.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   useEffect(() => {
     if (!search) return;
@@ -865,7 +874,7 @@ function VotesContent() {
                       </tr>
                     </thead>
                     <tbody>
-                      {sortedVotes.map((v) => (
+                      {paginatedVotes.map((v) => (
                         <tr
                           key={
                             v.issue != null
@@ -989,7 +998,7 @@ function VotesContent() {
             </>
           ) : (
             <div className="votes-cards-container" style={{ display: "flex", flexDirection: "column", gap: "24px", marginTop: "16px" }}>
-              {sortedVotes.map((v) => {
+              {paginatedVotes.map((v) => {
                 const voteLabel = v.vote === "yes" ? "Yes" : v.vote === "no" ? "No" : v.vote ? String(v.vote) : "—";
                 
                 return (
@@ -1082,6 +1091,28 @@ function VotesContent() {
             </div>
           )}
         </>
+      )}
+
+      {totalPages > 1 && (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "16px", marginTop: "24px", marginBottom: "40px" }}>
+          <button
+            className="btn btn-secondary"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          >
+            Previous
+          </button>
+          <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            className="btn btn-secondary"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </button>
+        </div>
       )}
 
       {/* ── Modals ── */}
