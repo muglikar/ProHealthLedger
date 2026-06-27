@@ -915,7 +915,7 @@ function VotesContent() {
                                 className="target-link"
                               >
                                 {formatProfessionalDisplayName(v.profile_slug, v.public_name)}
-                              </a>>
+                              </a>
                             </div>
                           </td>
                           <td className="audit-col-vote">
