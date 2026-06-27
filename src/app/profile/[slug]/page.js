@@ -85,11 +85,23 @@ export default async function ProfilePage({ params }) {
   // Build JSON-LD
   const schemaMarkup = {
     "@context": "https://schema.org",
-    "@type": "Person",
+    "@type": ["Person", "Organization"],
     "name": titleName,
     "url": `${CANONICAL_ORIGIN}/profile/${encodeURIComponent(slug)}`,
     "sameAs": profile?.linkedin_url || `https://www.linkedin.com/in/${encodeURIComponent(slug)}`,
   };
+
+  const totalVotes = vouches + flags;
+  if (totalVotes > 0) {
+    const average = (vouches * 5 + flags * 1) / totalVotes;
+    schemaMarkup.aggregateRating = {
+      "@type": "AggregateRating",
+      "ratingValue": average.toFixed(1),
+      "reviewCount": totalVotes.toString(),
+      "bestRating": "5",
+      "worstRating": "1"
+    };
+  }
 
   // If there are submissions, add reviews to the schema
   if (profile?.submissions && Array.isArray(profile.submissions) && profile.submissions.length > 0) {
