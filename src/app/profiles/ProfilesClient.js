@@ -73,10 +73,13 @@ function VotesContent() {
   const [viewCreditActive, setViewCreditActive] = useState(false);
   const [hasVouchedBefore, setHasVouchedBefore] = useState(false);
 
+  const [canViewLinkedin, setCanViewLinkedin] = useState(false);
+
   useEffect(() => {
     if (status !== "authenticated") {
       setViewCreditActive(false);
       setHasVouchedBefore(false);
+      setCanViewLinkedin(false);
       return;
     }
     function loadQuota() {
@@ -86,6 +89,7 @@ function VotesContent() {
           if (data && !data.error) {
             setViewCreditActive(!!data.view_credit_active);
             setHasVouchedBefore(data.yes_count >= 1);
+            setCanViewLinkedin(data.yes_count >= 1 && data.no_count >= 1);
           }
         })
         .catch(() => {});
@@ -763,14 +767,20 @@ function VotesContent() {
                         </button>
                       )}
                     </h2>
-                    <a
-                      href={p.linkedin_url || "#"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="votes-profile-panel-link"
-                    >
-                      View LinkedIn Profile →
-                    </a>
+                    {canViewLinkedin ? (
+                      <a
+                        href={p.linkedin_url || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="votes-profile-panel-link"
+                      >
+                        View LinkedIn Profile →
+                      </a>
+                    ) : (
+                      <div className="votes-profile-panel-link" style={{ color: "var(--text-secondary)", cursor: "not-allowed", display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.9rem" }} title="Sign in and contribute 1 vouch and 1 flag to unlock LinkedIn links">
+                        <span>🔒</span> LinkedIn profile locked
+                      </div>
+                    )}
                     <div className="vote-counts" style={{ margin: "8px 0 4px" }}>
                       <span className="vote-badge vote-yes">✓ {yesCount} would work with again</span>
                       <span className="vote-badge vote-no">✗ {noCount} would not work with them again</span>
@@ -892,14 +902,12 @@ function VotesContent() {
                                 size={36}
                                 showFlag={!!session && !v.photo_verified}
                               />
-                              <a
-                                href={v.linkedin_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                              <Link
+                                href={`/profile/${v.profile_slug}`}
                                 className="target-link"
                               >
                                 {formatProfessionalDisplayName(v.profile_slug, v.public_name)}
-                              </a>
+                              </Link>
                             </div>
                           </td>
                           <td className="audit-col-vote">

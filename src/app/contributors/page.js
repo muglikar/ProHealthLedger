@@ -35,7 +35,10 @@ export default function ContributorsPage() {
 
   function profileUrl(user) {
     if (!user) return null;
-    if (user.linkedin_url) return user.linkedin_url;
+    if (user.linkedin_url) {
+      const slug = user.linkedin_url.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1];
+      if (slug) return `/profile/${slug.toLowerCase()}`;
+    }
     if (user.github_username) return `https://github.com/${user.github_username}`;
     
     const userId = user.user_id || "";
