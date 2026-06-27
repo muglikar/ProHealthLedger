@@ -242,7 +242,7 @@ function VotesContent() {
       track.removeEventListener("click", onTrackClick);
       onUp();
     };
-  }, [loading, updateThumb]);
+  }, [loading, updateThumb, matchedProfile, currentPage]);
 
   /* ── Fetch ── */
 
