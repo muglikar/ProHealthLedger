@@ -348,5 +348,15 @@
     "created_at": "2026-06-24",
     "clicks": 0,
     "signups": []
+  },
+  {
+    "ref_code": "a277b2cf",
+    "sharer_id": "linkedin:CAOSO1oig0",
+    "sharer_name": "Anand Muglikar",
+    "profile_slug": "maheen-shaikh-25b80723a",
+    "profile_name": "Maheen Shaikh",
+    "created_at": "2026-06-27",
+    "clicks": 0,
+    "signups": []
   }
 ]
