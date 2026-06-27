@@ -1286,6 +1286,7 @@ a:hover {
     transition: all 0.25s ease;
     user-select: none;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    font-family: var(--font-monda);
   }
 
   .mobile-tier-card.is-active {
@@ -1336,6 +1337,7 @@ a:hover {
   justify-content: center;
   gap: 8px;
   padding: 1.25rem 0.5rem;
+  font-family: var(--font-monda);
 
   /* 3D Glass Block Effect */
   background: rgba(255, 255, 255, 0.4);
