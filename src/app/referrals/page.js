@@ -98,8 +98,7 @@ export default function ReferralsPage() {
     }
     if (userId.startsWith("linkedin:")) {
       const sub = userId.split(":")[1];
-      // For LinkedIn, if we don't have the vanity slug handy, we'll use a search query.
-      return `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(sub)}`;
+      return `/profiles?search=${encodeURIComponent(sub)}`;
     }
     return null;
   };
@@ -269,9 +268,9 @@ export default function ReferralsPage() {
                           <strong>✨ General Platform Link</strong>
                         ) : (
                           r.profile_linkedin_url ? (
-                            <a href={r.profile_linkedin_url} target="_blank" rel="noopener noreferrer" className="target-link">
+                            <Link href={`/profile/${r.profile_slug}`} className="target-link">
                               {r.profile_name}
-                            </a>
+                            </Link>
                           ) : (
                             r.profile_name
                           )
@@ -289,7 +288,11 @@ export default function ReferralsPage() {
                         <div className="signup-names">
                           {r.signup_names.map((name, nIdx) => {
                             const signupId = r.signups?.[nIdx];
-                            const profileUrl = r.signup_profiles?.[nIdx] || (signupId ? getProfileLink(signupId) : null);
+                            let profileUrl = r.signup_profiles?.[nIdx] || (signupId ? getProfileLink(signupId) : null);
+                            if (profileUrl && profileUrl.includes("linkedin.com/in/")) {
+                              const match = profileUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/);
+                              if (match) profileUrl = `/profile/${match[1].toLowerCase()}`;
+                            }
                             return (
                               <span key={nIdx}>
                                 {profileUrl ? (
@@ -332,13 +335,27 @@ export default function ReferralsPage() {
                   />
                   <div className="recruit-info">
                     <div className="recruit-name">
-                      {recruit.profileUrl || getProfileLink(recruit.id) ? (
-                        <a href={recruit.profileUrl || getProfileLink(recruit.id)} target="_blank" rel="noopener noreferrer" className="recruit-link">
-                          {recruit.name}
-                        </a>
-                      ) : (
-                        recruit.name
-                      )}
+                      {(() => {
+                        let finalUrl = null;
+                        if (recruit.profileUrl) {
+                          const match = recruit.profileUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/);
+                          if (match) {
+                            finalUrl = `/profile/${match[1].toLowerCase()}`;
+                          } else {
+                            finalUrl = recruit.profileUrl;
+                          }
+                        } else {
+                          finalUrl = getProfileLink(recruit.id);
+                        }
+                        
+                        return finalUrl ? (
+                          <a href={finalUrl} target="_blank" rel="noopener noreferrer" className="recruit-link">
+                            {recruit.name}
+                          </a>
+                        ) : (
+                          recruit.name
+                        );
+                      })()}
                     </div>
                     <div className="recruit-meta">
                       Joined via <span className="recruit-source">{recruit.source}</span>
