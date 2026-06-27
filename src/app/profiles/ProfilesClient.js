@@ -383,6 +383,10 @@ function VotesContent() {
   }, [filteredVotes, sortMode, slugToFlagCount, slugToVouchCount]);
 
 
+  const ITEMS_PER_PAGE = 50;
+  const totalPages = Math.ceil(sortedVotes.length / ITEMS_PER_PAGE);
+  const paginatedVotes = sortedVotes.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   useEffect(() => {
     if (!search) return;
     const timer = setTimeout(() => {
@@ -446,31 +450,38 @@ function VotesContent() {
       </span>
     );
 
+    let phlProfileUrl = null;
     if (linkedinUrl) {
-      return nameWithAvatar(
-        <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="user-link">
-          {label}
-        </a>
-      );
-    }
-    if (userId.startsWith("github:")) {
-      const gh = userId.slice(7);
-      return nameWithAvatar(
-        <a href={`https://github.com/${gh}`} target="_blank" rel="noopener noreferrer" className="user-link">
-          {label}
-        </a>
-      );
-    }
-    if (userId.startsWith("linkedin:")) {
+      const match = linkedinUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/);
+      if (match) phlProfileUrl = `/profile/${match[1].toLowerCase()}`;
+    } else if (userId.startsWith("linkedin:")) {
       const sub = userId.split(":")[1];
-      const searchUrl = `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(sub)}`;
-      return nameWithAvatar(
-        <a href={searchUrl} target="_blank" rel="noopener noreferrer" className="user-link">
-          {label}
-        </a>
-      );
+      phlProfileUrl = `/profiles?search=${encodeURIComponent(sub)}`;
+    } else if (userId.startsWith("github:")) {
+      const gh = userId.slice(7);
+      phlProfileUrl = `https://github.com/${gh}`;
     }
-    return nameWithAvatar(<span>{label}</span>);
+
+    const linkedName = phlProfileUrl ? (
+      <a href={phlProfileUrl} className="user-link">
+        {label}
+      </a>
+    ) : (
+      <span>{label}</span>
+    );
+
+    return (
+      <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+        {nameWithAvatar(linkedName)}
+        {linkedinUrl && canViewLinkedin && (
+          <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" title="View LinkedIn Profile" style={{ color: "#0a66c2", fontSize: "0.9rem", display: "inline-flex", alignItems: "center" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+            </svg>
+          </a>
+        )}
+      </span>
+    );
   }
 
   function commentCell(row) {
@@ -881,7 +892,7 @@ function VotesContent() {
                       </tr>
                     </thead>
                     <tbody>
-                      {sortedVotes.map((v) => (
+                      {paginatedVotes.map((v) => (
                         <tr
                           key={
                             v.issue != null
@@ -899,12 +910,12 @@ function VotesContent() {
                                 size={36}
                                 showFlag={!!session && !v.photo_verified}
                               />
-                              <Link
+                              <a
                                 href={v.profile_slug ? `/profile/${v.profile_slug}` : "#"}
                                 className="target-link"
                               >
                                 {formatProfessionalDisplayName(v.profile_slug, v.public_name)}
-                              </Link>
+                              </a>>
                             </div>
                           </td>
                           <td className="audit-col-vote">
@@ -1003,7 +1014,7 @@ function VotesContent() {
             </>
           ) : (
             <div className="votes-cards-container" style={{ display: "flex", flexDirection: "column", gap: "24px", marginTop: "16px" }}>
-              {sortedVotes.map((v) => {
+              {paginatedVotes.map((v) => {
                 const voteLabel = v.vote === "yes" ? "Yes" : v.vote === "no" ? "No" : v.vote ? String(v.vote) : "—";
                 
                 return (
@@ -1098,6 +1109,27 @@ function VotesContent() {
         </>
       )}
 
+      {totalPages > 1 && (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "16px", marginTop: "24px", marginBottom: "40px" }}>
+          <button
+            className="btn btn-secondary"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          >
+            Previous
+          </button>
+          <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            className="btn btn-secondary"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {/* ── Modals ── */}
 
