@@ -46,7 +46,7 @@ export default function ContributorsPage() {
       return `https://github.com/${userId.slice(7)}`;
     }
     if (userId.startsWith("linkedin:")) {
-      return `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(user.display_name || "Professional")}`;
+      return `/profiles?search=${encodeURIComponent(user.display_name || "Professional")}`;
     }
     return `https://github.com/${userId}`;
   }

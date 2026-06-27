@@ -903,7 +903,7 @@ function VotesContent() {
                                 showFlag={!!session && !v.photo_verified}
                               />
                               <Link
-                                href={`/profile/${v.profile_slug}`}
+                                href={v.profile_slug ? `/profile/${v.profile_slug}` : "#"}
                                 className="target-link"
                               >
                                 {formatProfessionalDisplayName(v.profile_slug, v.public_name)}
