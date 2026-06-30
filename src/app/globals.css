@@ -6139,8 +6139,17 @@ button.audit-comment-link:focus-visible {
 }
 
 @media (max-width: 600px) {
+  .pre-checkout-modal-overlay {
+    align-items: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px 12px;
+  }
+
   .pre-checkout-modal {
     max-width: 100%;
+    overflow: visible;
+    margin: auto 0;
   }
 
   .pre-checkout-row {
@@ -6150,6 +6159,28 @@ button.audit-comment-link:focus-visible {
 
   .pre-checkout-body {
     padding: 24px 20px 20px;
+  }
+
+  .pre-checkout-header {
+    padding: 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .feedback-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 }
 
