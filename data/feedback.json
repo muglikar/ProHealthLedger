@@ -86,5 +86,13 @@
     "message": "The flag feature should have 1:3 ratio instead meaning every 1 positive reviews, you can give 3 negative reviews.",
     "recommend": true,
     "timestamp": "2026-06-30T13:59:58.322Z"
+  },
+  {
+    "user_id": "linkedin:BzkLFAyue1",
+    "display_name": "Anurag Siddhanti",
+    "type": "bug",
+    "message": "It should have a SSO sync feature where once we click on LinkedIn in signin it should auto sync tou our profile on the device",
+    "recommend": true,
+    "timestamp": "2026-06-30T14:00:33.572Z"
   }
 ]
