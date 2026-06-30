@@ -39,16 +39,23 @@ export default function ContributorsPage() {
       const slug = user.linkedin_url.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1];
       if (slug) return `/profile/${slug.toLowerCase()}`;
     }
-    if (user.github_username) return `https://github.com/${user.github_username}`;
     
+    // Enforce routing Om and Anurag to their PHL profiles
+    if (user.user_id === "github:om-varshney") return "/profile/omvarshney";
+    if (user.user_id === "linkedin:BzkLFAyue1") return `/profiles?search=${encodeURIComponent("Anurag Siddhanti")}`;
+
+    // For everyone else, search their display name or user ID on PHL
+    if (user.display_name) {
+      return `/profiles?search=${encodeURIComponent(user.display_name)}`;
+    }
     const userId = user.user_id || "";
     if (userId.startsWith("github:")) {
-      return `https://github.com/${userId.slice(7)}`;
+      return `/profiles?search=${encodeURIComponent(userId.slice(7))}`;
     }
     if (userId.startsWith("linkedin:")) {
-      return `/profiles?search=${encodeURIComponent(user.display_name || "Professional")}`;
+      return `/profiles?search=${encodeURIComponent("Professional")}`;
     }
-    return `https://github.com/${userId}`;
+    return `/profiles?search=${encodeURIComponent(userId)}`;
   }
 
   function contributorLabel(user) {

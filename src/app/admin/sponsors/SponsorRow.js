@@ -17,6 +17,10 @@ export default function SponsorRow({ sponsor, profileMatch, index }) {
     ? (linkedinUrl.match(/linkedin\.com\/in\/([a-zA-Z0-9_-]+)/)?.[1] || null)
     : null;
 
+  const phlProfileUrl = slug 
+    ? `/profile/${slug.toLowerCase()}` 
+    : `/profiles?search=${encodeURIComponent(sponsor.name || "")}`;
+
   return (
     <tr style={{ background: index % 2 === 0 ? "#ffffff" : "#f8fafc" }}>
       <td
@@ -55,22 +59,16 @@ export default function SponsorRow({ sponsor, profileMatch, index }) {
           />
           <div>
             <div style={{ fontWeight: "700", fontSize: "1rem" }}>
-              {linkedinUrl ? (
-                <a
-                  href={linkedinUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    color: "#2563eb",
-                    textDecoration: "none",
-                    borderBottom: "1px dashed #2563eb",
-                  }}
-                >
-                  {sponsor.name}
-                </a>
-              ) : (
-                <span style={{ color: "#1e293b" }}>{sponsor.name}</span>
-              )}
+              <a
+                href={phlProfileUrl}
+                style={{
+                  color: "#2563eb",
+                  textDecoration: "none",
+                  borderBottom: "1px dashed #2563eb",
+                }}
+              >
+                {sponsor.name}
+              </a>
             </div>
             <div style={{ fontSize: "0.85rem", color: "#64748b" }}>
               {sponsor.email}
