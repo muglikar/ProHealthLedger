@@ -98,15 +98,44 @@ export default function OnboardingTour({ isOpen: forcedOpen, onClose }) {
 
   useEffect(() => {
     if (isVisible) {
-      updateCoords();
+      // Initial calculation
+      // Slight delay to allow initial DOM to settle
+      const timeoutId = setTimeout(updateCoords, 50);
+      
       window.addEventListener("resize", updateCoords);
       window.addEventListener("scroll", updateCoords);
+      
+      // Use ResizeObserver to detect layout shifts that move the target element
+      let resizeObserver = null;
+      if (typeof ResizeObserver !== 'undefined') {
+        resizeObserver = new ResizeObserver(() => {
+          updateCoords();
+        });
+        // Observe the body for height changes (banners being inserted)
+        resizeObserver.observe(document.body);
+        
+        // Also try to observe the specific target element if it exists
+        const currentTarget = STEPS[activeStep]?.target;
+        if (currentTarget) {
+          const el = document.querySelector(`[data-tour="${currentTarget}"]`);
+          if (el) resizeObserver.observe(el);
+        }
+      }
+
+      // Also set up a lightweight interval to catch anything observers miss (like CSS transitions)
+      const intervalId = setInterval(updateCoords, 500);
+
       return () => {
+        clearTimeout(timeoutId);
+        clearInterval(intervalId);
         window.removeEventListener("resize", updateCoords);
         window.removeEventListener("scroll", updateCoords);
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+        }
       };
     }
-  }, [isVisible, updateCoords]);
+  }, [isVisible, activeStep, updateCoords]);
 
   const handleNext = () => {
     if (activeStep < STEPS.length - 1) {
