@@ -153,58 +153,55 @@ if (linkedInClientId && linkedInClientSecret) {
     LinkedInProvider({
       clientId: linkedInClientId,
       clientSecret: linkedInClientSecret,
-      type: "oidc",
-      wellKnown: "https://www.linkedin.com/oauth/.well-known/openid-configuration",
       client: { token_endpoint_auth_method: "client_secret_post" },
-      idToken: true,
       checks: ["state"],
       authorization: {
         url: "https://www.linkedin.com/oauth/v2/authorization",
         params: {
-          // w_member_social is required for POST /rest/posts and image uploads.
-          // The "Share on LinkedIn" product must be enabled in the LinkedIn
-          // Developer App dashboard for this scope to be granted.
-          scope: process.env.LINKEDIN_SCOPE || "openid profile email w_member_social",
+          // Explicitly omit 'openid' scope to avoid id_token which crashes openid-client in OAuth2 mode.
+          scope: process.env.LINKEDIN_SCOPE || "profile email w_member_social",
         },
       },
       token: "https://www.linkedin.com/oauth/v2/accessToken",
-      // Custom fetch avoids merged userinfo.params.projection (for /v2/me) breaking OIDC userinfo.
-      // Includes fallback: if /v2/userinfo fails, decode the ID token directly.
       userinfo: {
         url: "https://api.linkedin.com/v2/userinfo",
         async request({ tokens }) {
           try {
+            // First try /v2/userinfo
             const res = await fetch("https://api.linkedin.com/v2/userinfo", {
               headers: { Authorization: `Bearer ${tokens.access_token}` },
             });
-            if (!res.ok) {
-              const body = await res.text();
-              console.error(`[LinkedIn Auth] userinfo endpoint failed ${res.status}: ${body}`);
-              // Fallback: try to decode the ID token payload directly
-              if (tokens.id_token) {
-                console.log("[LinkedIn Auth] Falling back to ID token payload");
-                const payload = JSON.parse(
-                  Buffer.from(tokens.id_token.split(".")[1], "base64url").toString()
-                );
-                return payload;
-              }
-              throw new Error(`LinkedIn userinfo ${res.status}: ${body}`);
+            if (res.ok) {
+              return res.json();
             }
-            return res.json();
+            console.warn(`[LinkedIn Auth] /v2/userinfo failed (${res.status}), falling back to /v2/me`);
+            
+            // Fallback to /v2/me and /v2/emailAddress for legacy or non-OIDC apps
+            const [meRes, emailRes] = await Promise.all([
+              fetch("https://api.linkedin.com/v2/me?projection=(id,localizedFirstName,localizedLastName,profilePicture(displayImage~digitalmediaAsset:playableStreams))", { headers: { Authorization: `Bearer ${tokens.access_token}` } }),
+              fetch("https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))", { headers: { Authorization: `Bearer ${tokens.access_token}` } })
+            ]);
+            
+            if (!meRes.ok) {
+              throw new Error(`LinkedIn /v2/me failed: ${await meRes.text()}`);
+            }
+            
+            const me = await meRes.json();
+            const emailData = emailRes.ok ? await emailRes.json() : null;
+            const email = emailData?.elements?.[0]?.["handle~"]?.emailAddress || null;
+            const picture = me.profilePicture?.["displayImage~"]?.elements?.[0]?.identifiers?.[0]?.identifier || null;
+            
+            // Normalize payload to match OIDC structure expected by our profile() callback
+            return {
+              sub: me.id,
+              name: `${me.localizedFirstName} ${me.localizedLastName}`.trim(),
+              given_name: me.localizedFirstName,
+              family_name: me.localizedLastName,
+              email: email,
+              picture: picture
+            };
           } catch (err) {
             console.error("[LinkedIn Auth] userinfo request error:", err.message);
-            // Last-resort fallback: decode ID token if available
-            if (tokens.id_token) {
-              try {
-                console.log("[LinkedIn Auth] Last-resort fallback to ID token payload");
-                const payload = JSON.parse(
-                  Buffer.from(tokens.id_token.split(".")[1], "base64url").toString()
-                );
-                return payload;
-              } catch (decodeErr) {
-                console.error("[LinkedIn Auth] ID token decode failed:", decodeErr.message);
-              }
-            }
             throw err;
           }
         },
