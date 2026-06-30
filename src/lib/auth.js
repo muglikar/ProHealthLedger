@@ -158,11 +158,35 @@ if (linkedInClientId && linkedInClientSecret) {
       authorization: {
         url: "https://www.linkedin.com/oauth/v2/authorization",
         params: {
-          // Explicitly omit 'openid' scope to avoid id_token which crashes openid-client in OAuth2 mode.
-          scope: process.env.LINKEDIN_SCOPE || "profile email w_member_social",
+          // 'openid' is required for /v2/userinfo
+          scope: process.env.LINKEDIN_SCOPE || "openid profile email w_member_social",
         },
       },
-      token: "https://www.linkedin.com/oauth/v2/accessToken",
+      token: {
+        url: "https://www.linkedin.com/oauth/v2/accessToken",
+        async request(context) {
+          const res = await fetch("https://www.linkedin.com/oauth/v2/accessToken", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              grant_type: "authorization_code",
+              code: context.params.code,
+              client_id: context.provider.clientId,
+              client_secret: context.provider.clientSecret,
+              redirect_uri: context.provider.callbackUrl,
+            }),
+          });
+          const tokens = await res.json();
+          if (!res.ok) throw new Error(`LinkedIn token error: ${JSON.stringify(tokens)}`);
+          
+          if (tokens.id_token) {
+            // Strip the id_token to prevent openid-client from crashing in OAuth2 mode!
+            console.log("[LinkedIn Auth] Stripping id_token to bypass openid-client crash");
+            delete tokens.id_token;
+          }
+          return { tokens };
+        },
+      },
       userinfo: {
         url: "https://api.linkedin.com/v2/userinfo",
         async request({ tokens }) {
