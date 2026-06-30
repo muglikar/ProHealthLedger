@@ -150,17 +150,14 @@ const providers = [
 
 if (linkedInClientId && linkedInClientSecret) {
   providers.push(
-    {
-      id: "linkedin",
-      name: "LinkedIn",
-      type: "oidc",
+    LinkedInProvider({
       clientId: linkedInClientId,
       clientSecret: linkedInClientSecret,
+      type: "oidc",
+      wellKnown: "https://www.linkedin.com/oauth/.well-known/openid-configuration",
       client: { token_endpoint_auth_method: "client_secret_post" },
       idToken: true,
       checks: ["state"],
-      issuer: "https://www.linkedin.com/oauth",
-      jwks_endpoint: "https://www.linkedin.com/oauth/openid/jwks",
       authorization: {
         url: "https://www.linkedin.com/oauth/v2/authorization",
         params: {
