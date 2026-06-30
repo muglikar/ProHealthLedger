@@ -2030,5 +2030,32 @@
     "original_photo_url": "https://media.licdn.com/dms/image/v2/C4E03AQEprn_V1Qy5NA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_100_100/0/1652460792783?e=2147483647&v=beta&t=PbucXOUj8ez4-8GPbzHj0oCOhzI7T6eJoqlF-qOgi6g",
     "profile_photo_url": "https://media.licdn.com/dms/image/v2/C4E03AQEprn_V1Qy5NA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_100_100/0/1652460792783?e=2147483647&v=beta&t=PbucXOUj8ez4-8GPbzHj0oCOhzI7T6eJoqlF-qOgi6g",
     "photo_storage": "linkedin_cdn"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/prashantpatil2101",
+    "slug": "prashantpatil2101",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:BzkLFAyue1",
+        "display_name": "Anurag Siddhanti",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQFXX7bs9s-FOA/profile-displayphoto-shrink_100_100/B4DZUegXj_G4AY-/0/1739973557996?e=1784160000&v=beta&t=XEMAdCVDl-EZcNelqUaLctjWkR_STHg2Mnk0XDGv7jY",
+        "vote": "no",
+        "issue": 110,
+        "date": "2026-06-30",
+        "reason": "A micromanager who consistently overpromises and underdelivers, creating unrealistic expectations that ultimately fall on junior team members to fulfill.",
+        "reason_pending": true
+      }
+    ],
+    "public_name": "Prashant Patil",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-06-30T13:26:58.435Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQGwexov66d2OA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1718263716024?e=2147483647&v=beta&t=qDS3_Mc6u8UAJVo5ZHXtl_9SmQd4r-x--S2L1ZeYkl0",
+    "profile_photo_url": "/prashantpatil2101.jpeg",
+    "photo_storage": "local"
   }
 ]
