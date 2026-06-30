@@ -1,5 +1,15 @@
 [
   {
+    "timestamp": "2026-06-30T16:48:14.279Z",
+    "type": "NEXTAUTH_ERROR",
+    "code": "OAUTH_CALLBACK_ERROR",
+    "message": "LinkedIn /v2/me failed: {\"status\":403,\"serviceErrorCode\":100,\"code\":\"ACCESS_DENIED\",\"message\":\"Not enough permissions to access: me.GET.NO_VERSION\"}",
+    "stack": "Error: LinkedIn /v2/me failed: {\"status\":403,\"serviceErrorCode\":100,\"code\":\"ACCESS_DENIED\",\"message\":\"Not enough permissions to access: me.GET.NO_VERSION\"}\n    at Object.request (/var/task/.next/server/chunks/_05velh-._.js:34:55778)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async u (/var/task/.next/server/chunks/_05velh-._.js:10:50488)\n    at async Object.l (/var/task/.next/server/chunks/_05velh-._.js:10:54768)\n    at async g (/var/task/.next/server/chunks/_05velh-._.js:34:19757)\n    at async s (/var/task/.next/server/chunks/_05velh-._.js:34:44461)\n    at async e.length.t (/var/task/.next/server/chunks/_05velh-._.js:34:45904)\n    at async rB.do (/var/task/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.prod.js:5:20926)\n    at async rB.handle (/var/task/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.prod.js:5:25709)\n    at async l (/var/task/.next/server/chunks/[root-of-the-server]__0w2~n86._.js:1:8115)",
+    "name": "OAuthCallbackError",
+    "provider": "linkedin",
+    "fullMetadata": "{}"
+  },
+  {
     "activity": "daily_archival",
     "timestamp": "2026-06-30T03:31:53.707Z",
     "status": "success",
