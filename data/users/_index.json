@@ -495,11 +495,18 @@
         "vote": "yes",
         "issue": 30,
         "date": "2026-04-16"
+      },
+      {
+        "profile_slug": "tirthankarsen243",
+        "vote": "yes",
+        "issue": 108,
+        "date": "2026-06-30"
       }
     ],
-    "yes_count": 1,
+    "yes_count": 2,
     "no_count": 0,
-    "image": "/anurag-siddhanti.jpeg"
+    "image": "/anurag-siddhanti.jpeg",
+    "linkedin_url": "https://www.linkedin.com/in/anurag-sid"
   },
   {
     "user_id": "linkedin:YPuTuKfNvt",
