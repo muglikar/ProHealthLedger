@@ -238,6 +238,21 @@ if (linkedInClientId && linkedInClientSecret) {
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   debug: true,
+  logger: {
+    error(code, metadata) {
+      console.error(`[NextAuth Error] ${code}`, metadata);
+    },
+    warn(code) {
+      // Suppress annoying warning about DEBUG_ENABLED
+      if (code !== 'DEBUG_ENABLED') {
+        console.warn(`[NextAuth Warn] ${code}`);
+      }
+    },
+    debug(code, metadata) {
+      // Filter out overly noisy debug logs if needed, but keeping for now
+      console.log(`[NextAuth Debug] ${code}`, metadata);
+    }
+  },
   providers,
   callbacks: {
     async signIn({ user, account, profile }) {
