@@ -150,21 +150,17 @@ const providers = [
 
 if (linkedInClientId && linkedInClientSecret) {
   providers.push(
-    LinkedInProvider({
+    {
+      id: "linkedin",
+      name: "LinkedIn",
+      type: "oidc",
       clientId: linkedInClientId,
       clientSecret: linkedInClientSecret,
       client: { token_endpoint_auth_method: "client_secret_post" },
-      // Skip ID token signature/issuer verification — we fetch user data via
-      // the userinfo endpoint directly, so we don't need openid-client to
-      // validate the JWT. This fixes login for LinkedIn accounts created via
-      // "Sign in with Google" where the ID token iss claim can differ.
-      idToken: false,
-      // Use simple state-based CSRF protection instead of PKCE/nonce which
-      // LinkedIn doesn't consistently support across all account types.
+      idToken: true,
       checks: ["state"],
-      // Removed issuer and jwks_endpoint to force next-auth to treat this as
-      // a pure OAuth2 provider rather than OIDC, bypassing ID token validation
-      // that fails for Google-linked accounts due to issuer mismatch.
+      issuer: "https://www.linkedin.com/oauth",
+      jwks_endpoint: "https://www.linkedin.com/oauth/openid/jwks",
       authorization: {
         url: "https://www.linkedin.com/oauth/v2/authorization",
         params: {
@@ -242,15 +238,37 @@ export const authOptions = {
   logger: {
     error(code, metadata) {
       console.error(`[NextAuth Error] ${code}`, metadata);
+      // Fire and forget logging to repo so we can read it easily
+      if (code === 'OAUTH_CALLBACK_ERROR') {
+        (async () => {
+          try {
+            const { readRepoJson, writeRepoJson } = await import('./github');
+            const { data: logs, sha } = await readRepoJson('data/system_logs.json').catch(() => ({ data: [] }));
+            const logArray = Array.isArray(logs) ? logs : [];
+            logArray.unshift({
+              timestamp: new Date().toISOString(),
+              type: 'NEXTAUTH_ERROR',
+              code,
+              message: metadata?.error?.message || String(metadata),
+              stack: metadata?.error?.stack,
+              name: metadata?.error?.name,
+              provider: metadata?.providerId,
+              fullMetadata: JSON.stringify(metadata, Object.getOwnPropertyNames(metadata?.error || {}))
+            });
+            if (logArray.length > 50) logArray.length = 50;
+            await writeRepoJson('data/system_logs.json', logArray, sha, `Log NextAuth error: ${code}`);
+          } catch (e) {
+            console.error('Failed to write NextAuth error log:', e);
+          }
+        })();
+      }
     },
     warn(code) {
-      // Suppress annoying warning about DEBUG_ENABLED
       if (code !== 'DEBUG_ENABLED') {
         console.warn(`[NextAuth Warn] ${code}`);
       }
     },
     debug(code, metadata) {
-      // Filter out overly noisy debug logs if needed, but keeping for now
       console.log(`[NextAuth Debug] ${code}`, metadata);
     }
   },
