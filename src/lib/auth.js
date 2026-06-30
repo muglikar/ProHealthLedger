@@ -162,8 +162,9 @@ if (linkedInClientId && linkedInClientSecret) {
       // Use simple state-based CSRF protection instead of PKCE/nonce which
       // LinkedIn doesn't consistently support across all account types.
       checks: ["state"],
-      issuer: "https://www.linkedin.com/oauth",
-      jwks_endpoint: "https://www.linkedin.com/oauth/openid/jwks",
+      // Removed issuer and jwks_endpoint to force next-auth to treat this as
+      // a pure OAuth2 provider rather than OIDC, bypassing ID token validation
+      // that fails for Google-linked accounts due to issuer mismatch.
       authorization: {
         url: "https://www.linkedin.com/oauth/v2/authorization",
         params: {
