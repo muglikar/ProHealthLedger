@@ -228,7 +228,7 @@ if (linkedInClientId && linkedInClientSecret) {
           image: profile.picture ?? null,
         };
       },
-    })
+    }
   );
 }
 
