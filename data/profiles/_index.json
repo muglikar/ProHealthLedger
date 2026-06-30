@@ -2057,5 +2057,32 @@
     "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQGwexov66d2OA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1718263716024?e=2147483647&v=beta&t=qDS3_Mc6u8UAJVo5ZHXtl_9SmQd4r-x--S2L1ZeYkl0",
     "profile_photo_url": "/prashantpatil2101.jpeg",
     "photo_storage": "local"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/rahul-malu-914b223a",
+    "slug": "rahul-malu-914b223a",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:BzkLFAyue1",
+        "display_name": "Anurag Siddhanti",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQFXX7bs9s-FOA/profile-displayphoto-shrink_100_100/B4DZUegXj_G4AY-/0/1739973557996?e=1784160000&v=beta&t=XEMAdCVDl-EZcNelqUaLctjWkR_STHg2Mnk0XDGv7jY",
+        "vote": "no",
+        "issue": 111,
+        "date": "2026-06-30",
+        "reason": "Extremely unprofessional, with poor leadership and limited understanding of AI. Frequently made unrealistic commitments that forced the team to work until 2:00 AM on numerous occasions, creating an unhealthy and unsustainable work environment.",
+        "reason_pending": true
+      }
+    ],
+    "public_name": "Rahul Malu",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-06-30T13:29:43.084Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQEUVE5-yupE4g/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1724087903206?e=2147483647&v=beta&t=Y5ZVG7pM5_XNJrfIttENZeq2m3d8yc4pT3_0owYoV9U",
+    "profile_photo_url": "/rahul-malu-914b223a.jpeg",
+    "photo_storage": "local"
   }
 ]
