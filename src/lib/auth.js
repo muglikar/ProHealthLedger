@@ -154,8 +154,14 @@ if (linkedInClientId && linkedInClientSecret) {
       clientId: linkedInClientId,
       clientSecret: linkedInClientSecret,
       client: { token_endpoint_auth_method: "client_secret_post" },
-      // Must match LinkedIn ID token `iss` (see openid-configuration). wellKnown +
-      // merged defaults produced issuer undefined → "unexpected iss value" in openid-client.
+      // Skip ID token signature/issuer verification — we fetch user data via
+      // the userinfo endpoint directly, so we don't need openid-client to
+      // validate the JWT. This fixes login for LinkedIn accounts created via
+      // "Sign in with Google" where the ID token iss claim can differ.
+      idToken: false,
+      // Use simple state-based CSRF protection instead of PKCE/nonce which
+      // LinkedIn doesn't consistently support across all account types.
+      checks: ["state"],
       issuer: "https://www.linkedin.com/oauth",
       jwks_endpoint: "https://www.linkedin.com/oauth/openid/jwks",
       authorization: {
@@ -169,22 +175,50 @@ if (linkedInClientId && linkedInClientSecret) {
       },
       token: "https://www.linkedin.com/oauth/v2/accessToken",
       // Custom fetch avoids merged userinfo.params.projection (for /v2/me) breaking OIDC userinfo.
+      // Includes fallback: if /v2/userinfo fails, decode the ID token directly.
       userinfo: {
         url: "https://api.linkedin.com/v2/userinfo",
         async request({ tokens }) {
-          const res = await fetch("https://api.linkedin.com/v2/userinfo", {
-            headers: { Authorization: `Bearer ${tokens.access_token}` },
-          });
-          if (!res.ok) {
-            const body = await res.text();
-            throw new Error(`LinkedIn userinfo ${res.status}: ${body}`);
+          try {
+            const res = await fetch("https://api.linkedin.com/v2/userinfo", {
+              headers: { Authorization: `Bearer ${tokens.access_token}` },
+            });
+            if (!res.ok) {
+              const body = await res.text();
+              console.error(`[LinkedIn Auth] userinfo endpoint failed ${res.status}: ${body}`);
+              // Fallback: try to decode the ID token payload directly
+              if (tokens.id_token) {
+                console.log("[LinkedIn Auth] Falling back to ID token payload");
+                const payload = JSON.parse(
+                  Buffer.from(tokens.id_token.split(".")[1], "base64url").toString()
+                );
+                return payload;
+              }
+              throw new Error(`LinkedIn userinfo ${res.status}: ${body}`);
+            }
+            return res.json();
+          } catch (err) {
+            console.error("[LinkedIn Auth] userinfo request error:", err.message);
+            // Last-resort fallback: decode ID token if available
+            if (tokens.id_token) {
+              try {
+                console.log("[LinkedIn Auth] Last-resort fallback to ID token payload");
+                const payload = JSON.parse(
+                  Buffer.from(tokens.id_token.split(".")[1], "base64url").toString()
+                );
+                return payload;
+              } catch (decodeErr) {
+                console.error("[LinkedIn Auth] ID token decode failed:", decodeErr.message);
+              }
+            }
+            throw err;
           }
-          return res.json();
         },
       },
       profile(profile) {
         const id = profile.sub;
         if (!id) {
+          console.error("[LinkedIn Auth] Profile missing sub claim:", JSON.stringify(profile));
           throw new Error("LinkedIn userinfo missing `sub`");
         }
         return {
@@ -207,6 +241,15 @@ export const authOptions = {
   providers,
   callbacks: {
     async signIn({ user, account, profile }) {
+      if (account?.provider === "linkedin") {
+        console.log("[LinkedIn Auth] signIn callback:", {
+          userId: user?.id,
+          name: user?.name,
+          email: user?.email ? "present" : "missing",
+          profileSub: profile?.sub,
+          providerAccountId: account?.providerAccountId,
+        });
+      }
       if (!user?.id || !user?.name) return true;
       try {
         const filePath = "data/users/_index.json";

@@ -43,3 +43,5 @@ next-env.d.ts
 
 # credentials
 PHL_QR_Codes/*.json
+node-v18.17.0-linux-x64/
+test_crash.js
