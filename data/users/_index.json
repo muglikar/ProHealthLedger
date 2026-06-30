@@ -501,10 +501,16 @@
         "vote": "yes",
         "issue": 108,
         "date": "2026-06-30"
+      },
+      {
+        "profile_slug": "prashantpatil2101",
+        "vote": "no",
+        "issue": 110,
+        "date": "2026-06-30"
       }
     ],
     "yes_count": 2,
-    "no_count": 0,
+    "no_count": 1,
     "image": "/anurag-siddhanti.jpeg",
     "linkedin_url": "https://www.linkedin.com/in/anurag-sid"
   },
