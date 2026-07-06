@@ -241,7 +241,7 @@ export default async function ProfilePage({ params }) {
   // Build JSON-LD
   const schemaMarkup = {
     "@context": "https://schema.org",
-    "@type": ["Person", "Organization"],
+    "@type": "Organization",
     "name": titleName,
     "url": `${CANONICAL_ORIGIN}/profile/${encodeURIComponent(slug)}`,
     "sameAs": profile?.linkedin_url || `https://www.linkedin.com/in/${encodeURIComponent(slug)}`,
