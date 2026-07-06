@@ -177,7 +177,18 @@ function VotesContent() {
 
     el.addEventListener("scroll", updateThumb, { passive: true });
     window.addEventListener("resize", updateThumb);
-    const raf = requestAnimationFrame(updateThumb);
+    
+    let ro;
+    if (window.ResizeObserver) {
+      ro = new ResizeObserver(() => updateThumb());
+      ro.observe(el);
+      if (el.firstElementChild) {
+        ro.observe(el.firstElementChild);
+      }
+    } else {
+      // Fallback
+      requestAnimationFrame(updateThumb);
+    }
 
     let dragging = false;
     let startX = 0;
@@ -231,8 +242,11 @@ function VotesContent() {
     };
     track.addEventListener("click", onTrackClick);
 
+    // Initial positioning
+    updateThumb();
+
     return () => {
-      cancelAnimationFrame(raf);
+      if (ro) ro.disconnect();
       el.removeEventListener("scroll", updateThumb);
       window.removeEventListener("resize", updateThumb);
       if (thumb) {
@@ -242,7 +256,7 @@ function VotesContent() {
       track.removeEventListener("click", onTrackClick);
       onUp();
     };
-  }, [loading, updateThumb]);
+  }, [loading, matchedProfile, filteredVotes.length, updateThumb]);
 
   /* ── Fetch ── */
 
