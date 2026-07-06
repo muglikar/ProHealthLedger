@@ -154,16 +154,21 @@ function VotesContent() {
     const thumb = thumbRef.current;
     if (!el || !track || !thumb) return;
     const { scrollWidth, clientWidth, scrollLeft } = el;
+    
+    // If layout isn't computed yet, skip
+    if (clientWidth === 0) return;
+
     if (scrollWidth <= clientWidth) {
       track.style.display = "none";
       return;
     }
-    track.style.display = "";
+    track.style.display = "flex";
     const trackW = track.clientWidth;
     const ratio = clientWidth / scrollWidth;
     const thumbW = Math.max(30, Math.round(trackW * ratio));
     const maxLeft = trackW - thumbW;
-    const thumbLeft = Math.round((scrollLeft / (scrollWidth - clientWidth)) * maxLeft);
+    const scrollRange = scrollWidth - clientWidth;
+    const thumbLeft = Math.round((scrollLeft / scrollRange) * maxLeft);
     thumb.style.width = thumbW + "px";
     thumb.style.left = thumbLeft + "px";
     setScrolledEnd(scrollLeft + clientWidth >= scrollWidth - 4);
@@ -186,8 +191,13 @@ function VotesContent() {
         ro.observe(el.firstElementChild);
       }
     } else {
-      // Fallback
       requestAnimationFrame(updateThumb);
+    }
+    
+    let mo;
+    if (window.MutationObserver) {
+      mo = new MutationObserver(() => updateThumb());
+      mo.observe(el, { childList: true, subtree: true, characterData: true });
     }
 
     let dragging = false;
@@ -242,11 +252,16 @@ function VotesContent() {
     };
     track.addEventListener("click", onTrackClick);
 
-    // Initial positioning
+    // Initial positioning with fallbacks for slow table layouts
     updateThumb();
+    const tId1 = setTimeout(updateThumb, 50);
+    const tId2 = setTimeout(updateThumb, 300);
 
     return () => {
+      clearTimeout(tId1);
+      clearTimeout(tId2);
       if (ro) ro.disconnect();
+      if (mo) mo.disconnect();
       el.removeEventListener("scroll", updateThumb);
       window.removeEventListener("resize", updateThumb);
       if (thumb) {
