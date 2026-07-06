@@ -61,10 +61,10 @@ function compareByDateThenIssue(a, b) {
 
 /* ── Main component ── */
 
-function VotesContent() {
+function VotesContent({ initialSearchProp }) {
   const searchParams = useSearchParams();
   const params = useParams();
-  const initialSearch = searchParams.get("search") || params?.slug || "";
+  const initialSearch = initialSearchProp || searchParams.get("search") || params?.slug || "";
   const { data: session, status } = useSession();
   const currentUserId = session?.userId || "";
 
@@ -1232,10 +1232,10 @@ function VotesContent() {
   );
 }
 
-export default function ProfilesClient() {
+export default function ProfilesClient({ initialSearch }) {
   return (
     <Suspense fallback={<div className="empty-state"><p>Loading…</p></div>}>
-      <VotesContent />
+      <VotesContent initialSearchProp={initialSearch} />
     </Suspense>
   );
 }
