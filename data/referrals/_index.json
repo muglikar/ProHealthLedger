@@ -356,8 +356,13 @@
     "profile_slug": "maheen-shaikh-25b80723a",
     "profile_name": "Maheen Shaikh",
     "created_at": "2026-06-27",
-    "clicks": 5,
-    "signups": []
+    "clicks": 14,
+    "signups": [
+      "linkedin:LGp4BmH9LO"
+    ],
+    "signup_names": [
+      "Maheen Shaikh"
+    ]
   },
   {
     "ref_code": "8c9b4e93",
@@ -366,12 +371,27 @@
     "profile_slug": "udayankanade",
     "profile_name": "Udayan Kanade",
     "created_at": "2026-07-01",
-    "clicks": 4,
+    "clicks": 6,
     "signups": [
       "linkedin:CAOSO1oig0"
     ],
     "signup_names": [
       "Anand Muglikar"
+    ]
+  },
+  {
+    "ref_code": "5fe210e5",
+    "sharer_id": "linkedin:LGp4BmH9LO",
+    "sharer_name": "Maheen Shaikh",
+    "profile_slug": "maheen-shaikh-25b80723a",
+    "profile_name": "Maheen Shaikh",
+    "created_at": "2026-07-06",
+    "clicks": 2,
+    "signups": [
+      "linkedin:LGp4BmH9LO"
+    ],
+    "signup_names": [
+      "Maheen Shaikh"
     ]
   }
 ]

@@ -645,7 +645,7 @@
     "slug": "muglikar",
     "public_name": "Anand Muglikar",
     "votes": {
-      "yes": 7,
+      "yes": 8,
       "no": 0
     },
     "submissions": [
@@ -708,6 +708,18 @@
         "vote": "yes",
         "issue": 107,
         "date": "2026-06-30"
+      },
+      {
+        "user": "linkedin:LGp4BmH9LO",
+        "display_name": "Maheen Shaikh",
+        "display_image": "https://media.licdn.com/dms/image/v2/C4E03AQEprn_V1Qy5NA/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1652460792783?e=1784764800&v=beta&t=xCKqDGUtDTiSuwe46V36u6B2ZxBqbNgXw4dygygubAA",
+        "submitter_linkedin_url": "http://www.linkedin.com/in/maheen-shaikh-25b80723a",
+        "vote": "yes",
+        "issue": 114,
+        "date": "2026-07-06",
+        "submitter_capacity": "Associate Data Scientist at Partex.ai",
+        "voted_capacity": "VP of AI ML at Kalyani Group",
+        "reason": "Anand Sir was an incredibly supportive and kind manager. As my first manager in corporate life, he guided me well and helped me settle in quickly. He’s supportive, genuine, and puts his team’s growth first. Even in a short time, he made sure I was in a better place before he left. Truly grateful for his mentorship"
       }
     ],
     "profile_photo_url": "/muglikar.jpeg",
