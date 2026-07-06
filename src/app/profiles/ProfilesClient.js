@@ -146,132 +146,6 @@ function VotesContent({ initialSearchProp }) {
     }
   }, []);
 
-  /* ── Custom scrollbar ── */
-
-  const updateThumb = useCallback(() => {
-    const el = tableWrapRef.current;
-    const track = trackRef.current;
-    const thumb = thumbRef.current;
-    if (!el || !track || !thumb) return;
-    const { scrollWidth, clientWidth, scrollLeft } = el;
-    
-    // If layout isn't computed yet, skip
-    if (clientWidth === 0) return;
-
-    if (scrollWidth <= clientWidth) {
-      track.style.display = "none";
-      return;
-    }
-    track.style.display = "flex";
-    const trackW = track.clientWidth;
-    const ratio = clientWidth / scrollWidth;
-    const thumbW = Math.max(30, Math.round(trackW * ratio));
-    const maxLeft = trackW - thumbW;
-    const scrollRange = scrollWidth - clientWidth;
-    const thumbLeft = Math.round((scrollLeft / scrollRange) * maxLeft);
-    thumb.style.width = thumbW + "px";
-    thumb.style.left = thumbLeft + "px";
-    setScrolledEnd(scrollLeft + clientWidth >= scrollWidth - 4);
-  }, []);
-
-  useEffect(() => {
-    const el = tableWrapRef.current;
-    const track = trackRef.current;
-    const thumb = thumbRef.current;
-    if (!el || !track) return;
-
-    el.addEventListener("scroll", updateThumb, { passive: true });
-    window.addEventListener("resize", updateThumb);
-    
-    let ro;
-    if (window.ResizeObserver) {
-      ro = new ResizeObserver(() => updateThumb());
-      ro.observe(el);
-      if (el.firstElementChild) {
-        ro.observe(el.firstElementChild);
-      }
-    } else {
-      requestAnimationFrame(updateThumb);
-    }
-    
-    let mo;
-    if (window.MutationObserver) {
-      mo = new MutationObserver(() => updateThumb());
-      mo.observe(el, { childList: true, subtree: true, characterData: true });
-    }
-
-    let dragging = false;
-    let startX = 0;
-    let startScrollLeft = 0;
-
-    const onDown = (e) => {
-      e.preventDefault();
-      dragging = true;
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      startX = clientX;
-      startScrollLeft = el.scrollLeft;
-      document.addEventListener("mousemove", onMove);
-      document.addEventListener("mouseup", onUp);
-      document.addEventListener("touchmove", onMove, { passive: false });
-      document.addEventListener("touchend", onUp);
-    };
-
-    const onMove = (e) => {
-      if (!dragging) return;
-      e.preventDefault();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const dx = clientX - startX;
-      const { scrollWidth, clientWidth } = el;
-      const trackW = track.clientWidth;
-      const ratio = clientWidth / scrollWidth;
-      const thumbW = Math.max(30, Math.round(trackW * ratio));
-      const maxThumbLeft = trackW - thumbW;
-      const scrollRange = scrollWidth - clientWidth;
-      el.scrollLeft = startScrollLeft + (dx / maxThumbLeft) * scrollRange;
-    };
-
-    const onUp = () => {
-      dragging = false;
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onUp);
-      document.removeEventListener("touchmove", onMove);
-      document.removeEventListener("touchend", onUp);
-    };
-
-    if (thumb) {
-      thumb.addEventListener("mousedown", onDown);
-      thumb.addEventListener("touchstart", onDown, { passive: false });
-    }
-
-    const onTrackClick = (e) => {
-      if (e.target === thumb) return;
-      const rect = track.getBoundingClientRect();
-      const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-      const { scrollWidth, clientWidth } = el;
-      el.scrollLeft = (clickX / rect.width) * (scrollWidth - clientWidth);
-    };
-    track.addEventListener("click", onTrackClick);
-
-    // Initial positioning with fallbacks for slow table layouts
-    updateThumb();
-    const tId1 = setTimeout(updateThumb, 50);
-    const tId2 = setTimeout(updateThumb, 300);
-
-    return () => {
-      clearTimeout(tId1);
-      clearTimeout(tId2);
-      if (ro) ro.disconnect();
-      if (mo) mo.disconnect();
-      el.removeEventListener("scroll", updateThumb);
-      window.removeEventListener("resize", updateThumb);
-      if (thumb) {
-        thumb.removeEventListener("mousedown", onDown);
-        thumb.removeEventListener("touchstart", onDown);
-      }
-      track.removeEventListener("click", onTrackClick);
-      onUp();
-    };
-  }, [loading, matchedProfile, filteredVotes.length, updateThumb]);
 
   /* ── Fetch ── */
 
@@ -433,6 +307,133 @@ function VotesContent({ initialSearchProp }) {
     const slug = [...matchedSlugs][0];
     return profiles.find((p) => p.slug === slug) || null;
   }, [query, sortedVotes, profiles]);
+
+  /* ── Custom scrollbar ── */
+
+  const updateThumb = useCallback(() => {
+    const el = tableWrapRef.current;
+    const track = trackRef.current;
+    const thumb = thumbRef.current;
+    if (!el || !track || !thumb) return;
+    const { scrollWidth, clientWidth, scrollLeft } = el;
+    
+    // If layout isn't computed yet, skip
+    if (clientWidth === 0) return;
+
+    if (scrollWidth <= clientWidth) {
+      track.style.display = "none";
+      return;
+    }
+    track.style.display = "flex";
+    const trackW = track.clientWidth;
+    const ratio = clientWidth / scrollWidth;
+    const thumbW = Math.max(30, Math.round(trackW * ratio));
+    const maxLeft = trackW - thumbW;
+    const scrollRange = scrollWidth - clientWidth;
+    const thumbLeft = Math.round((scrollLeft / scrollRange) * maxLeft);
+    thumb.style.width = thumbW + "px";
+    thumb.style.left = thumbLeft + "px";
+    setScrolledEnd(scrollLeft + clientWidth >= scrollWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const el = tableWrapRef.current;
+    const track = trackRef.current;
+    const thumb = thumbRef.current;
+    if (!el || !track) return;
+
+    el.addEventListener("scroll", updateThumb, { passive: true });
+    window.addEventListener("resize", updateThumb);
+    
+    let ro;
+    if (window.ResizeObserver) {
+      ro = new ResizeObserver(() => updateThumb());
+      ro.observe(el);
+      if (el.firstElementChild) {
+        ro.observe(el.firstElementChild);
+      }
+    } else {
+      requestAnimationFrame(updateThumb);
+    }
+    
+    let mo;
+    if (window.MutationObserver) {
+      mo = new MutationObserver(() => updateThumb());
+      mo.observe(el, { childList: true, subtree: true, characterData: true });
+    }
+
+    let dragging = false;
+    let startX = 0;
+    let startScrollLeft = 0;
+
+    const onDown = (e) => {
+      e.preventDefault();
+      dragging = true;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      startX = clientX;
+      startScrollLeft = el.scrollLeft;
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+      document.addEventListener("touchmove", onMove, { passive: false });
+      document.addEventListener("touchend", onUp);
+    };
+
+    const onMove = (e) => {
+      if (!dragging) return;
+      e.preventDefault();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const dx = clientX - startX;
+      const { scrollWidth, clientWidth } = el;
+      const trackW = track.clientWidth;
+      const ratio = clientWidth / scrollWidth;
+      const thumbW = Math.max(30, Math.round(trackW * ratio));
+      const maxThumbLeft = trackW - thumbW;
+      const scrollRange = scrollWidth - clientWidth;
+      el.scrollLeft = startScrollLeft + (dx / maxThumbLeft) * scrollRange;
+    };
+
+    const onUp = () => {
+      dragging = false;
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onUp);
+    };
+
+    if (thumb) {
+      thumb.addEventListener("mousedown", onDown);
+      thumb.addEventListener("touchstart", onDown, { passive: false });
+    }
+
+    const onTrackClick = (e) => {
+      if (e.target === thumb) return;
+      const rect = track.getBoundingClientRect();
+      const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      const { scrollWidth, clientWidth } = el;
+      el.scrollLeft = (clickX / rect.width) * (scrollWidth - clientWidth);
+    };
+    track.addEventListener("click", onTrackClick);
+
+    // Initial positioning with fallbacks for slow table layouts
+    updateThumb();
+    const tId1 = setTimeout(updateThumb, 50);
+    const tId2 = setTimeout(updateThumb, 300);
+
+    return () => {
+      clearTimeout(tId1);
+      clearTimeout(tId2);
+      if (ro) ro.disconnect();
+      if (mo) mo.disconnect();
+      el.removeEventListener("scroll", updateThumb);
+      window.removeEventListener("resize", updateThumb);
+      if (thumb) {
+        thumb.removeEventListener("mousedown", onDown);
+        thumb.removeEventListener("touchstart", onDown);
+      }
+      track.removeEventListener("click", onTrackClick);
+      onUp();
+    };
+  }, [loading, matchedProfile, filteredVotes.length, updateThumb]);
 
   /* ── Helpers ── */
 
