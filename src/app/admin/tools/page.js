@@ -439,9 +439,9 @@ export default function AdminToolsPage() {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <span style={{ fontWeight: "600", color: "var(--text)", fontSize: "0.95rem" }}>
-                      {formatActivityName(log.activity)}
+                      {formatActivityName(log.activity || log.code)}
                     </span>
-                    {getStatusBadge(log.status)}
+                    {getStatusBadge(log.status || (log.code ? 'error' : null))}
                   </div>
                   <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
                     {new Date(log.timestamp).toLocaleString()}
@@ -451,6 +451,11 @@ export default function AdminToolsPage() {
                   <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-secondary)", whiteSpace: "pre-wrap" }}>
                     {log.details}
                   </p>
+                )}
+                {log.metadata && (
+                  <pre style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-secondary)", background: "rgba(0,0,0,0.05)", padding: "8px", borderRadius: "4px", overflowX: "auto" }}>
+                    {JSON.stringify(log.metadata, null, 2)}
+                  </pre>
                 )}
               </div>
             ))}
@@ -508,12 +513,15 @@ export default function AdminToolsPage() {
 }
 
 function formatActivityName(act) {
+  if (!act) return "System Event";
   if (act === "weekly_backup") return "Weekly Google Drive Backup";
   if (act === "daily_archival") return "Daily Archiving (Wayback & Archive.is)";
-  return act.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  if (act === "OAUTH_CALLBACK_ERROR") return "OAuth Callback Error";
+  return String(act).replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function getStatusBadge(status) {
+  if (!status) return null;
   const isSuccess = status === "success";
   return (
     <span
@@ -527,7 +535,7 @@ function getStatusBadge(status) {
         border: `1px solid ${isSuccess ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)"}`,
       }}
     >
-      {status.toUpperCase()}
+      {String(status).toUpperCase()}
     </span>
   );
 }
