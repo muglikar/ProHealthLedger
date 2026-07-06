@@ -5381,18 +5381,6 @@ button.audit-comment-link:focus-visible {
 
 /* --- Modal Contrast & Clarity --- */
 
-.share-modal-backdrop {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  background: rgba(0, 0, 0, 0.75) !important;
-  /* Darker backdrop */
-  backdrop-filter: blur(8px) !important;
-  z-index: 99999 !important;
-}
-
 .feedback-modal {
   background: #ffffff !important;
   border-radius: 1.25rem !important;
