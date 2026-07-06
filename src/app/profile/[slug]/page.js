@@ -312,7 +312,7 @@ export default async function ProfilePage({ params }) {
           />
         }
       >
-        <ProfilesClient initialSearch={slug} />
+        <ProfilesClient initialSearch={slug} initialProfiles={profiles} />
       </Suspense>
     </>
   );

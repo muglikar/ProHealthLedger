@@ -201,7 +201,7 @@ export default async function VouchPage({ params }) {
           />
         }
       >
-        <ProfilesClient initialSearch={resolvedParams?.slug} />
+        <ProfilesClient initialSearch={resolvedParams?.slug} initialProfiles={profiles} />
       </Suspense>
     </>
   );

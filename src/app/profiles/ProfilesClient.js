@@ -61,15 +61,15 @@ function compareByDateThenIssue(a, b) {
 
 /* ── Main component ── */
 
-function VotesContent({ initialSearchProp }) {
+function VotesContent({ initialSearchProp, initialProfilesProp }) {
   const searchParams = useSearchParams();
   const params = useParams();
   const initialSearch = initialSearchProp || searchParams.get("search") || params?.slug || "";
   const { data: session, status } = useSession();
   const currentUserId = session?.userId || "";
 
-  const [profiles, setProfiles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [profiles, setProfiles] = useState(initialProfilesProp || []);
+  const [loading, setLoading] = useState(initialProfilesProp ? false : true);
   const [viewCreditActive, setViewCreditActive] = useState(false);
   const [hasVouchedBefore, setHasVouchedBefore] = useState(false);
 
@@ -153,7 +153,9 @@ function VotesContent({ initialSearchProp }) {
     if (status === "loading") return;
 
     function loadProfiles() {
-      setLoading(true);
+      if (profiles.length === 0) {
+        setLoading(true);
+      }
       Promise.all([
         fetch(session ? "/api/profiles?auth=1" : "/api/profiles")
           .then((res) => res.json())
@@ -180,7 +182,9 @@ function VotesContent({ initialSearchProp }) {
           setLoading(false);
         })
         .catch(() => {
-          setProfiles([]);
+          if (profiles.length === 0) {
+            setProfiles([]);
+          }
           setLoading(false);
         });
     }
@@ -1233,10 +1237,10 @@ function VotesContent({ initialSearchProp }) {
   );
 }
 
-export default function ProfilesClient({ initialSearch }) {
+export default function ProfilesClient({ initialSearch, initialProfiles }) {
   return (
     <Suspense fallback={<div className="empty-state"><p>Loading…</p></div>}>
-      <VotesContent initialSearchProp={initialSearch} />
+      <VotesContent initialSearchProp={initialSearch} initialProfilesProp={initialProfiles} />
     </Suspense>
   );
 }

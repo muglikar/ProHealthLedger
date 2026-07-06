@@ -1,4 +1,5 @@
 import ProfilesClient from "./ProfilesClient";
+import { readDataFile } from "@/lib/github";
 
 const SITE_URL = "https://prohealthledger.org";
 
@@ -63,6 +64,12 @@ export async function generateMetadata({ searchParams }) {
   };
 }
 
-export default function ProfilesPage() {
-  return <ProfilesClient />;
+export default async function ProfilesPage() {
+  let profiles = [];
+  try {
+    const res = await readDataFile("data/profiles/_index.json");
+    if (Array.isArray(res.data)) profiles = res.data;
+  } catch (e) {}
+
+  return <ProfilesClient initialProfiles={profiles} />;
 }
