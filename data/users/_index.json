@@ -665,6 +665,17 @@
     "display_name": "Maheen Shaikh",
     "email": "shaikh.maheen04@gmail.com",
     "image": "https://media.licdn.com/dms/image/v2/C4E03AQEprn_V1Qy5NA/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1652460792783?e=1784764800&v=beta&t=xCKqDGUtDTiSuwe46V36u6B2ZxBqbNgXw4dygygubAA",
-    "last_login": "2026-07-06T15:14:27.646Z"
+    "last_login": "2026-07-06T15:14:27.646Z",
+    "contributions": [
+      {
+        "profile_slug": "muglikar",
+        "vote": "yes",
+        "issue": 114,
+        "date": "2026-07-06"
+      }
+    ],
+    "yes_count": 1,
+    "no_count": 0,
+    "linkedin_url": "http://www.linkedin.com/in/maheen-shaikh-25b80723a"
   }
 ]
