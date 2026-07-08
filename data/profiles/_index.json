@@ -2122,5 +2122,34 @@
     "profile_photo_url": "/udayankanade.jpeg",
     "original_photo_url": "https://media.licdn.com/dms/image/v2/C4E03AQGzznPvzDnAOA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1645355279287?e=1784764800&v=beta&t=eFF9SwTXUXPRgq5Mrl58FoNhAIYXK2K9TbBrb3JQ_2A",
     "photo_storage": "local"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/anurag-sid",
+    "slug": "anurag-sid",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1785369600&v=beta&t=ioYSZuo3oD7MgG3I9mS90HtBRsjC-o-rziGdJ9Sokks",
+        "vote": "yes",
+        "issue": 115,
+        "date": "2026-07-08",
+        "submitter_capacity": "Associate Data Scientist at Partex.ai and Deputy Manager at Kalyani Group (KSMS TSPL)",
+        "voted_capacity": "Global Head of Data Science at Partex.ai and VP of AI/ML - Principal Architect at Kalyani Group (KSMS TSPL)",
+        "reason": "I had the opportunity to manage him during his time at Partex.ai, where he consistently demonstrated strong analytical thinking, excellent problem-solving abilities, and the ability to transform complex business challenges into practical, AI-driven solutions.\n\nHe successfully developed and evaluated 13 different deep learning–based approaches for Clinical Trial Probability of Success prediction, delivering results that consistently met—and often exceeded—my expectations. He also made significant contributions to our in-house Clinical LLM development initiative and proactively conducted technical knowledge-sharing sessions on how Large Language Models are built, reflecting both his technical depth and collaborative mindset.\n\nOne of his greatest strengths is his adaptability. Whether working in healthcare, finance, legal, or manufacturing, he rapidly understands the business domain, identifies the underlying problem, and delivers robust, production-ready AI solutions.\n\nDuring his tenure, he contributed to a Big Four consulting firm's Transfer Pricing platform, building AI-powered capabilities for transfer pricing calculations and automated report generation that streamlined complex client workflows.\n\nHe also designed and developed an AI-powered Legal Document Analysis platform for a leading European legal firm, enabling legal and procurement teams to analyze contracts, NDAs, and terms & conditions against organizational standards. The platform intelligently compared legal documents against reference templates, identified missing clauses, contractual risks, and deviations, generated negotiation-ready summaries, suggested improvements, and automated compliance reports—significantly reducing manual review effort while improving consistency and risk detection across thousands of legal documents.\n\nLater, at Kalyani Group, he independently architected, developed, and deployed LegalAI, an AI-powered legal document intelligence platform with an intuitive user interface that enabled legal teams to rapidly review and extract key highlights from thousands of NDAs and contracts. Delivering a production-ready application of this complexity in under a week was an exceptional achievement that reflected his technical competence, execution speed, and strong sense of ownership.\n\nHe is a high-caliber Data Scientist with a strong solution-oriented mindset who is equally comfortable tackling research-oriented machine learning challenges and building end-to-end production AI systems. Once provided with the right direction and business context, he takes ownership, works independently, and consistently delivers high-quality outcomes. As his manager, I found him dependable, technically strong, quick to learn, and capable of making meaningful contributions across diverse AI initiatives. I am confident he will be a valuable asset to any organization seeking someone who combines technical excellence, adaptability, business understanding, and a relentless focus on delivering impactful solutions.",
+        "reason_pending": true
+      }
+    ],
+    "public_name": "Anurag Siddhanti",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-07-08T15:13:46.259Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQFXX7bs9s-FOA/profile-displayphoto-shrink_200_200/B4DZUegXj_G4Ac-/0/1739973557964?e=2147483647&v=beta&t=xIEk_Q1PP0pWoHmEbdBVFQZ7mBIpEeoEyykdhiWz1P8",
+    "profile_photo_url": "/anurag-sid.jpeg",
+    "photo_storage": "local"
   }
 ]
