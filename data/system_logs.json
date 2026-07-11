@@ -1,5 +1,12 @@
 [
   {
+    "timestamp": "2026-07-11T08:31:52.147Z",
+    "type": "NEXTAUTH_ERROR",
+    "code": "OAUTH_CALLBACK_ERROR",
+    "message": "Error: access_denied",
+    "fullMetadata": "{}"
+  },
+  {
     "activity": "daily_archival",
     "timestamp": "2026-07-11T04:35:40.581Z",
     "status": "success",
