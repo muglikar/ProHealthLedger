@@ -2348,5 +2348,32 @@
     "original_photo_url": "https://media.licdn.com/dms/image/v2/C5103AQHeTJHddDmcXA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1525329699706?e=2147483647&v=beta&t=1yQv5ZuFTBaFyNPPGfLzwt6vNZbz-bfTAD8ajr0cWg8",
     "profile_photo_url": "/ameya08bhagwat.jpeg",
     "photo_storage": "local"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/jugnu",
+    "slug": "jugnu",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1785369600&v=beta&t=ioYSZuo3oD7MgG3I9mS90HtBRsjC-o-rziGdJ9Sokks",
+        "vote": "no",
+        "issue": 124,
+        "date": "2026-07-18",
+        "submitter_capacity": "Sr R&D Engineer at TouchMagix",
+        "voted_capacity": "MD at Talent hive Consultancy Pvt Ltd"
+      }
+    ],
+    "profile_photo_url": "/jugnu.jpeg",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/C4D03AQHH8fd9DstLNg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1601823961138?e=2147483647&v=beta&t=QzMQQioaNc6jSLcTE3d7aX1NUnWGkOOGur8p8SVi21Y",
+    "photo_storage": "local",
+    "public_name": "Jugnu Kashyap",
+    "resolution_source": "manual-photo-input",
+    "confidence": 0.95,
+    "resolved_at": "2026-07-18T10:38:37.195Z"
   }
 ]
