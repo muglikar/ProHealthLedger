@@ -2204,5 +2204,32 @@
     "resolution_source": "manual-photo-input",
     "confidence": 0.95,
     "resolved_at": "2026-07-18T09:37:08.388Z"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/rohitanurag",
+    "slug": "rohitanurag",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1785369600&v=beta&t=ioYSZuo3oD7MgG3I9mS90HtBRsjC-o-rziGdJ9Sokks",
+        "vote": "no",
+        "issue": 118,
+        "date": "2026-07-18",
+        "submitter_capacity": "Global Head of Data Science at Partex.ai",
+        "voted_capacity": "Data Engineering Lead at Partex.ai"
+      }
+    ],
+    "public_name": "Rohit Anurag",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-07-18T09:39:47.518Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D5603AQFo2tNRdXHeFw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1680879234037?e=2147483647&v=beta&t=CC132Diz6hL98-eNTAEK7fNWXqZRRxKQDxCcPTTCObk",
+    "profile_photo_url": "/rohitanurag.jpeg",
+    "photo_storage": "local"
   }
 ]
