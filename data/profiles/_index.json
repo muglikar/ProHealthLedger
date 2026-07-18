@@ -2257,5 +2257,32 @@
     "original_photo_url": "https://media.licdn.com/dms/image/v2/D5603AQFddlSYaZGtZg/profile-displayphoto-scale_200_200/B56ZmtTt9ZG4AY-/0/1759549252224?e=2147483647&v=beta&t=ODf86CwnOi1XrKkWIEidRoIGWFjTFpP9VoSynKZPjyQ",
     "profile_photo_url": "/ravindra-paygude-5773b141.jpeg",
     "photo_storage": "local"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/hemanshujain",
+    "slug": "hemanshujain",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1785369600&v=beta&t=ioYSZuo3oD7MgG3I9mS90HtBRsjC-o-rziGdJ9Sokks",
+        "vote": "no",
+        "issue": 120,
+        "date": "2026-07-18",
+        "submitter_capacity": "Sr. R&D Engineer at Teleskin (via Farasbee)",
+        "voted_capacity": "Co-founder at Farasbee"
+      }
+    ],
+    "public_name": "Hemanshu Jain",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-07-18T09:51:58.766Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQEok0JsZ1ykeA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1676540444236?e=2147483647&v=beta&t=SFkYkUeafPXLGIukMZ5fQC0uzB_jfrVX0n5ab2Txc74",
+    "profile_photo_url": "/hemanshujain.jpeg",
+    "photo_storage": "local"
   }
 ]
