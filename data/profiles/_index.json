@@ -2321,5 +2321,32 @@
     "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQGtB8okaiJSgQ/profile-displayphoto-scale_200_200/B4DZ9epoqKHgAc-/0/1783999401810?e=2147483647&v=beta&t=yyjrfrdY8g1G1jqYna4zOz1Mu_LsvJdO5OHtA2vGHCk",
     "profile_photo_url": "/anirudhdeodhar.jpeg",
     "photo_storage": "local"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/ameya08bhagwat",
+    "slug": "ameya08bhagwat",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_800_800/B4DZj7Q5e2IYAc-/0/1756562168629?e=1785369600&v=beta&t=ioYSZuo3oD7MgG3I9mS90HtBRsjC-o-rziGdJ9Sokks",
+        "vote": "no",
+        "issue": 123,
+        "date": "2026-07-18",
+        "submitter_capacity": "Global Head of Data Science at Partex.ai",
+        "voted_capacity": "Lead Quality Assurance Engineer at Innoplexus"
+      }
+    ],
+    "public_name": "Ameya Bhagwat",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-07-18T10:33:10.699Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/C5103AQHeTJHddDmcXA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1525329699706?e=2147483647&v=beta&t=1yQv5ZuFTBaFyNPPGfLzwt6vNZbz-bfTAD8ajr0cWg8",
+    "profile_photo_url": "/ameya08bhagwat.jpeg",
+    "photo_storage": "local"
   }
 ]
