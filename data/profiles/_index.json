@@ -2201,9 +2201,9 @@
     "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQGteC90trpW6w/profile-displayphoto-scale_400_400/B4DZ9DPJ3mI0Ag-/0/1783539475157?e=2147483647&v=beta&t=dS0yG0-KnLfxBhkM7JaA4ahfjnO2QJZWfrP3kA42F8g",
     "photo_storage": "local",
     "public_name": "Aman Ahluwalia",
-    "resolution_source": "manual-photo-input",
-    "confidence": 0.95,
-    "resolved_at": "2026-07-18T09:37:08.388Z"
+    "resolution_source": "manual",
+    "confidence": 1,
+    "resolved_at": "2026-07-18T09:41:08.459Z"
   },
   {
     "linkedin_url": "https://www.linkedin.com/in/rohitanurag",
