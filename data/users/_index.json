@@ -471,9 +471,15 @@
         "vote": "yes",
         "issue": 115,
         "date": "2026-07-08"
+      },
+      {
+        "profile_slug": "ishita-mallick-ab4506148",
+        "vote": "yes",
+        "issue": 116,
+        "date": "2026-07-18"
       }
     ],
-    "yes_count": 43,
+    "yes_count": 44,
     "no_count": 34,
     "image": "https://media.licdn.com/dms/image/v2/D4D03AQHBCZMqQN7vIQ/profile-displayphoto-shrink_200_200/B4DZj7Q5e2IYAY-/0/1756562168616?e=2147483647&v=beta&t=zncfiqKo6fWR-sxcOnmrBZcPiTKs3Em-u5YyXQ3iQOI"
   },
