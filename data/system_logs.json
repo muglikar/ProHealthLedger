@@ -1,5 +1,11 @@
 [
   {
+    "activity": "weekly_backup",
+    "timestamp": "2026-07-26T19:44:52.524Z",
+    "status": "success",
+    "details": "Successfully backed up data/ directory to Google Drive."
+  },
+  {
     "activity": "daily_archival",
     "timestamp": "2026-07-26T03:20:14.615Z",
     "status": "success",
