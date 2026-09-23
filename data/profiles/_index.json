@@ -2404,5 +2404,34 @@
     "resolution_source": "manual-photo-input",
     "confidence": 0.95,
     "resolved_at": "2026-08-17T05:32:42.268Z"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/gauranggandhi",
+    "slug": "gauranggandhi",
+    "votes": {
+      "yes": 1,
+      "no": 0
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQGK1eSBYhJktg/profile-displayphoto-scale_100_100/B4DaBy9sgcGYAc-/0/1788635172646?e=1792022400&v=beta&t=3ZE51lSQzedsgLfI2Em_eQDOz-1ha43R6QLV__ATjV0",
+        "vote": "yes",
+        "issue": 127,
+        "date": "2026-09-23",
+        "submitter_capacity": "CEO & Gardener at StomatoBot Technologies Pvt Ltd",
+        "voted_capacity": "Founder at L'étoile Systems Private Limited",
+        "reason": "Gaurang is a dear friend. He's always very interested in new technologies, discussions about products could evolve from their current state and always very keen to help make new relevant connections to help.",
+        "reason_pending": true
+      }
+    ],
+    "public_name": "Gaurang Gandhi",
+    "resolution_source": "client-preview",
+    "confidence": 0.95,
+    "resolved_at": "2026-09-23T10:18:50.378Z",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQEuldQuGGvIIg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1725904640126?e=2147483647&v=beta&t=n8oUZT9MT2U0yX30pny50LVBjILOdljETGTJT7vZyxw",
+    "profile_photo_url": "/gauranggandhi.jpeg",
+    "photo_storage": "local"
   }
 ]
