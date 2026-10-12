@@ -1,5 +1,11 @@
 [
   {
+    "activity": "daily_archival",
+    "timestamp": "2026-10-12T04:56:32.768Z",
+    "status": "success",
+    "details": "Successfully archived profiles and platform pages to the Wayback Machine & Archive.is."
+  },
+  {
     "activity": "weekly_backup",
     "timestamp": "2026-10-11T22:20:52.104Z",
     "status": "success",
@@ -292,11 +298,5 @@
     "timestamp": "2026-08-30T21:25:59.531Z",
     "status": "success",
     "details": "Successfully backed up data/ directory to Google Drive."
-  },
-  {
-    "activity": "daily_archival",
-    "timestamp": "2026-08-30T04:24:18.379Z",
-    "status": "success",
-    "details": "Successfully archived profiles and platform pages to the Wayback Machine & Archive.is."
   }
 ]
