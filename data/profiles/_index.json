@@ -2432,5 +2432,32 @@
     "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D03AQEuldQuGGvIIg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1725904640126?e=2147483647&v=beta&t=n8oUZT9MT2U0yX30pny50LVBjILOdljETGTJT7vZyxw",
     "profile_photo_url": "/gauranggandhi.jpeg",
     "photo_storage": "local"
+  },
+  {
+    "linkedin_url": "https://www.linkedin.com/in/pushpanjali-kumari-8b95981b2",
+    "slug": "pushpanjali-kumari-8b95981b2",
+    "votes": {
+      "yes": 0,
+      "no": 1
+    },
+    "submissions": [
+      {
+        "user": "linkedin:CAOSO1oig0",
+        "display_name": "Anand Muglikar",
+        "display_image": "https://media.licdn.com/dms/image/v2/D4D03AQGK1eSBYhJktg/profile-displayphoto-scale_100_100/B4DaBy9sgcGYAc-/0/1788635172646?e=1796256000&v=beta&t=-am2cdPPjaYbgVeoxG_EqcnE3flRBfGN9CcOvHCyWC0",
+        "vote": "no",
+        "issue": 128,
+        "date": "2026-11-12",
+        "submitter_capacity": "Global Head of Data Science at Partex.ai",
+        "voted_capacity": "Junior Data Scientist"
+      }
+    ],
+    "profile_photo_url": "/pushpanjali-kumari-8b95981b2.jpeg",
+    "original_photo_url": "https://media.licdn.com/dms/image/v2/D4D35AQHZd2fHBF4LSw/profile-framedphoto-shrink_400_400/B4DZ.TwQlXHEAU-/0/1784890330064?e=1795111200&v=beta&t=co7V28hAjB1cRocbMx-6kpcjePnKFfKF0gn9m63YUxg",
+    "photo_storage": "local",
+    "public_name": "Pushpanjali Kumari",
+    "resolution_source": "manual-photo-input",
+    "confidence": 0.95,
+    "resolved_at": "2026-11-12T17:39:15.165Z"
   }
 ]
