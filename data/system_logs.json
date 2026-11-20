@@ -1,6 +1,12 @@
 [
   {
     "activity": "daily_archival",
+    "timestamp": "2026-11-20T08:07:11.364Z",
+    "status": "success",
+    "details": "Successfully archived profiles and platform pages to the Wayback Machine & Archive.is."
+  },
+  {
+    "activity": "daily_archival",
     "timestamp": "2026-11-19T08:27:10.803Z",
     "status": "success",
     "details": "Successfully archived profiles and platform pages to the Wayback Machine & Archive.is."
@@ -290,12 +296,6 @@
   {
     "activity": "daily_archival",
     "timestamp": "2026-10-08T05:11:12.600Z",
-    "status": "success",
-    "details": "Successfully archived profiles and platform pages to the Wayback Machine & Archive.is."
-  },
-  {
-    "activity": "daily_archival",
-    "timestamp": "2026-10-07T04:56:06.710Z",
     "status": "success",
     "details": "Successfully archived profiles and platform pages to the Wayback Machine & Archive.is."
   }
